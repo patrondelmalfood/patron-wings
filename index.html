@@ -917,6 +917,10 @@
             <div class="admin-card"><div class="label">Burgers (unidades)</div><div class="value" id="mBurgerUnits">0</div></div>
             <div class="admin-card"><div class="label">Delivery (S/)</div><div class="value" id="mDelivery">0.00</div></div>
             <div class="admin-card"><div class="label">Tapers (S/)</div><div class="value" id="mTapers">0.00</div></div>
+            <div class="admin-card"><div class="label">Venta hoy (S/)</div><div class="value" id="mTodaySales">0.00</div></div>
+<div class="admin-card"><div class="label">Venta ayer (S/)</div><div class="value" id="mYesterdaySales">0.00</div></div>
+<div class="admin-card"><div class="label">Semana actual (S/)</div><div class="value" id="mWeekSales">0.00</div></div>
+<div class="admin-card"><div class="label">Promedio diario (S/)</div><div class="value" id="mAvgDailySales">0.00</div></div>
           </div>
 
           <div class="admin-three">
@@ -3183,6 +3187,50 @@ ensureBoletaCreated();;
       mWingsKg.textContent = agg.wingsKg.toFixed(2);
       mBroasterPieces.textContent = agg.broasterPieces;
       mBurgerUnits.textContent = agg.burgerUnits;
+      const today = getDateKeyLocal(new Date());
+const yesterday = getDateKeyLocal(new Date(Date.now() - 86400000));
+
+let todaySales = 0;
+let yesterdaySales = 0;
+let weekSales = 0;
+
+const now = new Date();
+const startOfWeek = new Date(now);
+startOfWeek.setHours(0,0,0,0);
+const day = now.getDay();
+const diff = day === 0 ? 6 : day - 1;
+startOfWeek.setDate(now.getDate() - diff);
+
+const allOrders = getActiveRows(getOrderLog());
+
+allOrders.forEach(order => {
+  const orderDate = order.dateKey;
+
+  if (orderDate === today) {
+    todaySales += safeNum(order.total);
+  }
+
+  if (orderDate === yesterday) {
+    yesterdaySales += safeNum(order.total);
+  }
+
+  const orderDateObj = new Date(orderDate + "T00:00:00");
+  if (orderDateObj >= startOfWeek) {
+    weekSales += safeNum(order.total);
+  }
+});
+
+const weekOrders = allOrders.filter(order => {
+  const orderDateObj = new Date(order.dateKey + "T00:00:00");
+  return orderDateObj >= startOfWeek;
+});
+
+const avgDaily = weekOrders.length ? (weekSales / weekOrders.length) : 0;
+
+mTodaySales.textContent = todaySales.toFixed(2);
+mYesterdaySales.textContent = yesterdaySales.toFixed(2);
+mWeekSales.textContent = weekSales.toFixed(2);
+mAvgDailySales.textContent = avgDaily.toFixed(2);
 
       renderSummaryBox(prodSummary, agg.prodMap);
       renderSummaryBox(drinkSummary, agg.drinkMap);
