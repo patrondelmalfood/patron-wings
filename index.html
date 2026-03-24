@@ -934,7 +934,13 @@
             </div>
             <div>
               <h3 style="margin:10px 0 6px; color:#fde68a;">Premios</h3>
-              <div class="summary-box" id="ruletaSummary"></div>
+  <div class="summary-box" id="ruletaSummary"></div>
+</div>
+
+<div>
+  <h3 style="margin:10px 0 6px; color:#fde68a;">Resumen semanal</h3>
+  <div class="summary-box" id="weekSummary"></div>
+</div>
             </div>
           </div>
 
@@ -3242,6 +3248,33 @@ mAvgDailySales.textContent = avgDaily.toFixed(2);
         }
       });
       renderSummaryBox(ruletaSummary, rewardMap);
+      // ===== RESUMEN POR DÍAS =====
+const days = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+
+const weekMap = {
+  0:0,1:0,2:0,3:0,4:0,5:0,6:0
+};
+
+allOrders.forEach(order => {
+  const date = new Date(order.dateKey + "T00:00:00");
+  const day = date.getDay();
+  weekMap[day] += safeNum(order.total);
+});
+
+let htmlWeek = "";
+let totalWeek = 0;
+
+for (let i = 1; i <= 6; i++) {
+  htmlWeek += `<div>${days[i]}: S/ ${weekMap[i].toFixed(2)}</div>`;
+  totalWeek += weekMap[i];
+}
+
+htmlWeek += `<div>${days[0]}: S/ ${weekMap[0].toFixed(2)}</div>`;
+totalWeek += weekMap[0];
+
+htmlWeek += `<hr><div><b>Total semana: S/ ${totalWeek.toFixed(2)}</b></div>`;
+
+weekSummary.innerHTML = htmlWeek;
 
       renderStockTable(daySetup, agg);
 
