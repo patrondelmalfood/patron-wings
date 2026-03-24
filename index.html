@@ -3248,17 +3248,33 @@ mAvgDailySales.textContent = avgDaily.toFixed(2);
         }
       });
       renderSummaryBox(ruletaSummary, rewardMap);
-      // ===== RESUMEN POR DÍAS =====
+// ===== RESUMEN POR DÍAS (SEMANA SELECCIONADA) =====
 const days = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+
+const selectedDate = new Date(dateKey + "T00:00:00");
+const startOfWeekSummary = new Date(selectedDate);
+startOfWeekSummary.setHours(0,0,0,0);
+
+const daySummary = startOfWeekSummary.getDay();
+const diffSummary = daySummary === 0 ? 6 : daySummary - 1;
+startOfWeekSummary.setDate(startOfWeekSummary.getDate() - diffSummary);
+
+const endOfWeekSummary = new Date(startOfWeekSummary);
+endOfWeekSummary.setDate(endOfWeekSummary.getDate() + 6);
+endOfWeekSummary.setHours(23,59,59,999);
 
 const weekMap = {
   0:0,1:0,2:0,3:0,4:0,5:0,6:0
 };
 
-allOrders.forEach(order => {
-  const date = new Date(order.dateKey + "T00:00:00");
-  const day = date.getDay();
-  weekMap[day] += safeNum(order.total);
+const allOrdersForSummary = getActiveRows(getOrderLog());
+
+allOrdersForSummary.forEach(order => {
+  const orderDateObj = new Date(order.dateKey + "T00:00:00");
+  if (orderDateObj >= startOfWeekSummary && orderDateObj <= endOfWeekSummary) {
+    const day = orderDateObj.getDay();
+    weekMap[day] += safeNum(order.total);
+  }
 });
 
 let htmlWeek = "";
@@ -3702,11 +3718,15 @@ weekSummary.innerHTML = htmlWeek;
       }
     }));
 
-    disableNavWhatsapp();
-    if (bottomBar) bottomBar.classList.add("hidden");
-    updateMixedPaymentVisibility();
-    renderCart();
-    initCloudSync();
+ disableNavWhatsapp();
+if (bottomBar) bottomBar.classList.add("hidden");
+updateMixedPaymentVisibility();
+renderCart();
+
+adminAuth.style.display = "block";
+adminContent.style.display = "none";
+
+initCloudSync();
   </script>
 </body>
 </html>
