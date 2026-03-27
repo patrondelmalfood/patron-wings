@@ -940,6 +940,8 @@
 <div>
   <h3 style="margin:10px 0 6px; color:#fde68a;">Resumen semanal</h3>
   <div class="summary-box" id="weekSummary"></div>
+ <h3 style="margin:10px 0 6px; color:#fde68a;">Últimos 7 días</h3>
+<div class="summary-box" id="last7Days"></div>
 </div>
             </div>
   
@@ -3291,7 +3293,27 @@ totalWeek += weekMap[0];
 htmlWeek += `<hr><div><b>Total semana: S/ ${totalWeek.toFixed(2)}</b></div>`;
 
 weekSummary.innerHTML = htmlWeek;
+// ===== ÚLTIMOS 7 DÍAS =====
+let htmlLast7 = "";
+let now7 = new Date();
 
+for (let i = 6; i >= 0; i--) {
+  let d = new Date(now7);
+  d.setDate(d.getDate() - i);
+
+  let key = getDateKeyLocal(d);
+  let total = 0;
+
+  allOrdersForSummary.forEach(order => {
+    if (order.dateKey === key) {
+      total += safeNum(order.total);
+    }
+  });
+
+  htmlLast7 += `<div>${key}: S/ ${total.toFixed(2)}</div>`;
+}
+
+last7Days.innerHTML = htmlLast7;
       renderStockTable(daySetup, agg);
 
       if (!rows.length) {
