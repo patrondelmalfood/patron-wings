@@ -921,7 +921,8 @@
 <div class="admin-card"><div class="label">Semana actual (S/)</div><div class="value" id="mWeekSales">0.00</div></div>
 <div class="admin-card"><div class="label">Promedio diario (S/)</div><div class="value" id="mAvgDailySales">0.00</div></div>
           </div>
-
+<h3 style="margin:12px 0 6px; color:#fde68a;">Gráfico de ventas semanales</h3>
+<div class="summary-box" id="weekChart"></div>
           <div class="admin-three">
             <div>
               <h3 style="margin:10px 0 6px; color:#fde68a;">Resumen por producto (cant.)</h3>
@@ -3302,6 +3303,38 @@ totalWeek += weekMap[0];
 htmlWeek += `<hr><div><b>Total semana: S/ ${totalWeek.toFixed(2)}</b></div>`;
 
 weekSummary.innerHTML = htmlWeek;
+// ===== GRAFICO SEMANAL =====
+let htmlChart = "";
+let maxValue = Math.max(...Object.values(weekMap), 1); // evitar división por 0
+
+for (let i = 1; i <= 6; i++) {
+  const value = weekMap[i];
+  const percent = (value / maxValue) * 100;
+
+  htmlChart += `
+    <div style="margin-bottom:8px;">
+      <div style="font-size:12px;">${days[i]}: S/ ${value.toFixed(2)}</div>
+      <div style="background:#222; border-radius:6px;">
+        <div style="width:${percent}%; background:#f59e0b; height:10px; border-radius:6px;"></div>
+      </div>
+    </div>
+  `;
+}
+
+// domingo
+const sundayValue = weekMap[0];
+const sundayPercent = (sundayValue / maxValue) * 100;
+
+htmlChart += `
+  <div style="margin-bottom:8px;">
+    <div style="font-size:12px;">${days[0]}: S/ ${sundayValue.toFixed(2)}</div>
+    <div style="background:#222; border-radius:6px;">
+      <div style="width:${sundayPercent}%; background:#f59e0b; height:10px; border-radius:6px;"></div>
+    </div>
+  </div>
+`;
+
+weekChart.innerHTML = htmlChart;
       renderStockTable(daySetup, agg);
 
       if (!rows.length) {
