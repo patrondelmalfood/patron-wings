@@ -825,7 +825,6 @@
             <button id="adminSaveOpenClose" type="button" style="background:#8b5cf6;color:#fff;font-weight:900;">Guardar datos del día</button>
             <button id="adminPrintSummary" type="button" style="background:#0ea5e9;color:#fff;font-weight:900;">🖨️ Imprimir resumen</button>
             <button id="adminExport" type="button" style="background:#10b981;color:#052e16;font-weight:900;">Exportar JSON</button>
-            <button id="adminClearDay" type="button" style="background:#dc2626;color:#fff;font-weight:900;">Cerrar día (limpiar)</button>
             <button id="adminLogout" type="button" style="background:#ef4444;color:#fff;font-weight:900;">Salir</button>
           </div>
 
@@ -1811,7 +1810,6 @@ function deepCopy(obj){
     const adminRefresh = document.getElementById("adminRefresh");
     const adminPrintSummary = document.getElementById("adminPrintSummary");
     const adminExport = document.getElementById("adminExport");
-    const adminClearDay = document.getElementById("adminClearDay");
     const adminDate = document.getElementById("adminDate");
     const adminSaveOpenClose = document.getElementById("adminSaveOpenClose");
 
@@ -3670,16 +3668,6 @@ last7Days.innerHTML = htmlLast7;
       URL.revokeObjectURL(url);
     });
 
-    adminClearDay.addEventListener("click", () => {
-      const dateKey = adminDate.value || getDateKeyLocal(new Date());
-      if (!confirm(`¿Seguro que deseas limpiar el día ${dateKey}? (solo en este dispositivo)`)) return;
-      const log = getOrderLog().filter(r => r.dateKey !== dateKey);
-      saveOrderLog(log);
-      deleteDaySetup(dateKey);
-      loadDaySetupIntoForm(dateKey);
-      renderAdmin();
-      alert("Día limpiado.");
-    });
 
     adminSaveOpenClose.addEventListener("click", () => {
       const dateKey = adminDate.value || getDateKeyLocal(new Date());
