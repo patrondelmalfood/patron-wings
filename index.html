@@ -920,6 +920,9 @@
 <div class="admin-card"><div class="label">Venta ayer (S/)</div><div class="value" id="mYesterdaySales">0.00</div></div>
 <div class="admin-card"><div class="label">Semana actual (S/)</div><div class="value" id="mWeekSales">0.00</div></div>
 <div class="admin-card"><div class="label">Promedio diario (S/)</div><div class="value" id="mAvgDailySales">0.00</div></div>
+<div class="admin-card"><div class="label">Compras semana (S/)</div><div class="value" id="mWeeklyPurchases">0.00</div></div>
+<div class="admin-card"><div class="label">Gastos fijos semana (S/)</div><div class="value" id="mWeeklyFixed">0.00</div></div>
+<div class="admin-card"><div class="label">Gasto total semana (S/)</div><div class="value" id="mWeeklyTotalCost">0.00</div></div>
           </div>
 <h3 style="margin:12px 0 6px; color:#fde68a;">Gráfico de ventas semanales</h3>
 <div class="summary-box" id="weekChart"></div>
@@ -1845,6 +1848,9 @@ function deepCopy(obj){
     const ruletaSummary = document.getElementById("ruletaSummary");
     const ordersList = document.getElementById("ordersList");
     const stockControlTableBody = document.querySelector("#stockControlTable tbody");
+    const mWeeklyPurchases = document.getElementById("mWeeklyPurchases");
+const mWeeklyFixed = document.getElementById("mWeeklyFixed");
+const mWeeklyTotalCost = document.getElementById("mWeeklyTotalCost");
 
     let adminUnlocked = false;
 
@@ -3236,6 +3242,9 @@ mTodaySales.textContent = todaySales.toFixed(2);
 mYesterdaySales.textContent = yesterdaySales.toFixed(2);
 mWeekSales.textContent = weekSales.toFixed(2);
 mAvgDailySales.textContent = avgDaily.toFixed(2);
+mWeeklyPurchases.textContent = "465.00";
+mWeeklyFixed.textContent = "1011.25";
+mWeeklyTotalCost.textContent = "1476.25";
 
       renderSummaryBox(prodSummary, agg.prodMap);
       renderSummaryBox(drinkSummary, agg.drinkMap);
