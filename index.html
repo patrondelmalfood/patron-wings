@@ -943,6 +943,11 @@
 <div>
   <h3 style="margin:10px 0 6px; color:#fde68a;">Resumen semanal</h3>
   <div class="summary-box" id="weekSummary"></div>
+  <h3 style="margin:10px 0 6px; color:#fde68a;">Detalle compras semana</h3>
+<div class="summary-box" id="weeklyPurchasesDetail"></div>
+
+<h3 style="margin:10px 0 6px; color:#fde68a;">Detalle gastos fijos</h3>
+<div class="summary-box" id="weeklyFixedDetail"></div>
 </div>
             </div>
   
@@ -1848,6 +1853,8 @@ function deepCopy(obj){
     const ruletaSummary = document.getElementById("ruletaSummary");
     const ordersList = document.getElementById("ordersList");
     const stockControlTableBody = document.querySelector("#stockControlTable tbody");
+    const weeklyPurchasesDetail = document.getElementById("weeklyPurchasesDetail");
+const weeklyFixedDetail = document.getElementById("weeklyFixedDetail");
     const mWeeklyPurchases = document.getElementById("mWeeklyPurchases");
 const mWeeklyFixed = document.getElementById("mWeeklyFixed");
 const mWeeklyTotalCost = document.getElementById("mWeeklyTotalCost");
@@ -3242,9 +3249,36 @@ mTodaySales.textContent = todaySales.toFixed(2);
 mYesterdaySales.textContent = yesterdaySales.toFixed(2);
 mWeekSales.textContent = weekSales.toFixed(2);
 mAvgDailySales.textContent = avgDaily.toFixed(2);
-mWeeklyPurchases.textContent = "465.00";
+mWeeklyPurchases.textContent = "1419.00";
 mWeeklyFixed.textContent = "1011.25";
-mWeeklyTotalCost.textContent = "1476.25";
+mWeeklyTotalCost.textContent = "2430.25";
+weeklyPurchasesDetail.innerHTML = `
+  <div>Alitas importadas: S/ 415.00</div>
+  <div>Papa precocida: S/ 370.00</div>
+  <div>Mayonesa base: S/ 41.00</div>
+  <div>Mostaza: S/ 48.00</div>
+  <div>Ketchup sachet: S/ 28.00</div>
+  <div>Mayonesa sachet: S/ 50.00</div>
+  <div>Aceite Nor Chef: S/ 128.00</div>
+  <div>Aceite B1: S/ 164.00</div>
+  <div>Pan burger: S/ 18.00</div>
+  <div>Coca Cola 1L: S/ 44.00</div>
+  <div>Inka Cola 1L: S/ 44.00</div>
+  <div>Agua pack: S/ 12.00</div>
+  <div>Gaseosa personal vidrio: S/ 33.00</div>
+  <div>Pepsi/Guaraná: S/ 24.00</div>
+`;
+
+weeklyFixedDetail.innerHTML = `
+  <div>Cocinero: S/ 300.00</div>
+  <div>Ayudante de cocina: S/ 200.00</div>
+  <div>Moza: S/ 150.00</div>
+  <div>Administradora: S/ 100.00</div>
+  <div>Alquiler: S/ 150.00</div>
+  <div>Luz: S/ 45.00</div>
+  <div>Internet: S/ 16.25</div>
+  <div>Cuarto del cocinero: S/ 50.00</div>
+`;
 
       renderSummaryBox(prodSummary, agg.prodMap);
       renderSummaryBox(drinkSummary, agg.drinkMap);
