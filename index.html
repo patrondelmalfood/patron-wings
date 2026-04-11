@@ -972,6 +972,39 @@
 
           <h3 style="margin:10px 0 6px; color:#fde68a;">Pedidos del día (estado)</h3>
           <div class="admin-box-list" id="ordersList"></div>
+          <h3 style="margin:10px 0 6px; color:#fde68a;">Consumo diario</h3>
+<div class="admin-form-block">
+  <div class="admin-grid-3">
+    <div class="admin-field">
+      <label for="usageItemSelect">Producto</label>
+      <select id="usageItemSelect"></select>
+    </div>
+    <div class="admin-field">
+      <label for="usageQtyInput">Cantidad usada</label>
+      <input type="number" id="usageQtyInput" min="0" step="0.01" placeholder="0.00">
+    </div>
+    <div class="admin-field">
+      <label for="usageUnitInput">Unidad</label>
+      <input type="text" id="usageUnitInput" placeholder="Ej: kg, unidad, bolsa_170g">
+    </div>
+  </div>
+
+  <div class="admin-field" style="margin-top:10px;">
+    <label for="usageNoteInput">Nota</label>
+    <input type="text" id="usageNoteInput" placeholder="Ej: consumo cocina noche / merma / personal">
+  </div>
+
+  <div class="admin-row" style="margin-top:10px;">
+    <button id="usageSaveBtn" type="button" style="background:#10b981;color:#052e16;font-weight:900;">Guardar consumo</button>
+  </div>
+
+  <div class="mini-note">
+    Aquí registrarás lo que realmente se usó en el día. Luego podremos comparar compras vs consumo real.
+  </div>
+</div>
+
+<h3 style="margin:10px 0 6px; color:#fde68a;">Consumos registrados del día</h3>
+<div class="admin-box-list" id="usageList"></div>
         </div>
       </div>
     </div>
@@ -1858,6 +1891,12 @@ const weeklyFixedDetail = document.getElementById("weeklyFixedDetail");
     const mWeeklyPurchases = document.getElementById("mWeeklyPurchases");
 const mWeeklyFixed = document.getElementById("mWeeklyFixed");
 const mWeeklyTotalCost = document.getElementById("mWeeklyTotalCost");
+const usageItemSelect = document.getElementById("usageItemSelect");
+const usageQtyInput = document.getElementById("usageQtyInput");
+const usageUnitInput = document.getElementById("usageUnitInput");
+const usageNoteInput = document.getElementById("usageNoteInput");
+const usageSaveBtn = document.getElementById("usageSaveBtn");
+const usageList = document.getElementById("usageList");
 
     let adminUnlocked = false;
 
@@ -1899,6 +1938,8 @@ const dayRows = await res2.json();
     if (adminUnlocked) renderAdmin();
 
     console.log("✅ Datos cargados desde Supabase");
+    loadUsageItems();
+loadUsageToday();
   } catch(err){
   console.error("Error cargando Supabase:", err);
   CLOUD_FAILED = true;
