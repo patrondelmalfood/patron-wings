@@ -15,36 +15,54 @@
       align-items: center;
       min-height: 100vh;
       padding: 20px;
+      box-sizing: border-box;
     }
 
     .card {
       width: 100%;
-      max-width: 420px;
+      max-width: 430px;
       background: #001233;
       border: 1px solid #facc15;
-      border-radius: 18px;
-      padding: 24px;
-      box-shadow: 0 0 20px rgba(250, 204, 21, 0.18);
+      border-radius: 22px;
+      padding: 26px;
+      box-shadow: 0 0 25px rgba(250, 204, 21, 0.18);
+      box-sizing: border-box;
     }
 
-    h1 {
-      margin-top: 0;
-      font-size: 28px;
-      color: #fde68a;
-      text-align: center;
-    }
-
-    p {
-      color: #d1d5db;
+    .brand {
       text-align: center;
       margin-bottom: 22px;
     }
 
+    .brand-logo {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #facc15;
+      margin-bottom: 12px;
+      background: #000;
+    }
+
+    .brand h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      color: #fde68a;
+      line-height: 1.1;
+    }
+
+    .brand p {
+      margin: 0;
+      color: #d1d5db;
+      font-size: 15px;
+    }
+
     label {
       display: block;
-      margin: 12px 0 6px;
+      margin: 14px 0 6px;
       color: #fde68a;
       font-weight: 700;
+      font-size: 15px;
     }
 
     input {
@@ -56,18 +74,24 @@
       background: #000;
       color: #fff;
       font-size: 16px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #facc15;
+      box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.15);
     }
 
     button {
       width: 100%;
-      margin-top: 18px;
-      padding: 14px;
+      margin-top: 20px;
+      padding: 15px;
       border: 0;
-      border-radius: 12px;
+      border-radius: 14px;
       background: #facc15;
       color: #111827;
       font-weight: 900;
-      font-size: 16px;
+      font-size: 17px;
       cursor: pointer;
     }
 
@@ -77,6 +101,7 @@
       border-radius: 12px;
       display: none;
       font-size: 14px;
+      line-height: 1.4;
     }
 
     .ok {
@@ -90,12 +115,22 @@
       color: #fecaca;
       border: 1px solid #dc2626;
     }
+
+    .mini {
+      margin-top: 14px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 13px;
+    }
   </style>
 </head>
 <body>
   <div class="card">
-    <h1>🎟 Registro de cliente</h1>
-    <p>Regístrate para tu tarjeta virtual de sellos y premios.</p>
+    <div class="brand">
+      <img src="LOGO.jpg" alt="El Patrón del Mal" class="brand-logo">
+      <h1>EL PATRÓN DEL MAL</h1>
+      <p>Tarjeta virtual de sellos y premios</p>
+    </div>
 
     <label for="nombre">Nombre</label>
     <input id="nombre" type="text" placeholder="Tu nombre">
@@ -110,6 +145,10 @@
 
     <div id="msgOk" class="msg ok"></div>
     <div id="msgErr" class="msg err"></div>
+
+    <div class="mini">
+      Al registrarte podrás acumular sellos y acceder a premios.
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -153,11 +192,17 @@
       msgOk.style.display = "none";
       msgErr.style.display = "none";
 
-      const { data: existingCustomer } = await supabaseClient
+      const { data: existingCustomer, error: existingError } = await supabaseClient
         .from("customers")
         .select("id")
         .eq("celular", celularVal)
         .maybeSingle();
+
+      if (existingError) {
+        console.error(existingError);
+        showErr("No se pudo validar el celular.");
+        return;
+      }
 
       if (existingCustomer) {
         showErr("Ese celular ya está registrado.");
