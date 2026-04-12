@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de cliente - El Patrón del Mal</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #000814;
+      color: #fff8dc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: #001233;
+      border: 1px solid #facc15;
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 0 20px rgba(250, 204, 21, 0.18);
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 28px;
+      color: #fde68a;
+      text-align: center;
+    }
+
+    p {
+      color: #d1d5db;
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      color: #fde68a;
+      font-weight: 700;
+    }
+
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      background: #000;
+      color: #fff;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 18px;
+      padding: 14px;
+      border: 0;
+      border-radius: 12px;
+      background: #facc15;
+      color: #111827;
+      font-weight: 900;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .msg {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 12px;
+      display: none;
+      font-size: 14px;
+    }
+
+    .ok {
+      background: #052e16;
+      color: #bbf7d0;
+      border: 1px solid #16a34a;
+    }
+
+    .err {
+      background: #450a0a;
+      color: #fecaca;
+      border: 1px solid #dc2626;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🎟 Registro de cliente</h1>
+    <p>Regístrate para tu tarjeta virtual de sellos y premios.</p>
+
+    <label for="nombre">Nombre</label>
+    <input id="nombre" type="text" placeholder="Tu nombre">
+
+    <label for="celular">Celular</label>
+    <input id="celular" type="text" placeholder="Tu número">
+
+    <label for="correo">Correo</label>
+    <input id="correo" type="email" placeholder="Tu correo">
+
+    <button id="btnGuardar">Registrarme</button>
+
+    <div id="msgOk" class="msg ok"></div>
+    <div id="msgErr" class="msg err"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://defdwzzewzfjusoezwkn.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
+
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: false }
+    });
+
+    const nombre = document.getElementById("nombre");
+    const celular = document.getElementById("celular");
+    const correo = document.getElementById("correo");
+    const btnGuardar = document.getElementById("btnGuardar");
+    const msgOk = document.getElementById("msgOk");
+    const msgErr = document.getElementById("msgErr");
+
+    function showOk(text) {
+      msgErr.style.display = "none";
+      msgOk.style.display = "block";
+      msgOk.textContent = text;
+    }
+
+    function showErr(text) {
+      msgOk.style.display = "none";
+      msgErr.style.display = "block";
+      msgErr.textContent = text;
+    }
+
+    btnGuardar.addEventListener("click", async () => {
+      const nombreVal = nombre.value.trim();
+      const celularVal = celular.value.trim();
+      const correoVal = correo.value.trim();
+
+      if (!nombreVal || !celularVal) {
+        showErr("Completa nombre y celular.");
+        return;
+      }
+
+      msgOk.style.display = "none";
+      msgErr.style.display = "none";
+
+      const { data: existingCustomer } = await supabaseClient
+        .from("customers")
+        .select("id")
+        .eq("celular", celularVal)
+        .maybeSingle();
+
+      if (existingCustomer) {
+        showErr("Ese celular ya está registrado.");
+        return;
+      }
+
+      const { data: customer, error: customerError } = await supabaseClient
+        .from("customers")
+        .insert([{
+          nombre: nombreVal,
+          celular: celularVal,
+          correo: correoVal || null
+        }])
+        .select()
+        .single();
+
+      if (customerError) {
+        console.error(customerError);
+        showErr("No se pudo registrar el cliente.");
+        return;
+      }
+
+      const { error: cardError } = await supabaseClient
+        .from("loyalty_cards")
+        .insert([{
+          customer_id: customer.id,
+          sellos_actuales: 0,
+          meta_sellos: 10,
+          premio_pendiente: false
+        }]);
+
+      if (cardError) {
+        console.error(cardError);
+        showErr("Cliente creado, pero falló la tarjeta.");
+        return;
+      }
+
+      showOk("Registro exitoso. Tu tarjeta virtual fue creada.");
+      nombre.value = "";
+      celular.value = "";
+      correo.value = "";
+    });
+  </script>
+</body>
+</html>
