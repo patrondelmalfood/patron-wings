@@ -1897,7 +1897,106 @@ const usageUnitInput = document.getElementById("usageUnitInput");
 const usageNoteInput = document.getElementById("usageNoteInput");
 const usageSaveBtn = document.getElementById("usageSaveBtn");
 const usageList = document.getElementById("usageList");
+async function loadUsageItems() {
+  const res = await fetch(SUPABASE_URL + "/rest/v1/inventory_items?select=id,nombre&order=nombre.asc", {
+    headers: {
+      "apikey": SUPABASE_ANON_KEY,
+      "Authorization": "Bearer " + SUPABASE_ANON_KEY
+    }
+  });
 
+  const data = await res.json();
+
+  usageItemSelect.innerHTML = `<option value="">Selecciona producto</option>`;
+
+  data.forEach(item => {
+    const option = document.createElement("option");
+    option.value = item.id;
+    option.textContent = item.nombre;
+    usageItemSelect.appendChild(option);
+  });
+}
+
+async function loadUsageToday() {
+  const todayKey = getDateKeyLocal(new Date());
+
+  const res = await fetch(
+    SUPABASE_URL +
+      "/rest/v1/inventory_usage?select=id,fecha,cantidad_usada,unidad_uso,nota,item_id,inventory_items(nombre)&fecha=eq." +
+      todayKey +
+      "&order=created_at.desc",
+    {
+      headers: {
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": "Bearer " + SUPABASE_ANON_KEY
+      }
+    }
+  );
+
+  const data = await res.json();
+
+  if (!data.length) {
+    usageList.innerHTML = `<div class="admin-item">No hay consumos registrados hoy.</div>`;
+    return;
+  }
+
+  usageList.innerHTML = data.map(row => `
+    <div class="admin-item">
+      <strong>${row.inventory_items?.nombre || "Sin nombre"}</strong>
+      — ${safeNum(row.cantidad_usada).toFixed(2)} ${row.unidad_uso || ""}
+      ${row.nota ? `<br><small>${row.nota}</small>` : ""}
+    </div>
+  `).join("");
+}
+
+usageSaveBtn.addEventListener("click", async () => {
+  const item_id = parseInt(usageItemSelect.value, 10);
+  const cantidad = parseFloat(usageQtyInput.value || "0");
+  const unidad = (usageUnitInput.value || "").trim();
+  const nota = (usageNoteInput.value || "").trim();
+  const fecha = getDateKeyLocal(new Date());
+
+  if (!item_id) {
+    alert("Selecciona un producto");
+    return;
+  }
+
+  if (!(cantidad > 0)) {
+    alert("Ingresa una cantidad válida");
+    return;
+  }
+
+  const res = await fetch(SUPABASE_URL + "/rest/v1/inventory_usage", {
+    method: "POST",
+    headers: {
+      "apikey": SUPABASE_ANON_KEY,
+      "Authorization": "Bearer " + SUPABASE_ANON_KEY,
+      "Content-Type": "application/json",
+      "Prefer": "return=representation"
+    },
+    body: JSON.stringify({
+      fecha,
+      item_id,
+      cantidad_usada: cantidad,
+      unidad_uso: unidad,
+      nota
+    })
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    console.error("Error guardando consumo:", errText);
+    alert("No se pudo guardar el consumo");
+    return;
+  }
+
+  usageQtyInput.value = "";
+  usageUnitInput.value = "";
+  usageNoteInput.value = "";
+
+  await loadUsageToday();
+  alert("Consumo guardado ✅");
+});
     let adminUnlocked = false;
 
   async function initCloudSync(){
