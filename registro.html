@@ -42,13 +42,32 @@
       border: 2px solid #facc15;
       margin-bottom: 12px;
       background: #000;
+      box-shadow: 0 0 12px rgba(250, 204, 21, 0.35);
+    }
+
+    @keyframes goldGlow {
+      0% {
+        color: #facc15;
+        text-shadow: 0 0 4px #facc15, 0 0 8px rgba(250, 204, 21, 0.45);
+      }
+      50% {
+        color: #ffe58a;
+        text-shadow: 0 0 6px #ffe58a, 0 0 14px rgba(250, 204, 21, 0.7), 0 0 22px rgba(250, 204, 21, 0.45);
+      }
+      100% {
+        color: #facc15;
+        text-shadow: 0 0 4px #facc15, 0 0 8px rgba(250, 204, 21, 0.45);
+      }
     }
 
     .brand h1 {
       margin: 0 0 8px;
       font-size: 28px;
-      color: #fde68a;
       line-height: 1.1;
+      color: #facc15;
+      animation: goldGlow 2.2s ease-in-out infinite;
+      font-weight: 900;
+      letter-spacing: 1px;
     }
 
     .brand p {
