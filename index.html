@@ -3917,22 +3917,20 @@ weekChart.innerHTML = htmlChart;
     });
 
     adminRefresh.addEventListener("click", () => {
-      saveDaySetup(adminDate.value || getDateKeyLocal(new Date()), readDaySetupFromForm());
-      renderAdmin();
-    });
+  renderAdmin();
+});
 
     adminDate.addEventListener("change", renderAdmin);
 
-    [
-      openCashInput, openCloseNoteInput,
-      stockInit1L, stockInitHalfPlastic, stockInitGlass, stockInitWater,
-      stockEnd1L, stockEndHalfPlastic, stockEndGlass, stockEndWater
-    ].forEach(el => el.addEventListener("input", () => {
-      if (adminUnlocked) {
-        saveDaySetup(adminDate.value || getDateKeyLocal(new Date()), readDaySetupFromForm());
-        renderAdmin();
-      }
-    }));
+   [
+  openCashInput, openCloseNoteInput,
+  stockInit1L, stockInitHalfPlastic, stockInitGlass, stockInitWater,
+  stockEnd1L, stockEndHalfPlastic, stockEndGlass, stockEndWater
+].forEach(el => el.addEventListener("input", () => {
+  if (adminUnlocked) {
+    renderAdmin();
+  }
+}));
 
  disableNavWhatsapp();
 if (bottomBar) bottomBar.classList.add("hidden");
