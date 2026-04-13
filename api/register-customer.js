@@ -19,16 +19,27 @@ export default async function handler(req, res) {
       "Content-Type": "application/json"
     };
 
-    const checkRes = await fetch(
-      SUPABASE_URL +
-        "/rest/v1/customers?select=id&celular=eq." +
-        encodeURIComponent(celular),
-      { headers }
-    );
+    let checkRes;
+    try {
+      checkRes = await fetch(
+        SUPABASE_URL +
+          "/rest/v1/customers?select=id&celular=eq." +
+          encodeURIComponent(celular),
+        { headers }
+      );
+    } catch (err) {
+      return res.status(500).json({
+        error: "Falló conexión al validar celular",
+        detail: err.message || String(err)
+      });
+    }
 
     if (!checkRes.ok) {
       const txt = await checkRes.text();
-      return res.status(500).json({ error: "Error validando celular", detail: txt });
+      return res.status(500).json({
+        error: "Error validando celular",
+        detail: txt
+      });
     }
 
     const existingRows = await checkRes.json();
@@ -37,25 +48,36 @@ export default async function handler(req, res) {
       return res.status(409).json({ error: "Ese celular ya está registrado" });
     }
 
-    const customerRes = await fetch(
-      SUPABASE_URL + "/rest/v1/customers",
-      {
-        method: "POST",
-        headers: {
-          ...headers,
-          Prefer: "return=representation"
-        },
-        body: JSON.stringify([{
-          nombre,
-          celular,
-          correo: correo || null
-        }])
-      }
-    );
+    let customerRes;
+    try {
+      customerRes = await fetch(
+        SUPABASE_URL + "/rest/v1/customers",
+        {
+          method: "POST",
+          headers: {
+            ...headers,
+            Prefer: "return=representation"
+          },
+          body: JSON.stringify([{
+            nombre,
+            celular,
+            correo: correo || null
+          }])
+        }
+      );
+    } catch (err) {
+      return res.status(500).json({
+        error: "Falló conexión al crear cliente",
+        detail: err.message || String(err)
+      });
+    }
 
     if (!customerRes.ok) {
       const txt = await customerRes.text();
-      return res.status(500).json({ error: "Error creando cliente", detail: txt });
+      return res.status(500).json({
+        error: "Error creando cliente",
+        detail: txt
+      });
     }
 
     const customerRows = await customerRes.json();
@@ -65,23 +87,34 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: "Cliente creado sin ID válido" });
     }
 
-    const cardRes = await fetch(
-      SUPABASE_URL + "/rest/v1/loyalty_cards",
-      {
-        method: "POST",
-        headers,
-        body: JSON.stringify([{
-          customer_id: customer.id,
-          sellos_actuales: 0,
-          meta_sellos: 10,
-          premio_pendiente: false
-        }])
-      }
-    );
+    let cardRes;
+    try {
+      cardRes = await fetch(
+        SUPABASE_URL + "/rest/v1/loyalty_cards",
+        {
+          method: "POST",
+          headers,
+          body: JSON.stringify([{
+            customer_id: customer.id,
+            sellos_actuales: 0,
+            meta_sellos: 10,
+            premio_pendiente: false
+          }])
+        }
+      );
+    } catch (err) {
+      return res.status(500).json({
+        error: "Falló conexión al crear tarjeta",
+        detail: err.message || String(err)
+      });
+    }
 
     if (!cardRes.ok) {
       const txt = await cardRes.text();
-      return res.status(500).json({ error: "Cliente creado, pero falló la tarjeta", detail: txt });
+      return res.status(500).json({
+        error: "Cliente creado, pero falló la tarjeta",
+        detail: txt
+      });
     }
 
     return res.status(200).json({
