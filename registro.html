@@ -179,15 +179,7 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const SUPABASE_URL = "https://defdwzzewzfjusoezwkn.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
-
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth: { persistSession: false }
-    });
-
     const nombre = document.getElementById("nombre");
     const celular = document.getElementById("celular");
     const correo = document.getElementById("correo");
@@ -222,55 +214,26 @@
       msgErr.style.display = "none";
 
       try {
-        const { data: existingCustomer, error: existingError } = await supabaseClient
-          .from("customers")
-          .select("id")
-          .eq("celular", celularVal)
-          .maybeSingle();
-
-        if (existingError) {
-          console.error(existingError);
-          showErr("Error validando celular: " + (existingError.message || JSON.stringify(existingError)));
-          return;
-        }
-
-        if (existingCustomer) {
-          showErr("Ese celular ya está registrado.");
-          return;
-        }
-
-        const { data: customer, error: customerError } = await supabaseClient
-          .from("customers")
-          .insert([{
+        const res = await fetch("/api/register-customer", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
             nombre: nombreVal,
             celular: celularVal,
-            correo: correoVal || null
-          }])
-          .select()
-          .single();
+            correo: correoVal
+          })
+        });
 
-        if (customerError) {
-          console.error(customerError);
-          showErr("Error al registrar cliente: " + (customerError.message || JSON.stringify(customerError)));
+        const data = await res.json();
+
+        if (!res.ok) {
+          showErr(data.error + (data.detail ? ": " + data.detail : ""));
           return;
         }
 
-        const { error: cardError } = await supabaseClient
-          .from("loyalty_cards")
-          .insert([{
-            customer_id: customer.id,
-            sellos_actuales: 0,
-            meta_sellos: 10,
-            premio_pendiente: false
-          }]);
-
-        if (cardError) {
-          console.error(cardError);
-          showErr("Cliente creado, pero falló la tarjeta: " + (cardError.message || JSON.stringify(cardError)));
-          return;
-        }
-
-        showOk("Registro exitoso. Tu tarjeta virtual fue creada.");
+        showOk(data.message || "Registro exitoso.");
         nombre.value = "";
         celular.value = "";
         correo.value = "";
