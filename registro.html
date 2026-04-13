@@ -179,9 +179,14 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const SUPABASE_URL = "https://defdwzzewzfjusoezwkn.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
+
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: false }
+    });
 
     const nombre = document.getElementById("nombre");
     const celular = document.getElementById("celular");
@@ -189,12 +194,6 @@
     const btnGuardar = document.getElementById("btnGuardar");
     const msgOk = document.getElementById("msgOk");
     const msgErr = document.getElementById("msgErr");
-
-    const BASE_HEADERS = {
-      "apikey": SUPABASE_ANON_KEY,
-      "Authorization": "Bearer " + SUPABASE_ANON_KEY,
-      "Content-Type": "application/json"
-    };
 
     function showOk(text) {
       msgErr.style.display = "none";
@@ -206,15 +205,6 @@
       msgOk.style.display = "none";
       msgErr.style.display = "block";
       msgErr.textContent = text;
-    }
-
-    async function readErrorText(res) {
-      try {
-        const txt = await res.text();
-        return txt || ("HTTP " + res.status);
-      } catch {
-        return "HTTP " + res.status;
-      }
     }
 
     btnGuardar.addEventListener("click", async () => {
@@ -232,78 +222,51 @@
       msgErr.style.display = "none";
 
       try {
-        const checkRes = await fetch(
-          SUPABASE_URL +
-            "/rest/v1/customers?select=id&celular=eq." +
-            encodeURIComponent(celularVal),
-          {
-            headers: BASE_HEADERS
-          }
-        );
+        const { data: existingCustomer, error: existingError } = await supabaseClient
+          .from("customers")
+          .select("id")
+          .eq("celular", celularVal)
+          .maybeSingle();
 
-        if (!checkRes.ok) {
-          const errText = await readErrorText(checkRes);
-          console.error("Error validando celular:", errText);
-          showErr("Error al validar celular: " + errText);
+        if (existingError) {
+          console.error(existingError);
+          showErr("Error validando celular: " + (existingError.message || JSON.stringify(existingError)));
           return;
         }
 
-        const existingRows = await checkRes.json();
-
-        if (Array.isArray(existingRows) && existingRows.length > 0) {
+        if (existingCustomer) {
           showErr("Ese celular ya está registrado.");
           return;
         }
 
-        const customerRes = await fetch(
-          SUPABASE_URL + "/rest/v1/customers",
-          {
-            method: "POST",
-            headers: {
-              ...BASE_HEADERS,
-              "Prefer": "return=representation"
-            },
-            body: JSON.stringify([{
-              nombre: nombreVal,
-              celular: celularVal,
-              correo: correoVal || null
-            }])
-          }
-        );
+        const { data: customer, error: customerError } = await supabaseClient
+          .from("customers")
+          .insert([{
+            nombre: nombreVal,
+            celular: celularVal,
+            correo: correoVal || null
+          }])
+          .select()
+          .single();
 
-        if (!customerRes.ok) {
-          const errText = await readErrorText(customerRes);
-          console.error("Error creando cliente:", errText);
-          showErr("Error al registrar cliente: " + errText);
+        if (customerError) {
+          console.error(customerError);
+          showErr("Error al registrar cliente: " + (customerError.message || JSON.stringify(customerError)));
           return;
         }
 
-        const customerRows = await customerRes.json();
-        const customer = customerRows && customerRows[0];
+        const { error: cardError } = await supabaseClient
+          .from("loyalty_cards")
+          .insert([{
+            customer_id: customer.id,
+            sellos_actuales: 0,
+            meta_sellos: 10,
+            premio_pendiente: false
+          }]);
 
-        if (!customer || !customer.id) {
-          showErr("Cliente creado sin ID válido.");
-          return;
-        }
-
-        const cardRes = await fetch(
-          SUPABASE_URL + "/rest/v1/loyalty_cards",
-          {
-            method: "POST",
-            headers: BASE_HEADERS,
-            body: JSON.stringify([{
-              customer_id: customer.id,
-              sellos_actuales: 0,
-              meta_sellos: 10,
-              premio_pendiente: false
-            }])
-          }
-        );
-
-        if (!cardRes.ok) {
-          const errText = await readErrorText(cardRes);
-          console.error("Error creando tarjeta:", errText);
-          showErr("Cliente creado, pero falló la tarjeta: " + errText);
+        if (cardError) {
+          console.error(cardError);
+          showErr("Cliente creado, pero falló la tarjeta: " + (cardError.message || JSON.stringify(cardError)));
           return;
         }
 
