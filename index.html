@@ -3922,14 +3922,12 @@ weekChart.innerHTML = htmlChart;
 
     adminDate.addEventListener("change", renderAdmin);
 
-   [
+[
   openCashInput, openCloseNoteInput,
   stockInit1L, stockInitHalfPlastic, stockInitGlass, stockInitWater,
   stockEnd1L, stockEndHalfPlastic, stockEndGlass, stockEndWater
-].forEach(el => el.addEventListener("input", () => {
-  if (adminUnlocked) {
-    renderAdmin();
-  }
+].forEach(el => el.addEventListener("change", () => {
+  // no renderizar mientras escribes
 }));
 
  disableNavWhatsapp();
