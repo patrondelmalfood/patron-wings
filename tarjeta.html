@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi tarjeta virtual - El Patrón del Mal</title>
+  <style>
+    :root{
+      --bg:#000814;
+      --card:#001233;
+      --gold:#facc15;
+      --gold-soft:#fde68a;
+      --text:#fff8dc;
+      --muted:#94a3b8;
+      --line:#334155;
+      --ok:#16a34a;
+      --bad:#dc2626;
+    }
+
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      font-family: Arial, sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(250,204,21,0.10), transparent 25%),
+        linear-gradient(180deg, #000814 0%, #00122b 100%);
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:22px;
+    }
+
+    .wrap{
+      width:100%;
+      max-width:780px;
+    }
+
+    .card{
+      background:rgba(0,18,51,0.98);
+      border:1px solid var(--gold);
+      border-radius:28px;
+      padding:26px;
+      box-shadow:
+        0 0 28px rgba(250,204,21,0.12),
+        0 10px 40px rgba(0,0,0,0.45);
+      overflow:hidden;
+      position:relative;
+    }
+
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-120px auto auto -120px;
+      width:240px;
+      height:240px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(250,204,21,0.18), transparent 70%);
+      pointer-events:none;
+    }
+
+    .top{
+      display:flex;
+      align-items:center;
+      gap:18px;
+      margin-bottom:18px;
+      flex-wrap:wrap;
+    }
+
+    .logo{
+      width:92px;
+      height:92px;
+      border-radius:50%;
+      object-fit:cover;
+      border:2px solid var(--gold);
+      background:#fff;
+      box-shadow:0 0 16px rgba(250,204,21,0.28);
+      flex-shrink:0;
+    }
+
+    .title-box{
+      flex:1;
+      min-width:220px;
+    }
+
+    .title{
+      margin:0;
+      font-size:34px;
+      line-height:1.05;
+      color:var(--gold);
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:1px;
+      text-shadow:0 0 10px rgba(250,204,21,0.30);
+    }
+
+    .subtitle{
+      margin:8px 0 0;
+      color:#dbeafe;
+      font-size:16px;
+    }
+
+    .chip{
+      display:inline-block;
+      margin-top:10px;
+      padding:7px 12px;
+      border-radius:999px;
+      border:1px solid rgba(250,204,21,0.35);
+      background:rgba(0,0,0,0.25);
+      color:var(--gold-soft);
+      font-weight:700;
+      font-size:13px;
+    }
+
+    .status{
+      margin-top:18px;
+      padding:14px 16px;
+      border-radius:16px;
+      font-size:14px;
+      display:none;
+      line-height:1.45;
+    }
+
+    .status.ok{
+      display:block;
+      background:#052e16;
+      border:1px solid var(--ok);
+      color:#bbf7d0;
+    }
+
+    .status.err{
+      display:block;
+      background:#450a0a;
+      border:1px solid var(--bad);
+      color:#fecaca;
+    }
+
+    .info{
+      margin-top:18px;
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+    }
+
+    .info-card{
+      background:rgba(0,0,0,0.26);
+      border:1px solid #1e293b;
+      border-radius:18px;
+      padding:14px;
+    }
+
+    .info-label{
+      color:var(--muted);
+      font-size:12px;
+      margin-bottom:8px;
+    }
+
+    .info-value{
+      color:#fff;
+      font-size:18px;
+      font-weight:800;
+      word-break:break-word;
+    }
+
+    .progress-box{
+      margin-top:22px;
+      background:rgba(0,0,0,0.26);
+      border:1px solid #1e293b;
+      border-radius:22px;
+      padding:18px;
+    }
+
+    .progress-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+
+    .progress-head h2{
+      margin:0;
+      font-size:20px;
+      color:var(--gold-soft);
+    }
+
+    .big-counter{
+      font-size:18px;
+      font-weight:900;
+      color:var(--gold);
+    }
+
+    .bar{
+      width:100%;
+      height:14px;
+      background:#0f172a;
+      border:1px solid #1e293b;
+      border-radius:999px;
+      overflow:hidden;
+    }
+
+    .bar-fill{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg, #facc15, #fde68a);
+      border-radius:999px;
+      transition:width .35s ease;
+      box-shadow:0 0 12px rgba(250,204,21,0.35);
+    }
+
+    .stamps{
+      margin-top:18px;
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:14px;
+    }
+
+    .stamp{
+      aspect-ratio:1/1;
+      border-radius:50%;
+      border:2px solid rgba(250,204,21,0.35);
+      background:
+        radial-gradient(circle at top, rgba(250,204,21,0.12), rgba(0,0,0,0.18)),
+        #020617;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      overflow:hidden;
+      transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    }
+
+    .stamp:hover{
+      transform:translateY(-2px);
+    }
+
+    .stamp img{
+      width:62%;
+      height:62%;
+      object-fit:contain;
+      border-radius:50%;
+      background:#fff;
+      padding:4px;
+      transition:filter .2s ease, opacity .2s ease, transform .2s ease;
+    }
+
+    .stamp.empty img{
+      opacity:.22;
+      filter:grayscale(100%);
+      transform:scale(.92);
+    }
+
+    .stamp.filled{
+      border-color:var(--gold);
+      box-shadow:0 0 18px rgba(250,204,21,0.22);
+    }
+
+    .stamp.filled img{
+      opacity:1;
+      filter:none;
+      transform:scale(1);
+    }
+
+    .stamp-number{
+      position:absolute;
+      bottom:6px;
+      right:8px;
+      font-size:11px;
+      font-weight:900;
+      color:#e5e7eb;
+      background:rgba(0,0,0,0.58);
+      border-radius:999px;
+      padding:2px 6px;
+      border:1px solid rgba(255,255,255,0.10);
+    }
+
+    .reward{
+      margin-top:20px;
+      border-radius:18px;
+      padding:16px;
+      font-weight:700;
+      font-size:15px;
+      display:none;
+    }
+
+    .reward.pending{
+      display:block;
+      background:linear-gradient(180deg, rgba(250,204,21,0.14), rgba(250,204,21,0.06));
+      border:1px solid rgba(250,204,21,0.45);
+      color:#fff3bf;
+      box-shadow:0 0 14px rgba(250,204,21,0.14);
+    }
+
+    .reward.normal{
+      display:block;
+      background:rgba(0,0,0,0.24);
+      border:1px solid #1e293b;
+      color:#cbd5e1;
+    }
+
+    .actions{
+      margin-top:20px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      flex:1;
+      min-width:160px;
+      padding:14px 16px;
+      border:none;
+      border-radius:14px;
+      font-size:16px;
+      font-weight:900;
+      cursor:pointer;
+    }
+
+    .btn-primary{
+      background:var(--gold);
+      color:#111827;
+    }
+
+    .btn-secondary{
+      background:#0f172a;
+      color:#f8fafc;
+      border:1px solid #334155;
+    }
+
+    .search-box{
+      margin-top:18px;
+      padding:16px;
+      border-radius:18px;
+      background:rgba(0,0,0,0.24);
+      border:1px solid #1e293b;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .search-box input{
+      flex:1;
+      min-width:180px;
+      padding:14px;
+      border-radius:12px;
+      border:1px solid #334155;
+      background:#000;
+      color:#fff;
+      font-size:16px;
+      outline:none;
+    }
+
+    .search-box input:focus{
+      border-color:var(--gold);
+      box-shadow:0 0 0 2px rgba(250,204,21,0.15);
+    }
+
+    .foot{
+      margin-top:16px;
+      text-align:center;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .loading{
+      text-align:center;
+      padding:16px;
+      color:#dbeafe;
+      font-size:15px;
+    }
+
+    @media (max-width:700px){
+      .title{ font-size:28px; }
+      .info{ grid-template-columns:1fr; }
+      .stamps{ grid-template-columns:repeat(5,1fr); gap:10px; }
+    }
+
+    @media (max-width:520px){
+      .card{ padding:18px; border-radius:22px; }
+      .title{ font-size:22px; }
+      .subtitle{ font-size:14px; }
+      .stamps{ grid-template-columns:repeat(5,1fr); gap:8px; }
+      .stamp-number{ font-size:10px; right:5px; bottom:5px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="top">
+        <img src="LOGO.jpg" alt="Logo" class="logo">
+        <div class="title-box">
+          <h1 class="title">Mi Tarjeta Virtual</h1>
+          <p class="subtitle">Sella tus compras y gana premios en El Patrón del Mal</p>
+          <div class="chip" id="chipText">Cargando tarjeta...</div>
+        </div>
+      </div>
+
+      <div id="statusOk" class="status ok" style="display:none;"></div>
+      <div id="statusErr" class="status err" style="display:none;"></div>
+
+      <div id="loading" class="loading">Consultando tu tarjeta...</div>
+
+      <div id="content" style="display:none;">
+        <div class="info">
+          <div class="info-card">
+            <div class="info-label">Cliente</div>
+            <div class="info-value" id="clienteNombre">-</div>
+          </div>
+          <div class="info-card">
+            <div class="info-label">Celular</div>
+            <div class="info-value" id="clienteCelular">-</div>
+          </div>
+          <div class="info-card">
+            <div class="info-label">Correo</div>
+            <div class="info-value" id="clienteCorreo">-</div>
+          </div>
+        </div>
+
+        <div class="progress-box">
+          <div class="progress-head">
+            <h2>Sellos acumulados</h2>
+            <div class="big-counter" id="bigCounter">0 / 10</div>
+          </div>
+
+          <div class="bar">
+            <div class="bar-fill" id="barFill"></div>
+          </div>
+
+          <div class="stamps" id="stampsGrid"></div>
+
+          <div class="reward normal" id="rewardBox">
+            Sigue acumulando sellos para reclamar tu premio.
+          </div>
+        </div>
+
+        <div class="search-box">
+          <input type="text" id="buscarCelular" placeholder="Consultar otro número">
+          <button class="btn btn-primary" id="btnBuscar">Ver tarjeta</button>
+          <button class="btn btn-secondary" id="btnRegistro">Ir a registro</button>
+        </div>
+
+        <div class="foot">
+          Presenta esta tarjeta virtual en el local para validar tus sellos y premios.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const statusOk = document.getElementById("statusOk");
+    const statusErr = document.getElementById("statusErr");
+    const loading = document.getElementById("loading");
+    const content = document.getElementById("content");
+    const chipText = document.getElementById("chipText");
+
+    const clienteNombre = document.getElementById("clienteNombre");
+    const clienteCelular = document.getElementById("clienteCelular");
+    const clienteCorreo = document.getElementById("clienteCorreo");
+    const bigCounter = document.getElementById("bigCounter");
+    const barFill = document.getElementById("barFill");
+    const stampsGrid = document.getElementById("stampsGrid");
+    const rewardBox = document.getElementById("rewardBox");
+    const buscarCelular = document.getElementById("buscarCelular");
+    const btnBuscar = document.getElementById("btnBuscar");
+    const btnRegistro = document.getElementById("btnRegistro");
+
+    function showOk(text) {
+      statusErr.style.display = "none";
+      statusOk.style.display = "block";
+      statusOk.textContent = text;
+    }
+
+    function showErr(text) {
+      statusOk.style.display = "none";
+      statusErr.style.display = "block";
+      statusErr.textContent = text;
+    }
+
+    function hideMessages() {
+      statusOk.style.display = "none";
+      statusErr.style.display = "none";
+    }
+
+    function getCellFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      return (params.get("celular") || "").trim();
+    }
+
+    function renderStamps(actuales, meta) {
+      stampsGrid.innerHTML = "";
+      const total = Math.max(1, Number(meta) || 10);
+      const current = Math.max(0, Number(actuales) || 0);
+
+      for (let i = 1; i <= total; i++) {
+        const filled = i <= current;
+
+        const stamp = document.createElement("div");
+        stamp.className = "stamp " + (filled ? "filled" : "empty");
+
+        const img = document.createElement("img");
+        img.src = "LOGO.jpg";
+        img.alt = "Sello " + i;
+
+        const number = document.createElement("div");
+        number.className = "stamp-number";
+        number.textContent = i;
+
+        stamp.appendChild(img);
+        stamp.appendChild(number);
+        stampsGrid.appendChild(stamp);
+      }
+    }
+
+    function renderCard(data) {
+      const customer = data.customer || {};
+      const card = data.card || {};
+
+      const actuales = Number(card.sellos_actuales || 0);
+      const meta = Math.max(1, Number(card.meta_sellos || 10));
+      const premioPendiente = !!card.premio_pendiente;
+      const progress = Math.min(100, (actuales / meta) * 100);
+
+      clienteNombre.textContent = customer.nombre || "-";
+      clienteCelular.textContent = customer.celular || "-";
+      clienteCorreo.textContent = customer.correo || "No registrado";
+      bigCounter.textContent = actuales + " / " + meta;
+      barFill.style.width = progress + "%";
+      chipText.textContent = "Cliente registrado";
+      renderStamps(actuales, meta);
+
+      if (premioPendiente || actuales >= meta) {
+        rewardBox.className = "reward pending";
+        rewardBox.textContent = "🎉 ¡Tienes un premio pendiente! Acércate al local para reclamarlo.";
+        showOk("Tarjeta cargada correctamente. Tienes premio disponible.");
+      } else {
+        rewardBox.className = "reward normal";
+        rewardBox.textContent = "Te faltan " + Math.max(0, meta - actuales) + " sello(s) para llegar a tu premio.";
+        showOk("Tarjeta cargada correctamente.");
+      }
+
+      loading.style.display = "none";
+      content.style.display = "block";
+    }
+
+    async function loadCard(celular) {
+      hideMessages();
+      loading.style.display = "block";
+      content.style.display = "none";
+      chipText.textContent = "Consultando tarjeta...";
+
+      if (!celular) {
+        loading.style.display = "none";
+        chipText.textContent = "Ingresa tu celular";
+        showErr("No se encontró el celular en el enlace. Escribe tu número abajo para consultar.");
+        content.style.display = "block";
+        clienteNombre.textContent = "-";
+        clienteCelular.textContent = "-";
+        clienteCorreo.textContent = "-";
+        bigCounter.textContent = "0 / 10";
+        barFill.style.width = "0%";
+        renderStamps(0, 10);
+        rewardBox.className = "reward normal";
+        rewardBox.textContent = "Consulta tu número para ver tus sellos.";
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/get-card?celular=" + encodeURIComponent(celular));
+        const data = await res.json();
+
+        if (!res.ok) {
+          loading.style.display = "none";
+          chipText.textContent = "Tarjeta no encontrada";
+          showErr(data.error + (data.detail ? ": " + data.detail : ""));
+          content.style.display = "block";
+          clienteNombre.textContent = "-";
+          clienteCelular.textContent = celular;
+          clienteCorreo.textContent = "-";
+          bigCounter.textContent = "0 / 10";
+          barFill.style.width = "0%";
+          renderStamps(0, 10);
+          rewardBox.className = "reward normal";
+          rewardBox.textContent = "Aún no se encontró una tarjeta para este número.";
+          return;
+        }
+
+        renderCard(data);
+      } catch (err) {
+        loading.style.display = "none";
+        chipText.textContent = "Error de conexión";
+        showErr("No se pudo consultar la tarjeta: " + (err.message || String(err)));
+        content.style.display = "block";
+        clienteNombre.textContent = "-";
+        clienteCelular.textContent = celular || "-";
+        clienteCorreo.textContent = "-";
+        bigCounter.textContent = "0 / 10";
+        barFill.style.width = "0%";
+        renderStamps(0, 10);
+        rewardBox.className = "reward normal";
+        rewardBox.textContent = "Vuelve a intentar en unos segundos.";
+      }
+    }
+
+    btnBuscar.addEventListener("click", () => {
+      const cel = buscarCelular.value.trim();
+      if (!cel) {
+        showErr("Escribe un número de celular.");
+        return;
+      }
+      const url = "/tarjeta.html?celular=" + encodeURIComponent(cel);
+      window.location.href = url;
+    });
+
+    buscarCelular.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        btnBuscar.click();
+      }
+    });
+
+    btnRegistro.addEventListener("click", () => {
+      window.location.href = "/registro.html";
+    });
+
+    renderStamps(0, 10);
+    const initialCell = getCellFromUrl();
+    if (initialCell) {
+      buscarCelular.value = initialCell;
+    }
+    loadCard(initialCell);
+  </script>
+</body>
+</html>
