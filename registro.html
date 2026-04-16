@@ -233,10 +233,11 @@
           return;
         }
 
-        showOk(data.message || "Registro exitoso.");
-        nombre.value = "";
-        celular.value = "";
-        correo.value = "";
+        showOk("Registro exitoso. Abriendo tu tarjeta...");
+        setTimeout(() => {
+          window.location.href = "/tarjeta.html?celular=" + encodeURIComponent(celularVal);
+        }, 1200);
+
       } catch (err) {
         console.error(err);
         showErr("Error inesperado: " + (err.message || String(err)));
