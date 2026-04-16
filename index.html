@@ -2073,31 +2073,7 @@ async function syncOrdersToCloud(){
       return;
     }
   }
-
-  const { data: existingRows, error: fetchError } = await supabaseClient
-    .from(ORDERS_TABLE)
-    .select("order_id");
-
-  if (fetchError) {
-    console.error("Error leyendo pedidos existentes:", fetchError);
-    return;
-  }
-
-  const localIds = new Set(ORDER_LOG_CACHE.map(x => String(x.id)));
-  const idsToDelete = (existingRows || [])
-    .map(x => String(x.order_id))
-    .filter(id => !localIds.has(id));
-
-  if (idsToDelete.length) {
-    const { error: deleteError } = await supabaseClient
-      .from(ORDERS_TABLE)
-      .delete()
-      .in("order_id", idsToDelete);
-
-    if (deleteError) {
-      console.error("Error borrando pedidos antiguos:", deleteError);
-    }
-  }
+  
 }
 
 function saveOrderLog(log){
