@@ -10,7 +10,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Falta nombre o celular" });
     }
 
-    const SUPABASE_URL = "https://defdwzzewzfjusoezwkn.supabase.co";
+    const SUPABASE_URL = "https://defdwzzewzfjuseozwkn.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
 
     const headers = {
