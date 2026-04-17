@@ -276,6 +276,15 @@
       display:none !important;
     }
 
+    .history-item{
+      padding:10px 0;
+      border-bottom:1px solid #1e293b;
+    }
+
+    .history-item:last-child{
+      border-bottom:none;
+    }
+
     @media (max-width:800px){
       .info{ grid-template-columns:1fr 1fr; }
     }
@@ -387,6 +396,11 @@
           </div>
         </div>
 
+        <div class="reward-box">
+          <div class="reward-title">Historial reciente</div>
+          <div id="historyBox" class="reward-note">Aquí aparecerán los últimos movimientos del cliente.</div>
+        </div>
+
         <div class="stamp-note" id="stampNote">
           Busca un cliente para comenzar.
         </div>
@@ -427,6 +441,7 @@
     const clienteSellos = document.getElementById("clienteSellos");
     const clientePremio = document.getElementById("clientePremio");
     const stampNote = document.getElementById("stampNote");
+    const historyBox = document.getElementById("historyBox");
 
     let currentCustomer = null;
     let currentCard = null;
@@ -518,6 +533,62 @@
       return "";
     }
 
+    function formatDateTime(value) {
+      if (!value) return "-";
+      try {
+        const d = new Date(value);
+        return d.toLocaleString("es-PE");
+      } catch {
+        return value;
+      }
+    }
+
+    function renderHistory(movements) {
+      if (!Array.isArray(movements) || movements.length === 0) {
+        historyBox.innerHTML = "No hay movimientos registrados todavía.";
+        return;
+      }
+
+      historyBox.innerHTML = movements.map(item => {
+        const tipo = item.tipo || "-";
+        const cantidad = Number(item.cantidad || 0);
+        const nota = item.nota || "";
+        const fecha = formatDateTime(item.created_at);
+
+        return `
+          <div class="history-item">
+            <div><b>Tipo:</b> ${tipo}</div>
+            <div><b>Cantidad:</b> ${cantidad}</div>
+            <div><b>Nota:</b> ${nota || "-"}</div>
+            <div><b>Fecha:</b> ${fecha}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function loadHistoryByCell(celular) {
+      historyBox.innerHTML = "Cargando historial...";
+
+      if (!celular) {
+        historyBox.innerHTML = "Aquí aparecerán los últimos movimientos del cliente.";
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/admin-get-history?celular=" + encodeURIComponent(celular));
+        const data = await res.json();
+
+        if (!res.ok) {
+          historyBox.innerHTML = "No se pudo cargar el historial.";
+          return;
+        }
+
+        renderHistory(data.movements || []);
+      } catch (err) {
+        historyBox.innerHTML = "Error cargando historial.";
+      }
+    }
+
     function renderCustomer(data) {
       currentCustomer = data.customer || null;
       currentCard = data.card || null;
@@ -545,6 +616,7 @@
         stampNote.textContent = "Cliente cargado correctamente.";
       }
 
+      loadHistoryByCell(currentCustomer?.celular || "");
       result.style.display = "block";
     }
 
@@ -558,6 +630,7 @@
       clienteSellos.textContent = "0 / 20";
       clientePremio.textContent = "No";
       stampNote.textContent = "Busca un cliente para comenzar.";
+      historyBox.innerHTML = "Aquí aparecerán los últimos movimientos del cliente.";
       result.style.display = "none";
       hideMessages();
     }
