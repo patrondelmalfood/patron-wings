@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ingresar - El Patrón del Mal</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #000814;
+      color: #fff8dc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 430px;
+      background: #001233;
+      border: 1px solid #facc15;
+      border-radius: 22px;
+      padding: 26px;
+      box-shadow: 0 0 25px rgba(250, 204, 21, 0.18);
+      box-sizing: border-box;
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .brand-logo {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #facc15;
+      margin-bottom: 12px;
+      background: #000;
+      box-shadow: 0 0 12px rgba(250, 204, 21, 0.35);
+    }
+
+    .brand h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      line-height: 1.1;
+      color: #facc15;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    .brand p {
+      margin: 0;
+      color: #d1d5db;
+      font-size: 15px;
+    }
+
+    label {
+      display: block;
+      margin: 14px 0 6px;
+      color: #fde68a;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      background: #000;
+      color: #fff;
+      font-size: 16px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #facc15;
+      box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.15);
+    }
+
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 15px;
+      border: 0;
+      border-radius: 14px;
+      background: #facc15;
+      color: #111827;
+      font-weight: 900;
+      font-size: 17px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .msg {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 12px;
+      display: none;
+      font-size: 14px;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .ok {
+      background: #052e16;
+      color: #bbf7d0;
+      border: 1px solid #16a34a;
+    }
+
+    .err {
+      background: #450a0a;
+      color: #fecaca;
+      border: 1px solid #dc2626;
+    }
+
+    .mini {
+      margin-top: 14px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 13px;
+    }
+
+    .link-register {
+      margin-top: 14px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .link-register a {
+      color: #facc15;
+      text-decoration: none;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">
+      <img src="LOGO.jpg" alt="El Patrón del Mal" class="brand-logo">
+      <h1>INGRESAR</h1>
+      <p>Accede a tu tarjeta virtual</p>
+    </div>
+
+    <label for="celular">Celular</label>
+    <input id="celular" type="text" placeholder="Tu número">
+
+    <label for="password">Contraseña</label>
+    <input id="password" type="password" placeholder="Tu contraseña">
+
+    <button id="btnLogin">Entrar</button>
+
+    <div id="msgOk" class="msg ok"></div>
+    <div id="msgErr" class="msg err"></div>
+
+    <div class="mini">
+      Ingresa para ver tus sellos y premios.
+    </div>
+
+    <div class="link-register">
+      ¿No tienes cuenta? <a href="/registro.html">Regístrate</a>
+    </div>
+  </div>
+
+  <script>
+    const TOKEN_KEY = "pdm_customer_token";
+
+    const celular = document.getElementById("celular");
+    const password = document.getElementById("password");
+    const btnLogin = document.getElementById("btnLogin");
+    const msgOk = document.getElementById("msgOk");
+    const msgErr = document.getElementById("msgErr");
+
+    function showOk(text) {
+      msgErr.style.display = "none";
+      msgOk.style.display = "block";
+      msgOk.textContent = text;
+    }
+
+    function showErr(text) {
+      msgOk.style.display = "none";
+      msgErr.style.display = "block";
+      msgErr.textContent = text;
+    }
+
+    btnLogin.addEventListener("click", async () => {
+      const celularVal = celular.value.replace(/\D/g, "").trim();
+      const passwordVal = password.value.trim();
+
+      if (!celularVal || !passwordVal) {
+        showErr("Completa celular y contraseña.");
+        return;
+      }
+
+      btnLogin.disabled = true;
+      msgOk.style.display = "none";
+      msgErr.style.display = "none";
+
+      try {
+        const res = await fetch("/api/login-customer", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            celular: celularVal,
+            password: passwordVal
+          })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showErr(data.error + (data.detail ? ": " + data.detail : ""));
+          return;
+        }
+
+        localStorage.setItem(TOKEN_KEY, data.token);
+
+        showOk("Ingreso correcto. Abriendo tu tarjeta...");
+        setTimeout(() => {
+          window.location.href = "/tarjeta.html";
+        }, 1000);
+
+      } catch (err) {
+        console.error(err);
+        showErr("Error inesperado: " + (err.message || String(err)));
+      } finally {
+        btnLogin.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
