@@ -150,7 +150,11 @@
       z-index:1;
     }
 
-    .content{ display:none; position:relative; z-index:1; }
+    .content{
+      display:none;
+      position:relative;
+      z-index:1;
+    }
 
     .info{
       margin-top:18px;
@@ -301,6 +305,7 @@
       background:rgba(0,0,0,0.24);
       border:1px solid #1e293b;
       color:#cbd5e1;
+      line-height:1.45;
     }
 
     .levels{
@@ -512,7 +517,7 @@
 
     function renderStamps(actuales, meta) {
       stampsGrid.innerHTML = "";
-      const total = Math.max(1, Number(meta) || 20);
+      const total = Math.max(20, Number(meta) || 20);
       const current = Math.max(0, Number(actuales) || 0);
 
       for (let i = 1; i <= total; i++) {
@@ -639,7 +644,6 @@
 
         renderStamps(actuales, meta);
         renderLevels(actuales);
-
         rewardBox.textContent = buildRewardMessage(actuales, premioPendiente);
 
         if (premioPendiente) {
