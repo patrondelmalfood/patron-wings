@@ -86,7 +86,8 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           sellos_actuales: newStamps,
           meta_sellos: meta,
-          premio_pendiente: premioPendiente
+          premio_pendiente: premioPendiente,
+          ultimo_movimiento_at: new Date().toISOString()
         })
       }
     );
@@ -101,6 +102,31 @@ export default async function handler(req, res) {
 
     const updatedRows = await updateRes.json();
     const updated = updatedRows && updatedRows[0];
+
+    const movementRes = await fetch(
+      SUPABASE_URL + "/rest/v1/loyalty_movements",
+      {
+        method: "POST",
+        headers: {
+          ...headers,
+          Prefer: "return=representation"
+        },
+        body: JSON.stringify([{
+          customer_id: customer.id,
+          tipo: "sello_sumado",
+          cantidad: 1,
+          nota: "sello agregado desde admin"
+        }])
+      }
+    );
+
+    if (!movementRes.ok) {
+      const txt = await movementRes.text();
+      return res.status(500).json({
+        error: "Se actualizó la tarjeta, pero falló el movimiento",
+        detail: txt
+      });
+    }
 
     return res.status(200).json({
       ok: true,
