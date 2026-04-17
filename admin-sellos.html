@@ -32,7 +32,7 @@
 
     .wrap{
       width:100%;
-      max-width:780px;
+      max-width:860px;
       margin:0 auto;
     }
 
@@ -144,6 +144,11 @@
       color:#fff;
     }
 
+    .btn-orange{
+      background:#fb923c;
+      color:#3f1d00;
+    }
+
     .msg{
       margin-top:16px;
       padding:12px;
@@ -177,7 +182,7 @@
 
     .info{
       display:grid;
-      grid-template-columns:repeat(3,1fr);
+      grid-template-columns:repeat(4,1fr);
       gap:12px;
     }
 
@@ -206,6 +211,28 @@
       display:flex;
       gap:10px;
       flex-wrap:wrap;
+    }
+
+    .reward-box{
+      margin-top:18px;
+      padding:16px;
+      border-radius:18px;
+      background:rgba(0,0,0,0.24);
+      border:1px solid #1e293b;
+    }
+
+    .reward-title{
+      margin:0 0 10px;
+      color:var(--gold-soft);
+      font-size:16px;
+      font-weight:900;
+    }
+
+    .reward-note{
+      margin-top:10px;
+      color:#cbd5e1;
+      font-size:14px;
+      line-height:1.4;
     }
 
     .stamp-note{
@@ -249,6 +276,10 @@
       display:none !important;
     }
 
+    @media (max-width:800px){
+      .info{ grid-template-columns:1fr 1fr; }
+    }
+
     @media (max-width:700px){
       .title{ font-size:26px; }
       .info{ grid-template-columns:1fr; }
@@ -290,7 +321,7 @@
           <img src="LOGO.jpg" alt="Logo" class="logo">
           <div>
             <h1 class="title">Admin de Sellos</h1>
-            <p class="subtitle">Busca clientes por celular y suma sellos fácilmente</p>
+            <p class="subtitle">Busca clientes por celular y gestiona sellos y premios</p>
           </div>
         </div>
         <button class="btn-red" id="btnLogout">Salir</button>
@@ -327,12 +358,33 @@
             <div class="info-label">Sellos actuales</div>
             <div class="info-value" id="clienteSellos">0 / 20</div>
           </div>
+          <div class="info-card">
+            <div class="info-label">Premio pendiente</div>
+            <div class="info-value" id="clientePremio">No</div>
+          </div>
         </div>
 
         <div class="actions">
           <button class="btn-green" id="btnAddStamp">+1 sello</button>
+          <button class="btn-orange" id="btnClaimReward">Entregar premio</button>
           <button class="btn-secondary" id="btnRefresh">Actualizar</button>
           <button class="btn-red" id="btnClear">Limpiar</button>
+        </div>
+
+        <div class="reward-box">
+          <div class="reward-title">Nota del premio entregado</div>
+          <input
+            id="rewardNote"
+            type="text"
+            placeholder="Ej: premio 5 sellos - gaseosa"
+            autocomplete="off"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false"
+          >
+          <div class="reward-note">
+            Aquí escribe qué premio entregaste, por ejemplo: gaseosa, salchimix, burger clásica o plato de alitas.
+          </div>
         </div>
 
         <div class="stamp-note" id="stampNote">
@@ -341,7 +393,7 @@
       </div>
 
       <div class="mini">
-        Panel simple para moza o administrador. Un toque suma 1 sello al cliente encontrado.
+        Panel simple para moza o administrador. Ahora registra sellos y también premios entregados con historial.
       </div>
     </div>
   </div>
@@ -361,8 +413,10 @@
     const buscarCelular = document.getElementById("buscarCelular");
     const btnBuscar = document.getElementById("btnBuscar");
     const btnAddStamp = document.getElementById("btnAddStamp");
+    const btnClaimReward = document.getElementById("btnClaimReward");
     const btnRefresh = document.getElementById("btnRefresh");
     const btnClear = document.getElementById("btnClear");
+    const rewardNote = document.getElementById("rewardNote");
 
     const msgOk = document.getElementById("msgOk");
     const msgErr = document.getElementById("msgErr");
@@ -371,6 +425,7 @@
     const clienteNombre = document.getElementById("clienteNombre");
     const clienteCelular = document.getElementById("clienteCelular");
     const clienteSellos = document.getElementById("clienteSellos");
+    const clientePremio = document.getElementById("clientePremio");
     const stampNote = document.getElementById("stampNote");
 
     let currentCustomer = null;
@@ -455,19 +510,37 @@
       }, 400);
     }
 
+    function getSuggestedRewardNote(stamps) {
+      if (stamps >= 20) return "premio 20 sellos - plato de alitas";
+      if (stamps >= 15) return "premio 15 sellos - burger clásica";
+      if (stamps >= 10) return "premio 10 sellos - salchimix";
+      if (stamps >= 5) return "premio 5 sellos - gaseosa";
+      return "";
+    }
+
     function renderCustomer(data) {
       currentCustomer = data.customer || null;
       currentCard = data.card || null;
 
       const actuales = Number(currentCard?.sellos_actuales || 0);
       const meta = Math.max(20, Number(currentCard?.meta_sellos || 20));
+      const premioPendiente = !!currentCard?.premio_pendiente;
 
       clienteNombre.textContent = currentCustomer?.nombre || "-";
       clienteCelular.textContent = currentCustomer?.celular || "-";
       clienteSellos.textContent = `${actuales} / ${meta}`;
+      clientePremio.textContent = premioPendiente ? "Sí" : "No";
 
-      if ([5, 10, 15, 20].includes(actuales)) {
-        stampNote.textContent = `Cliente llegó a ${actuales} sellos. Revisar premio disponible.`;
+      if (premioPendiente) {
+        stampNote.textContent = `Cliente tiene premio pendiente. Si ya se entregó, registra la nota y presiona "Entregar premio".`;
+        if (!rewardNote.value.trim()) {
+          rewardNote.value = getSuggestedRewardNote(actuales);
+        }
+      } else if ([5, 10, 15, 20].includes(actuales)) {
+        stampNote.textContent = `Cliente llegó a ${actuales} sellos. Puedes entregar el premio correspondiente.`;
+        if (!rewardNote.value.trim()) {
+          rewardNote.value = getSuggestedRewardNote(actuales);
+        }
       } else {
         stampNote.textContent = "Cliente cargado correctamente.";
       }
@@ -479,9 +552,11 @@
       currentCustomer = null;
       currentCard = null;
       buscarCelular.value = "";
+      rewardNote.value = "";
       clienteNombre.textContent = "-";
       clienteCelular.textContent = "-";
       clienteSellos.textContent = "0 / 20";
+      clientePremio.textContent = "No";
       stampNote.textContent = "Busca un cliente para comenzar.";
       result.style.display = "none";
       hideMessages();
@@ -507,6 +582,7 @@
           return;
         }
 
+        rewardNote.value = "";
         renderCustomer(data);
         showOk("Cliente encontrado correctamente.");
       } catch (err) {
@@ -560,6 +636,52 @@
       }
     }
 
+    async function claimReward() {
+      hideMessages();
+
+      if (!currentCustomer || !currentCustomer.celular) {
+        showErr("Primero busca un cliente.");
+        return;
+      }
+
+      const note = rewardNote.value.trim();
+      if (!note) {
+        showErr("Escribe la nota del premio entregado.");
+        return;
+      }
+
+      btnClaimReward.disabled = true;
+      btnClaimReward.textContent = "Registrando...";
+
+      try {
+        const res = await fetch("/api/admin-claim-reward", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            celular: currentCustomer.celular,
+            nota: note
+          })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showErr(data.error + (data.detail ? ": " + data.detail : ""));
+          return;
+        }
+
+        renderCustomer(data);
+        showOk("Premio marcado como entregado y guardado en historial.");
+      } catch (err) {
+        showErr("Error inesperado: " + (err.message || String(err)));
+      } finally {
+        btnClaimReward.disabled = false;
+        btnClaimReward.textContent = "Entregar premio";
+      }
+    }
+
     btnUnlock.addEventListener("click", unlockPanel);
     btnLogout.addEventListener("click", closePanel);
 
@@ -571,6 +693,7 @@
 
     btnBuscar.addEventListener("click", searchCustomer);
     btnAddStamp.addEventListener("click", addStamp);
+    btnClaimReward.addEventListener("click", claimReward);
     btnRefresh.addEventListener("click", searchCustomer);
     btnClear.addEventListener("click", clearView);
 
