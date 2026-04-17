@@ -49,8 +49,16 @@
     .top{
       display:flex;
       align-items:center;
+      justify-content:space-between;
       gap:18px;
       margin-bottom:18px;
+      flex-wrap:wrap;
+    }
+
+    .top-left{
+      display:flex;
+      align-items:center;
+      gap:18px;
       flex-wrap:wrap;
     }
 
@@ -214,24 +222,78 @@
       font-size:13px;
     }
 
+    .lock-screen{
+      max-width:430px;
+      margin:80px auto 0;
+    }
+
+    .lock-screen .card{
+      text-align:center;
+    }
+
+    .lock-title{
+      margin:0 0 8px;
+      font-size:30px;
+      color:var(--gold);
+      font-weight:900;
+      text-transform:uppercase;
+    }
+
+    .lock-subtitle{
+      margin:0 0 18px;
+      color:#dbeafe;
+      font-size:15px;
+    }
+
+    .hidden{
+      display:none !important;
+    }
+
     @media (max-width:700px){
       .title{ font-size:26px; }
       .info{ grid-template-columns:1fr; }
       .search-box{ flex-direction:column; }
       .search-box button{ width:100%; }
       .actions button{ width:100%; }
+      .top{ align-items:flex-start; }
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
+  <div id="lockScreen" class="wrap lock-screen">
+    <div class="card">
+      <img src="LOGO.jpg" alt="Logo" class="logo">
+      <h1 class="lock-title">Acceso Admin</h1>
+      <p class="lock-subtitle">Ingresa la clave para abrir el panel de sellos.</p>
+
+      <input
+        id="adminPassword"
+        type="password"
+        placeholder="Ingresa la clave"
+        autocomplete="current-password"
+        autocapitalize="off"
+        autocorrect="off"
+        spellcheck="false"
+      >
+
+      <button class="btn-primary" id="btnUnlock" style="width:100%; margin-top:14px;">Entrar</button>
+
+      <div id="lockMsgOk" class="msg ok"></div>
+      <div id="lockMsgErr" class="msg err"></div>
+    </div>
+  </div>
+
+  <div id="adminPanel" class="wrap hidden">
     <div class="card">
       <div class="top">
-        <img src="LOGO.jpg" alt="Logo" class="logo">
-        <div>
-          <h1 class="title">Admin de Sellos</h1>
-          <p class="subtitle">Busca clientes por celular y suma sellos fácilmente</p>
+        <div class="top-left">
+          <img src="LOGO.jpg" alt="Logo" class="logo">
+          <div>
+            <h1 class="title">Admin de Sellos</h1>
+            <p class="subtitle">Busca clientes por celular y suma sellos fácilmente</p>
+          </div>
         </div>
+        <button class="btn-red" id="btnLogout">Salir</button>
       </div>
 
       <div class="search-box">
@@ -285,6 +347,17 @@
   </div>
 
   <script>
+    const ADMIN_PASSWORD = "Bela1997";
+    const ADMIN_SESSION_KEY = "pdm_admin_sellos_ok";
+
+    const lockScreen = document.getElementById("lockScreen");
+    const adminPanel = document.getElementById("adminPanel");
+    const adminPassword = document.getElementById("adminPassword");
+    const btnUnlock = document.getElementById("btnUnlock");
+    const btnLogout = document.getElementById("btnLogout");
+    const lockMsgOk = document.getElementById("lockMsgOk");
+    const lockMsgErr = document.getElementById("lockMsgErr");
+
     const buscarCelular = document.getElementById("buscarCelular");
     const btnBuscar = document.getElementById("btnBuscar");
     const btnAddStamp = document.getElementById("btnAddStamp");
@@ -303,6 +376,23 @@
     let currentCustomer = null;
     let currentCard = null;
 
+    function showLockOk(text) {
+      lockMsgErr.style.display = "none";
+      lockMsgOk.style.display = "block";
+      lockMsgOk.textContent = text;
+    }
+
+    function showLockErr(text) {
+      lockMsgOk.style.display = "none";
+      lockMsgErr.style.display = "block";
+      lockMsgErr.textContent = text;
+    }
+
+    function hideLockMessages() {
+      lockMsgOk.style.display = "none";
+      lockMsgErr.style.display = "none";
+    }
+
     function showOk(text) {
       msgErr.style.display = "none";
       msgOk.style.display = "block";
@@ -318,6 +408,51 @@
     function hideMessages() {
       msgOk.style.display = "none";
       msgErr.style.display = "none";
+    }
+
+    function openPanel() {
+      lockScreen.classList.add("hidden");
+      adminPanel.classList.remove("hidden");
+      buscarCelular.focus();
+    }
+
+    function closePanel() {
+      localStorage.removeItem(ADMIN_SESSION_KEY);
+      adminPanel.classList.add("hidden");
+      lockScreen.classList.remove("hidden");
+      adminPassword.value = "";
+      hideLockMessages();
+      adminPassword.focus();
+    }
+
+    function tryAutoLogin() {
+      const ok = localStorage.getItem(ADMIN_SESSION_KEY);
+      if (ok === "1") {
+        openPanel();
+      } else {
+        closePanel();
+      }
+    }
+
+    function unlockPanel() {
+      const pass = adminPassword.value.trim();
+      hideLockMessages();
+
+      if (!pass) {
+        showLockErr("Escribe la clave.");
+        return;
+      }
+
+      if (pass !== ADMIN_PASSWORD) {
+        showLockErr("Clave incorrecta.");
+        return;
+      }
+
+      localStorage.setItem(ADMIN_SESSION_KEY, "1");
+      showLockOk("Clave correcta. Abriendo panel...");
+      setTimeout(() => {
+        openPanel();
+      }, 400);
     }
 
     function renderCustomer(data) {
@@ -425,6 +560,15 @@
       }
     }
 
+    btnUnlock.addEventListener("click", unlockPanel);
+    btnLogout.addEventListener("click", closePanel);
+
+    adminPassword.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        unlockPanel();
+      }
+    });
+
     btnBuscar.addEventListener("click", searchCustomer);
     btnAddStamp.addEventListener("click", addStamp);
     btnRefresh.addEventListener("click", searchCustomer);
@@ -435,6 +579,8 @@
         searchCustomer();
       }
     });
+
+    tryAutoLogin();
   </script>
 </body>
 </html>
