@@ -1,13 +1,38 @@
+import crypto from "crypto";
+
+const TOKEN_SECRET = "patron_wings_token_seguro_2026_Bela1997_local_845219_x9";
+
+function verifyToken(token) {
+  try {
+    if (!token || !token.includes(".")) return null;
+
+    const [base, sig] = token.split(".");
+    const expected = crypto
+      .createHmac("sha256", TOKEN_SECRET)
+      .update(base)
+      .digest("base64url");
+
+    if (sig !== expected) return null;
+
+    const json = Buffer.from(base, "base64url").toString("utf8");
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Método no permitido" });
   }
 
   try {
-    const celular = String(req.query.celular || "").trim();
+    const auth = req.headers.authorization || "";
+    const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
+    const session = verifyToken(token);
 
-    if (!celular) {
-      return res.status(400).json({ error: "Falta celular" });
+    if (!session || !session.customer_id || !session.celular) {
+      return res.status(401).json({ error: "Sesión inválida o vencida" });
     }
 
     const SUPABASE_URL = "https://defdwzzewzfjuseozwkn.supabase.co";
@@ -19,13 +44,21 @@ export default async function handler(req, res) {
       "Content-Type": "application/json"
     };
 
-    const customerRes = await fetch(
-      SUPABASE_URL +
-        "/rest/v1/customers?select=id,nombre,celular,correo&celular=eq." +
-        encodeURIComponent(celular) +
-        "&limit=1",
-      { headers }
-    );
+    let customerRes;
+    try {
+      customerRes = await fetch(
+        SUPABASE_URL +
+          "/rest/v1/customers?select=id,nombre,celular&id=eq." +
+          encodeURIComponent(session.customer_id) +
+          "&limit=1",
+        { headers }
+      );
+    } catch (err) {
+      return res.status(500).json({
+        error: "Falló conexión al buscar cliente",
+        detail: err.message || String(err)
+      });
+    }
 
     if (!customerRes.ok) {
       const txt = await customerRes.text();
@@ -39,16 +72,24 @@ export default async function handler(req, res) {
     const customer = customerRows && customerRows[0];
 
     if (!customer || !customer.id) {
-      return res.status(404).json({ error: "No existe una tarjeta para ese celular" });
+      return res.status(404).json({ error: "Cliente no encontrado" });
     }
 
-    const cardRes = await fetch(
-      SUPABASE_URL +
-        "/rest/v1/loyalty_cards?select=id,customer_id,sellos_actuales,meta_sellos,premio_pendiente&customer_id=eq." +
-        encodeURIComponent(customer.id) +
-        "&limit=1",
-      { headers }
-    );
+    let cardRes;
+    try {
+      cardRes = await fetch(
+        SUPABASE_URL +
+          "/rest/v1/loyalty_cards?select=id,customer_id,sellos_actuales,meta_sellos,premio_pendiente&customer_id=eq." +
+          encodeURIComponent(customer.id) +
+          "&limit=1",
+        { headers }
+      );
+    } catch (err) {
+      return res.status(500).json({
+        error: "Falló conexión al buscar tarjeta",
+        detail: err.message || String(err)
+      });
+    }
 
     if (!cardRes.ok) {
       const txt = await cardRes.text();
@@ -62,7 +103,7 @@ export default async function handler(req, res) {
     const card = cardRows && cardRows[0];
 
     if (!card || !card.id) {
-      return res.status(404).json({ error: "Cliente encontrado, pero sin tarjeta" });
+      return res.status(404).json({ error: "Tarjeta no encontrada" });
     }
 
     return res.status(200).json({
@@ -70,8 +111,7 @@ export default async function handler(req, res) {
       customer: {
         id: customer.id,
         nombre: customer.nombre || "",
-        celular: customer.celular || "",
-        correo: customer.correo || ""
+        celular: customer.celular || ""
       },
       card: {
         id: card.id,
