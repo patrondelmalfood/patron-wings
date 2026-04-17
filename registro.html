@@ -104,6 +104,35 @@
       box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.15);
     }
 
+    .password-wrap {
+      position: relative;
+    }
+
+    .password-wrap input {
+      padding-right: 56px;
+    }
+
+    .toggle-pass {
+      position: absolute;
+      top: 50%;
+      right: 8px;
+      transform: translateY(-50%);
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: #fde68a;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      width: auto;
+      min-width: 42px;
+    }
+
+    .toggle-pass:hover {
+      border-color: #facc15;
+    }
+
     button {
       width: 100%;
       margin-top: 20px;
@@ -173,13 +202,33 @@
     </div>
 
     <label for="nombre">Nombre</label>
-    <input id="nombre" type="text" placeholder="Tu nombre">
+    <input id="nombre" type="text" placeholder="Tu nombre" autocomplete="name">
 
     <label for="celular">Celular</label>
-    <input id="celular" type="text" placeholder="Tu número">
+    <input
+      id="celular"
+      type="text"
+      placeholder="Tu número"
+      inputmode="numeric"
+      autocomplete="tel"
+      autocapitalize="off"
+      autocorrect="off"
+      spellcheck="false"
+    >
 
     <label for="password">Contraseña</label>
-    <input id="password" type="password" placeholder="Tu contraseña">
+    <div class="password-wrap">
+      <input
+        id="password"
+        type="password"
+        placeholder="Crea tu contraseña"
+        autocomplete="new-password"
+        autocapitalize="off"
+        autocorrect="off"
+        spellcheck="false"
+      >
+      <button type="button" class="toggle-pass" id="togglePassword" aria-label="Mostrar contraseña">👁</button>
+    </div>
 
     <button id="btnGuardar">Registrarme</button>
 
@@ -199,9 +248,14 @@
     const nombre = document.getElementById("nombre");
     const celular = document.getElementById("celular");
     const password = document.getElementById("password");
+    const togglePassword = document.getElementById("togglePassword");
     const btnGuardar = document.getElementById("btnGuardar");
     const msgOk = document.getElementById("msgOk");
     const msgErr = document.getElementById("msgErr");
+
+    window.addEventListener("load", () => {
+      password.value = "";
+    });
 
     function showOk(text) {
       msgErr.style.display = "none";
@@ -214,6 +268,13 @@
       msgErr.style.display = "block";
       msgErr.textContent = text;
     }
+
+    togglePassword.addEventListener("click", () => {
+      const isHidden = password.type === "password";
+      password.type = isHidden ? "text" : "password";
+      togglePassword.textContent = isHidden ? "🙈" : "👁";
+      togglePassword.setAttribute("aria-label", isHidden ? "Ocultar contraseña" : "Mostrar contraseña");
+    });
 
     btnGuardar.addEventListener("click", async () => {
       const nombreVal = nombre.value.trim();
