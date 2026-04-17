@@ -324,13 +324,15 @@
       currentCustomer = data.customer || null;
       currentCard = data.card || null;
 
+      const actuales = Number(currentCard?.sellos_actuales || 0);
+      const meta = Math.max(20, Number(currentCard?.meta_sellos || 20));
+
       clienteNombre.textContent = currentCustomer?.nombre || "-";
       clienteCelular.textContent = currentCustomer?.celular || "-";
-      clienteSellos.textContent = `${Number(currentCard?.sellos_actuales || 0)} / ${Number(currentCard?.meta_sellos || 20)}`;
+      clienteSellos.textContent = `${actuales} / ${meta}`;
 
-      const s = Number(currentCard?.sellos_actuales || 0);
-      if ([5, 10, 15, 20].includes(s)) {
-        stampNote.textContent = `Cliente llegó a ${s} sellos. Revisar premio disponible.`;
+      if ([5, 10, 15, 20].includes(actuales)) {
+        stampNote.textContent = `Cliente llegó a ${actuales} sellos. Revisar premio disponible.`;
       } else {
         stampNote.textContent = "Cliente cargado correctamente.";
       }
