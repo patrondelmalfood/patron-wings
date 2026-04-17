@@ -116,7 +116,7 @@ export default async function handler(req, res) {
           body: JSON.stringify([{
             customer_id: customer.id,
             sellos_actuales: 0,
-            meta_sellos: 10,
+            meta_sellos: 20,
             premio_pendiente: false
           }])
         }
