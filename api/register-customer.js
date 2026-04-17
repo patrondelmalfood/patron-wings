@@ -1,13 +1,25 @@
+import crypto from "crypto";
+
+function hashPassword(password) {
+  const salt = crypto.randomBytes(16).toString("hex");
+  const hash = crypto.scryptSync(password, salt, 64).toString("hex");
+  return `${salt}:${hash}`;
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Método no permitido" });
   }
 
   try {
-    const { nombre, celular, correo } = req.body || {};
+    const { nombre, celular, password } = req.body || {};
 
-    if (!nombre || !celular) {
-      return res.status(400).json({ error: "Falta nombre o celular" });
+    if (!nombre || !celular || !password) {
+      return res.status(400).json({ error: "Falta nombre, celular o contraseña" });
+    }
+
+    if (String(password).length < 4) {
+      return res.status(400).json({ error: "La contraseña debe tener al menos 4 caracteres" });
     }
 
     const SUPABASE_URL = "https://defdwzzewzfjuseozwkn.supabase.co";
@@ -19,12 +31,16 @@ export default async function handler(req, res) {
       "Content-Type": "application/json"
     };
 
+    const cleanNombre = String(nombre).trim();
+    const cleanCell = String(celular).replace(/\D/g, "").trim();
+    const passwordHash = hashPassword(String(password));
+
     let checkRes;
     try {
       checkRes = await fetch(
         SUPABASE_URL +
           "/rest/v1/customers?select=id&celular=eq." +
-          encodeURIComponent(celular),
+          encodeURIComponent(cleanCell),
         { headers }
       );
     } catch (err) {
@@ -59,9 +75,9 @@ export default async function handler(req, res) {
             Prefer: "return=representation"
           },
           body: JSON.stringify([{
-            nombre,
-            celular,
-            correo: correo || null
+            nombre: cleanNombre,
+            celular: cleanCell,
+            password_hash: passwordHash
           }])
         }
       );
@@ -93,7 +109,10 @@ export default async function handler(req, res) {
         SUPABASE_URL + "/rest/v1/loyalty_cards",
         {
           method: "POST",
-          headers,
+          headers: {
+            ...headers,
+            Prefer: "return=representation"
+          },
           body: JSON.stringify([{
             customer_id: customer.id,
             sellos_actuales: 0,
@@ -119,7 +138,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       ok: true,
-      message: "Registro exitoso. Tu tarjeta virtual fue creada."
+      message: "Registro exitoso. Ahora inicia sesión."
     });
   } catch (err) {
     return res.status(500).json({
