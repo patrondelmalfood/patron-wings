@@ -921,6 +921,7 @@
 <div class="admin-card"><div class="label">Semana actual (S/)</div><div class="value" id="mWeekSales">0.00</div></div>
 <div class="admin-card"><div class="label">Promedio diario (S/)</div><div class="value" id="mAvgDailySales">0.00</div></div>
 <div class="admin-card"><div class="label">Compras semana (S/)</div><div class="value" id="mWeeklyPurchases">0.00</div></div>
+            <div class="admin-card"><div class="label">Compras hoy (S/)</div><div class="value" id="mDailyPurchases">0.00</div></div>
 <div class="admin-card"><div class="label">Gastos fijos semana (S/)</div><div class="value" id="mWeeklyFixed">0.00</div></div>
 <div class="admin-card"><div class="label">Gasto total semana (S/)</div><div class="value" id="mWeeklyTotalCost">0.00</div></div>
           </div>
@@ -972,6 +973,50 @@
 
           <h3 style="margin:10px 0 6px; color:#fde68a;">Pedidos del día (estado)</h3>
           <div class="admin-box-list" id="ordersList"></div>
+          <h3 style="margin:10px 0 6px; color:#fde68a;">🛒 Compras del día</h3>
+
+<div class="admin-form-block">
+  <div class="admin-grid-3">
+    <div class="admin-field">
+      <label for="purchaseProductInput">Producto comprado</label>
+      <input type="text" id="purchaseProductInput" placeholder="Ej: Alitas, papa, mayonesa">
+    </div>
+
+    <div class="admin-field">
+      <label for="purchaseQtyInput">Cantidad</label>
+      <input type="number" id="purchaseQtyInput" min="0" step="0.01" placeholder="Ej: 10">
+    </div>
+
+    <div class="admin-field">
+      <label for="purchaseUnitInput">Unidad</label>
+      <input type="text" id="purchaseUnitInput" placeholder="Ej: kg, saco, balde, unidad">
+    </div>
+
+    <div class="admin-field">
+      <label for="purchaseCostInput">Costo total S/</label>
+      <input type="number" id="purchaseCostInput" min="0" step="0.01" placeholder="0.00">
+    </div>
+
+    <div class="admin-field">
+      <label for="purchaseNoteInput">Nota</label>
+      <input type="text" id="purchaseNoteInput" placeholder="Ej: compra lunes / mercado">
+    </div>
+
+    <div class="admin-field">
+      <label style="opacity:0;">Guardar</label>
+      <button id="purchaseSaveBtn" type="button" style="background:#10b981;color:#052e16;font-weight:900;width:100%;">
+        Guardar compra
+      </button>
+    </div>
+  </div>
+
+  <div class="mini-note">
+    Aquí se registra lo que se compra cada día. Luego se sumará automáticamente para la semana.
+  </div>
+</div>
+
+<h3 style="margin:10px 0 6px; color:#fde68a;">Compras registradas del día</h3>
+<div class="admin-box-list" id="purchaseList"></div>
           <h3 style="margin:10px 0 6px; color:#fde68a;">Consumo diario</h3>
 <div class="admin-form-block">
   <div class="admin-grid-3">
@@ -1891,12 +1936,125 @@ const weeklyFixedDetail = document.getElementById("weeklyFixedDetail");
     const mWeeklyPurchases = document.getElementById("mWeeklyPurchases");
 const mWeeklyFixed = document.getElementById("mWeeklyFixed");
 const mWeeklyTotalCost = document.getElementById("mWeeklyTotalCost");
+  const mDailyPurchases = document.getElementById("mDailyPurchases");
+
+const purchaseProductInput = document.getElementById("purchaseProductInput");
+const purchaseQtyInput = document.getElementById("purchaseQtyInput");
+const purchaseUnitInput = document.getElementById("purchaseUnitInput");
+const purchaseCostInput = document.getElementById("purchaseCostInput");
+const purchaseNoteInput = document.getElementById("purchaseNoteInput");
+const purchaseSaveBtn = document.getElementById("purchaseSaveBtn");
+const purchaseList = document.getElementById("purchaseList");
+
+const PURCHASES_STORAGE_KEY = "pdm_daily_purchases_v1";
 const usageItemSelect = document.getElementById("usageItemSelect");
 const usageQtyInput = document.getElementById("usageQtyInput");
 const usageUnitInput = document.getElementById("usageUnitInput");
 const usageNoteInput = document.getElementById("usageNoteInput");
 const usageSaveBtn = document.getElementById("usageSaveBtn");
 const usageList = document.getElementById("usageList");
+  function getPurchases(){
+  try {
+    return JSON.parse(localStorage.getItem(PURCHASES_STORAGE_KEY) || "[]");
+  } catch(e) {
+    return [];
+  }
+}
+
+function savePurchases(list){
+  localStorage.setItem(PURCHASES_STORAGE_KEY, JSON.stringify(list || []));
+}
+
+function getWeekRangeFromDateKey(dateKey){
+  const selectedDate = new Date(dateKey + "T00:00:00");
+  const start = new Date(selectedDate);
+  start.setHours(0,0,0,0);
+
+  const day = start.getDay();
+  const diff = day === 0 ? 6 : day - 1;
+  start.setDate(start.getDate() - diff);
+
+  const end = new Date(start);
+  end.setDate(start.getDate() + 6);
+  end.setHours(23,59,59,999);
+
+  return { start, end };
+}
+
+function getPurchaseWeekSummary(dateKey){
+  const all = getPurchases();
+  const range = getWeekRangeFromDateKey(dateKey);
+
+  const weekPurchases = all.filter(p => {
+    const d = new Date(p.dateKey + "T00:00:00");
+    return d >= range.start && d <= range.end;
+  });
+
+  const weekTotal = weekPurchases.reduce((sum, p) => sum + safeNum(p.cost), 0);
+
+  if (!weekPurchases.length) {
+    return {
+      weekTotal,
+      html: `<div>No hay compras registradas esta semana.</div>`
+    };
+  }
+
+  const html = weekPurchases.map(p => `
+    <div style="padding:6px 0; border-bottom:1px dashed #1e293b;">
+      <b>${p.dateKey}</b> - ${p.product}: 
+      ${safeNum(p.qty).toFixed(2)} ${p.unit || ""}
+      - <b>S/ ${safeNum(p.cost).toFixed(2)}</b>
+      ${p.note ? `<br><small>${p.note}</small>` : ""}
+    </div>
+  `).join("");
+
+  return { weekTotal, html };
+}
+
+function renderDailyPurchases(dateKey){
+  const all = getPurchases();
+  const daily = all.filter(p => p.dateKey === dateKey);
+  const dailyTotal = daily.reduce((sum, p) => sum + safeNum(p.cost), 0);
+
+  if (mDailyPurchases) {
+    mDailyPurchases.textContent = dailyTotal.toFixed(2);
+  }
+
+  if (!purchaseList) return;
+
+  if (!daily.length) {
+    purchaseList.innerHTML = `<div class="admin-item">No hay compras registradas para esta fecha.</div>`;
+    return;
+  }
+
+  purchaseList.innerHTML = daily.map(p => `
+    <div class="admin-item">
+      <div class="top">
+        <span>${p.product}</span>
+        <span>S/ ${safeNum(p.cost).toFixed(2)}</span>
+      </div>
+      <div class="sub">
+        Cantidad: ${safeNum(p.qty).toFixed(2)} ${p.unit || ""}
+        ${p.note ? `<br>Nota: ${p.note}` : ""}
+      </div>
+      <div style="margin-top:6px;">
+        <button class="btn-mini btn-annul" type="button" onclick="deletePurchase('${p.id}')">
+          Eliminar
+        </button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function deletePurchase(id){
+  const ok = confirm("¿Seguro que deseas eliminar esta compra?");
+  if (!ok) return;
+
+  const list = getPurchases().filter(p => p.id !== id);
+  savePurchases(list);
+
+  renderAdmin();
+}
 async function loadUsageItems() {
   const res = await fetch(SUPABASE_URL + "/rest/v1/inventory_items?select=id,nombre&order=nombre.asc", {
     headers: {
@@ -1949,7 +2107,51 @@ async function loadUsageToday() {
   `).join("");
 }
 
-usageSaveBtn.addEventListener("click", async () => {
+purchaseSaveBtn.addEventListener("click", () => {
+  const product = (purchaseProductInput.value || "").trim();
+  const qty = safeNum(purchaseQtyInput.value);
+  const unit = (purchaseUnitInput.value || "").trim();
+  const cost = safeNum(purchaseCostInput.value);
+  const note = (purchaseNoteInput.value || "").trim();
+
+  const dateKey = adminDate.value || getDateKeyLocal(new Date());
+
+  if (!product) {
+    alert("Escribe el producto comprado.");
+    return;
+  }
+
+  if (!(cost > 0)) {
+    alert("Ingresa un costo válido.");
+    return;
+  }
+
+  const list = getPurchases();
+
+  list.push({
+    id: String(Date.now()) + "_" + Math.floor(Math.random() * 9999),
+    dateKey,
+    product,
+    qty,
+    unit,
+    cost,
+    note,
+    createdAt: new Date().toISOString()
+  });
+
+  savePurchases(list);
+
+  purchaseProductInput.value = "";
+  purchaseQtyInput.value = "";
+  purchaseUnitInput.value = "";
+  purchaseCostInput.value = "";
+  purchaseNoteInput.value = "";
+
+  renderAdmin();
+
+  alert("Compra guardada ✅");
+});
+  usageSaveBtn.addEventListener("click", async () => {
   const item_id = parseInt(usageItemSelect.value, 10);
   const cantidad = parseFloat(usageQtyInput.value || "0");
   const unidad = (usageUnitInput.value || "").trim();
@@ -3365,25 +3567,16 @@ mTodaySales.textContent = todaySales.toFixed(2);
 mYesterdaySales.textContent = yesterdaySales.toFixed(2);
 mWeekSales.textContent = weekSales.toFixed(2);
 mAvgDailySales.textContent = avgDaily.toFixed(2);
-mWeeklyPurchases.textContent = "1419.00";
-mWeeklyFixed.textContent = "1011.25";
-mWeeklyTotalCost.textContent = "2430.25";
-weeklyPurchasesDetail.innerHTML = `
-  <div>Alitas importadas: S/ 415.00</div>
-  <div>Papa precocida: S/ 370.00</div>
-  <div>Mayonesa base: S/ 41.00</div>
-  <div>Mostaza: S/ 48.00</div>
-  <div>Ketchup sachet: S/ 28.00</div>
-  <div>Mayonesa sachet: S/ 50.00</div>
-  <div>Aceite Nor Chef: S/ 128.00</div>
-  <div>Aceite B1: S/ 164.00</div>
-  <div>Pan burger: S/ 18.00</div>
-  <div>Coca Cola 1L: S/ 44.00</div>
-  <div>Inka Cola 1L: S/ 44.00</div>
-  <div>Agua pack: S/ 12.00</div>
-  <div>Gaseosa personal vidrio: S/ 33.00</div>
-  <div>Pepsi/Guaraná: S/ 24.00</div>
-`;
+const purchaseSummary = getPurchaseWeekSummary(dateKey);
+const weeklyFixedCost = 1011.25;
+
+mWeeklyPurchases.textContent = purchaseSummary.weekTotal.toFixed(2);
+mWeeklyFixed.textContent = weeklyFixedCost.toFixed(2);
+mWeeklyTotalCost.textContent = (purchaseSummary.weekTotal + weeklyFixedCost).toFixed(2);
+
+weeklyPurchasesDetail.innerHTML = purchaseSummary.html;
+
+renderDailyPurchases(dateKey);
 
 weeklyFixedDetail.innerHTML = `
   <div>Cocinero: S/ 300.00</div>
