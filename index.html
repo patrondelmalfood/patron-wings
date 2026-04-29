@@ -1047,6 +1047,50 @@
 
 <h3 style="margin:10px 0 6px; color:#fde68a;">Compras registradas del día</h3>
 <div class="admin-box-list" id="purchaseList"></div>
+          <h3 style="margin:10px 0 6px; color:#fde68a;">Consumo automático por ventas</h3>
+
+<div class="admin-form-block">
+  <div class="admin-card-grid">
+    <div class="admin-card">
+      <div class="label">Alitas vendidas</div>
+      <div class="value" id="autoWingsPieces">0 pzas</div>
+    </div>
+
+    <div class="admin-card">
+      <div class="label">Alitas aprox.</div>
+      <div class="value" id="autoWingsKg">0.00 kg</div>
+    </div>
+
+    <div class="admin-card">
+      <div class="label">Papas usadas</div>
+      <div class="value" id="autoPotatoBags">0 bolsas</div>
+    </div>
+
+    <div class="admin-card">
+      <div class="label">Presas broaster</div>
+      <div class="value" id="autoBroasterPieces">0</div>
+    </div>
+
+    <div class="admin-card">
+      <div class="label">Burgers vendidas</div>
+      <div class="value" id="autoBurgerUnits">0</div>
+    </div>
+
+    <div class="admin-card">
+      <div class="label">Delivery cobrado</div>
+      <div class="value" id="autoDeliveryTotal">S/ 0.00</div>
+    </div>
+
+    <div class="admin-card">
+      <div class="label">Tapers usados</div>
+      <div class="value" id="autoTapersTotal">S/ 0.00</div>
+    </div>
+  </div>
+
+  <div class="mini-note">
+    Este consumo se calcula automáticamente con los pedidos válidos del día. Los pedidos anulados no se cuentan.
+  </div>
+</div>
           <h3 style="margin:10px 0 6px; color:#fde68a;">Consumo manual / ajustes</h3>
 <div class="admin-form-block">
   <div class="admin-grid-3">
@@ -1957,6 +2001,13 @@ function deepCopy(obj){
     const mWingsKg = document.getElementById("mWingsKg");
     const mBroasterPieces = document.getElementById("mBroasterPieces");
     const mBurgerUnits = document.getElementById("mBurgerUnits");
+  const autoWingsPieces = document.getElementById("autoWingsPieces");
+const autoWingsKg = document.getElementById("autoWingsKg");
+const autoPotatoBags = document.getElementById("autoPotatoBags");
+const autoBroasterPieces = document.getElementById("autoBroasterPieces");
+const autoBurgerUnits = document.getElementById("autoBurgerUnits");
+const autoDeliveryTotal = document.getElementById("autoDeliveryTotal");
+const autoTapersTotal = document.getElementById("autoTapersTotal");
 
     const prodSummary = document.getElementById("prodSummary");
     const drinkSummary = document.getElementById("drinkSummary");
@@ -3604,6 +3655,13 @@ ensureBoletaCreated();;
       mWingsKg.textContent = agg.wingsKg.toFixed(2);
       mBroasterPieces.textContent = agg.broasterPieces;
       mBurgerUnits.textContent = agg.burgerUnits;
+      if (autoWingsPieces) autoWingsPieces.textContent = `${agg.wingsPieces} pzas`;
+if (autoWingsKg) autoWingsKg.textContent = `${agg.wingsKg.toFixed(2)} kg`;
+if (autoPotatoBags) autoPotatoBags.textContent = `${agg.potatoBags} bolsas`;
+if (autoBroasterPieces) autoBroasterPieces.textContent = agg.broasterPieces;
+if (autoBurgerUnits) autoBurgerUnits.textContent = agg.burgerUnits;
+if (autoDeliveryTotal) autoDeliveryTotal.textContent = `S/ ${totalDelivery.toFixed(2)}`;
+if (autoTapersTotal) autoTapersTotal.textContent = `S/ ${totalTapers.toFixed(2)}`;
       const today = getDateKeyLocal(new Date());
 const yesterday = getDateKeyLocal(new Date(Date.now() - 86400000));
 
