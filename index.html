@@ -1118,6 +1118,7 @@ function deepCopy(obj){
     const ORDER_LOG_STORAGE_KEY = "pdm_order_log_v16";
     const DAY_SETUP_STORAGE_KEY = "pdm_day_setup_v16";
     const ADMIN_PASSWORD = "181221";
+  const ADMIN_SESSION_KEY = "pdm_admin_logged_v1";
     const STICKY_OFFSET = 105;
     const WINGS_PER_KG = 16.5;
 
@@ -4108,37 +4109,56 @@ weekChart.innerHTML = htmlChart;
       sendToRawBT(buildAdminSummaryTicketText(dateKey));
     });
 
-    navAdmin.addEventListener("click", () => {
-      adminModal.classList.add("open");
-      if (adminUnlocked) renderAdmin();
-    });
+  navAdmin.addEventListener("click", async () => {
+  adminModal.classList.add("open");
+
+  if (localStorage.getItem(ADMIN_SESSION_KEY) === "1") {
+    adminUnlocked = true;
+    adminAuth.style.display = "none";
+    adminContent.style.display = "block";
+    adminDate.value = getDateKeyLocal(new Date());
+    await renderAdmin();
+  } else if (adminUnlocked) {
+    await renderAdmin();
+  }
+});
     adminClose.addEventListener("click", () => adminModal.classList.remove("open"));
 
-    adminLogin.addEventListener("click", () => {
-      if (String(adminPass.value||"") !== ADMIN_PASSWORD) {
-        alert("Clave incorrecta.");
-        return;
-      }
-      adminUnlocked = true;
-      adminPass.value = "";
-      adminAuth.style.display = "none";
-      adminContent.style.display = "block";
-      adminDate.value = getDateKeyLocal(new Date());
-      renderAdmin();
-    });
+    adminLogin.addEventListener("click", async () => {
+  if (String(adminPass.value || "") !== ADMIN_PASSWORD) {
+    alert("Clave incorrecta.");
+    return;
+  }
 
-    adminLogout.addEventListener("click", () => {
-      adminUnlocked = false;
-      adminAuth.style.display = "block";
-      adminContent.style.display = "none";
-      alert("Sesión admin cerrada.");
-    });
+  adminUnlocked = true;
+  localStorage.setItem(ADMIN_SESSION_KEY, "1");
 
-    adminRefresh.addEventListener("click", () => {
-  renderAdmin();
+  adminPass.value = "";
+  adminAuth.style.display = "none";
+  adminContent.style.display = "block";
+  adminDate.value = getDateKeyLocal(new Date());
+
+  await renderAdmin();
 });
 
-    adminDate.addEventListener("change", renderAdmin);
+    adminLogout.addEventListener("click", () => {
+  adminUnlocked = false;
+  localStorage.removeItem(ADMIN_SESSION_KEY);
+
+  adminAuth.style.display = "block";
+  adminContent.style.display = "none";
+  adminPass.value = "";
+
+  alert("Sesión admin cerrada.");
+});
+
+ adminRefresh.addEventListener("click", async () => {
+  await renderAdmin();
+});
+
+  adminDate.addEventListener("change", async () => {
+  await renderAdmin();
+});
 
 [
   openCashInput, openCloseNoteInput,
