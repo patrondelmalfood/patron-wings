@@ -3510,7 +3510,7 @@ ensureBoletaCreated();;
       }).join("");
     }
 
-    function renderAdmin(){
+    async function renderAdmin(){
       if (!adminUnlocked) return;
 
       const dateKey = adminDate.value || getDateKeyLocal(new Date());
