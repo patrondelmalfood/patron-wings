@@ -833,6 +833,30 @@
             <button id="adminExport" type="button" style="background:#10b981;color:#052e16;font-weight:900;">Exportar JSON</button>
             <button id="adminLogout" type="button" style="background:#ef4444;color:#fff;font-weight:900;">Salir</button>
           </div>
+          <div class="admin-form-block">
+  <h4>🧾 Acciones del pedido actual</h4>
+
+  <div class="admin-row">
+    <button type="button" style="background:#22c55e;color:#000;font-weight:900;"
+      onclick="document.getElementById('btn-print-kitchen').click();">
+      👨‍🍳 Comanda cocina
+    </button>
+
+    <button type="button" style="background:#0ea5e9;color:#fff;font-weight:900;"
+      onclick="document.getElementById('btn-print-client').click();">
+      🧾 Boleta cliente
+    </button>
+
+    <button type="button" style="background:#22c55e;color:#052e16;font-weight:900;"
+      onclick="document.getElementById('btn-register-sale').click();">
+      ✅ Registrar venta
+    </button>
+  </div>
+
+  <div class="mini-note">
+    Estas acciones son solo para administrador o moza. El cliente no las ve en la carta pública.
+  </div>
+</div>
 
           <div class="print-guide">
             <div style="font-weight:900;">━━━━━━━━━━ INICIO BLOQUE QUE SE IMPRIME ━━━━━━━━━━</div>
