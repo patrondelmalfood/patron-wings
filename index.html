@@ -2406,11 +2406,22 @@ function getOrderTimeText(order){
   const rawDate =
     order.createdAt ||
     order.created_at ||
+    order.dateTime ||
     order.updatedAt ||
     order.updated_at ||
     "";
 
   if (!rawDate) return "Hora no registrada";
+
+  // Si viene como 24/04/2026 21:35
+  const match = String(rawDate).match(/(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})/);
+  if (match) {
+    let hour = parseInt(match[4], 10);
+    const minute = match[5];
+    const ampm = hour >= 12 ? "p. m." : "a. m.";
+    hour = hour % 12 || 12;
+    return `${String(hour).padStart(2, "0")}:${minute} ${ampm}`;
+  }
 
   const d = new Date(rawDate);
 
