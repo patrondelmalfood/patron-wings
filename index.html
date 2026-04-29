@@ -2067,14 +2067,7 @@ async function deletePurchase(id){
 
   renderAdmin();
 }
-  const ok = confirm("¿Seguro que deseas eliminar esta compra?");
-  if (!ok) return;
-
-  const list = getPurchases().filter(p => p.id !== id);
-  savePurchases(list);
-
-  renderAdmin();
-}
+ 
 async function loadUsageItems() {
   const res = await fetch(SUPABASE_URL + "/rest/v1/inventory_items?select=id,nombre&order=nombre.asc", {
     headers: {
