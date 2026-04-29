@@ -1071,6 +1071,7 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 });
 const ORDERS_TABLE = "orders_cloud";
 const DAY_SETUP_TABLE = "day_setup_cloud";
+const PURCHASES_TABLE = "daily_purchases";
 
 let ORDER_LOG_CACHE = [];
 let DAY_SETUP_CACHE = {};
@@ -1953,16 +1954,19 @@ const usageUnitInput = document.getElementById("usageUnitInput");
 const usageNoteInput = document.getElementById("usageNoteInput");
 const usageSaveBtn = document.getElementById("usageSaveBtn");
 const usageList = document.getElementById("usageList");
-  function getPurchases(){
-  try {
-    return JSON.parse(localStorage.getItem(PURCHASES_STORAGE_KEY) || "[]");
-  } catch(e) {
+ async function getPurchasesFromCloud(){
+  const { data, error } = await supabaseClient
+    .from(PURCHASES_TABLE)
+    .select("*")
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    console.error("Error cargando compras:", error);
+    alert("No se pudieron cargar las compras desde Supabase.");
     return [];
   }
-}
 
-function savePurchases(list){
-  localStorage.setItem(PURCHASES_STORAGE_KEY, JSON.stringify(list || []));
+  return data || [];
 }
 
 function getWeekRangeFromDateKey(dateKey){
@@ -1981,12 +1985,12 @@ function getWeekRangeFromDateKey(dateKey){
   return { start, end };
 }
 
-function getPurchaseWeekSummary(dateKey){
-  const all = getPurchases();
+async function getPurchaseWeekSummary(dateKey){
+  const all = await getPurchasesFromCloud();
   const range = getWeekRangeFromDateKey(dateKey);
 
   const weekPurchases = all.filter(p => {
-    const d = new Date(p.dateKey + "T00:00:00");
+    const d = new Date(p.date_key + "T00:00:00");
     return d >= range.start && d <= range.end;
   });
 
@@ -2001,7 +2005,7 @@ function getPurchaseWeekSummary(dateKey){
 
   const html = weekPurchases.map(p => `
     <div style="padding:6px 0; border-bottom:1px dashed #1e293b;">
-      <b>${p.dateKey}</b> - ${p.product}: 
+      <b>${p.date_key}</b> - ${p.product}: 
       ${safeNum(p.qty).toFixed(2)} ${p.unit || ""}
       - <b>S/ ${safeNum(p.cost).toFixed(2)}</b>
       ${p.note ? `<br><small>${p.note}</small>` : ""}
@@ -2011,9 +2015,9 @@ function getPurchaseWeekSummary(dateKey){
   return { weekTotal, html };
 }
 
-function renderDailyPurchases(dateKey){
-  const all = getPurchases();
-  const daily = all.filter(p => p.dateKey === dateKey);
+async function renderDailyPurchases(dateKey){
+  const all = await getPurchasesFromCloud();
+  const daily = all.filter(p => p.date_key === dateKey);
   const dailyTotal = daily.reduce((sum, p) => sum + safeNum(p.cost), 0);
 
   if (mDailyPurchases) {
@@ -2046,7 +2050,23 @@ function renderDailyPurchases(dateKey){
   `).join("");
 }
 
-function deletePurchase(id){
+async function deletePurchase(id){
+  const ok = confirm("¿Seguro que deseas eliminar esta compra?");
+  if (!ok) return;
+
+  const { error } = await supabaseClient
+    .from(PURCHASES_TABLE)
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    console.error("Error eliminando compra:", error);
+    alert("No se pudo eliminar la compra.");
+    return;
+  }
+
+  renderAdmin();
+}
   const ok = confirm("¿Seguro que deseas eliminar esta compra?");
   if (!ok) return;
 
@@ -2107,7 +2127,7 @@ async function loadUsageToday() {
   `).join("");
 }
 
-purchaseSaveBtn.addEventListener("click", () => {
+purchaseSaveBtn.addEventListener("click", async () => {
   const product = (purchaseProductInput.value || "").trim();
   const qty = safeNum(purchaseQtyInput.value);
   const unit = (purchaseUnitInput.value || "").trim();
@@ -2126,20 +2146,26 @@ purchaseSaveBtn.addEventListener("click", () => {
     return;
   }
 
-  const list = getPurchases();
-
-  list.push({
+  const newPurchase = {
     id: String(Date.now()) + "_" + Math.floor(Math.random() * 9999),
-    dateKey,
+    date_key: dateKey,
     product,
     qty,
     unit,
     cost,
     note,
-    createdAt: new Date().toISOString()
-  });
+    created_at: new Date().toISOString()
+  };
 
-  savePurchases(list);
+  const { error } = await supabaseClient
+    .from(PURCHASES_TABLE)
+    .insert([newPurchase]);
+
+  if (error) {
+    console.error("Error guardando compra:", error);
+    alert("No se pudo guardar la compra en Supabase.");
+    return;
+  }
 
   purchaseProductInput.value = "";
   purchaseQtyInput.value = "";
@@ -2147,9 +2173,9 @@ purchaseSaveBtn.addEventListener("click", () => {
   purchaseCostInput.value = "";
   purchaseNoteInput.value = "";
 
-  renderAdmin();
+  await renderAdmin();
 
-  alert("Compra guardada ✅");
+  alert("Compra guardada en la nube ✅");
 });
   usageSaveBtn.addEventListener("click", async () => {
   const item_id = parseInt(usageItemSelect.value, 10);
@@ -3567,7 +3593,7 @@ mTodaySales.textContent = todaySales.toFixed(2);
 mYesterdaySales.textContent = yesterdaySales.toFixed(2);
 mWeekSales.textContent = weekSales.toFixed(2);
 mAvgDailySales.textContent = avgDaily.toFixed(2);
-const purchaseSummary = getPurchaseWeekSummary(dateKey);
+const purchaseSummary = await getPurchaseWeekSummary(dateKey);
 const weeklyFixedCost = 1011.25;
 
 mWeeklyPurchases.textContent = purchaseSummary.weekTotal.toFixed(2);
@@ -3576,7 +3602,7 @@ mWeeklyTotalCost.textContent = (purchaseSummary.weekTotal + weeklyFixedCost).toF
 
 weeklyPurchasesDetail.innerHTML = purchaseSummary.html;
 
-renderDailyPurchases(dateKey);
+await renderDailyPurchases(dateKey);
 
 weeklyFixedDetail.innerHTML = `
   <div>Cocinero: S/ 300.00</div>
