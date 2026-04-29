@@ -1008,9 +1008,32 @@
 <div class="admin-form-block">
   <div class="admin-grid-3">
     <div class="admin-field">
-      <label for="purchaseProductInput">Producto comprado</label>
-      <input type="text" id="purchaseProductInput" placeholder="Ej: Alitas, papa, mayonesa">
-    </div>
+  <label for="purchaseProductInput">Insumo comprado</label>
+  <select id="purchaseProductInput">
+    <option value="">Selecciona insumo</option>
+    <option value="Alitas kg">Alitas kg</option>
+    <option value="Papa bolsa 170g">Papa bolsa 170g</option>
+    <option value="Presas broaster">Presas broaster</option>
+    <option value="Pan burger">Pan burger</option>
+    <option value="Carne burger">Carne burger</option>
+    <option value="Queso tajada">Queso tajada</option>
+    <option value="Huevo">Huevo</option>
+    <option value="Chorizo">Chorizo</option>
+    <option value="Tocino">Tocino</option>
+    <option value="Gaseosa 1L">Gaseosa 1L</option>
+    <option value="Gaseosa 1/2L plástico">Gaseosa 1/2L plástico</option>
+    <option value="Gaseosa vidrio/personal">Gaseosa vidrio/personal</option>
+    <option value="Agua mineral">Agua mineral</option>
+    <option value="Mayonesa">Mayonesa</option>
+    <option value="Ketchup">Ketchup</option>
+    <option value="Mostaza">Mostaza</option>
+    <option value="Aceite">Aceite</option>
+    <option value="Arroz">Arroz</option>
+    <option value="Hotdog">Hotdog</option>
+    <option value="Bolsas / empaques">Bolsas / empaques</option>
+    <option value="Otro / no inventariable">Otro / no inventariable</option>
+  </select>
+</div>
 
     <div class="admin-field">
       <label for="purchaseQtyInput">Cantidad</label>
@@ -1041,7 +1064,7 @@
   </div>
 
   <div class="mini-note">
-    Aquí se registra lo que se compra cada día. Luego se sumará automáticamente para la semana.
+    Selecciona el insumo comprado para que luego el sistema pueda calcular el stock real. Usa "Otro / no inventariable" para gastos que no entran al inventario.
   </div>
 </div>
 
