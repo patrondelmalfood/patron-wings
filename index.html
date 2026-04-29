@@ -2398,10 +2398,30 @@ function deleteDaySetup(dateKey){
       return maxNum + 1;
     }
 
-    function formatDailyOrderNumber(n){
-      return String(parseInt(n || 0, 10) || 0).padStart(3, "0");
-    }
+   function formatDailyOrderNumber(n){
+  return String(parseInt(n || 0, 10) || 0).padStart(3, "0");
+}
 
+function getOrderTimeText(order){
+  const rawDate =
+    order.createdAt ||
+    order.created_at ||
+    order.updatedAt ||
+    order.updated_at ||
+    "";
+
+  if (!rawDate) return "Hora no registrada";
+
+  const d = new Date(rawDate);
+
+  if (isNaN(d.getTime())) return "Hora no registrada";
+
+  return d.toLocaleTimeString("es-PE", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true
+  });
+}
     function ensureBoletaCreated(){
       if (!CURRENT_BOLETA) {
         const dateKey = getDateKeyLocal(new Date());
@@ -3770,7 +3790,7 @@ weekChart.innerHTML = htmlChart;
         return `
           <div class="admin-item ${isAnnulled ? 'admin-item-annulled' : ''}">
             <div class="top">
-              <span>#${formatDailyOrderNumber(r.dailyOrderNumber)} • Boleta ${r.boletaNumber}</span>
+              <span>#${formatDailyOrderNumber(r.dailyOrderNumber)} • Boleta ${r.boletaNumber} • 🕒 ${getOrderTimeText(r)}</span>
               <span class="${isAnnulled ? 'annulled-total' : ''}">S/ ${safeNum(r.total).toFixed(2)}</span>
             </div>
             <div class="meta">
