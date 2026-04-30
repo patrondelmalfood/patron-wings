@@ -1168,6 +1168,26 @@
     Este consumo se calcula automáticamente con los pedidos válidos del día. Los pedidos anulados no se cuentan.
   </div>
 </div>
+          <h3 style="margin:10px 0 6px; color:#fde68a;">Stock real estimado</h3>
+
+<div class="admin-form-block">
+  <table class="stock-table" id="realStockTable">
+    <thead>
+      <tr>
+        <th>Insumo</th>
+        <th>Inicial</th>
+        <th>Compras</th>
+        <th>Consumo automático</th>
+        <th>Stock estimado</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div class="mini-note">
+    Este stock es estimado: stock inicial + compras del día - consumo automático por ventas válidas.
+  </div>
+</div>
           <h3 style="margin:10px 0 6px; color:#fde68a;">Consumo manual / ajustes</h3>
 <div class="admin-form-block">
   <div class="admin-grid-3">
@@ -2100,6 +2120,7 @@ const autoTapersTotal = document.getElementById("autoTapersTotal");
     const ruletaSummary = document.getElementById("ruletaSummary");
     const ordersList = document.getElementById("ordersList");
     const stockControlTableBody = document.querySelector("#stockControlTable tbody");
+  const realStockTableBody = document.querySelector("#realStockTable tbody");
     const weeklyPurchasesDetail = document.getElementById("weeklyPurchasesDetail");
 const weeklyFixedDetail = document.getElementById("weeklyFixedDetail");
     const mWeeklyPurchases = document.getElementById("mWeeklyPurchases");
@@ -2182,7 +2203,70 @@ async function getPurchaseWeekSummary(dateKey){
 
   return { weekTotal, html };
 }
+function sumPurchasesForDateByProduct(purchases, dateKey, productName){
+  return (purchases || [])
+    .filter(p => p.date_key === dateKey && p.product === productName)
+    .reduce((sum, p) => sum + safeNum(p.qty), 0);
+}
 
+function renderRealStockTable(dateKey, purchases, daySetup, agg){
+  if (!realStockTableBody) return;
+
+  const init = daySetup.stockInitItems || {};
+
+  const rows = [
+    {
+      name: "Alitas kg",
+      unit: "kg",
+      initial: safeNum(init.wingsKg),
+      purchases: sumPurchasesForDateByProduct(purchases, dateKey, "Alitas kg"),
+      auto: safeNum(agg.wingsKg)
+    },
+    {
+      name: "Papa bolsa 170g",
+      unit: "bolsas",
+      initial: safeNum(init.potatoBags),
+      purchases: sumPurchasesForDateByProduct(purchases, dateKey, "Papa bolsa 170g"),
+      auto: safeNum(agg.potatoBags)
+    },
+    {
+      name: "Presas broaster",
+      unit: "presas",
+      initial: safeNum(init.broasterPieces),
+      purchases: sumPurchasesForDateByProduct(purchases, dateKey, "Presas broaster"),
+      auto: safeNum(agg.broasterPieces)
+    },
+    {
+      name: "Pan burger",
+      unit: "und",
+      initial: safeNum(init.burgerBread),
+      purchases: sumPurchasesForDateByProduct(purchases, dateKey, "Pan burger"),
+      auto: safeNum(agg.burgerUnits)
+    },
+    {
+      name: "Carne burger",
+      unit: "und",
+      initial: safeNum(init.burgerMeat),
+      purchases: sumPurchasesForDateByProduct(purchases, dateKey, "Carne burger"),
+      auto: safeNum(agg.burgerUnits)
+    }
+  ];
+
+  realStockTableBody.innerHTML = rows.map(r => {
+    const estimated = r.initial + r.purchases - r.auto;
+    const cls = estimated <= 0 ? "bad" : estimated <= 5 ? "warn" : "good";
+
+    return `
+      <tr>
+        <td>${r.name}</td>
+        <td>${r.initial.toFixed(r.unit === "kg" ? 2 : 0)} ${r.unit}</td>
+        <td>${r.purchases.toFixed(r.unit === "kg" ? 2 : 0)} ${r.unit}</td>
+        <td>${r.auto.toFixed(r.unit === "kg" ? 2 : 0)} ${r.unit}</td>
+        <td class="${cls}">${estimated.toFixed(r.unit === "kg" ? 2 : 0)} ${r.unit}</td>
+      </tr>
+    `;
+  }).join("");
+}
 async function renderDailyPurchases(dateKey){
   const all = await getPurchasesFromCloud();
   const daily = all.filter(p => p.date_key === dateKey);
@@ -3768,6 +3852,8 @@ if (autoBroasterPieces) autoBroasterPieces.textContent = agg.broasterPieces;
 if (autoBurgerUnits) autoBurgerUnits.textContent = agg.burgerUnits;
 if (autoDeliveryTotal) autoDeliveryTotal.textContent = `S/ ${totalDelivery.toFixed(2)}`;
 if (autoTapersTotal) autoTapersTotal.textContent = `S/ ${totalTapers.toFixed(2)}`;
+      const purchasesForRealStock = await getPurchasesFromCloud();
+renderRealStockTable(dateKey, purchasesForRealStock, daySetup, agg);
       const today = getDateKeyLocal(new Date());
 const yesterday = getDateKeyLocal(new Date(Date.now() - 86400000));
 
