@@ -1003,6 +1003,60 @@
 
           <h3 style="margin:10px 0 6px; color:#fde68a;">Pedidos del día (estado)</h3>
           <div class="admin-box-list" id="ordersList"></div>
+          <h3 style="margin:10px 0 6px; color:#fde68a;">Stock inicial por insumo</h3>
+
+<div class="admin-form-block">
+  <div class="admin-grid-3">
+    <div class="admin-field">
+      <label for="stockInitWingsKg">Alitas inicial (kg)</label>
+      <input type="number" id="stockInitWingsKg" min="0" step="0.01" placeholder="0.00">
+    </div>
+
+    <div class="admin-field">
+      <label for="stockInitPotatoBags">Papa inicial (bolsas 170g)</label>
+      <input type="number" id="stockInitPotatoBags" min="0" step="1" placeholder="0">
+    </div>
+
+    <div class="admin-field">
+      <label for="stockInitBroasterPieces">Presas broaster inicial</label>
+      <input type="number" id="stockInitBroasterPieces" min="0" step="1" placeholder="0">
+    </div>
+
+    <div class="admin-field">
+      <label for="stockInitBurgerBread">Pan burger inicial</label>
+      <input type="number" id="stockInitBurgerBread" min="0" step="1" placeholder="0">
+    </div>
+
+    <div class="admin-field">
+      <label for="stockInitBurgerMeat">Carne burger inicial</label>
+      <input type="number" id="stockInitBurgerMeat" min="0" step="1" placeholder="0">
+    </div>
+
+    <div class="admin-field">
+      <label for="stockInitCheese">Queso tajada inicial</label>
+      <input type="number" id="stockInitCheese" min="0" step="1" placeholder="0">
+    </div>
+
+    <div class="admin-field">
+      <label for="stockInitEgg">Huevo inicial</label>
+      <input type="number" id="stockInitEgg" min="0" step="1" placeholder="0">
+    </div>
+
+    <div class="admin-field">
+      <label for="stockInitChorizo">Chorizo inicial</label>
+      <input type="number" id="stockInitChorizo" min="0" step="1" placeholder="0">
+    </div>
+
+    <div class="admin-field">
+      <label for="stockInitBacon">Tocino inicial</label>
+      <input type="number" id="stockInitBacon" min="0" step="1" placeholder="0">
+    </div>
+  </div>
+
+  <div class="mini-note">
+    Aquí colocas con cuánto stock empieza el día. Luego se usará para calcular: stock inicial + compras - consumo automático - ajustes.
+  </div>
+</div>
           <h3 style="margin:10px 0 6px; color:#fde68a;">🛒 Compras del día</h3>
 
 <div class="admin-form-block">
@@ -2004,6 +2058,15 @@ function deepCopy(obj){
     const stockInitHalfPlastic = document.getElementById("stockInitHalfPlastic");
     const stockInitGlass = document.getElementById("stockInitGlass");
     const stockInitWater = document.getElementById("stockInitWater");
+  const stockInitWingsKg = document.getElementById("stockInitWingsKg");
+const stockInitPotatoBags = document.getElementById("stockInitPotatoBags");
+const stockInitBroasterPieces = document.getElementById("stockInitBroasterPieces");
+const stockInitBurgerBread = document.getElementById("stockInitBurgerBread");
+const stockInitBurgerMeat = document.getElementById("stockInitBurgerMeat");
+const stockInitCheese = document.getElementById("stockInitCheese");
+const stockInitEgg = document.getElementById("stockInitEgg");
+const stockInitChorizo = document.getElementById("stockInitChorizo");
+const stockInitBacon = document.getElementById("stockInitBacon");
     const stockEnd1L = document.getElementById("stockEnd1L");
     const stockEndHalfPlastic = document.getElementById("stockEndHalfPlastic");
     const stockEndGlass = document.getElementById("stockEndGlass");
@@ -2526,6 +2589,15 @@ function getOrderTimeText(order){
       stockInitHalfPlastic.value = safeInt(s.stockInit?.halfPlastic) || "";
       stockInitGlass.value = safeInt(s.stockInit?.glass) || "";
       stockInitWater.value = safeInt(s.stockInit?.water) || "";
+      stockInitWingsKg.value = safeNum(s.stockInitItems?.wingsKg) || "";
+stockInitPotatoBags.value = safeInt(s.stockInitItems?.potatoBags) || "";
+stockInitBroasterPieces.value = safeInt(s.stockInitItems?.broasterPieces) || "";
+stockInitBurgerBread.value = safeInt(s.stockInitItems?.burgerBread) || "";
+stockInitBurgerMeat.value = safeInt(s.stockInitItems?.burgerMeat) || "";
+stockInitCheese.value = safeInt(s.stockInitItems?.cheese) || "";
+stockInitEgg.value = safeInt(s.stockInitItems?.egg) || "";
+stockInitChorizo.value = safeInt(s.stockInitItems?.chorizo) || "";
+stockInitBacon.value = safeInt(s.stockInitItems?.bacon) || "";
 
       stockEnd1L.value = safeInt(s.stockEnd?.oneL) || "";
       stockEndHalfPlastic.value = safeInt(s.stockEnd?.halfPlastic) || "";
@@ -2543,6 +2615,17 @@ function getOrderTimeText(order){
           glass: safeInt(stockInitGlass.value),
           water: safeInt(stockInitWater.value)
         },
+          stockInitItems: {
+    wingsKg: Number(safeNum(stockInitWingsKg.value).toFixed(2)),
+    potatoBags: safeInt(stockInitPotatoBags.value),
+    broasterPieces: safeInt(stockInitBroasterPieces.value),
+    burgerBread: safeInt(stockInitBurgerBread.value),
+    burgerMeat: safeInt(stockInitBurgerMeat.value),
+    cheese: safeInt(stockInitCheese.value),
+    egg: safeInt(stockInitEgg.value),
+    chorizo: safeInt(stockInitChorizo.value),
+    bacon: safeInt(stockInitBacon.value)
+  },
         stockEnd: {
           oneL: safeInt(stockEnd1L.value),
           halfPlastic: safeInt(stockEndHalfPlastic.value),
