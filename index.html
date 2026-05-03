@@ -714,6 +714,89 @@ height:65px;
       font-weight:900;
       margin-top:4px;
     }
+    /* FASE 2 - ALITAS estilo app */
+#alitas + .menu-grid{
+  display:grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap:12px;
+  margin-top:12px;
+}
+
+#alitas + .menu-grid .item-card{
+  padding:0;
+  overflow:hidden;
+  border-radius:18px;
+  background:#111;
+  border:1px solid rgba(255,159,28,.75);
+  box-shadow:0 4px 14px rgba(0,0,0,.55);
+}
+
+#alitas + .menu-grid .item-card::before{
+  content:"";
+  display:block;
+  width:100%;
+  height:135px;
+  background-image:url("cat-alitas.png");
+  background-size:cover;
+  background-position:center;
+}
+
+#alitas + .menu-grid .item-header,
+#alitas + .menu-grid .item-desc,
+#alitas + .menu-grid .salsas-item,
+#alitas + .menu-grid .salsa-select-wrap,
+#alitas + .menu-grid .item-actions{
+  padding-left:10px;
+  padding-right:10px;
+}
+
+#alitas + .menu-grid .item-header{
+  padding-top:10px;
+}
+
+#alitas + .menu-grid .item-name{
+  font-size:16px;
+  color:#fff;
+}
+
+#alitas + .menu-grid .item-price{
+  font-size:17px;
+  color:#ffd60a;
+}
+
+#alitas + .menu-grid .item-desc{
+  font-size:12px;
+  color:#ddd;
+}
+
+#alitas + .menu-grid .item-actions{
+  padding-bottom:12px;
+}
+
+#alitas + .menu-grid button{
+  border-radius:10px;
+  background:#ffd60a;
+  color:#000;
+  font-weight:900;
+}
+
+@media (max-width:600px){
+  #alitas + .menu-grid{
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  #alitas + .menu-grid .item-card::before{
+    height:105px;
+  }
+
+  #alitas + .menu-grid .item-name{
+    font-size:14px;
+  }
+
+  #alitas + .menu-grid .item-price{
+    font-size:15px;
+  }
+}
   </style>
 </head>
 
