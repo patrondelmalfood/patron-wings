@@ -45,6 +45,7 @@
 .app-category-card{
   display:flex;
   align-items:center;
+  justify-content:space-between;
   gap:12px;
   padding:10px;
   min-height:82px;
@@ -63,6 +64,17 @@ width:90px;
 height:65px;
   object-fit:cover;
   border-radius:12px;
+}
+    .app-category-card span{
+  flex:1;
+  font-size:18px;
+}
+
+.app-category-card b{
+  color:#ffd60a;
+  font-size:34px;
+  font-weight:300;
+  line-height:1;
 }
 
 .app-category-card:hover{
@@ -848,28 +860,33 @@ height:65px;
     <section class="app-category-list">
 
   <a href="#alitas" class="app-category-card">
-    <img src="cat-alitas.png">
-    <span>Alitas 🔥</span>
-  </a>
+  <img src="cat-alitas.png">
+  <span>Alitas 🔥</span>
+  <b>›</b>
+</a>
 
   <a href="#hamburguesas" class="app-category-card">
     <img src="cat-hamburguesa.png">
     <span>Hamburguesas 🍔</span>
+    <b>›</b>
   </a>
 
   <a href="#cartel" class="app-category-card">
     <img src="cat-cartel.png">
     <span>Platos del cartel 🔥</span>
+    <b>›</b>
   </a>
 
   <a href="#cremas" class="app-category-card">
     <img src="cat-cremas.jpg">
     <span>Cremas extras 🧂</span>
+    <b>›</b>
   </a>
 
   <a href="#bebidas" class="app-category-card">
     <img src="cat-bebidas.png">
     <span>Bebidas 🥤</span>
+    <b>›</b>
   </a>
 
 </section>
