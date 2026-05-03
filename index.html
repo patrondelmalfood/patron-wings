@@ -4567,6 +4567,13 @@ weekChart.innerHTML = htmlChart;
 
     if (btnClear) btnClear.addEventListener("click", () => {
       cart = [];
+      try {
+  if (typeof saveCart === "function") saveCart();
+} catch(e){}
+
+try {
+  if (typeof CART_STORAGE_KEY !== "undefined") localStorage.removeItem(CART_STORAGE_KEY);
+} catch(e){}
       CURRENT_BOLETA = null;
       CURRENT_REGISTERED = false;
       CURRENT_ORDER_LOCKED = false;
@@ -4583,6 +4590,11 @@ if (errorMsg) errorMsg.textContent = "";
       if (cartTotalEl) cartTotalEl.innerHTML = "Total: S/ 0.00";
 if (bottomTotal) bottomTotal.textContent = "Total: S/ 0.00";
 if (bottomBar) bottomBar.classList.add("hidden");
+      document.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
+
+document.querySelectorAll(".item-card").forEach(card => {
+  card.style.setProperty("--alitas-img", 'url("alitas-bbq.JPG")');
+});
       renderCart();
     });
 
