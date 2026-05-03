@@ -4533,8 +4533,11 @@ weekChart.innerHTML = htmlChart;
       const el = document.getElementById("boleta-virtual") || document.getElementById("carrito");
       scrollToWithOffset(el, STICKY_OFFSET);
     }
-    navVerPedido.addEventListener("click", goToTicketBox);
-    if (bottomVerPedido) bottomVerPedido.addEventListener("click", goToTicketBox);
+    if (navVerPedido) navVerPedido.addEventListener("click", goToTicketBox);
+   if (bottomVerPedido) bottomVerPedido.addEventListener("click", () => {
+  const carrito = document.getElementById("carrito");
+  if (carrito) scrollToWithOffset(carrito);
+});
 
     chkDelivery.addEventListener("change", () => {
       if (chkDelivery.checked) { chkPickup.checked = false; chkEatIn.checked = false; }
@@ -4559,7 +4562,7 @@ weekChart.innerHTML = htmlChart;
     mixedYapeInput.addEventListener("input", renderCart);
     mixedCashInput.addEventListener("input", renderCart);
 
-    btnClear.addEventListener("click", () => {
+    if (btnClear) btnClear.addEventListener("click", () => {
       cart = [];
       CURRENT_BOLETA = null;
       CURRENT_REGISTERED = false;
@@ -4735,6 +4738,32 @@ function activarImagenesAlitasPorSalsa(){
 }
 
 setTimeout(activarImagenesAlitasPorSalsa, 500);
+  ["customer-name", "customer-dni", "order-comment"].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.addEventListener("input", () => {
+      renderCart();
+    });
+  }
+});
+
+["chk-delivery", "chk-pickup", "chk-eatin"].forEach(id => {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  el.addEventListener("change", () => {
+    if (el.checked) {
+      ["chk-delivery", "chk-pickup", "chk-eatin"].forEach(otherId => {
+        if (otherId !== id) {
+          const other = document.getElementById(otherId);
+          if (other) other.checked = false;
+        }
+      });
+    }
+
+    renderCart();
+  });
+});
   </script>
 </body>
 </html>
