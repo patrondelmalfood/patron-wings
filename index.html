@@ -903,13 +903,6 @@ height:65px;
 </div>
     </div>
 
-    <div class="status-bar">
-      <div class="status-pill">
-        <span class="open-dot" id="openDot"></span>
-        <span id="openText"><strong>Horario:</strong> Lun-Dom 5:30pm – 11:45pm</span>
-      </div>
-      <div class="status-pill">⏱️ <span id="nowStatus">Cargando estado…</span></div>
-    </div>
 
     <div class="hero"><img src="FOTO DEL LOCAL 1.jpg" alt="Local El Patrón del Mal"></div>
 
@@ -1494,7 +1487,7 @@ function deepCopy(obj){
     const WHATSAPP_NUMBER = "51944275861";
     const LOCATION_TEXT_FOR_OWNER = "📍 Ubicación: (cliente enviará su ubicación por WhatsApp)";
     const OPEN_HOUR = 17, OPEN_MIN = 30;
-    const CLOSE_HOUR = 23, CLOSE_MIN = 45;
+    const CLOSE_HOUR = 24, CLOSE_MIN = 0;
     const ORDER_LOG_STORAGE_KEY = "pdm_order_log_v16";
     const DAY_SETUP_STORAGE_KEY = "pdm_day_setup_v16";
     const ADMIN_PASSWORD = "181221";
@@ -1585,7 +1578,7 @@ function deepCopy(obj){
 
       if (open){
         openDot.className = "open-dot";
-        nowStatus.innerHTML = `🟢 <strong>Abierto ahora</strong> (hasta 11:45pm)`;
+        nowStatus.innerHTML = `🟢 <strong>Abierto ahora</strong> (hasta 12:00am)`;
       } else {
         openDot.className = "closed-dot";
         nowStatus.innerHTML = `🔴 <strong>Cerrado ahora</strong> (abre: ${nextOpenText(now)})`;
