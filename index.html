@@ -809,6 +809,64 @@ height:65px;
     font-size:15px;
   }
 }
+    .app-hour-card{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin:14px 0 8px;
+  padding:12px 14px;
+  border-radius:18px;
+  border:1px solid #ff9f1c;
+  background:rgba(0,0,0,.82);
+  box-shadow:0 0 12px rgba(255,159,28,.18);
+}
+
+.hour-icon{
+  font-size:24px;
+  color:#ffd60a;
+}
+
+.hour-text{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+
+.hour-text strong{
+  color:#7CFF6B;
+  font-size:14px;
+}
+
+.hour-text span{
+  color:#ddd;
+  font-size:13px;
+}
+
+.hour-arrow{
+  color:#fff;
+  font-size:30px;
+  line-height:1;
+}
+
+.app-section-question{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  margin:8px 0 10px;
+}
+
+.app-section-question span{
+  width:55px;
+  height:1px;
+  background:linear-gradient(90deg, transparent, #ff9f1c, transparent);
+}
+
+.app-section-question p{
+  margin:0;
+  color:#fff;
+  font-size:13px;
+}
   </style>
 </head>
 
@@ -857,6 +915,20 @@ height:65px;
 
     <p class="intro-text">Selecciona tus platos favoritos, revisa tu pedido y envíalo directo por WhatsApp a nuestro número.</p>
 
+    <div class="app-hour-card">
+  <div class="hour-icon">🕘</div>
+  <div class="hour-text">
+    <strong>Abierto ahora</strong>
+    <span>Lun-Dom 5:30pm – 11:45pm</span>
+  </div>
+  <div class="hour-arrow">›</div>
+</div>
+
+<div class="app-section-question">
+  <span></span>
+  <p>¿Qué quieres pedir hoy?</p>
+  <span></span>
+</div>
     <section class="app-category-list">
 
   <a href="#alitas" class="app-category-card">
