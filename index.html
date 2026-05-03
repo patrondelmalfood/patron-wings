@@ -2211,6 +2211,9 @@ function deepCopy(obj){
           }
 
           addToCart(item, qty, selectedSauces, sauceApart, selectedBrand, noSauce);
+          card.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
+card.style.setProperty("--alitas-img", 'url("alitas-bbq.JPG")');
+qtyInput.value = 1;
 
           const originalText = btn.textContent;
           btn.textContent = "✔ Añadido";
