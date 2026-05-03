@@ -748,7 +748,7 @@ height:65px;
   display:block;
   width:100%;
   height:135px;
-  background-image:url("cat-alitas.png");
+  background-image:var(--alitas-img, url("alitas-bbq.png"));
   background-size:cover;
   background-position:center;
 }
@@ -4693,6 +4693,48 @@ adminAuth.style.display = "block";
 adminContent.style.display = "none";
 
 initCloudSync();
+  function getAlitasImageBySauces(sauces){
+  const s = sauces.map(x => x.toLowerCase());
+
+  if (s.includes("bbq") && s.includes("acevichada")) return "alitas-bbq-acevichada.png";
+  if (s.includes("buffalo") && s.includes("acevichada")) return "alitas-buffalo-acevichada.png";
+  if (s.includes("maracuyá") && s.includes("acevichada")) return "alitas-maracuya-acevichada.png";
+  if (s.includes("maracuya") && s.includes("acevichada")) return "alitas-maracuya-acevichada.png";
+  if (s.includes("bbq") && (s.includes("maracuyá") || s.includes("maracuya"))) return "alitas-bbq-maracuya.png";
+  if (s.includes("buffalo") && (s.includes("maracuyá") || s.includes("maracuya"))) return "alitas-buffalo-maracuya.png";
+
+  if (s.includes("bbq")) return "alitas-bbq.png";
+  if (s.includes("acevichada")) return "alitas-acevichada.png";
+  if (s.includes("buffalo")) return "alitas-buffalo.png";
+  if (s.includes("maracuyá") || s.includes("maracuya")) return "alitas-maracuya.png";
+
+  return "alitas-sinsalsa.png";
+}
+
+function activarImagenesAlitasPorSalsa(){
+  const cards = document.querySelectorAll("#alitas + .menu-grid .item-card");
+
+  cards.forEach(card => {
+    const checks = card.querySelectorAll('input[type="checkbox"]');
+
+    checks.forEach(chk => {
+      chk.addEventListener("change", () => {
+        const seleccionadas = Array.from(checks)
+          .filter(c => c.checked)
+          .map(c => {
+            const label = c.closest("label");
+            return label ? label.textContent.trim() : "";
+          })
+          .filter(t => !t.toLowerCase().includes("sin salsa") && !t.toLowerCase().includes("aparte"));
+
+        const img = getAlitasImageBySauces(seleccionadas);
+        card.style.setProperty("--alitas-img", `url("${img}")`);
+      });
+    });
+  });
+}
+
+setTimeout(activarImagenesAlitasPorSalsa, 500);
   </script>
 </body>
 </html>
