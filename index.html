@@ -911,8 +911,8 @@ height:65px;
     <div class="app-hour-card">
   <div class="hour-icon">🕘</div>
   <div class="hour-text">
-    <strong>Abierto ahora</strong>
-    <span>Lun-Dom 5:30pm – 11:45pm</span>
+  <strong id="appHourStatus">Cargando estado...</strong>
+<span>Lun-Dom 5:30pm – 12:00am</span>
   </div>
   <div class="hour-arrow">›</div>
 </div>
@@ -1575,12 +1575,15 @@ function deepCopy(obj){
       const open = isOpenNow(now);
       const openDot = document.getElementById("openDot");
       const nowStatus = document.getElementById("nowStatus");
+      const appHourStatus = document.getElementById("appHourStatus");
 
       if (open){
         openDot.className = "open-dot";
         nowStatus.innerHTML = `🟢 <strong>Abierto ahora</strong> (hasta 12:00am)`;
+        if (appHourStatus) appHourStatus.innerHTML = "🟢 Abierto ahora";
       } else {
         openDot.className = "closed-dot";
+        if (appHourStatus) appHourStatus.innerHTML = "🔴 Cerrado ahora";
         nowStatus.innerHTML = `🔴 <strong>Cerrado ahora</strong> (abre: ${nextOpenText(now)})`;
       }
     }
