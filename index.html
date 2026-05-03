@@ -4580,6 +4580,9 @@ const errorMsg = document.getElementById("error-msg");
 if (boleta) boleta.innerHTML = "";
 if (comanda) comanda.innerHTML = "";
 if (errorMsg) errorMsg.textContent = "";
+      if (cartTotalEl) cartTotalEl.innerHTML = "Total: S/ 0.00";
+if (bottomTotal) bottomTotal.textContent = "Total: S/ 0.00";
+if (bottomBar) bottomBar.classList.add("hidden");
       renderCart();
     });
 
