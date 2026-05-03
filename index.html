@@ -1578,13 +1578,13 @@ function deepCopy(obj){
       const appHourStatus = document.getElementById("appHourStatus");
 
       if (open){
-        openDot.className = "open-dot";
-        nowStatus.innerHTML = `🟢 <strong>Abierto ahora</strong> (hasta 12:00am)`;
+  if (openDot) openDot.className = "open-dot";
+  if (nowStatus) nowStatus.innerHTML = `🟢 <strong>Abierto ahora</strong> (hasta 12:00am)`;
         if (appHourStatus) appHourStatus.innerHTML = "🟢 Abierto ahora";
-      } else {
-        openDot.className = "closed-dot";
-        if (appHourStatus) appHourStatus.innerHTML = "🔴 Cerrado ahora";
-        nowStatus.innerHTML = `🔴 <strong>Cerrado ahora</strong> (abre: ${nextOpenText(now)})`;
+     } else {
+  if (openDot) openDot.className = "closed-dot";
+  if (appHourStatus) appHourStatus.innerHTML = "🔴 Cerrado ahora";
+  if (nowStatus) nowStatus.innerHTML = `🔴 <strong>Cerrado ahora</strong> (abre: ${nextOpenText(now)})`;
       }
     }
     renderOpenStatus();
