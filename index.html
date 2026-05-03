@@ -35,6 +35,39 @@
       position:relative;
       overflow-x:hidden;
     }
+    .app-category-list{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin-top:15px;
+}
+
+.app-category-card{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:10px;
+  border-radius:16px;
+  border:1px solid #ff9f1c;
+  background:rgba(0,0,0,.85);
+  text-decoration:none;
+  color:#fff;
+  font-weight:700;
+  font-size:16px;
+  box-shadow:0 0 10px rgba(255,159,28,.2);
+}
+
+.app-category-card img{
+  width:70px;
+  height:55px;
+  object-fit:cover;
+  border-radius:12px;
+}
+
+.app-category-card:hover{
+  transform:scale(1.02);
+  box-shadow:0 0 15px rgba(255,214,10,.4);
+}
 
     .bg-rayos{
       position:fixed; inset:0;
@@ -728,18 +761,34 @@
 
     <p class="intro-text">Selecciona tus platos favoritos, revisa tu pedido y envíalo directo por WhatsApp a nuestro número.</p>
 
-    <nav class="mini-nav" id="miniNav">
-      <button id="nav-ver-pedido" class="primary">🛒 Ver pedido</button>
-      <a id="nav-maps" href="https://www.google.com/maps/place/El+patr%C3%B3n+del+mal/@-8.9908081,-78.6140661,16z/data=!4m6!3m5!1s0x91ac7f00024ec49d:0x337e2ffe9013077f!8m2!3d-8.9897988!4d-78.6150996!16s%2Fg%2F11vqbm79vq?entry=ttu" target="_blank">📍 Ubicación</a>
-      <a id="nav-whatsapp" class="primary disabled" href="#" target="_blank">📲 WhatsApp</a>
-      <button id="nav-admin" class="primary" type="button">🔐 Admin</button>
+    <section class="app-category-list">
 
-      <a href="#alitas">Alitas 🔥</a>
-      <a href="#hamburguesas">Hamburguesas 🍔</a>
-      <a href="#cartel">Platos del cartel 🔥</a>
-      <a href="#cremas">Cremas extras 🧂</a>
-      <a href="#bebidas">Bebidas 🥤</a>
-    </nav>
+  <a href="#alitas" class="app-category-card">
+    <img src="cat-alitas.png">
+    <span>Alitas 🔥</span>
+  </a>
+
+  <a href="#hamburguesas" class="app-category-card">
+    <img src="cat-hamburguesa.png">
+    <span>Hamburguesas 🍔</span>
+  </a>
+
+  <a href="#cartel" class="app-category-card">
+    <img src="cat-cartel.png">
+    <span>Platos del cartel 🔥</span>
+  </a>
+
+  <a href="#cremas" class="app-category-card">
+    <img src="cat-cremas.jpg">
+    <span>Cremas extras 🧂</span>
+  </a>
+
+  <a href="#bebidas" class="app-category-card">
+    <img src="cat-bebidas.png">
+    <span>Bebidas 🥤</span>
+  </a>
+
+</section>
 
     <div id="menu"></div>
 
