@@ -4570,6 +4570,13 @@ weekChart.innerHTML = htmlChart;
       DAILY_ORDER_NUMBER = null;
       mixedYapeInput.value = "";
       mixedCashInput.value = "";
+      const boleta = document.getElementById("boleta-virtual");
+const comanda = document.getElementById("comanda-cocina");
+const errorMsg = document.getElementById("error-msg");
+
+if (boleta) boleta.innerHTML = "";
+if (comanda) comanda.innerHTML = "";
+if (errorMsg) errorMsg.textContent = "";
       renderCart();
     });
 
