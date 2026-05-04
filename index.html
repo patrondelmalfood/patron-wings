@@ -2024,6 +2024,7 @@ function deepCopy(obj){
           noneCb.type = "checkbox";
           noneCb.value = "SIN_SALSA";
           noneCb.name = `salsa-none-${item.id}`;
+          noneCb.addEventListener("change", () => setTimeout(() => actualizarImagenAlitasCard(card), 0));
           noneLabel.appendChild(noneCb);
           noneLabel.appendChild(document.createTextNode(" Sin salsa"));
           noneWrap.appendChild(noneLabel);
@@ -2035,6 +2036,7 @@ function deepCopy(obj){
             cb.type = "checkbox";
             cb.value = sauce;
             cb.name = `salsa-${item.id}`;
+            cb.addEventListener("change", () => setTimeout(() => actualizarImagenAlitasCard(card), 0));
             label.appendChild(cb);
             label.appendChild(document.createTextNode(" " + sauce.replace("Salsa ", "")));
             saucesDiv.appendChild(label);
@@ -2045,6 +2047,7 @@ function deepCopy(obj){
           const aparteCb = document.createElement("input");
           aparteCb.type = "checkbox";
           aparteCb.name = `salsa-aparte-${item.id}`;
+          aparteCb.addEventListener("change", () => setTimeout(() => actualizarImagenAlitasCard(card), 0));
           aparteLabel.appendChild(aparteCb);
           aparteLabel.appendChild(document.createTextNode(" Salsas aparte"));
           aparteWrapper.appendChild(aparteLabel);
@@ -4883,6 +4886,22 @@ function activarImagenesAlitasPorSalsa(){
 activarImagenesAlitasPorSalsa();
 setTimeout(activarImagenesAlitasPorSalsa, 300);
 setTimeout(activarImagenesAlitasPorSalsa, 1200);
+
+// Refuerzo global: cambia la imagen en vivo aunque el navegador no tome el listener del grid
+// Funciona para clicks y cambios en cualquier checkbox de alitas.
+document.addEventListener("change", (e) => {
+  if (!e.target.matches('#alitas + .menu-grid input[type="checkbox"]')) return;
+  const card = e.target.closest(".item-card");
+  actualizarImagenAlitasCard(card);
+}, true);
+
+document.addEventListener("click", (e) => {
+  if (!e.target.matches('#alitas + .menu-grid input[type="checkbox"]')) return;
+  setTimeout(() => {
+    const card = e.target.closest(".item-card");
+    actualizarImagenAlitasCard(card);
+  }, 0);
+}, true);
   ["customer-name", "customer-dni", "order-comment"].forEach(id => {
   const el = document.getElementById(id);
   if (el) {
