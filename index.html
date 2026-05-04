@@ -2209,7 +2209,8 @@ function deepCopy(obj){
             if (!brandSel.value) { alert("Elige la opción (marca)."); return; }
             selectedBrand = brandSel.value;
           }
-
+          
+addToCart(item, qty, selectedSauces, sauceApart, selectedBrand, noSauce);
          // LIMPIAR SELECCIÓN DESPUÉS DE AGREGAR
 qtyInput.value = "1";
 
