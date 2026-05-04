@@ -2213,22 +2213,33 @@ function deepCopy(obj){
 addToCart(item, qty, selectedSauces, sauceApart, selectedBrand, noSauce);
        // LIMPIAR SELECCIÓN DESPUÉS DE AGREGAR
 setTimeout(() => {
-  qtyInput.value = "1";
+  const menu = document.getElementById("menu");
 
-  // Limpia todos los checks de ESTA tarjeta
-  card.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-    cb.checked = false;
-    cb.removeAttribute("checked");
-  });
+  if (menu) {
+    // Limpia todos los checks del menú: salsas, marcas, opciones, etc.
+    menu.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cb.checked = false;
+      cb.defaultChecked = false;
+      cb.removeAttribute("checked");
+    });
 
-  // Limpia selects si existieran
-  card.querySelectorAll("select").forEach(sel => {
-    sel.value = "";
-  });
+    // Limpia todos los select del menú
+    menu.querySelectorAll("select").forEach(sel => {
+      sel.selectedIndex = 0;
+      sel.value = "";
+    });
 
-  // Regresa imagen principal
-  card.style.setProperty("--alitas-img", 'url("alitas-bbq.JPG")');
-}, 50);
+    // Regresa cantidades del menú a 1
+    menu.querySelectorAll('input[type="number"]').forEach(inp => {
+      inp.value = "1";
+    });
+
+    // Regresa imagen principal en todas las tarjetas de alitas
+    menu.querySelectorAll(".item-card").forEach(c => {
+      c.style.setProperty("--alitas-img", 'url("alitas-bbq.JPG")');
+    });
+  }
+}, 150);
 
 // Efecto visual del botón
 const originalText = btn.textContent;
