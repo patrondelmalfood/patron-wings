@@ -594,17 +594,18 @@ height:65px;
 
     .admin-access-btn{
       position:fixed;
+      top:12px;
       right:14px;
-      bottom:78px;
-      z-index:9;
-      padding:10px 14px;
+      z-index:999;
+      padding:9px 14px;
       border-radius:999px;
       border:1px solid #facc15;
-      background:#111827;
+      background:rgba(17,24,39,.96);
       color:#fde68a;
       font-weight:900;
       font-size:14px;
-      box-shadow:0 0 12px rgba(250,204,21,.35);
+      box-shadow:0 0 12px rgba(250,204,21,.45);
+      backdrop-filter:blur(6px);
     }
     .admin-access-btn:hover{
       background:#facc15;
@@ -613,9 +614,9 @@ height:65px;
     }
     @media (max-width:600px){
       .admin-access-btn{
+        top:10px;
         right:10px;
-        bottom:70px;
-        padding:9px 12px;
+        padding:8px 12px;
         font-size:13px;
       }
     }
