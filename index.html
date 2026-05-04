@@ -260,6 +260,40 @@ height:65px;
       box-shadow:0 4px 10px rgba(0,0,0,.7);
       border-color:#ff9f1c;
     }
+
+    /* Imagen fija para snacks y hamburguesas */
+    .item-card.has-card-img{
+      padding:0;
+      overflow:hidden;
+      border-radius:14px;
+    }
+    .item-card.has-card-img .card-photo{
+      width:100%;
+      height:135px;
+      object-fit:cover;
+      object-position:center;
+      display:block;
+    }
+    .item-card.has-card-img .item-header,
+    .item-card.has-card-img .item-desc,
+    .item-card.has-card-img .salsas-item,
+    .item-card.has-card-img .salsa-select-wrap,
+    .item-card.has-card-img .item-actions{
+      padding-left:10px;
+      padding-right:10px;
+    }
+    .item-card.has-card-img .item-header{
+      padding-top:10px;
+    }
+    .item-card.has-card-img .item-actions{
+      padding-bottom:12px;
+    }
+    @media (max-width:600px){
+      .item-card.has-card-img .card-photo{
+        height:105px;
+      }
+    }
+
     .item-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
     .item-name{ font-weight:bold; font-size:15px; }
     .item-price{ font-weight:bold; color:#ffe066; animation: goldPulse 1.4s infinite alternate; }
@@ -1887,8 +1921,8 @@ function deepCopy(obj){
         image: null,
         sauceMode: "none",
         items: [
-          { id: 10, name: "Tequeños (6 und, jamón y queso)",   price: 13, desc: "" },
-          { id: 11, name: "Porción de Nuggets",                price: 11, desc: "" }
+          { id: 10, name: "Tequeños (6 und, jamón y queso)",   price: 13, desc: "", cardImg: "Tequeños.png" },
+          { id: 11, name: "Porción de Nuggets",                price: 11, desc: "", cardImg: "Porción de Nuggets.png" }
         ]
       },
       {
@@ -1897,11 +1931,11 @@ function deepCopy(obj){
         image: "BURGER 2.jpg",
         sauceMode: "none",
         items: [
-          { id: 12, name: "Burger Clásica Ochoa",              price: 11, desc: "Carne 200 g + queso + papas + ensalada + cremas" },
-          { id: 13, name: "Burger Royal Gaviria",              price: 13, desc: "Carne 200 g + queso + huevo + papas + ensalada + cremas" },
-          { id: 14, name: "Burger Premium Ulloa",              price: 15, desc: "Carne 200 g + queso + chorizo + tocino + papas + ensalada + cremas" },
-          { id: 15, name: "Burger Pablo Escobar",              price: 21, desc: "2 carnes + queso + jamón + huevo + tocino + papas + ensalada + cremas" },
-          { id: 16, name: "Burger Crispy Motoa",               price: 14, desc: "Pollo crispy + queso + jamón + papas + ensalada + cremas" }
+          { id: 12, name: "Burger Clásica Ochoa",              price: 11, desc: "Carne 200 g + queso + papas + ensalada + cremas", cardImg: "Burger Clásica Ochoa.png" },
+          { id: 13, name: "Burger Royal Gaviria",              price: 13, desc: "Carne 200 g + queso + huevo + papas + ensalada + cremas", cardImg: "Burger Royal Gaviria.png" },
+          { id: 14, name: "Burger Premium Ulloa",              price: 15, desc: "Carne 200 g + queso + chorizo + tocino + papas + ensalada + cremas", cardImg: "Burger Premium Ulloa.png" },
+          { id: 15, name: "Burger Pablo Escobar",              price: 21, desc: "2 carnes + queso + jamón + huevo + tocino + papas + ensalada + cremas", cardImg: "Burger Pablo Escobar.png" },
+          { id: 16, name: "Burger Crispy Motoa",               price: 14, desc: "Pollo crispy + queso + jamón + papas + ensalada + cremas", cardImg: "Burger Crispy Motoa.png" }
         ]
       },
       {
@@ -2009,15 +2043,20 @@ function deepCopy(obj){
           card.style.setProperty("--alitas-img", `url("${item.fixedAlitasImg}")`);
         }
 
-        // Imagen real para la sección Alitas.
-        // Esto evita que el fondo antiguo se quede pegado en algunos navegadores o despliegues.
+        // Imagen fija para snacks, hamburguesas y otros productos con foto propia.
+        if (item.cardImg) {
+          card.dataset.cardImg = item.cardImg;
+        }
+
+        // Imagen real para alitas, snacks y hamburguesas.
+        // Evita que el fondo CSS viejo se quede pegado y permite fotos fijas por producto.
         let cardPhoto = null;
-        if (section.anchorId === "alitas") {
-          card.classList.add("has-real-img");
+        if (section.anchorId === "alitas" || item.cardImg) {
+          card.classList.add("has-real-img", "has-card-img");
           cardPhoto = document.createElement("img");
           cardPhoto.className = "card-photo";
           cardPhoto.alt = item.name;
-          cardPhoto.src = item.fixedAlitasImg || "alitas-bbq.JPG";
+          cardPhoto.src = item.cardImg || item.fixedAlitasImg || "alitas-bbq.JPG";
           card.appendChild(cardPhoto);
         }
 
@@ -3206,7 +3245,7 @@ function ensureCloudReady(actionText = "usar el sistema"){
   });
 
   menu.querySelectorAll(".item-card").forEach(card => {
-    const img = card.dataset.fixedAlitasImg || "alitas-bbq.JPG";
+    const img = card.dataset.cardImg || card.dataset.fixedAlitasImg || "alitas-bbq.JPG";
     card.style.setProperty("--alitas-img", `url("${img}")`);
     const photo = card.querySelector(".card-photo");
     if (photo) photo.src = img;
@@ -4689,7 +4728,7 @@ if (bottomBar) bottomBar.classList.add("hidden");
       document.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
 
 document.querySelectorAll(".item-card").forEach(card => {
-  const img = card.dataset.fixedAlitasImg || "alitas-bbq.JPG";
+  const img = card.dataset.cardImg || card.dataset.fixedAlitasImg || "alitas-bbq.JPG";
   card.style.setProperty("--alitas-img", `url("${img}")`);
   const photo = card.querySelector(".card-photo");
   if (photo) photo.src = img;
