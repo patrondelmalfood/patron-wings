@@ -2211,21 +2211,24 @@ function deepCopy(obj){
           }
           
 addToCart(item, qty, selectedSauces, sauceApart, selectedBrand, noSauce);
-         // LIMPIAR SELECCIÓN DESPUÉS DE AGREGAR
-qtyInput.value = "1";
+       // LIMPIAR SELECCIÓN DESPUÉS DE AGREGAR
+setTimeout(() => {
+  qtyInput.value = "1";
 
-// Limpia todas las salsas marcadas de esta tarjeta
-card.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-  cb.checked = false;
-});
+  // Limpia todos los checks de ESTA tarjeta
+  card.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    cb.checked = false;
+    cb.removeAttribute("checked");
+  });
 
-// Limpia selects de salsa si existieran
-card.querySelectorAll("select").forEach(sel => {
-  sel.value = "";
-});
+  // Limpia selects si existieran
+  card.querySelectorAll("select").forEach(sel => {
+    sel.value = "";
+  });
 
-// Regresa imagen de alitas a la imagen principal
-card.style.setProperty("--alitas-img", 'url("alitas-bbq.JPG")');
+  // Regresa imagen principal
+  card.style.setProperty("--alitas-img", 'url("alitas-bbq.JPG")');
+}, 50);
 
 // Efecto visual del botón
 const originalText = btn.textContent;
