@@ -294,6 +294,29 @@ height:65px;
       }
     }
 
+
+
+    /* AJUSTE HAMBURGUESAS: mostrar la burger completa, sin cortarla */
+    #hamburguesas + .menu-grid .item-card.has-card-img .card-photo{
+      height:170px;
+      object-fit:contain;
+      object-position:center center;
+      background:#0b0b0b;
+      padding:6px;
+      box-sizing:border-box;
+    }
+
+    @media (max-width:600px){
+      #hamburguesas + .menu-grid .item-card.has-card-img .card-photo{
+        height:150px;
+        object-fit:contain;
+        object-position:center center;
+        background:#0b0b0b;
+        padding:5px;
+        box-sizing:border-box;
+      }
+    }
+
     .item-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
     .item-name{ font-weight:bold; font-size:15px; }
     .item-price{ font-weight:bold; color:#ffe066; animation: goldPulse 1.4s infinite alternate; }
