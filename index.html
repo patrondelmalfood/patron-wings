@@ -4778,48 +4778,111 @@ adminAuth.style.display = "block";
 adminContent.style.display = "none";
 
 initCloudSync();
-  function getAlitasImageBySauces(sauces){
-  const s = sauces.map(x => x.toLowerCase());
+  const ALITAS_IMG_DEFAULT = "alitas-bbq.JPG";
 
-  if (s.includes("bbq") && s.includes("acevichada")) return "alitas-bbq-acevichada.png";
-  if (s.includes("buffalo") && s.includes("acevichada")) return "alitas-buffalo-acevichada.png";
-  if (s.includes("maracuyá") && s.includes("acevichada")) return "alitas-maracuya-acevichada.png";
-  if (s.includes("maracuya") && s.includes("acevichada")) return "alitas-maracuya-acevichada.png";
-  if (s.includes("bbq") && (s.includes("maracuyá") || s.includes("maracuya"))) return "alitas-bbq-maracuya.png";
-  if (s.includes("buffalo") && (s.includes("maracuyá") || s.includes("maracuya"))) return "alitas-buffalo-maracuya.png";
-
-  if (s.includes("bbq")) return "alitas-bbq.JPG";
-  if (s.includes("acevichada")) return "alitas-acevichada.png";
-  if (s.includes("buffalo")) return "alitas-buffalo.png";
-  if (s.includes("maracuyá") || s.includes("maracuya")) return "alitas-maracuya.png";
-
-  return "alitas-sinsalsa.png";
+function normalizarTextoSalsa(txt){
+  return String(txt || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .trim();
 }
 
-function activarImagenesAlitasPorSalsa(){
-  const cards = document.querySelectorAll("#alitas + .menu-grid .item-card");
+function getAlitasImageBySauces(sauces, noSauce = false){
+  const s = (sauces || []).map(normalizarTextoSalsa);
 
-  cards.forEach(card => {
-    const checks = card.querySelectorAll('input[type="checkbox"]');
+  if (noSauce) return "alitas-sinsalsa.png";
+  if (!s.length) return ALITAS_IMG_DEFAULT;
 
-    checks.forEach(chk => {
-      chk.addEventListener("change", () => {
-        const seleccionadas = Array.from(checks)
-          .filter(c => c.checked)
-          .map(c => {
-            const label = c.closest("label");
-            return label ? label.textContent.trim() : "";
-          })
-          .filter(t => !t.toLowerCase().includes("sin salsa") && !t.toLowerCase().includes("aparte"));
+  const hasBBQ = s.some(x => x.includes("bbq"));
+  const hasAcevichada = s.some(x => x.includes("acevichada"));
+  const hasBuffalo = s.some(x => x.includes("buffalo") || x.includes("picante"));
+  const hasMaracuya = s.some(x => x.includes("maracuya"));
 
-        const img = getAlitasImageBySauces(seleccionadas);
-        card.style.setProperty("--alitas-img", `url("${img}")`);
-      });
-    });
+  // Imágenes mixtas que ya subiste al repositorio
+  if (hasBBQ && hasAcevichada) return "alitas-bbq-acevichada.png";
+  if (hasBuffalo && hasAcevichada) return "alitas-buffalo-acevichada.png";
+  if (hasMaracuya && hasAcevichada) return "alitas-maracuya-acevichada.png";
+  if (hasBBQ && hasMaracuya) return "alitas-bbq-maracuya.png";
+  if (hasBuffalo && hasMaracuya) return "alitas-buffalo-maracuya.png";
+
+  // Imágenes de una sola salsa
+  if (hasAcevichada) return "alitas-acevichada.png";
+  if (hasBuffalo) return "alitas-buffalo.png";
+  if (hasMaracuya) return "alitas-maracuya.png";
+  if (hasBBQ) return ALITAS_IMG_DEFAULT;
+
+  return ALITAS_IMG_DEFAULT;
+}
+
+function getSeleccionSalsasDeTarjeta(card){
+  const checks = Array.from(card.querySelectorAll('input[type="checkbox"]'));
+  let noSauce = false;
+  const sauces = [];
+
+  checks.forEach(chk => {
+    if (!chk.checked) return;
+
+    const label = chk.closest("label");
+    const texto = label ? label.textContent.trim() : "";
+    const normal = normalizarTextoSalsa(texto);
+
+    if (normal.includes("sin salsa")) {
+      noSauce = true;
+      return;
+    }
+
+    if (normal.includes("aparte")) return;
+    sauces.push(texto);
+  });
+
+  if (noSauce) return { sauces: [], noSauce: true };
+  return { sauces, noSauce: false };
+}
+
+function actualizarImagenAlitasCard(card){
+  if (!card) return;
+  const data = getSeleccionSalsasDeTarjeta(card);
+  const img = getAlitasImageBySauces(data.sauces, data.noSauce);
+  card.style.setProperty("--alitas-img", `url("${img}")`);
+}
+
+function actualizarTodasLasImagenesAlitas(){
+  document.querySelectorAll("#alitas + .menu-grid .item-card").forEach(card => {
+    actualizarImagenAlitasCard(card);
   });
 }
 
-setTimeout(activarImagenesAlitasPorSalsa, 1500);
+function activarImagenesAlitasPorSalsa(){
+  const alitasGrid = document.querySelector("#alitas + .menu-grid");
+  if (!alitasGrid) return;
+
+  if (alitasGrid.dataset.imagenesSalsaActivas !== "1") {
+    alitasGrid.dataset.imagenesSalsaActivas = "1";
+
+    // Delegado: funciona aunque los checks se creen antes o después
+    alitasGrid.addEventListener("change", (e) => {
+      if (!e.target.matches('input[type="checkbox"]')) return;
+      const card = e.target.closest(".item-card");
+      actualizarImagenAlitasCard(card);
+    });
+
+    // También responde al click para que el cambio se vea al instante en celular
+    alitasGrid.addEventListener("click", (e) => {
+      if (!e.target.matches('input[type="checkbox"]')) return;
+      setTimeout(() => {
+        const card = e.target.closest(".item-card");
+        actualizarImagenAlitasCard(card);
+      }, 0);
+    });
+  }
+
+  actualizarTodasLasImagenesAlitas();
+}
+
+activarImagenesAlitasPorSalsa();
+setTimeout(activarImagenesAlitasPorSalsa, 300);
+setTimeout(activarImagenesAlitasPorSalsa, 1200);
   ["customer-name", "customer-dni", "order-comment"].forEach(id => {
   const el = document.getElementById(id);
   if (el) {
