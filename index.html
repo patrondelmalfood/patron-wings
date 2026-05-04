@@ -592,18 +592,26 @@ height:65px;
 
 
 
+    .admin-header-slot{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-shrink:0;
+      margin-left:auto;
+      margin-right:8px;
+    }
+
     .admin-access-btn{
-      position:fixed;
-      top:12px;
-      right:14px;
-      z-index:999;
-      padding:9px 14px;
+      position:static;
+      z-index:4;
+      padding:8px 13px;
       border-radius:999px;
       border:1px solid #facc15;
-      background:rgba(17,24,39,.96);
+      background:rgba(17,24,39,.92);
       color:#fde68a;
       font-weight:900;
       font-size:14px;
+      white-space:nowrap;
       box-shadow:0 0 12px rgba(250,204,21,.45);
       backdrop-filter:blur(6px);
     }
@@ -613,11 +621,13 @@ height:65px;
       opacity:1;
     }
     @media (max-width:600px){
+      .admin-header-slot{
+        margin-left:4px;
+        margin-right:4px;
+      }
       .admin-access-btn{
-        top:10px;
-        right:10px;
-        padding:8px 12px;
-        font-size:13px;
+        padding:7px 10px;
+        font-size:12px;
       }
     }
 
@@ -1027,8 +1037,6 @@ height:65px;
 
 <body>
   <div class="bg-rayos"></div>
-  <button id="nav-admin" class="admin-access-btn" type="button">🔐 Admin</button>
-
   <div class="bg-estrellas"></div>
   <div class="gif-dinero"><img src="dinero.gif" alt="Dinero cayendo"></div>
 
@@ -1040,6 +1048,11 @@ height:65px;
         <p>Alitas, hamburguesas, mostritos y más.</p>
         <p>Haz tu pedido online y recíbelo por delivery o para recoger.</p>
       </div>
+
+      <div class="admin-header-slot">
+        <button id="nav-admin" class="admin-access-btn" type="button">🔐 Admin</button>
+      </div>
+
       <div style="display:flex; flex-direction:column; gap:8px; align-items:center;">
   <a class="fb-icon" href="https://www.facebook.com/profile.php?id=100093146827040&sk=about" target="_blank" aria-label="Facebook">f</a>
 
