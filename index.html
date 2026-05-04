@@ -343,6 +343,31 @@ height:65px;
       }
     }
 
+
+
+    /* AJUSTE ADICIONALES O EXTRAS: fotos completas y visibles */
+    #extras + .menu-grid .item-card.has-card-img .card-photo{
+      width:100%;
+      height:170px;
+      object-fit:contain;
+      object-position:center center;
+      background:#111;
+      padding:6px;
+      box-sizing:border-box;
+      display:block;
+    }
+
+    @media (max-width:600px){
+      #extras + .menu-grid .item-card.has-card-img .card-photo{
+        height:145px;
+        object-fit:contain;
+        object-position:center center;
+        background:#111;
+        padding:5px;
+        box-sizing:border-box;
+      }
+    }
+
     .item-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
     .item-name{ font-weight:bold; font-size:15px; }
     .item-price{ font-weight:bold; color:#ffe066; animation: goldPulse 1.4s infinite alternate; }
@@ -2011,17 +2036,17 @@ function deepCopy(obj){
         ]
       },
       {
-        anchorId: null,
+        anchorId: "extras",
         name: "Adicionales o extras",
         image: null,
         sauceMode: "none",
         items: [
-          { id: 23, name: "Porción de chaufa",                 price: 6,  desc: "" },
-          { id: 24, name: "Porción de papas",                  price: 6,  desc: "Equivale a 2 porciones de 170g" },
-          { id: 25, name: "Porción de ensalada",               price: 4,  desc: "" },
-          { id: 26, name: "Porción de chorizo",                price: 5,  desc: "" },
-          { id: 27, name: "Porción de hotdog",                 price: 4,  desc: "" },
-          { id: 28, name: "Huevo extra",                       price: 3,  desc: "" }
+          { id: 23, name: "Porción de chaufa",                 price: 6,  desc: "", cardImg: "Porción de chaufa.png" },
+          { id: 24, name: "Porción de papas",                  price: 6,  desc: "Equivale a 2 porciones de 170g", cardImg: "Porción de papas.png" },
+          { id: 25, name: "Porción de ensalada",               price: 4,  desc: "", cardImg: "Porción de ensalada.png" },
+          { id: 26, name: "Porción de chorizo",                price: 5,  desc: "", cardImg: "Porción de chorizo.png" },
+          { id: 27, name: "Porción de hotdog",                 price: 4,  desc: "", cardImg: "Porción de hotdog.png" },
+          { id: 28, name: "Huevo extra",                       price: 3,  desc: "", cardImg: "Huevo extra.png" }
         ]
       },
       {
