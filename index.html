@@ -2211,35 +2211,6 @@ function deepCopy(obj){
           }
           
 addToCart(item, qty, selectedSauces, sauceApart, selectedBrand, noSauce);
-       // LIMPIAR SELECCIÓN DESPUÉS DE AGREGAR
-setTimeout(() => {
-  const menu = document.getElementById("menu");
-
-  if (menu) {
-    // Limpia todos los checks del menú: salsas, marcas, opciones, etc.
-    menu.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-      cb.checked = false;
-      cb.defaultChecked = false;
-      cb.removeAttribute("checked");
-    });
-
-    // Limpia todos los select del menú
-    menu.querySelectorAll("select").forEach(sel => {
-      sel.selectedIndex = 0;
-      sel.value = "";
-    });
-
-    // Regresa cantidades del menú a 1
-    menu.querySelectorAll('input[type="number"]').forEach(inp => {
-      inp.value = "1";
-    });
-
-    // Regresa imagen principal en todas las tarjetas de alitas
-    menu.querySelectorAll(".item-card").forEach(c => {
-      c.style.setProperty("--alitas-img", 'url("alitas-bbq.JPG")');
-    });
-  }
-}, 150);
 
 // Efecto visual del botón
 const originalText = btn.textContent;
@@ -2268,6 +2239,14 @@ setTimeout(() => {
         note.style.color = "#ccc";
         note.textContent = section.footerText;
         menuContainer.appendChild(note);
+      }
+    });
+
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest("button");
+      if (!btn) return;
+      if (String(btn.textContent || "").trim().toLowerCase().includes("agregar")) {
+        programarLimpiezaMenu();
       }
     });
 
@@ -3170,27 +3149,64 @@ function ensureCloudReady(actionText = "usar el sistema"){
     }
 
   function limpiarSeleccionMenu(){
-  document.querySelectorAll('#menu input[type="checkbox"]').forEach(cb => {
+  const menu = document.getElementById("menu");
+  if (!menu) return;
+
+  menu.querySelectorAll('input[type="checkbox"]').forEach(cb => {
     cb.checked = false;
     cb.defaultChecked = false;
     cb.removeAttribute("checked");
   });
 
-  document.querySelectorAll('#menu select').forEach(sel => {
+  menu.querySelectorAll("select").forEach(sel => {
     sel.selectedIndex = 0;
     sel.value = "";
   });
 
-  document.querySelectorAll('#menu input[type="number"]').forEach(inp => {
+  menu.querySelectorAll('input[type="number"]').forEach(inp => {
     inp.value = "1";
   });
 
-  document.querySelectorAll('#menu .item-card').forEach(card => {
+  menu.querySelectorAll(".item-card").forEach(card => {
     card.style.setProperty("--alitas-img", 'url("alitas-bbq.JPG")');
   });
 }
-   function addToCart(item, qty, sauces, sauceApart, brand, noSauce) {
-ensureBoletaCreated();;
+
+function programarLimpiezaMenu(){
+  requestAnimationFrame(() => limpiarSeleccionMenu());
+  setTimeout(limpiarSeleccionMenu, 50);
+  setTimeout(limpiarSeleccionMenu, 150);
+  setTimeout(limpiarSeleccionMenu, 400);
+  setTimeout(limpiarSeleccionMenu, 900);
+}
+
+function resetPedidoSiEstaVacio(){
+  if (cart.length > 0) return;
+
+  if (cartItemsEl) cartItemsEl.innerHTML = "";
+  if (cartEmptyEl) cartEmptyEl.style.display = "block";
+  if (cartTotalEl) cartTotalEl.innerHTML = "Total: S/ 0.00";
+
+  if (bottomTotal) bottomTotal.textContent = "Total: S/ 0.00";
+  if (bottomBar) bottomBar.classList.add("hidden");
+
+  if (boletaEl) boletaEl.innerHTML = "";
+  if (comandaEl) comandaEl.innerHTML = "";
+  if (errorMsg) errorMsg.textContent = "";
+
+  if (btnWhatsapp) {
+    btnWhatsapp.classList.add("disabled");
+    btnWhatsapp.href = "#";
+  }
+
+  CURRENT_BOLETA = null;
+  CURRENT_REGISTERED = false;
+  CURRENT_ORDER_LOCKED = false;
+  DAILY_ORDER_NUMBER = null;
+}
+
+function addToCart(item, qty, sauces, sauceApart, brand, noSauce) {
+      ensureBoletaCreated();
 
       const keySauces = (sauces || []).slice().sort().join("|");
       let found = cart.find(entry =>
@@ -3212,10 +3228,7 @@ ensureBoletaCreated();;
       });
 
       renderCart();
-
-setTimeout(limpiarSeleccionMenu, 100);
-setTimeout(limpiarSeleccionMenu, 300);
-setTimeout(limpiarSeleccionMenu, 700);
+      programarLimpiezaMenu();
     }
 
     function removeFromCart(index) {
@@ -3225,6 +3238,8 @@ setTimeout(limpiarSeleccionMenu, 700);
       }
       cart.splice(index, 1);
       renderCart();
+      resetPedidoSiEstaVacio();
+      programarLimpiezaMenu();
     }
 
     function changeQty(index, delta) {
@@ -3236,6 +3251,8 @@ setTimeout(limpiarSeleccionMenu, 700);
       cart[index].qty += delta;
       if (cart[index].qty <= 0) cart.splice(index, 1);
       renderCart();
+      resetPedidoSiEstaVacio();
+      programarLimpiezaMenu();
     }
         function buildClientTicketHTML(ctx){
       let html = `
@@ -4634,6 +4651,8 @@ document.querySelectorAll(".item-card").forEach(card => {
   card.style.setProperty("--alitas-img", 'url("alitas-bbq.JPG")');
 });
       renderCart();
+      resetPedidoSiEstaVacio();
+      programarLimpiezaMenu();
     });
 
     btnWhatsapp.addEventListener("click", (e) => {
