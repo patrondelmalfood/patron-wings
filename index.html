@@ -753,6 +753,18 @@ height:65px;
   background-position:center;
 }
 
+/* Imagen real de alitas: evita que el ::before se quede con imagen antigua */
+#alitas + .menu-grid .item-card.has-real-img::before{
+  display:none !important;
+}
+#alitas + .menu-grid .card-photo{
+  width:100%;
+  height:135px;
+  object-fit:cover;
+  object-position:center;
+  display:block;
+}
+
 #alitas + .menu-grid .item-header,
 #alitas + .menu-grid .item-desc,
 #alitas + .menu-grid .salsas-item,
@@ -798,6 +810,10 @@ height:65px;
   }
 
   #alitas + .menu-grid .item-card::before{
+    height:105px;
+  }
+
+  #alitas + .menu-grid .card-photo{
     height:105px;
   }
 
@@ -1846,13 +1862,13 @@ function deepCopy(obj){
           { id: 1,  name: "5 Alitas (1 salsa)",                price: 18, desc: "+ papas + ensalada + 3 cremas caseras" },
           { id: 2,  name: "6 Alitas (2 salsas mixtas)",        price: 21, desc: "+ papas + ensalada + 3 cremas caseras" },
           { id: 21, name: "8 Alitas (2 salsas mixtas)",        price: 29, desc: "+ papas + ensalada + 3 cremas caseras" },
-          { id: 3,  name: "10 Alitas (2 salsas mixtas)",       price: 33, desc: "+ papas + ensalada + 3 cremas caseras" },
-          { id: 4,  name: "15 Alitas (3 salsas mixtas)",       price: 46, desc: "+ papas grandes + ensalada grande + 3 cremas grandes" },
-          { id: 5,  name: "30 Alitas (3 salsas mixtas)",       price: 96, desc: "+ 2 porciones grandes de papas + 2 ensaladas grandes + 3 cremas dobles" },
-          { id: 6,  name: "Chaufi Alitas - Montoya",           price: 20, desc: "+ chaufa + 4 alitas + papas + ensalada + cremas" },
-          { id: 7,  name: "Salchi Alitas - Popeye",            price: 22, desc: "+ chorizo + hotdog + 5 alitas + papas + cremas" },
-          { id: 8,  name: "Salchi Mix - Medellín",             price: 16, desc: "+ chorizo + hotdog + huevo + papas + cremas" },
-          { id: 9,  name: "El Golpe de la DEA",                price: 19, desc: "Trocitos pollo + chaufa + papas + ensalada + cremas" }
+          { id: 3,  name: "10 Alitas (2 salsas mixtas)",       price: 33, desc: "+ papas + ensalada + 3 cremas caseras", fixedAlitasImg: "10 piezas de alitas.png" },
+          { id: 4,  name: "15 Alitas (3 salsas mixtas)",       price: 46, desc: "+ papas grandes + ensalada grande + 3 cremas grandes", fixedAlitasImg: "15-alitas.jpg" },
+          { id: 5,  name: "30 Alitas (3 salsas mixtas)",       price: 96, desc: "+ 2 porciones grandes de papas + 2 ensaladas grandes + 3 cremas dobles", fixedAlitasImg: "30 Alitas.png" },
+          { id: 6,  name: "Chaufi Alitas - Montoya",           price: 20, desc: "+ chaufa + 4 alitas + papas + ensalada + cremas", fixedAlitasImg: "chaufi-alitas.png" },
+          { id: 7,  name: "Salchi Alitas - Popeye",            price: 22, desc: "+ chorizo + hotdog + 5 alitas + papas + cremas", fixedAlitasImg: "salchi-alitas.png" },
+          { id: 8,  name: "Salchi Mix - Medellín",             price: 16, desc: "+ chorizo + hotdog + huevo + papas + cremas", fixedAlitasImg: "Salchi Mix - Medellín.png" },
+          { id: 9,  name: "El Golpe de la DEA",                price: 19, desc: "Trocitos pollo + chaufa + papas + ensalada + cremas", fixedAlitasImg: "golpe-dea.png" }
         ]
       },
       {
@@ -1985,6 +2001,25 @@ function deepCopy(obj){
       section.items.forEach(item => {
         const card = document.createElement("div");
         card.className = "item-card";
+
+        // Imagen fija para platos especiales de alitas
+        // Estos NO cambian al seleccionar salsa.
+        if (item.fixedAlitasImg) {
+          card.dataset.fixedAlitasImg = item.fixedAlitasImg;
+          card.style.setProperty("--alitas-img", `url("${item.fixedAlitasImg}")`);
+        }
+
+        // Imagen real para la sección Alitas.
+        // Esto evita que el fondo antiguo se quede pegado en algunos navegadores o despliegues.
+        let cardPhoto = null;
+        if (section.anchorId === "alitas") {
+          card.classList.add("has-real-img");
+          cardPhoto = document.createElement("img");
+          cardPhoto.className = "card-photo";
+          cardPhoto.alt = item.name;
+          cardPhoto.src = item.fixedAlitasImg || "alitas-bbq.JPG";
+          card.appendChild(cardPhoto);
+        }
 
         const header = document.createElement("div");
         header.className = "item-header";
@@ -3171,7 +3206,10 @@ function ensureCloudReady(actionText = "usar el sistema"){
   });
 
   menu.querySelectorAll(".item-card").forEach(card => {
-    card.style.setProperty("--alitas-img", 'url("alitas-bbq.JPG")');
+    const img = card.dataset.fixedAlitasImg || "alitas-bbq.JPG";
+    card.style.setProperty("--alitas-img", `url("${img}")`);
+    const photo = card.querySelector(".card-photo");
+    if (photo) photo.src = img;
   });
 }
 
@@ -4651,7 +4689,10 @@ if (bottomBar) bottomBar.classList.add("hidden");
       document.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
 
 document.querySelectorAll(".item-card").forEach(card => {
-  card.style.setProperty("--alitas-img", 'url("alitas-bbq.JPG")');
+  const img = card.dataset.fixedAlitasImg || "alitas-bbq.JPG";
+  card.style.setProperty("--alitas-img", `url("${img}")`);
+  const photo = card.querySelector(".card-photo");
+  if (photo) photo.src = img;
 });
       renderCart();
       resetPedidoSiEstaVacio();
@@ -4845,9 +4886,21 @@ function getSeleccionSalsasDeTarjeta(card){
 
 function actualizarImagenAlitasCard(card){
   if (!card) return;
+
+  // Platos especiales con imagen fija: no cambian aunque el cliente seleccione salsa.
+  if (card.dataset.fixedAlitasImg) {
+    const fixedImg = card.dataset.fixedAlitasImg;
+    card.style.setProperty("--alitas-img", `url("${fixedImg}")`);
+    const photo = card.querySelector(".card-photo");
+    if (photo) photo.src = fixedImg;
+    return;
+  }
+
   const data = getSeleccionSalsasDeTarjeta(card);
   const img = getAlitasImageBySauces(data.sauces, data.noSauce);
   card.style.setProperty("--alitas-img", `url("${img}")`);
+  const photo = card.querySelector(".card-photo");
+  if (photo) photo.src = img;
 }
 
 function actualizarTodasLasImagenesAlitas(){
