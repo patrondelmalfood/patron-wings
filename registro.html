@@ -136,15 +136,75 @@
     button {
       width: 100%;
       margin-top: 20px;
-@@ -173,13 +202,33 @@
+      padding: 15px;
+      border: 0;
+      border-radius: 14px;
+      background: #facc15;
+      color: #111827;
+      font-weight: 900;
+      font-size: 17px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .msg {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 12px;
+      display: none;
+      font-size: 14px;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .ok {
+      background: #052e16;
+      color: #bbf7d0;
+      border: 1px solid #16a34a;
+    }
+
+    .err {
+      background: #450a0a;
+      color: #fecaca;
+      border: 1px solid #dc2626;
+    }
+
+    .mini {
+      margin-top: 14px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 13px;
+    }
+
+    .link-login {
+      margin-top: 14px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .link-login a {
+      color: #facc15;
+      text-decoration: none;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">
+      <img src="LOGO.jpg" alt="El Patrón del Mal" class="brand-logo">
+      <h1>EL PATRÓN DEL MAL</h1>
+      <p>Tarjeta virtual de sellos y premios</p>
     </div>
 
     <label for="nombre">Nombre</label>
-    <input id="nombre" type="text" placeholder="Tu nombre">
     <input id="nombre" type="text" placeholder="Tu nombre" autocomplete="name">
 
     <label for="celular">Celular</label>
-    <input id="celular" type="text" placeholder="Tu número">
     <input
       id="celular"
       type="text"
@@ -157,7 +217,6 @@
     >
 
     <label for="password">Contraseña</label>
-    <input id="password" type="password" placeholder="Tu contraseña">
     <div class="password-wrap">
       <input
         id="password"
@@ -173,7 +232,19 @@
 
     <button id="btnGuardar">Registrarme</button>
 
-@@ -199,10 +248,15 @@
+    <div id="msgOk" class="msg ok"></div>
+    <div id="msgErr" class="msg err"></div>
+
+    <div class="mini">
+      Regístrate para acumular sellos y reclamar premios.
+    </div>
+
+    <div class="link-login">
+      ¿Ya tienes cuenta? <a href="/login.html">Inicia sesión</a>
+    </div>
+  </div>
+
+  <script>
     const nombre = document.getElementById("nombre");
     const celular = document.getElementById("celular");
     const password = document.getElementById("password");
@@ -189,7 +260,12 @@
     function showOk(text) {
       msgErr.style.display = "none";
       msgOk.style.display = "block";
-@@ -215,52 +269,59 @@
+      msgOk.textContent = text;
+    }
+
+    function showErr(text) {
+      msgOk.style.display = "none";
+      msgErr.style.display = "block";
       msgErr.textContent = text;
     }
 
