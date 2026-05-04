@@ -590,6 +590,36 @@ height:65px;
       .mixed-payment-grid{ grid-template-columns:1fr; }
     }
 
+
+
+    .admin-access-btn{
+      position:fixed;
+      right:14px;
+      bottom:78px;
+      z-index:9;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid #facc15;
+      background:#111827;
+      color:#fde68a;
+      font-weight:900;
+      font-size:14px;
+      box-shadow:0 0 12px rgba(250,204,21,.35);
+    }
+    .admin-access-btn:hover{
+      background:#facc15;
+      color:#111827;
+      opacity:1;
+    }
+    @media (max-width:600px){
+      .admin-access-btn{
+        right:10px;
+        bottom:70px;
+        padding:9px 12px;
+        font-size:13px;
+      }
+    }
+
     .admin-modal{
       position:fixed;
       inset:0;
@@ -996,6 +1026,8 @@ height:65px;
 
 <body>
   <div class="bg-rayos"></div>
+  <button id="nav-admin" class="admin-access-btn" type="button">🔐 Admin</button>
+
   <div class="bg-estrellas"></div>
   <div class="gif-dinero"><img src="dinero.gif" alt="Dinero cayendo"></div>
 
@@ -4867,7 +4899,7 @@ document.querySelectorAll(".item-card").forEach(card => {
       sendToRawBT(buildAdminSummaryTicketText(dateKey));
     });
 
-  navAdmin.addEventListener("click", async () => {
+  if (navAdmin) navAdmin.addEventListener("click", async () => {
   adminModal.classList.add("open");
 
   if (localStorage.getItem(ADMIN_SESSION_KEY) === "1") {
@@ -4876,11 +4908,19 @@ document.querySelectorAll(".item-card").forEach(card => {
     adminContent.style.display = "block";
     adminDate.value = getDateKeyLocal(new Date());
     await renderAdmin();
-  } else if (adminUnlocked) {
-    await renderAdmin();
+  } else {
+    adminAuth.style.display = "block";
+    adminContent.style.display = "none";
+    adminPass.value = "";
+    adminPass.focus();
   }
 });
     adminClose.addEventListener("click", () => adminModal.classList.remove("open"));
+
+
+    if (adminPass) adminPass.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") adminLogin.click();
+    });
 
     adminLogin.addEventListener("click", async () => {
   if (String(adminPass.value || "") !== ADMIN_PASSWORD) {
