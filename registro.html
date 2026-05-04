@@ -753,6 +753,18 @@ height:65px;
   background-position:center;
 }
 
+/* Imagen real de alitas: evita que el ::before se quede con imagen antigua */
+#alitas + .menu-grid .item-card.has-real-img::before{
+  display:none !important;
+}
+#alitas + .menu-grid .card-photo{
+  width:100%;
+  height:135px;
+  object-fit:cover;
+  object-position:center;
+  display:block;
+}
+
 #alitas + .menu-grid .item-header,
 #alitas + .menu-grid .item-desc,
 #alitas + .menu-grid .salsas-item,
@@ -798,6 +810,10 @@ height:65px;
   }
 
   #alitas + .menu-grid .item-card::before{
+    height:105px;
+  }
+
+  #alitas + .menu-grid .card-photo{
     height:105px;
   }
 
@@ -867,31 +883,6 @@ height:65px;
   color:#fff;
   font-size:13px;
 }
-
-
-/* IMÁGENES FIJAS PARA PLATOS ESPECIALES DE ALITAS */
-#alitas + .menu-grid .fixed-img-10-alitas::before{
-  background-image:url("10 piezas de alitas.png") !important;
-}
-#alitas + .menu-grid .fixed-img-15-alitas::before{
-  background-image:url("15-alitas.jpg") !important;
-}
-#alitas + .menu-grid .fixed-img-30-alitas::before{
-  background-image:url("30 Alitas.png") !important;
-}
-#alitas + .menu-grid .fixed-img-chaufi-alitas::before{
-  background-image:url("chaufi-alitas.png") !important;
-}
-#alitas + .menu-grid .fixed-img-salchi-alitas::before{
-  background-image:url("salchi-alitas.png") !important;
-}
-#alitas + .menu-grid .fixed-img-salchi-mix::before{
-  background-image:url("Salchi Mix - Medellín.png") !important;
-}
-#alitas + .menu-grid .fixed-img-golpe-dea::before{
-  background-image:url("golpe-dea.png") !important;
-}
-
   </style>
 </head>
 
@@ -1871,13 +1862,13 @@ function deepCopy(obj){
           { id: 1,  name: "5 Alitas (1 salsa)",                price: 18, desc: "+ papas + ensalada + 3 cremas caseras" },
           { id: 2,  name: "6 Alitas (2 salsas mixtas)",        price: 21, desc: "+ papas + ensalada + 3 cremas caseras" },
           { id: 21, name: "8 Alitas (2 salsas mixtas)",        price: 29, desc: "+ papas + ensalada + 3 cremas caseras" },
-          { id: 3,  name: "10 Alitas (2 salsas mixtas)",       price: 33, desc: "+ papas + ensalada + 3 cremas caseras", fixedAlitasImg: "10 piezas de alitas.png", fixedAlitasClass: "fixed-img-10-alitas" },
-          { id: 4,  name: "15 Alitas (3 salsas mixtas)",       price: 46, desc: "+ papas grandes + ensalada grande + 3 cremas grandes", fixedAlitasImg: "15-alitas.jpg", fixedAlitasClass: "fixed-img-15-alitas" },
-          { id: 5,  name: "30 Alitas (3 salsas mixtas)",       price: 96, desc: "+ 2 porciones grandes de papas + 2 ensaladas grandes + 3 cremas dobles", fixedAlitasImg: "30 Alitas.png", fixedAlitasClass: "fixed-img-30-alitas" },
-          { id: 6,  name: "Chaufi Alitas - Montoya",           price: 20, desc: "+ chaufa + 4 alitas + papas + ensalada + cremas", fixedAlitasImg: "chaufi-alitas.png", fixedAlitasClass: "fixed-img-chaufi-alitas" },
-          { id: 7,  name: "Salchi Alitas - Popeye",            price: 22, desc: "+ chorizo + hotdog + 5 alitas + papas + cremas", fixedAlitasImg: "salchi-alitas.png", fixedAlitasClass: "fixed-img-salchi-alitas" },
-          { id: 8,  name: "Salchi Mix - Medellín",             price: 16, desc: "+ chorizo + hotdog + huevo + papas + cremas", fixedAlitasImg: "Salchi Mix - Medellín.png", fixedAlitasClass: "fixed-img-salchi-mix" },
-          { id: 9,  name: "El Golpe de la DEA",                price: 19, desc: "Trocitos pollo + chaufa + papas + ensalada + cremas", fixedAlitasImg: "golpe-dea.png", fixedAlitasClass: "fixed-img-golpe-dea" }
+          { id: 3,  name: "10 Alitas (2 salsas mixtas)",       price: 33, desc: "+ papas + ensalada + 3 cremas caseras", fixedAlitasImg: "10 piezas de alitas.png" },
+          { id: 4,  name: "15 Alitas (3 salsas mixtas)",       price: 46, desc: "+ papas grandes + ensalada grande + 3 cremas grandes", fixedAlitasImg: "15-alitas.jpg" },
+          { id: 5,  name: "30 Alitas (3 salsas mixtas)",       price: 96, desc: "+ 2 porciones grandes de papas + 2 ensaladas grandes + 3 cremas dobles", fixedAlitasImg: "30 Alitas.png" },
+          { id: 6,  name: "Chaufi Alitas - Montoya",           price: 20, desc: "+ chaufa + 4 alitas + papas + ensalada + cremas", fixedAlitasImg: "chaufi-alitas.png" },
+          { id: 7,  name: "Salchi Alitas - Popeye",            price: 22, desc: "+ chorizo + hotdog + 5 alitas + papas + cremas", fixedAlitasImg: "salchi-alitas.png" },
+          { id: 8,  name: "Salchi Mix - Medellín",             price: 16, desc: "+ chorizo + hotdog + huevo + papas + cremas", fixedAlitasImg: "Salchi Mix - Medellín.png" },
+          { id: 9,  name: "El Golpe de la DEA",                price: 19, desc: "Trocitos pollo + chaufa + papas + ensalada + cremas", fixedAlitasImg: "golpe-dea.png" }
         ]
       },
       {
@@ -2017,8 +2008,17 @@ function deepCopy(obj){
           card.dataset.fixedAlitasImg = item.fixedAlitasImg;
           card.style.setProperty("--alitas-img", `url("${item.fixedAlitasImg}")`);
         }
-        if (item.fixedAlitasClass) {
-          card.classList.add(item.fixedAlitasClass);
+
+        // Imagen real para la sección Alitas.
+        // Esto evita que el fondo antiguo se quede pegado en algunos navegadores o despliegues.
+        let cardPhoto = null;
+        if (section.anchorId === "alitas") {
+          card.classList.add("has-real-img");
+          cardPhoto = document.createElement("img");
+          cardPhoto.className = "card-photo";
+          cardPhoto.alt = item.name;
+          cardPhoto.src = item.fixedAlitasImg || "alitas-bbq.JPG";
+          card.appendChild(cardPhoto);
         }
 
         const header = document.createElement("div");
@@ -3206,11 +3206,10 @@ function ensureCloudReady(actionText = "usar el sistema"){
   });
 
   menu.querySelectorAll(".item-card").forEach(card => {
-    if (typeof actualizarImagenAlitasCard === "function") {
-      actualizarImagenAlitasCard(card);
-    } else {
-      card.style.setProperty("--alitas-img", 'url("alitas-bbq.JPG")');
-    }
+    const img = card.dataset.fixedAlitasImg || "alitas-bbq.JPG";
+    card.style.setProperty("--alitas-img", `url("${img}")`);
+    const photo = card.querySelector(".card-photo");
+    if (photo) photo.src = img;
   });
 }
 
@@ -4690,7 +4689,10 @@ if (bottomBar) bottomBar.classList.add("hidden");
       document.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
 
 document.querySelectorAll(".item-card").forEach(card => {
-  if (typeof actualizarImagenAlitasCard === "function") actualizarImagenAlitasCard(card);
+  const img = card.dataset.fixedAlitasImg || "alitas-bbq.JPG";
+  card.style.setProperty("--alitas-img", `url("${img}")`);
+  const photo = card.querySelector(".card-photo");
+  if (photo) photo.src = img;
 });
       renderCart();
       resetPedidoSiEstaVacio();
@@ -4822,47 +4824,12 @@ adminContent.style.display = "none";
 initCloudSync();
   const ALITAS_IMG_DEFAULT = "alitas-bbq.JPG";
 
-const ALITAS_FIXED_IMAGES_BY_NAME = {
-  "10 Alitas (2 salsas mixtas)": { img: "10 piezas de alitas.png", cls: "fixed-img-10-alitas" },
-  "15 Alitas (3 salsas mixtas)": { img: "15-alitas.jpg", cls: "fixed-img-15-alitas" },
-  "30 Alitas (3 salsas mixtas)": { img: "30 Alitas.png", cls: "fixed-img-30-alitas" },
-  "Chaufi Alitas - Montoya": { img: "chaufi-alitas.png", cls: "fixed-img-chaufi-alitas" },
-  "Salchi Alitas - Popeye": { img: "salchi-alitas.png", cls: "fixed-img-salchi-alitas" },
-  "Salchi Mix - Medellín": { img: "Salchi Mix - Medellín.png", cls: "fixed-img-salchi-mix" },
-  "El Golpe de la DEA": { img: "golpe-dea.png", cls: "fixed-img-golpe-dea" }
-};
-
 function normalizarTextoSalsa(txt){
   return String(txt || "")
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[̀-ͯ]/g, "")
     .trim();
-}
-
-function getFixedAlitasDataFromCard(card){
-  if (!card) return null;
-
-  if (card.dataset.fixedAlitasImg) {
-    return { img: card.dataset.fixedAlitasImg, cls: card.dataset.fixedAlitasClass || "" };
-  }
-
-  const nameEl = card.querySelector(".item-name");
-  const name = nameEl ? nameEl.textContent.trim() : "";
-  return ALITAS_FIXED_IMAGES_BY_NAME[name] || null;
-}
-
-function aplicarImagenFijaAlitas(card){
-  const fixed = getFixedAlitasDataFromCard(card);
-  if (!fixed) return false;
-
-  card.dataset.fixedAlitasImg = fixed.img;
-  if (fixed.cls) {
-    card.dataset.fixedAlitasClass = fixed.cls;
-    card.classList.add(fixed.cls);
-  }
-  card.style.setProperty("--alitas-img", `url("${fixed.img}")`);
-  return true;
 }
 
 function getAlitasImageBySauces(sauces, noSauce = false){
@@ -4921,11 +4888,19 @@ function actualizarImagenAlitasCard(card){
   if (!card) return;
 
   // Platos especiales con imagen fija: no cambian aunque el cliente seleccione salsa.
-  if (aplicarImagenFijaAlitas(card)) return;
+  if (card.dataset.fixedAlitasImg) {
+    const fixedImg = card.dataset.fixedAlitasImg;
+    card.style.setProperty("--alitas-img", `url("${fixedImg}")`);
+    const photo = card.querySelector(".card-photo");
+    if (photo) photo.src = fixedImg;
+    return;
+  }
 
   const data = getSeleccionSalsasDeTarjeta(card);
   const img = getAlitasImageBySauces(data.sauces, data.noSauce);
   card.style.setProperty("--alitas-img", `url("${img}")`);
+  const photo = card.querySelector(".card-photo");
+  if (photo) photo.src = img;
 }
 
 function actualizarTodasLasImagenesAlitas(){
@@ -4962,10 +4937,8 @@ function activarImagenesAlitasPorSalsa(){
 }
 
 activarImagenesAlitasPorSalsa();
-setTimeout(activarImagenesAlitasPorSalsa, 100);
 setTimeout(activarImagenesAlitasPorSalsa, 300);
 setTimeout(activarImagenesAlitasPorSalsa, 1200);
-setTimeout(actualizarTodasLasImagenesAlitas, 2500);
 
 // Refuerzo global: cambia la imagen en vivo aunque el navegador no tome el listener del grid
 // Funciona para clicks y cambios en cualquier checkbox de alitas.
