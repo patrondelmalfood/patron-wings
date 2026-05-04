@@ -2210,32 +2210,31 @@ function deepCopy(obj){
             selectedBrand = brandSel.value;
           }
 
-          addToCart(item, qty, selectedSauces, sauceApart, selectedBrand, noSauce);
-          card.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
+         // LIMPIAR SELECCIÓN DESPUÉS DE AGREGAR
+qtyInput.value = "1";
+
+// Limpia todas las salsas marcadas de esta tarjeta
+card.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+  cb.checked = false;
+});
+
+// Limpia selects de salsa si existieran
+card.querySelectorAll("select").forEach(sel => {
+  sel.value = "";
+});
+
+// Regresa imagen de alitas a la imagen principal
 card.style.setProperty("--alitas-img", 'url("alitas-bbq.JPG")');
-qtyInput.value = 1;
 
-          const originalText = btn.textContent;
-          btn.textContent = "✔ Añadido";
-          btn.disabled = true;
-          setTimeout(() => { btn.textContent = originalText; btn.disabled = false; }, 900);
+// Efecto visual del botón
+const originalText = btn.textContent;
+btn.textContent = "✔ Añadido";
+btn.disabled = true;
 
-          qtyInput.value = "1";
-
-          if (section.sauceMode === "multi") {
-            card.querySelectorAll(`input[name="salsa-${item.id}"]`).forEach(el => el.checked = false);
-            const aparteCb = card.querySelector(`input[name="salsa-aparte-${item.id}"]`);
-            if (aparteCb) aparteCb.checked = false;
-            const noSauceCb = card.querySelector(`input[name="salsa-none-${item.id}"]`);
-            if (noSauceCb) noSauceCb.checked = false;
-          }
-
-          if (section.sauceMode === "single") {
-            const sel = card.querySelector(`select[name="salsa-select-${item.id}"]`);
-            if (sel) sel.value = "";
-          }
-
-          if (brandSel) brandSel.value = "";
+setTimeout(() => {
+  btn.textContent = originalText;
+  btn.disabled = false;
+}, 900);
         });
 
         actions.appendChild(qtyInput);
