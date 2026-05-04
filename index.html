@@ -3169,6 +3169,26 @@ function ensureCloudReady(actionText = "usar el sistema"){
       return true;
     }
 
+  function limpiarSeleccionMenu(){
+  document.querySelectorAll('#menu input[type="checkbox"]').forEach(cb => {
+    cb.checked = false;
+    cb.defaultChecked = false;
+    cb.removeAttribute("checked");
+  });
+
+  document.querySelectorAll('#menu select').forEach(sel => {
+    sel.selectedIndex = 0;
+    sel.value = "";
+  });
+
+  document.querySelectorAll('#menu input[type="number"]').forEach(inp => {
+    inp.value = "1";
+  });
+
+  document.querySelectorAll('#menu .item-card').forEach(card => {
+    card.style.setProperty("--alitas-img", 'url("alitas-bbq.JPG")');
+  });
+}
    function addToCart(item, qty, sauces, sauceApart, brand, noSauce) {
 ensureBoletaCreated();;
 
@@ -3192,6 +3212,10 @@ ensureBoletaCreated();;
       });
 
       renderCart();
+
+setTimeout(limpiarSeleccionMenu, 100);
+setTimeout(limpiarSeleccionMenu, 300);
+setTimeout(limpiarSeleccionMenu, 700);
     }
 
     function removeFromCart(index) {
