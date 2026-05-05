@@ -2937,55 +2937,37 @@ function saveLocalDaySetupAll(data){
   writeLocalJSON(DAY_SETUP_STORAGE_KEY, data && typeof data === "object" ? data : {});
 }
 
-function normalizeDateKeyValue(value){
-  const raw = String(value || "").trim();
-  if (!raw) return getDateKeyLocal(new Date());
-
-  // input[type=date] normalmente usa YYYY-MM-DD
-  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
-
-  // Algunos celulares muestran/entregan DD/MM/YYYY
-  const m = raw.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-  if (m) return `${m[3]}-${m[2]}-${m[1]}`;
-
-  return raw;
-}
-
 function getDaySetupUpdatedTime(setup){
-  if (!setup) return 0;
-  const raw = setup.updatedAt || setup.updated_at || setup.updated || "";
+  const raw = setup?.updatedAt || setup?.updated_at || setup?.savedAt || "";
   const d = new Date(raw);
   return isNaN(d.getTime()) ? 0 : d.getTime();
 }
 
-function mergeDaySetups(localObj, cloudObj){
-  const result = {};
-
-  function addOne(dateKey, setup){
-    const key = normalizeDateKeyValue(dateKey);
-    if (!key || !setup) return;
-    const incoming = deepCopy(setup);
-    const current = result[key];
-
-    // Si ambos tienen fecha de actualización, gana el más reciente.
-    // Si uno no tiene updatedAt, no dejamos que un registro viejo vacío borre uno bueno.
-    const incomingTime = getDaySetupUpdatedTime(incoming);
-    const currentTime = getDaySetupUpdatedTime(current);
-
-    if (!current || incomingTime >= currentTime) {
-      result[key] = incoming;
-    }
-  }
-
-  Object.entries(localObj || {}).forEach(([dateKey, setup]) => addOne(dateKey, setup));
-  Object.entries(cloudObj || {}).forEach(([dateKey, setup]) => addOne(dateKey, setup));
-
-  return result;
+function normalizeDaySetup(setup, fallbackUpdatedAt = ""){
+  const base = (setup && typeof setup === "object") ? deepCopy(setup) : {};
+  if (!base.updatedAt && fallbackUpdatedAt) base.updatedAt = fallbackUpdatedAt;
+  return base;
 }
 
-function daySetupUrl(extraQuery = ""){
-  const base = SUPABASE_URL + "/rest/v1/" + DAY_SETUP_TABLE;
-  return base + (extraQuery ? "?" + extraQuery : "");
+function mergeDaySetupCaches(...sources){
+  const out = {};
+
+  sources.forEach(source => {
+    if (!source || typeof source !== "object") return;
+
+    Object.entries(source).forEach(([dateKey, setup]) => {
+      if (!dateKey || !setup) return;
+
+      const normalized = normalizeDaySetup(setup);
+      const current = out[dateKey];
+
+      if (!current || getDaySetupUpdatedTime(normalized) >= getDaySetupUpdatedTime(current)) {
+        out[dateKey] = normalized;
+      }
+    });
+  });
+
+  return out;
 }
 
 function getOrderUpdatedTime(order){
@@ -3011,7 +2993,7 @@ function mergeOrderLogs(localRows, cloudRows){
   async function initCloudSync(){
   // Carga datos locales primero para que el admin nunca aparezca vacío.
   ORDER_LOG_CACHE = mergeOrderLogs(getLocalOrderLog(), ORDER_LOG_CACHE);
-  DAY_SETUP_CACHE = mergeDaySetups(getLocalDaySetupAll(), DAY_SETUP_CACHE);
+  DAY_SETUP_CACHE = mergeDaySetupCaches(getLocalDaySetupAll(), DAY_SETUP_CACHE);
 
   let ordersOk = false;
   let setupOk = false;
@@ -3038,9 +3020,9 @@ function mergeOrderLogs(localRows, cloudRows){
   }
 
   // Caja inicial + inventario del día desde Supabase.
-  // Se ordena por updated_at para que, si hay filas antiguas duplicadas, gane la última guardada.
+  // IMPORTANTE: antes se leía sin updated_at y una fila vieja con 0 podía pisar la caja recién guardada.
   try {
-    const res2 = await fetch(daySetupUrl("select=date_key,data,updated_at&order=updated_at.asc"), {
+    const res2 = await fetch(SUPABASE_URL + "/rest/v1/" + DAY_SETUP_TABLE + "?select=date_key,data,updated_at&order=updated_at.asc", {
       headers: {
         "apikey": SUPABASE_ANON_KEY,
         "Authorization": "Bearer " + SUPABASE_ANON_KEY
@@ -3054,19 +3036,19 @@ function mergeOrderLogs(localRows, cloudRows){
 
     (dayRows || []).forEach(row => {
       if (!row || !row.date_key) return;
-      const setup = row.data || {};
-      const normalizedKey = normalizeDateKeyValue(row.date_key);
-      const rowUpdated = row.updated_at || setup.updatedAt || "";
-      const setupWithTime = { ...setup, updatedAt: setup.updatedAt || rowUpdated };
-      cloudDaySetup[normalizedKey] = setupWithTime;
+      const setup = normalizeDaySetup(row.data || {}, row.updated_at || "");
+      const current = cloudDaySetup[row.date_key];
+      if (!current || getDaySetupUpdatedTime(setup) >= getDaySetupUpdatedTime(current)) {
+        cloudDaySetup[row.date_key] = setup;
+      }
     });
 
-    DAY_SETUP_CACHE = mergeDaySetups(getLocalDaySetupAll(), cloudDaySetup);
+    DAY_SETUP_CACHE = mergeDaySetupCaches(getLocalDaySetupAll(), DAY_SETUP_CACHE, cloudDaySetup);
     saveLocalDaySetupAll(DAY_SETUP_CACHE);
     setupOk = true;
   } catch(err){
     console.error("Error cargando caja/inventario desde Supabase:", err);
-    DAY_SETUP_CACHE = mergeDaySetups(getLocalDaySetupAll(), DAY_SETUP_CACHE);
+    DAY_SETUP_CACHE = mergeDaySetupCaches(getLocalDaySetupAll(), DAY_SETUP_CACHE);
   }
 
   CLOUD_READY = ordersOk || setupOk;
@@ -3129,64 +3111,56 @@ function getDaySetupAll(){
 }
 
 function getDaySetup(dateKey){
-  const key = normalizeDateKeyValue(dateKey);
   const all = getDaySetupAll();
-  return all[key] || {
+  return all[dateKey] || {
     openCash: 0,
     note: "",
     stockInit: { oneL:0, halfPlastic:0, glass:0, water:0 },
-    stockInitItems: { wingsKg:0, potatoBags:0, broasterPieces:0, burgerBread:0, burgerMeat:0, cheese:0, egg:0, chorizo:0, bacon:0 },
     stockEnd: { oneL:0, halfPlastic:0, glass:0, water:0 }
   };
 }
 
 async function syncDaySetupToCloud(dateKey){
-  // IMPORTANTE: siempre intentamos guardar y confirmar lectura en nube.
+  // IMPORTANTE: no bloqueamos por CLOUD_FAILED; siempre intentamos guardar en nube.
   try {
-    const key = normalizeDateKeyValue(dateKey);
-    const setup = DAY_SETUP_CACHE[key];
+    const setup = DAY_SETUP_CACHE[dateKey];
     if (!setup) return { ok:false, error:"No hay datos del día para sincronizar." };
 
+    const nowIso = setup.updatedAt || new Date().toISOString();
     const payload = {
-      date_key: key,
-      updated_at: setup.updatedAt || new Date().toISOString(),
-      data: setup
+      date_key: dateKey,
+      updated_at: nowIso,
+      data: { ...deepCopy(setup), updatedAt: nowIso }
     };
 
-    const { data, error } = await supabaseClient
+    const { error } = await supabaseClient
       .from(DAY_SETUP_TABLE)
-      .upsert([payload], { onConflict: "date_key" })
-      .select("date_key,data,updated_at")
-      .maybeSingle();
+      .upsert([payload], { onConflict: "date_key" });
 
     if (error) {
       console.error("Error guardando caja/inventario en nube:", error);
       return { ok:false, error: error.message || JSON.stringify(error) };
     }
 
-    // Confirmación fuerte: guardamos en caché exactamente lo que respondió Supabase.
-    if (data && data.date_key) {
-      const cloudSetup = { ...(data.data || {}), updatedAt: (data.data && data.data.updatedAt) || data.updated_at || setup.updatedAt };
-      DAY_SETUP_CACHE = mergeDaySetups(DAY_SETUP_CACHE, { [data.date_key]: cloudSetup });
-      saveLocalDaySetupAll(DAY_SETUP_CACHE);
+    // Confirmación: leemos nuevamente y nos quedamos con el registro más reciente de ese día.
+    const { data: rows, error: readBackError } = await supabaseClient
+      .from(DAY_SETUP_TABLE)
+      .select("date_key,data,updated_at")
+      .eq("date_key", dateKey);
+
+    if (readBackError) {
+      console.warn("Guardó, pero no se pudo confirmar lectura de caja/inventario:", readBackError);
     } else {
-      // Si Supabase no devuelve fila, hacemos una lectura directa del día.
-      const confirmRes = await fetch(daySetupUrl(
-        "select=date_key,data,updated_at&date_key=eq." + encodeURIComponent(key) + "&order=updated_at.desc&limit=1"
-      ), {
-        headers: {
-          "apikey": SUPABASE_ANON_KEY,
-          "Authorization": "Bearer " + SUPABASE_ANON_KEY
+      const cloudDaySetup = {};
+      (rows || []).forEach(row => {
+        if (!row || !row.date_key) return;
+        const setupRow = normalizeDaySetup(row.data || {}, row.updated_at || "");
+        const current = cloudDaySetup[row.date_key];
+        if (!current || getDaySetupUpdatedTime(setupRow) >= getDaySetupUpdatedTime(current)) {
+          cloudDaySetup[row.date_key] = setupRow;
         }
       });
-
-      if (!confirmRes.ok) throw new Error("Guardó pero no se pudo confirmar lectura: HTTP " + confirmRes.status);
-      const rows = await confirmRes.json();
-      if (!rows || !rows.length) throw new Error("Guardó pero Supabase no devolvió la fila del día. Revisa permisos SELECT/RLS.");
-
-      const row = rows[0];
-      const cloudSetup = { ...(row.data || {}), updatedAt: (row.data && row.data.updatedAt) || row.updated_at || setup.updatedAt };
-      DAY_SETUP_CACHE = mergeDaySetups(DAY_SETUP_CACHE, { [row.date_key]: cloudSetup });
+      DAY_SETUP_CACHE = mergeDaySetupCaches(getLocalDaySetupAll(), DAY_SETUP_CACHE, cloudDaySetup);
       saveLocalDaySetupAll(DAY_SETUP_CACHE);
     }
 
@@ -3200,9 +3174,8 @@ async function syncDaySetupToCloud(dateKey){
 }
 
 async function saveDaySetup(dateKey, setup){
-  const key = normalizeDateKeyValue(dateKey);
   const nowIso = new Date().toISOString();
-  DAY_SETUP_CACHE[key] = {
+  DAY_SETUP_CACHE[dateKey] = {
     ...deepCopy(setup),
     updatedAt: nowIso
   };
@@ -3211,7 +3184,7 @@ async function saveDaySetup(dateKey, setup){
   saveLocalDaySetupAll(DAY_SETUP_CACHE);
 
   // 2) Luego intenta guardar en Supabase para verlo en vivo en otros equipos.
-  return await syncDaySetupToCloud(key);
+  return await syncDaySetupToCloud(dateKey);
 }
 
 async function deleteDaySetupCloud(dateKey){
@@ -4499,7 +4472,7 @@ function addToCart(item, qty, sauces, sauceApart, brand, noSauce) {
     async function renderAdmin(forceForm = false){
       if (!adminUnlocked) return;
 
-      const dateKey = normalizeDateKeyValue(adminDate.value || getDateKeyLocal(new Date()));
+      const dateKey = adminDate.value || getDateKeyLocal(new Date());
       adminDate.value = dateKey;
 
       const daySetupInputs = [
@@ -5110,8 +5083,7 @@ document.querySelectorAll(".item-card").forEach(card => {
 
 
     adminSaveOpenClose.addEventListener("click", async () => {
-      const dateKey = normalizeDateKeyValue(adminDate.value || getDateKeyLocal(new Date()));
-      adminDate.value = dateKey;
+      const dateKey = adminDate.value || getDateKeyLocal(new Date());
       const setupNow = readDaySetupFromForm();
 
       // Guarda local y en nube. Aunque falle la nube, el formulario queda guardado y visible en este equipo.
@@ -5128,8 +5100,7 @@ document.querySelectorAll(".item-card").forEach(card => {
     });
 
     adminPrintSummary.addEventListener("click", async () => {
-      const dateKey = normalizeDateKeyValue(adminDate.value || getDateKeyLocal(new Date()));
-      adminDate.value = dateKey;
+      const dateKey = adminDate.value || getDateKeyLocal(new Date());
       await saveDaySetup(dateKey, readDaySetupFromForm());
       const el = document.getElementById("admin-summary-ticket");
       el.innerHTML = buildAdminSummaryTicketHTML(dateKey);
