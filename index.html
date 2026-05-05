@@ -1705,6 +1705,7 @@ setTimeout(() => {
       }
     });
 
+
     let cart = [];
     let CURRENT_BOLETA = null;
     let CURRENT_REGISTERED = false;
@@ -2511,12 +2512,14 @@ stockInitBacon.value = safeInt(s.stockInitItems?.bacon) || "";
     }
 
     function enableNavWhatsapp(href){
+      if (!navWhatsapp) return;
       navWhatsapp.href = href;
       navWhatsapp.classList.remove("disabled");
       navWhatsapp.classList.add("primary");
     }
 
     function disableNavWhatsapp(){
+      if (!navWhatsapp) return;
       navWhatsapp.href = "#";
       navWhatsapp.classList.add("disabled");
       navWhatsapp.classList.remove("primary");
@@ -2736,11 +2739,11 @@ function ensureCloudReady(actionText = "usar el sistema"){
 }
 
 function programarLimpiezaMenu(){
-  // Limpieza inmediata y única.
-  // Antes había varios setTimeout (50,150,400,900 ms) que seguían corriendo
-  // después de agregar; si el cliente marcaba otra salsa rápido, esos timers
-  // le borraban el check y parecía que recién agarraba a la segunda o tercera.
-  limpiarSeleccionMenu();
+  // Limpieza segura: se ejecuta después de que el pedido ya fue agregado y pintado.
+  // No se limpia al hacer click en el botón antes de leer los checks.
+  setTimeout(() => {
+    limpiarSeleccionMenu();
+  }, 120);
 }
 
 function resetPedidoSiEstaVacio(){
@@ -2802,7 +2805,6 @@ function addToCart(item, qty, sauces, sauceApart, brand, noSauce) {
       cart.splice(index, 1);
       renderCart();
       resetPedidoSiEstaVacio();
-      programarLimpiezaMenu();
     }
 
     function changeQty(index, delta) {
@@ -2815,7 +2817,6 @@ function addToCart(item, qty, sauces, sauceApart, brand, noSauce) {
       if (cart[index].qty <= 0) cart.splice(index, 1);
       renderCart();
       resetPedidoSiEstaVacio();
-      programarLimpiezaMenu();
     }
         function buildClientTicketHTML(ctx){
       let html = `
