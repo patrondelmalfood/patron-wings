@@ -1330,6 +1330,8 @@ height:65px;
 
           <div class="admin-card-grid">
             <div class="admin-card"><div class="label">Pedidos válidos</div><div class="value" id="mOrders">0</div></div>
+            <div class="admin-card"><div class="label">Sin entregar</div><div class="value" id="mPending">0</div></div>
+            <div class="admin-card"><div class="label">Entregadas</div><div class="value" id="mDelivered">0</div></div>
             <div class="admin-card"><div class="label">Anulados</div><div class="value" id="mCanceled">0</div></div>
             <div class="admin-card"><div class="label">Venta total (S/)</div><div class="value" id="mSales">0.00</div></div>
             <div class="admin-card"><div class="label">Efectivo (S/)</div><div class="value" id="mCash">0.00</div></div>
@@ -2897,8 +2899,70 @@ purchaseSaveBtn.addEventListener("click", async () => {
 });
     let adminUnlocked = false;
 
+  function readLocalJSON(key, fallback){
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return fallback;
+    const parsed = JSON.parse(raw);
+    return parsed || fallback;
+  } catch(e) {
+    console.warn("No se pudo leer localStorage", key, e);
+    return fallback;
+  }
+}
+
+function writeLocalJSON(key, value){
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch(e) {
+    console.warn("No se pudo guardar localStorage", key, e);
+  }
+}
+
+function getLocalOrderLog(){
+  const rows = readLocalJSON(ORDER_LOG_STORAGE_KEY, []);
+  return Array.isArray(rows) ? rows : [];
+}
+
+function saveLocalOrderLog(rows){
+  writeLocalJSON(ORDER_LOG_STORAGE_KEY, Array.isArray(rows) ? rows : []);
+}
+
+function getLocalDaySetupAll(){
+  const data = readLocalJSON(DAY_SETUP_STORAGE_KEY, {});
+  return data && typeof data === "object" && !Array.isArray(data) ? data : {};
+}
+
+function saveLocalDaySetupAll(data){
+  writeLocalJSON(DAY_SETUP_STORAGE_KEY, data && typeof data === "object" ? data : {});
+}
+
+function getOrderUpdatedTime(order){
+  const raw = order?.updatedAt || order?.updated_at || order?.dateTime || order?.createdAt || "";
+  const d = new Date(raw);
+  return isNaN(d.getTime()) ? 0 : d.getTime();
+}
+
+function mergeOrderLogs(localRows, cloudRows){
+  const map = new Map();
+  [...(localRows || []), ...(cloudRows || [])].forEach(order => {
+    if (!order) return;
+    const id = String(order.id || order.order_id || order.boletaNumber || "");
+    if (!id) return;
+    const previous = map.get(id);
+    if (!previous || getOrderUpdatedTime(order) >= getOrderUpdatedTime(previous)) {
+      map.set(id, order);
+    }
+  });
+  return Array.from(map.values());
+}
+
   async function initCloudSync(){
   try{
+    // Primero carga respaldo local para que admin no quede vacío si la nube demora o falla.
+    ORDER_LOG_CACHE = mergeOrderLogs(getLocalOrderLog(), ORDER_LOG_CACHE);
+    DAY_SETUP_CACHE = { ...getLocalDaySetupAll(), ...DAY_SETUP_CACHE };
+
     const res = await fetch(SUPABASE_URL + "/rest/v1/" + ORDERS_TABLE + "?select=data", {
   headers: {
     "apikey": SUPABASE_ANON_KEY,
@@ -2910,9 +2974,12 @@ if (!res.ok) throw new Error("Error fetch orders");
 
 const ordersRows = await res.json();
 
-    ORDER_LOG_CACHE = (ordersRows || [])
-      .map(r => r.data)
-      .filter(Boolean);
+const cloudOrders = (ordersRows || [])
+  .map(r => r.data)
+  .filter(Boolean);
+
+ORDER_LOG_CACHE = mergeOrderLogs(getLocalOrderLog(), cloudOrders);
+saveLocalOrderLog(ORDER_LOG_CACHE);
 
  const res2 = await fetch(SUPABASE_URL + "/rest/v1/" + DAY_SETUP_TABLE + "?select=date_key,data", {
   headers: {
@@ -2925,23 +2992,30 @@ if (!res2.ok) throw new Error("Error fetch day setup");
 
 const dayRows = await res2.json();
 
-    DAY_SETUP_CACHE = {};
+    const cloudDaySetup = {};
     (dayRows || []).forEach(row => {
-      DAY_SETUP_CACHE[row.date_key] = row.data;
+      if (row && row.date_key) cloudDaySetup[row.date_key] = row.data || {};
     });
 
-    CLOUD_READY = true;
-    renderCart();
-    if (adminUnlocked) renderAdmin();
+    // La nube manda, pero si una fecha aún no existe en nube, se conserva el respaldo local.
+    DAY_SETUP_CACHE = { ...getLocalDaySetupAll(), ...cloudDaySetup };
+    saveLocalDaySetupAll(DAY_SETUP_CACHE);
 
-    console.log("✅ Datos cargados desde Supabase");
+    CLOUD_READY = true;
+    CLOUD_FAILED = false;
+    renderCart();
+    if (adminUnlocked) await renderAdmin(false);
+
+    console.log("✅ Datos cargados desde Supabase/localStorage");
     loadUsageItems();
 loadUsageToday();
   } catch(err){
   console.error("Error cargando Supabase:", err);
   CLOUD_FAILED = true;
+  ORDER_LOG_CACHE = mergeOrderLogs(getLocalOrderLog(), ORDER_LOG_CACHE);
+  DAY_SETUP_CACHE = { ...getLocalDaySetupAll(), ...DAY_SETUP_CACHE };
   renderCart();
-  if (adminUnlocked) renderAdmin();
+  if (adminUnlocked) await renderAdmin(false);
 }
 }
 
@@ -2950,7 +3024,7 @@ function getOrderLog(){
 }
 
 async function syncOrdersToCloud(){
- if (!CLOUD_READY || CLOUD_FAILED) return;
+ if (!CLOUD_READY || CLOUD_FAILED) return false;
 
   const rows = ORDER_LOG_CACHE.map(order => ({
     order_id: String(order.id),
@@ -2968,15 +3042,18 @@ async function syncOrdersToCloud(){
 
     if (upsertError) {
       console.error("Error guardando pedidos:", upsertError);
-      return;
+      return false;
     }
   }
-  
+  return true;
 }
 
 function saveOrderLog(log){
   ORDER_LOG_CACHE = Array.isArray(log) ? deepCopy(log) : [];
-  syncOrdersToCloud();
+  saveLocalOrderLog(ORDER_LOG_CACHE);
+  syncOrdersToCloud().then(ok => {
+    if (!ok) console.warn("Pedido guardado localmente, pendiente de sincronizar con nube.");
+  });
 }
 
 function getDaySetupAll(){
@@ -2994,10 +3071,10 @@ function getDaySetup(dateKey){
 }
 
 async function syncDaySetupToCloud(dateKey){
-  if (!CLOUD_READY || CLOUD_FAILED) return;
+  if (!CLOUD_READY || CLOUD_FAILED) return false;
 
   const setup = DAY_SETUP_CACHE[dateKey];
-  if (!setup) return;
+  if (!setup) return false;
 
   const { error } = await supabaseClient
     .from(DAY_SETUP_TABLE)
@@ -3009,12 +3086,19 @@ async function syncDaySetupToCloud(dateKey){
 
   if (error) {
     console.error("Error guardando day setup:", error);
+    return false;
   }
+  return true;
 }
 
-function saveDaySetup(dateKey, setup){
-  DAY_SETUP_CACHE[dateKey] = deepCopy(setup);
-  syncDaySetupToCloud(dateKey);
+async function saveDaySetup(dateKey, setup){
+  const nowIso = new Date().toISOString();
+  DAY_SETUP_CACHE[dateKey] = {
+    ...deepCopy(setup),
+    updatedAt: nowIso
+  };
+  saveLocalDaySetupAll(DAY_SETUP_CACHE);
+  return await syncDaySetupToCloud(dateKey);
 }
 
 async function deleteDaySetupCloud(dateKey){
@@ -3869,6 +3953,8 @@ function addToCart(item, qty, sauces, sauceApart, brand, noSauce) {
     function buildOrderRecord(ctx, source){
       return {
         id: `${Date.now()}_${Math.floor(Math.random()*9999)}`,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
         dateKey: getDateKeyLocal(new Date()),
         dateTime: formatDateTimeForTicket(new Date()),
         dailyOrderNumber: DAILY_ORDER_NUMBER,
@@ -3989,8 +4075,9 @@ function addToCart(item, qty, sauces, sauceApart, brand, noSauce) {
       }
 
       log[idx].status = nextStatus;
+      log[idx].updatedAt = new Date().toISOString();
       saveOrderLog(log);
-      renderAdmin();
+      renderAdmin(false);
 
       if (nextStatus === "ANULADO") {
         alert("✅ Pedido anulado. Ya no suma en el resumen del día.");
@@ -4296,12 +4383,22 @@ function addToCart(item, qty, sauces, sauceApart, brand, noSauce) {
       }).join("");
     }
 
-    async function renderAdmin(){
+    async function renderAdmin(forceForm = false){
       if (!adminUnlocked) return;
 
       const dateKey = adminDate.value || getDateKeyLocal(new Date());
       adminDate.value = dateKey;
-      loadDaySetupIntoForm(dateKey);
+
+      const daySetupInputs = [
+        openCashInput, openCloseNoteInput,
+        stockInit1L, stockInitHalfPlastic, stockInitGlass, stockInitWater,
+        stockEnd1L, stockEndHalfPlastic, stockEndGlass, stockEndWater,
+        stockInitWingsKg, stockInitPotatoBags, stockInitBroasterPieces,
+        stockInitBurgerBread, stockInitBurgerMeat, stockInitCheese,
+        stockInitEgg, stockInitChorizo, stockInitBacon
+      ].filter(Boolean);
+      const isEditingDaySetup = daySetupInputs.includes(document.activeElement);
+      if (forceForm || !isEditingDaySetup) loadDaySetupIntoForm(dateKey);
 
       const daySetup = getDaySetup(dateKey);
       const log = getOrderLog();
@@ -4320,6 +4417,10 @@ function addToCart(item, qty, sauces, sauceApart, brand, noSauce) {
       const ruletaCount = activeRows.filter(r => (r.ruleta && r.ruleta.premio) || r.rewardKey).length;
 
       mOrders.textContent = totalOrders;
+      const pendingRows = activeRows.filter(r => String(r.status || "PENDIENTE").toUpperCase() !== "ENTREGADO");
+      const deliveredRows = activeRows.filter(r => String(r.status || "").toUpperCase() === "ENTREGADO");
+      if (mPending) mPending.textContent = pendingRows.length;
+      if (mDelivered) mDelivered.textContent = deliveredRows.length;
       mCanceled.textContent = annulledRows.length;
       mSales.textContent = totalSales.toFixed(2);
       mCash.textContent = totalCash.toFixed(2);
@@ -4895,16 +4996,20 @@ document.querySelectorAll(".item-card").forEach(card => {
     });
 
 
-    adminSaveOpenClose.addEventListener("click", () => {
+    adminSaveOpenClose.addEventListener("click", async () => {
       const dateKey = adminDate.value || getDateKeyLocal(new Date());
-      saveDaySetup(dateKey, readDaySetupFromForm());
-      renderAdmin();
-      alert("✅ Datos del día guardados.");
+      const okCloud = await saveDaySetup(dateKey, readDaySetupFromForm());
+      await renderAdmin(true);
+      if (okCloud) {
+        alert("✅ Datos del día guardados en la nube.");
+      } else {
+        alert("⚠️ Datos guardados en este celular, pero no se pudo confirmar la nube. Revisa internet/Supabase y presiona Actualizar.");
+      }
     });
 
-    adminPrintSummary.addEventListener("click", () => {
+    adminPrintSummary.addEventListener("click", async () => {
       const dateKey = adminDate.value || getDateKeyLocal(new Date());
-      saveDaySetup(dateKey, readDaySetupFromForm());
+      await saveDaySetup(dateKey, readDaySetupFromForm());
       const el = document.getElementById("admin-summary-ticket");
       el.innerHTML = buildAdminSummaryTicketHTML(dateKey);
       sendToRawBT(buildAdminSummaryTicketText(dateKey));
@@ -4918,7 +5023,7 @@ document.querySelectorAll(".item-card").forEach(card => {
     adminAuth.style.display = "none";
     adminContent.style.display = "block";
     adminDate.value = getDateKeyLocal(new Date());
-    await renderAdmin();
+    await renderAdmin(true);
   } else {
     adminAuth.style.display = "block";
     adminContent.style.display = "none";
@@ -4962,20 +5067,31 @@ document.querySelectorAll(".item-card").forEach(card => {
 });
 
  adminRefresh.addEventListener("click", async () => {
-  await renderAdmin();
+  await initCloudSync();
+  await renderAdmin(false);
 });
 
   adminDate.addEventListener("change", async () => {
-  await renderAdmin();
+  await renderAdmin(true);
 });
 
 [
   openCashInput, openCloseNoteInput,
   stockInit1L, stockInitHalfPlastic, stockInitGlass, stockInitWater,
-  stockEnd1L, stockEndHalfPlastic, stockEndGlass, stockEndWater
-].forEach(el => el.addEventListener("change", () => {
+  stockEnd1L, stockEndHalfPlastic, stockEndGlass, stockEndWater,
+  stockInitWingsKg, stockInitPotatoBags, stockInitBroasterPieces,
+  stockInitBurgerBread, stockInitBurgerMeat, stockInitCheese,
+  stockInitEgg, stockInitChorizo, stockInitBacon
+].filter(Boolean).forEach(el => el.addEventListener("change", () => {
   // no renderizar mientras escribes
 }));
+
+// Actualiza el admin automáticamente para que dueño y moza vean ventas/comandas en vivo.
+setInterval(async () => {
+  if (!adminUnlocked) return;
+  if (!adminModal || !adminModal.classList.contains("open")) return;
+  await initCloudSync();
+}, 8000);
 
  disableNavWhatsapp();
 if (bottomBar) bottomBar.classList.add("hidden");
