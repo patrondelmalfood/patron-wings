@@ -2997,10 +2997,13 @@ function mergeOrderLogs(localRows, cloudRows){
 
   let ordersOk = false;
   let setupOk = false;
+  const cloudDaySetupFromOrders = {};
 
-  // Pedidos/ventas/comandas desde Supabase
+  // Pedidos/ventas/comandas desde Supabase.
+  // También usamos orders_cloud como respaldo fuerte para la caja inicial,
+  // porque esta tabla ya está funcionando en vivo con las ventas/comandas.
   try {
-    const res = await fetch(SUPABASE_URL + "/rest/v1/" + ORDERS_TABLE + "?select=data", {
+    const res = await fetch(SUPABASE_URL + "/rest/v1/" + ORDERS_TABLE + "?select=order_id,data,updated_at,status", {
       headers: {
         "apikey": SUPABASE_ANON_KEY,
         "Authorization": "Bearer " + SUPABASE_ANON_KEY
@@ -3010,17 +3013,41 @@ function mergeOrderLogs(localRows, cloudRows){
     if (!res.ok) throw new Error("Error leyendo pedidos: HTTP " + res.status);
 
     const ordersRows = await res.json();
-    const cloudOrders = (ordersRows || []).map(r => r.data).filter(Boolean);
+
+    // Pedidos normales: ignora las filas técnicas de caja/inventario.
+    const cloudOrders = (ordersRows || [])
+      .map(r => r.data)
+      .filter(d => d && d.__type !== "day_setup");
+
     ORDER_LOG_CACHE = mergeOrderLogs(getLocalOrderLog(), cloudOrders);
     saveLocalOrderLog(ORDER_LOG_CACHE);
+
+    // Filas técnicas de caja/inventario guardadas dentro de orders_cloud.
+    (ordersRows || []).forEach(row => {
+      const rowId = String(row?.order_id || "");
+      const d = row?.data || {};
+      const isDaySetupRow = d.__type === "day_setup" || rowId.startsWith("DAY_SETUP_");
+      if (!isDaySetupRow) return;
+
+      const dateKey = d.dateKey || d.date_key || rowId.replace("DAY_SETUP_", "");
+      if (!dateKey) return;
+
+      const setupRaw = d.setup || d.data || d;
+      const setup = normalizeDaySetup(setupRaw, row.updated_at || d.updatedAt || d.updated_at || "");
+      const current = cloudDaySetupFromOrders[dateKey];
+      if (!current || getDaySetupUpdatedTime(setup) >= getDaySetupUpdatedTime(current)) {
+        cloudDaySetupFromOrders[dateKey] = setup;
+      }
+    });
+
     ordersOk = true;
   } catch(err){
     console.error("Error cargando pedidos desde Supabase:", err);
     ORDER_LOG_CACHE = mergeOrderLogs(getLocalOrderLog(), ORDER_LOG_CACHE);
   }
 
-  // Caja inicial + inventario del día desde Supabase.
-  // IMPORTANTE: antes se leía sin updated_at y una fila vieja con 0 podía pisar la caja recién guardada.
+  // Caja inicial + inventario desde day_setup_cloud si existe.
+  // Pero YA NO dejamos que esta tabla pise lo guardado en orders_cloud si viene viejo o en cero.
   try {
     const res2 = await fetch(SUPABASE_URL + "/rest/v1/" + DAY_SETUP_TABLE + "?select=date_key,data,updated_at&order=updated_at.asc", {
       headers: {
@@ -3043,12 +3070,15 @@ function mergeOrderLogs(localRows, cloudRows){
       }
     });
 
-    DAY_SETUP_CACHE = mergeDaySetupCaches(getLocalDaySetupAll(), DAY_SETUP_CACHE, cloudDaySetup);
+    // Orden importante: local -> cache -> day_setup_cloud -> orders_cloud.
+    // Si orders_cloud tiene la caja nueva, gana porque es el respaldo que ya sabemos que funciona en vivo.
+    DAY_SETUP_CACHE = mergeDaySetupCaches(getLocalDaySetupAll(), DAY_SETUP_CACHE, cloudDaySetup, cloudDaySetupFromOrders);
     saveLocalDaySetupAll(DAY_SETUP_CACHE);
     setupOk = true;
   } catch(err){
-    console.error("Error cargando caja/inventario desde Supabase:", err);
-    DAY_SETUP_CACHE = mergeDaySetupCaches(getLocalDaySetupAll(), DAY_SETUP_CACHE);
+    console.error("Error cargando caja/inventario desde day_setup_cloud:", err);
+    DAY_SETUP_CACHE = mergeDaySetupCaches(getLocalDaySetupAll(), DAY_SETUP_CACHE, cloudDaySetupFromOrders);
+    setupOk = Object.keys(cloudDaySetupFromOrders).length > 0;
   }
 
   CLOUD_READY = ordersOk || setupOk;
@@ -3121,46 +3151,69 @@ function getDaySetup(dateKey){
 }
 
 async function syncDaySetupToCloud(dateKey){
-  // IMPORTANTE: no bloqueamos por CLOUD_FAILED; siempre intentamos guardar en nube.
+  // SOLUCIÓN FUERTE:
+  // Guardamos la caja/inventario también dentro de orders_cloud con una fila técnica.
+  // Esa tabla ya guarda ventas/comandas correctamente, por eso la usamos como fuente segura en vivo.
   try {
     const setup = DAY_SETUP_CACHE[dateKey];
     if (!setup) return { ok:false, error:"No hay datos del día para sincronizar." };
 
     const nowIso = setup.updatedAt || new Date().toISOString();
-    const payload = {
-      date_key: dateKey,
-      updated_at: nowIso,
-      data: { ...deepCopy(setup), updatedAt: nowIso }
-    };
+    const cleanSetup = { ...deepCopy(setup), updatedAt: nowIso };
 
-    const { error } = await supabaseClient
-      .from(DAY_SETUP_TABLE)
-      .upsert([payload], { onConflict: "date_key" });
+    // 1) Guardado principal y confiable en orders_cloud.
+    const setupOrderId = "DAY_SETUP_" + dateKey;
+    const { error: orderSetupError } = await supabaseClient
+      .from(ORDERS_TABLE)
+      .upsert([{
+        order_id: setupOrderId,
+        date_key: dateKey,
+        boleta_number: "",
+        status: "DAY_SETUP",
+        updated_at: nowIso,
+        data: {
+          __type: "day_setup",
+          dateKey: dateKey,
+          setup: cleanSetup,
+          updatedAt: nowIso
+        }
+      }], { onConflict: "order_id" });
 
-    if (error) {
-      console.error("Error guardando caja/inventario en nube:", error);
-      return { ok:false, error: error.message || JSON.stringify(error) };
+    if (orderSetupError) {
+      console.error("Error guardando caja/inventario en orders_cloud:", orderSetupError);
+      return { ok:false, error: orderSetupError.message || JSON.stringify(orderSetupError) };
     }
 
-    // Confirmación: leemos nuevamente y nos quedamos con el registro más reciente de ese día.
+    // 2) Guardado secundario en day_setup_cloud. Si falla, NO borramos lo ya guardado en orders_cloud.
+    try {
+      const { error: setupTableError } = await supabaseClient
+        .from(DAY_SETUP_TABLE)
+        .upsert([{
+          date_key: dateKey,
+          updated_at: nowIso,
+          data: cleanSetup
+        }], { onConflict: "date_key" });
+
+      if (setupTableError) {
+        console.warn("day_setup_cloud falló, pero orders_cloud sí guardó:", setupTableError);
+      }
+    } catch(e) {
+      console.warn("day_setup_cloud falló, pero orders_cloud sí guardó:", e);
+    }
+
+    // 3) Confirmación leyendo la fila técnica desde orders_cloud.
     const { data: rows, error: readBackError } = await supabaseClient
-      .from(DAY_SETUP_TABLE)
-      .select("date_key,data,updated_at")
-      .eq("date_key", dateKey);
+      .from(ORDERS_TABLE)
+      .select("order_id,data,updated_at")
+      .eq("order_id", setupOrderId);
 
     if (readBackError) {
-      console.warn("Guardó, pero no se pudo confirmar lectura de caja/inventario:", readBackError);
+      console.warn("Guardó, pero no se pudo confirmar lectura desde orders_cloud:", readBackError);
     } else {
-      const cloudDaySetup = {};
-      (rows || []).forEach(row => {
-        if (!row || !row.date_key) return;
-        const setupRow = normalizeDaySetup(row.data || {}, row.updated_at || "");
-        const current = cloudDaySetup[row.date_key];
-        if (!current || getDaySetupUpdatedTime(setupRow) >= getDaySetupUpdatedTime(current)) {
-          cloudDaySetup[row.date_key] = setupRow;
-        }
-      });
-      DAY_SETUP_CACHE = mergeDaySetupCaches(getLocalDaySetupAll(), DAY_SETUP_CACHE, cloudDaySetup);
+      const row = (rows || [])[0];
+      const d = row?.data || {};
+      const setupBack = normalizeDaySetup(d.setup || d, row?.updated_at || d.updatedAt || nowIso);
+      DAY_SETUP_CACHE = mergeDaySetupCaches(getLocalDaySetupAll(), DAY_SETUP_CACHE, { [dateKey]: setupBack });
       saveLocalDaySetupAll(DAY_SETUP_CACHE);
     }
 
@@ -3188,14 +3241,22 @@ async function saveDaySetup(dateKey, setup){
 }
 
 async function deleteDaySetupCloud(dateKey){
-  if (!CLOUD_READY || CLOUD_FAILED) return;
-  const { error } = await supabaseClient
-    .from(DAY_SETUP_TABLE)
-    .delete()
-    .eq("date_key", dateKey);
+  try {
+    await supabaseClient
+      .from(DAY_SETUP_TABLE)
+      .delete()
+      .eq("date_key", dateKey);
+  } catch(e) {
+    console.warn("No se pudo borrar day_setup_cloud:", e);
+  }
 
-  if (error) {
-    console.error("Error borrando day setup:", error);
+  try {
+    await supabaseClient
+      .from(ORDERS_TABLE)
+      .delete()
+      .eq("order_id", "DAY_SETUP_" + dateKey);
+  } catch(e) {
+    console.warn("No se pudo borrar DAY_SETUP en orders_cloud:", e);
   }
 }
 
