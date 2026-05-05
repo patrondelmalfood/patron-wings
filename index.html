@@ -400,6 +400,17 @@ height:65px;
       color:#fff;
     }
 
+    /* FIX CHECKBOX CELULAR: evita demora/doble toque en checks y botones */
+    input[type="checkbox"], input[type="radio"], label, button, select {
+      touch-action: manipulation;
+    }
+    input[type="checkbox"], input[type="radio"]{
+      width:18px;
+      height:18px;
+      vertical-align:middle;
+      accent-color:#ffd60a;
+    }
+
     button, a.btn{
       padding:7px 10px;
       border-radius:4px;
@@ -1484,7 +1495,7 @@ function deepCopy(obj){
           noneCb.type = "checkbox";
           noneCb.value = "SIN_SALSA";
           noneCb.name = `salsa-none-${item.id}`;
-          noneCb.addEventListener("change", () => setTimeout(() => actualizarImagenAlitasCard(card), 0));
+          noneCb.addEventListener("change", () => actualizarImagenAlitasCard(card));
           noneLabel.appendChild(noneCb);
           noneLabel.appendChild(document.createTextNode(" Sin salsa"));
           noneWrap.appendChild(noneLabel);
@@ -1496,7 +1507,7 @@ function deepCopy(obj){
             cb.type = "checkbox";
             cb.value = sauce;
             cb.name = `salsa-${item.id}`;
-            cb.addEventListener("change", () => setTimeout(() => actualizarImagenAlitasCard(card), 0));
+            cb.addEventListener("change", () => actualizarImagenAlitasCard(card));
             label.appendChild(cb);
             label.appendChild(document.createTextNode(" " + sauce.replace("Salsa ", "")));
             saucesDiv.appendChild(label);
@@ -1507,7 +1518,7 @@ function deepCopy(obj){
           const aparteCb = document.createElement("input");
           aparteCb.type = "checkbox";
           aparteCb.name = `salsa-aparte-${item.id}`;
-          aparteCb.addEventListener("change", () => setTimeout(() => actualizarImagenAlitasCard(card), 0));
+          aparteCb.addEventListener("change", () => actualizarImagenAlitasCard(card));
           aparteLabel.appendChild(aparteCb);
           aparteLabel.appendChild(document.createTextNode(" Salsas aparte"));
           aparteWrapper.appendChild(aparteLabel);
@@ -1611,82 +1622,90 @@ function deepCopy(obj){
 
         const btn = document.createElement("button");
         btn.textContent = "Agregar";
-        btn.addEventListener("click", () => {
-          if (CURRENT_ORDER_LOCKED) {
-            alert("Este pedido ya fue registrado. Vacía el pedido para iniciar uno nuevo.");
-            return;
-          }
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
 
-          const qty = Math.max(1, Number(qtyInput.value) || 1);
-
-          let selectedSauces = [];
-          let sauceApart = false;
-          let selectedBrand = null;
-          let noSauce = false;
-
-          if (section.sauceMode === "multi") {
-            const noSauceCb = card.querySelector(`input[name="salsa-none-${item.id}"]`);
-            noSauce = !!(noSauceCb && noSauceCb.checked);
-
-            selectedSauces = Array.from(card.querySelectorAll(`input[name="salsa-${item.id}"]:checked`))
-              .map(el => el.value);
-
-            const maxSalsas = getSauceMaxForItemName(item.name);
-
-            if (noSauce && selectedSauces.length > 0) {
-              alert(`No puedes marcar "Sin salsa" y otras salsas a la vez en "${item.name}".`);
-              return;
-            }
-            if (!noSauce && selectedSauces.length === 0) {
-              alert(`Elige al menos 1 salsa o marca "Sin salsa" para "${item.name}".`);
-              return;
-            }
-            if (selectedSauces.length > maxSalsas) {
-              alert(`Máximo ${maxSalsas} salsas para "${item.name}".`);
+          // FIX: en algunos celulares el check visual se marca primero y el valor real
+          // termina de actualizarse unos milisegundos después. Por eso leemos el pedido
+          // en el siguiente ciclo del navegador. Así el PRIMER click en Agregar ya suma.
+          setTimeout(() => {
+            if (CURRENT_ORDER_LOCKED) {
+              alert("Este pedido ya fue registrado. Vacía el pedido para iniciar uno nuevo.");
               return;
             }
 
-            const aparteCb = card.querySelector(`input[name="salsa-aparte-${item.id}"]`);
-            sauceApart = !!(aparteCb && aparteCb.checked);
-            if (noSauce) sauceApart = false;
-          }
+            const qty = Math.max(1, Number(qtyInput.value) || 1);
 
-          if (section.sauceMode === "single") {
-            const sel = card.querySelector(`select[name="salsa-select-${item.id}"]`);
-            if (!sel || !sel.value) {
-              alert(`Elige una opción de salsa para "${item.name}".`);
-              return;
+            let selectedSauces = [];
+            let sauceApart = false;
+            let selectedBrand = null;
+            let noSauce = false;
+
+            if (section.sauceMode === "multi") {
+              const noSauceCb = card.querySelector(`input[name="salsa-none-${item.id}"]`);
+              noSauce = !!(noSauceCb && noSauceCb.checked);
+
+              selectedSauces = Array.from(card.querySelectorAll(`input[name="salsa-${item.id}"]`))
+                .filter(el => el.checked)
+                .map(el => el.value);
+
+              const maxSalsas = getSauceMaxForItemName(item.name);
+
+              if (noSauce && selectedSauces.length > 0) {
+                alert(`No puedes marcar "Sin salsa" y otras salsas a la vez en "${item.name}".`);
+                return;
+              }
+              if (!noSauce && selectedSauces.length === 0) {
+                alert(`Elige al menos 1 salsa o marca "Sin salsa" para "${item.name}".`);
+                return;
+              }
+              if (selectedSauces.length > maxSalsas) {
+                alert(`Máximo ${maxSalsas} salsas para "${item.name}".`);
+                return;
+              }
+
+              const aparteCb = card.querySelector(`input[name="salsa-aparte-${item.id}"]`);
+              sauceApart = !!(aparteCb && aparteCb.checked);
+              if (noSauce) sauceApart = false;
             }
 
-            if (isNoSauceValue(sel.value)) {
-              noSauce = true;
-              selectedSauces = [];
-            } else {
-              selectedSauces = [sel.value];
+            if (section.sauceMode === "single") {
+              const sel = card.querySelector(`select[name="salsa-select-${item.id}"]`);
+              if (!sel || !sel.value) {
+                alert(`Elige una opción de salsa para "${item.name}".`);
+                return;
+              }
+
+              if (isNoSauceValue(sel.value)) {
+                noSauce = true;
+                selectedSauces = [];
+              } else {
+                selectedSauces = [sel.value];
+              }
+              sauceApart = false;
             }
-            sauceApart = false;
-          }
 
-          const brandSel = card.querySelector(`select[name="brand-${item.id}"]`);
-          if (brandSel) {
-            if (!brandSel.value) { alert("Elige la opción (marca)."); return; }
-            selectedBrand = brandSel.value;
-          }
-          
-addToCart(item, qty, selectedSauces, sauceApart, selectedBrand, noSauce);
+            const brandSel = card.querySelector(`select[name="brand-${item.id}"]`);
+            if (brandSel) {
+              if (!brandSel.value) { alert("Elige la opción (marca)."); return; }
+              selectedBrand = brandSel.value;
+            }
 
-// Efecto visual del botón
-const originalText = btn.textContent;
-btn.textContent = "✔ Añadido";
-btn.disabled = true;
+            addToCart(item, qty, selectedSauces, sauceApart, selectedBrand, noSauce);
 
-setTimeout(() => {
-  btn.textContent = originalText;
-  btn.disabled = false;
-}, 350);
+            // Efecto visual del botón
+            const originalText = btn.textContent;
+            btn.textContent = "✔ Añadido";
+            btn.disabled = true;
+
+            setTimeout(() => {
+              btn.textContent = originalText;
+              btn.disabled = false;
+            }, 350);
+          }, 0);
         });
 
-        actions.appendChild(qtyInput);
+actions.appendChild(qtyInput);
         actions.appendChild(btn);
         card.appendChild(actions);
 
@@ -4375,11 +4394,9 @@ document.addEventListener("change", (e) => {
 
 document.addEventListener("click", (e) => {
   if (!e.target.matches('#alitas + .menu-grid input[type="checkbox"]')) return;
-  setTimeout(() => {
-    const card = e.target.closest(".item-card");
-    actualizarImagenAlitasCard(card);
-  }, 0);
-}, true);
+  const card = e.target.closest(".item-card");
+  setTimeout(() => actualizarImagenAlitasCard(card), 0);
+}, false);
   ["customer-name", "customer-dni", "order-comment"].forEach(id => {
   const el = document.getElementById(id);
   if (el) {
