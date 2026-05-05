@@ -757,6 +757,17 @@ height:65px;
   color:#fff;
   font-size:13px;
 }
+
+
+    /* FIX CHECKS CELULAR: respuesta inmediata en taps */
+    input[type="checkbox"], input[type="radio"], button, select, label{
+      touch-action: manipulation;
+    }
+    input[type="checkbox"], input[type="radio"]{
+      width:18px;
+      height:18px;
+      vertical-align:middle;
+    }
   </style>
 </head>
 
@@ -1625,84 +1636,95 @@ function deepCopy(obj){
         btn.addEventListener("click", (e) => {
           e.preventDefault();
 
-          // FIX: en algunos celulares el check visual se marca primero y el valor real
-          // termina de actualizarse unos milisegundos después. Por eso leemos el pedido
-          // en el siguiente ciclo del navegador. Así el PRIMER click en Agregar ya suma.
-          setTimeout(() => {
-            if (CURRENT_ORDER_LOCKED) {
-              alert("Este pedido ya fue registrado. Vacía el pedido para iniciar uno nuevo.");
-              return;
-            }
+          if (btn.dataset.agregando === "1") return;
+          btn.dataset.agregando = "1";
 
-            const qty = Math.max(1, Number(qtyInput.value) || 1);
-
-            let selectedSauces = [];
-            let sauceApart = false;
-            let selectedBrand = null;
-            let noSauce = false;
-
-            if (section.sauceMode === "multi") {
-              const noSauceCb = card.querySelector(`input[name="salsa-none-${item.id}"]`);
-              noSauce = !!(noSauceCb && noSauceCb.checked);
-
-              selectedSauces = Array.from(card.querySelectorAll(`input[name="salsa-${item.id}"]`))
-                .filter(el => el.checked)
-                .map(el => el.value);
-
-              const maxSalsas = getSauceMaxForItemName(item.name);
-
-              if (noSauce && selectedSauces.length > 0) {
-                alert(`No puedes marcar "Sin salsa" y otras salsas a la vez en "${item.name}".`);
-                return;
-              }
-              if (!noSauce && selectedSauces.length === 0) {
-                alert(`Elige al menos 1 salsa o marca "Sin salsa" para "${item.name}".`);
-                return;
-              }
-              if (selectedSauces.length > maxSalsas) {
-                alert(`Máximo ${maxSalsas} salsas para "${item.name}".`);
+          esperarEstadoRealDelCheck(() => {
+            try {
+              if (CURRENT_ORDER_LOCKED) {
+                alert("Este pedido ya fue registrado. Vacía el pedido para iniciar uno nuevo.");
                 return;
               }
 
-              const aparteCb = card.querySelector(`input[name="salsa-aparte-${item.id}"]`);
-              sauceApart = !!(aparteCb && aparteCb.checked);
-              if (noSauce) sauceApart = false;
-            }
+              const qty = Math.max(1, Number(qtyInput.value) || 1);
 
-            if (section.sauceMode === "single") {
-              const sel = card.querySelector(`select[name="salsa-select-${item.id}"]`);
-              if (!sel || !sel.value) {
-                alert(`Elige una opción de salsa para "${item.name}".`);
-                return;
+              let selectedSauces = [];
+              let sauceApart = false;
+              let selectedBrand = null;
+              let noSauce = false;
+
+              if (section.sauceMode === "multi") {
+                const noSauceCb = card.querySelector(`input[name="salsa-none-${item.id}"]`);
+                noSauce = !!(noSauceCb && noSauceCb.checked);
+
+                selectedSauces = Array.from(card.querySelectorAll(`input[name="salsa-${item.id}"]`))
+                  .filter(el => el.checked === true)
+                  .map(el => el.value);
+
+                const maxSalsas = getSauceMaxForItemName(item.name);
+
+                if (noSauce && selectedSauces.length > 0) {
+                  alert(`No puedes marcar "Sin salsa" y otras salsas a la vez en "${item.name}".`);
+                  return;
+                }
+                if (!noSauce && selectedSauces.length === 0) {
+                  alert(`Elige al menos 1 salsa o marca "Sin salsa" para "${item.name}".`);
+                  return;
+                }
+                if (selectedSauces.length > maxSalsas) {
+                  alert(`Máximo ${maxSalsas} salsas para "${item.name}".`);
+                  return;
+                }
+
+                const aparteCb = card.querySelector(`input[name="salsa-aparte-${item.id}"]`);
+                sauceApart = !!(aparteCb && aparteCb.checked);
+                if (noSauce) sauceApart = false;
               }
 
-              if (isNoSauceValue(sel.value)) {
-                noSauce = true;
-                selectedSauces = [];
-              } else {
-                selectedSauces = [sel.value];
+              if (section.sauceMode === "single") {
+                const sel = card.querySelector(`select[name="salsa-select-${item.id}"]`);
+                if (!sel || !sel.value) {
+                  alert(`Elige una opción de salsa para "${item.name}".`);
+                  return;
+                }
+
+                if (isNoSauceValue(sel.value)) {
+                  noSauce = true;
+                  selectedSauces = [];
+                } else {
+                  selectedSauces = [sel.value];
+                }
+                sauceApart = false;
               }
-              sauceApart = false;
+
+              const brandSel = card.querySelector(`select[name="brand-${item.id}"]`);
+              if (brandSel) {
+                if (!brandSel.value) {
+                  alert("Elige la opción (marca).");
+                  return;
+                }
+                selectedBrand = brandSel.value;
+              }
+
+              addToCart(item, qty, selectedSauces, sauceApart, selectedBrand, noSauce);
+
+              // Limpieza doble y segura: al instante y luego de que el navegador repinte.
+              limpiarTarjetaPedido(card);
+              setTimeout(() => limpiarTarjetaPedido(card), 80);
+
+              const originalText = "Agregar";
+              btn.textContent = "✔ Añadido";
+              btn.disabled = true;
+
+              setTimeout(() => {
+                btn.textContent = originalText;
+                btn.disabled = false;
+              }, 350);
+
+            } finally {
+              setTimeout(() => { btn.dataset.agregando = "0"; }, 120);
             }
-
-            const brandSel = card.querySelector(`select[name="brand-${item.id}"]`);
-            if (brandSel) {
-              if (!brandSel.value) { alert("Elige la opción (marca)."); return; }
-              selectedBrand = brandSel.value;
-            }
-
-            addToCart(item, qty, selectedSauces, sauceApart, selectedBrand, noSauce);
-
-            // Efecto visual del botón
-            const originalText = btn.textContent;
-            btn.textContent = "✔ Añadido";
-            btn.disabled = true;
-
-            setTimeout(() => {
-              btn.textContent = originalText;
-              btn.disabled = false;
-            }, 350);
-          }, 0);
+          });
         });
 
 actions.appendChild(qtyInput);
@@ -2751,6 +2773,39 @@ function ensureCloudReady(actionText = "usar el sistema"){
     card.style.setProperty("--alitas-img", `url("${img}")`);
     const photo = card.querySelector(".card-photo");
     if (photo) photo.src = img;
+  });
+}
+
+
+function limpiarTarjetaPedido(card){
+  if (!card) return;
+
+  card.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    cb.checked = false;
+    cb.defaultChecked = false;
+    cb.removeAttribute("checked");
+  });
+
+  card.querySelectorAll("select").forEach(sel => {
+    sel.selectedIndex = 0;
+    sel.value = "";
+  });
+
+  card.querySelectorAll('input[type="number"]').forEach(inp => {
+    inp.value = "1";
+  });
+
+  const img = card.dataset.cardImg || card.dataset.fixedAlitasImg || "alitas-bbq.JPG";
+  card.style.setProperty("--alitas-img", `url("${img}")`);
+  const photo = card.querySelector(".card-photo");
+  if (photo) photo.src = img;
+}
+
+function esperarEstadoRealDelCheck(callback){
+  // En algunos celulares el check se pinta visualmente antes de que JS lea .checked.
+  // Esperamos 2 frames cortos para que el PRIMER click en Agregar ya tome la salsa.
+  requestAnimationFrame(() => {
+    setTimeout(callback, 35);
   });
 }
 
