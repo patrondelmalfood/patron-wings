@@ -2519,12 +2519,14 @@ stockInitBacon.value = safeInt(s.stockInitItems?.bacon) || "";
     }
 
     function enableNavWhatsapp(href){
+      if (!navWhatsapp) return;
       navWhatsapp.href = href;
       navWhatsapp.classList.remove("disabled");
       navWhatsapp.classList.add("primary");
     }
 
     function disableNavWhatsapp(){
+      if (!navWhatsapp) return;
       navWhatsapp.href = "#";
       navWhatsapp.classList.add("disabled");
       navWhatsapp.classList.remove("primary");
@@ -2538,6 +2540,7 @@ stockInitBacon.value = safeInt(s.stockInitItems?.bacon) || "";
 
     function updateMixedPaymentVisibility(){
       const method = getPaymentMethod();
+      if (!mixedPaymentBox) return;
       if (method === "mixto") mixedPaymentBox.classList.add("show");
       else mixedPaymentBox.classList.remove("show");
     }
@@ -4187,28 +4190,28 @@ weekChart.innerHTML = htmlChart;
   if (carrito) scrollToWithOffset(carrito);
 });
 
-    chkDelivery.addEventListener("change", () => {
-      if (chkDelivery.checked) { chkPickup.checked = false; chkEatIn.checked = false; }
+    if (chkDelivery) chkDelivery.addEventListener("change", () => {
+      if (chkDelivery.checked) { if (chkPickup) chkPickup.checked = false; if (chkEatIn) chkEatIn.checked = false; }
       renderCart();
     });
-    chkPickup.addEventListener("change", () => {
-      if (chkPickup.checked) { chkDelivery.checked = false; chkEatIn.checked = false; }
+    if (chkPickup) chkPickup.addEventListener("change", () => {
+      if (chkPickup.checked) { if (chkDelivery) chkDelivery.checked = false; if (chkEatIn) chkEatIn.checked = false; }
       renderCart();
     });
-    chkEatIn.addEventListener("change", () => {
-      if (chkEatIn.checked) { chkDelivery.checked = false; chkPickup.checked = false; }
+    if (chkEatIn) chkEatIn.addEventListener("change", () => {
+      if (chkEatIn.checked) { if (chkDelivery) chkDelivery.checked = false; if (chkPickup) chkPickup.checked = false; }
       renderCart();
     });
 
-    inputName.addEventListener("input", renderCart);
-    inputDni.addEventListener("input", () => {
+    if (inputName) inputName.addEventListener("input", renderCart);
+    if (inputDni) inputDni.addEventListener("input", () => {
       inputDni.value = sanitizeDniInput(inputDni.value);
       renderCart();
     });
-    inputComment.addEventListener("input", renderCart);
+    if (inputComment) inputComment.addEventListener("input", renderCart);
     paymentRadios.forEach(r => r.addEventListener("change", renderCart));
-    mixedYapeInput.addEventListener("input", renderCart);
-    mixedCashInput.addEventListener("input", renderCart);
+    if (mixedYapeInput) mixedYapeInput.addEventListener("input", renderCart);
+    if (mixedCashInput) mixedCashInput.addEventListener("input", renderCart);
 
     if (btnClear) btnClear.addEventListener("click", () => {
       cart = [];
@@ -4248,7 +4251,7 @@ document.querySelectorAll(".item-card").forEach(card => {
       programarLimpiezaMenu();
     });
 
-    btnWhatsapp.addEventListener("click", (e) => {
+    if (btnWhatsapp) btnWhatsapp.addEventListener("click", (e) => {
       if (!canProceedWithOrder(true)) {
         e.preventDefault();
         return;
