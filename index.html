@@ -1705,14 +1705,6 @@ setTimeout(() => {
       }
     });
 
-    document.addEventListener("click", (e) => {
-      const btn = e.target.closest("button");
-      if (!btn) return;
-      if (String(btn.textContent || "").trim().toLowerCase().includes("agregar")) {
-        programarLimpiezaMenu();
-      }
-    });
-
     let cart = [];
     let CURRENT_BOLETA = null;
     let CURRENT_REGISTERED = false;
@@ -2519,14 +2511,12 @@ stockInitBacon.value = safeInt(s.stockInitItems?.bacon) || "";
     }
 
     function enableNavWhatsapp(href){
-      if (!navWhatsapp) return;
       navWhatsapp.href = href;
       navWhatsapp.classList.remove("disabled");
       navWhatsapp.classList.add("primary");
     }
 
     function disableNavWhatsapp(){
-      if (!navWhatsapp) return;
       navWhatsapp.href = "#";
       navWhatsapp.classList.add("disabled");
       navWhatsapp.classList.remove("primary");
@@ -2540,7 +2530,6 @@ stockInitBacon.value = safeInt(s.stockInitItems?.bacon) || "";
 
     function updateMixedPaymentVisibility(){
       const method = getPaymentMethod();
-      if (!mixedPaymentBox) return;
       if (method === "mixto") mixedPaymentBox.classList.add("show");
       else mixedPaymentBox.classList.remove("show");
     }
@@ -2747,11 +2736,11 @@ function ensureCloudReady(actionText = "usar el sistema"){
 }
 
 function programarLimpiezaMenu(){
-  requestAnimationFrame(() => limpiarSeleccionMenu());
-  setTimeout(limpiarSeleccionMenu, 50);
-  setTimeout(limpiarSeleccionMenu, 150);
-  setTimeout(limpiarSeleccionMenu, 400);
-  setTimeout(limpiarSeleccionMenu, 900);
+  // Limpieza inmediata y única.
+  // Antes había varios setTimeout (50,150,400,900 ms) que seguían corriendo
+  // después de agregar; si el cliente marcaba otra salsa rápido, esos timers
+  // le borraban el check y parecía que recién agarraba a la segunda o tercera.
+  limpiarSeleccionMenu();
 }
 
 function resetPedidoSiEstaVacio(){
@@ -4190,28 +4179,28 @@ weekChart.innerHTML = htmlChart;
   if (carrito) scrollToWithOffset(carrito);
 });
 
-    if (chkDelivery) chkDelivery.addEventListener("change", () => {
-      if (chkDelivery.checked) { if (chkPickup) chkPickup.checked = false; if (chkEatIn) chkEatIn.checked = false; }
+    chkDelivery.addEventListener("change", () => {
+      if (chkDelivery.checked) { chkPickup.checked = false; chkEatIn.checked = false; }
       renderCart();
     });
-    if (chkPickup) chkPickup.addEventListener("change", () => {
-      if (chkPickup.checked) { if (chkDelivery) chkDelivery.checked = false; if (chkEatIn) chkEatIn.checked = false; }
+    chkPickup.addEventListener("change", () => {
+      if (chkPickup.checked) { chkDelivery.checked = false; chkEatIn.checked = false; }
       renderCart();
     });
-    if (chkEatIn) chkEatIn.addEventListener("change", () => {
-      if (chkEatIn.checked) { if (chkDelivery) chkDelivery.checked = false; if (chkPickup) chkPickup.checked = false; }
+    chkEatIn.addEventListener("change", () => {
+      if (chkEatIn.checked) { chkDelivery.checked = false; chkPickup.checked = false; }
       renderCart();
     });
 
-    if (inputName) inputName.addEventListener("input", renderCart);
-    if (inputDni) inputDni.addEventListener("input", () => {
+    inputName.addEventListener("input", renderCart);
+    inputDni.addEventListener("input", () => {
       inputDni.value = sanitizeDniInput(inputDni.value);
       renderCart();
     });
-    if (inputComment) inputComment.addEventListener("input", renderCart);
+    inputComment.addEventListener("input", renderCart);
     paymentRadios.forEach(r => r.addEventListener("change", renderCart));
-    if (mixedYapeInput) mixedYapeInput.addEventListener("input", renderCart);
-    if (mixedCashInput) mixedCashInput.addEventListener("input", renderCart);
+    mixedYapeInput.addEventListener("input", renderCart);
+    mixedCashInput.addEventListener("input", renderCart);
 
     if (btnClear) btnClear.addEventListener("click", () => {
       cart = [];
@@ -4251,7 +4240,7 @@ document.querySelectorAll(".item-card").forEach(card => {
       programarLimpiezaMenu();
     });
 
-    if (btnWhatsapp) btnWhatsapp.addEventListener("click", (e) => {
+    btnWhatsapp.addEventListener("click", (e) => {
       if (!canProceedWithOrder(true)) {
         e.preventDefault();
         return;
