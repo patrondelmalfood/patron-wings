@@ -2958,65 +2958,67 @@ function mergeOrderLogs(localRows, cloudRows){
 }
 
   async function initCloudSync(){
-  try{
-    // Primero carga respaldo local para que admin no quede vacío si la nube demora o falla.
-    ORDER_LOG_CACHE = mergeOrderLogs(getLocalOrderLog(), ORDER_LOG_CACHE);
-    DAY_SETUP_CACHE = { ...getLocalDaySetupAll(), ...DAY_SETUP_CACHE };
+  // Carga datos locales primero para que el admin nunca aparezca vacío.
+  ORDER_LOG_CACHE = mergeOrderLogs(getLocalOrderLog(), ORDER_LOG_CACHE);
+  DAY_SETUP_CACHE = { ...getLocalDaySetupAll(), ...DAY_SETUP_CACHE };
 
+  let ordersOk = false;
+  let setupOk = false;
+
+  // Pedidos/ventas/comandas desde Supabase
+  try {
     const res = await fetch(SUPABASE_URL + "/rest/v1/" + ORDERS_TABLE + "?select=data", {
-  headers: {
-    "apikey": SUPABASE_ANON_KEY,
-    "Authorization": "Bearer " + SUPABASE_ANON_KEY
+      headers: {
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": "Bearer " + SUPABASE_ANON_KEY
+      }
+    });
+
+    if (!res.ok) throw new Error("Error leyendo pedidos: HTTP " + res.status);
+
+    const ordersRows = await res.json();
+    const cloudOrders = (ordersRows || []).map(r => r.data).filter(Boolean);
+    ORDER_LOG_CACHE = mergeOrderLogs(getLocalOrderLog(), cloudOrders);
+    saveLocalOrderLog(ORDER_LOG_CACHE);
+    ordersOk = true;
+  } catch(err){
+    console.error("Error cargando pedidos desde Supabase:", err);
+    ORDER_LOG_CACHE = mergeOrderLogs(getLocalOrderLog(), ORDER_LOG_CACHE);
   }
-});
 
-if (!res.ok) throw new Error("Error fetch orders");
+  // Caja inicial + inventario del día desde Supabase
+  try {
+    const res2 = await fetch(SUPABASE_URL + "/rest/v1/" + DAY_SETUP_TABLE + "?select=date_key,data", {
+      headers: {
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": "Bearer " + SUPABASE_ANON_KEY
+      }
+    });
 
-const ordersRows = await res.json();
+    if (!res2.ok) throw new Error("Error leyendo caja/inventario: HTTP " + res2.status);
 
-const cloudOrders = (ordersRows || [])
-  .map(r => r.data)
-  .filter(Boolean);
-
-ORDER_LOG_CACHE = mergeOrderLogs(getLocalOrderLog(), cloudOrders);
-saveLocalOrderLog(ORDER_LOG_CACHE);
-
- const res2 = await fetch(SUPABASE_URL + "/rest/v1/" + DAY_SETUP_TABLE + "?select=date_key,data", {
-  headers: {
-    "apikey": SUPABASE_ANON_KEY,
-    "Authorization": "Bearer " + SUPABASE_ANON_KEY
-  }
-});
-
-if (!res2.ok) throw new Error("Error fetch day setup");
-
-const dayRows = await res2.json();
-
+    const dayRows = await res2.json();
     const cloudDaySetup = {};
     (dayRows || []).forEach(row => {
       if (row && row.date_key) cloudDaySetup[row.date_key] = row.data || {};
     });
 
-    // La nube manda, pero si una fecha aún no existe en nube, se conserva el respaldo local.
     DAY_SETUP_CACHE = { ...getLocalDaySetupAll(), ...cloudDaySetup };
     saveLocalDaySetupAll(DAY_SETUP_CACHE);
-
-    CLOUD_READY = true;
-    CLOUD_FAILED = false;
-    renderCart();
-    if (adminUnlocked) await renderAdmin(false);
-
-    console.log("✅ Datos cargados desde Supabase/localStorage");
-    loadUsageItems();
-loadUsageToday();
+    setupOk = true;
   } catch(err){
-  console.error("Error cargando Supabase:", err);
-  CLOUD_FAILED = true;
-  ORDER_LOG_CACHE = mergeOrderLogs(getLocalOrderLog(), ORDER_LOG_CACHE);
-  DAY_SETUP_CACHE = { ...getLocalDaySetupAll(), ...DAY_SETUP_CACHE };
+    console.error("Error cargando caja/inventario desde Supabase:", err);
+    DAY_SETUP_CACHE = { ...getLocalDaySetupAll(), ...DAY_SETUP_CACHE };
+  }
+
+  CLOUD_READY = ordersOk || setupOk;
+  CLOUD_FAILED = !(ordersOk || setupOk);
+
   renderCart();
   if (adminUnlocked) await renderAdmin(false);
-}
+
+  loadUsageItems();
+  loadUsageToday();
 }
 
 function getOrderLog(){
@@ -3024,28 +3026,36 @@ function getOrderLog(){
 }
 
 async function syncOrdersToCloud(){
- if (!CLOUD_READY || CLOUD_FAILED) return false;
+  // IMPORTANTE: aunque una lectura anterior de Supabase haya fallado, igual intentamos guardar.
+  // Antes CLOUD_FAILED bloqueaba el guardado y por eso la moza no veía cambios en vivo.
+  try {
+    const rows = ORDER_LOG_CACHE.map(order => ({
+      order_id: String(order.id),
+      date_key: order.dateKey || "",
+      boleta_number: String(order.boletaNumber || ""),
+      status: String(order.status || ""),
+      updated_at: new Date().toISOString(),
+      data: order
+    }));
 
-  const rows = ORDER_LOG_CACHE.map(order => ({
-    order_id: String(order.id),
-    date_key: order.dateKey || "",
-    boleta_number: String(order.boletaNumber || ""),
-    status: String(order.status || ""),
-    updated_at: new Date().toISOString(),
-    data: order
-  }));
+    if (rows.length > 0) {
+      const { error: upsertError } = await supabaseClient
+        .from(ORDERS_TABLE)
+        .upsert(rows, { onConflict: "order_id" });
 
-  if (rows.length > 0) {
-    const { error: upsertError } = await supabaseClient
-      .from(ORDERS_TABLE)
-      .upsert(rows, { onConflict: "order_id" });
-
-    if (upsertError) {
-      console.error("Error guardando pedidos:", upsertError);
-      return false;
+      if (upsertError) {
+        console.error("Error guardando pedidos en nube:", upsertError);
+        return false;
+      }
     }
+
+    CLOUD_READY = true;
+    CLOUD_FAILED = false;
+    return true;
+  } catch (err) {
+    console.error("Error inesperado guardando pedidos en nube:", err);
+    return false;
   }
-  return true;
 }
 
 function saveOrderLog(log){
@@ -3071,24 +3081,31 @@ function getDaySetup(dateKey){
 }
 
 async function syncDaySetupToCloud(dateKey){
-  if (!CLOUD_READY || CLOUD_FAILED) return false;
+  // IMPORTANTE: no bloqueamos por CLOUD_FAILED; siempre intentamos guardar en nube.
+  try {
+    const setup = DAY_SETUP_CACHE[dateKey];
+    if (!setup) return { ok:false, error:"No hay datos del día para sincronizar." };
 
-  const setup = DAY_SETUP_CACHE[dateKey];
-  if (!setup) return false;
+    const { error } = await supabaseClient
+      .from(DAY_SETUP_TABLE)
+      .upsert([{
+        date_key: dateKey,
+        updated_at: new Date().toISOString(),
+        data: setup
+      }], { onConflict: "date_key" });
 
-  const { error } = await supabaseClient
-    .from(DAY_SETUP_TABLE)
-    .upsert([{
-      date_key: dateKey,
-      updated_at: new Date().toISOString(),
-      data: setup
-    }], { onConflict: "date_key" });
+    if (error) {
+      console.error("Error guardando caja/inventario en nube:", error);
+      return { ok:false, error: error.message || JSON.stringify(error) };
+    }
 
-  if (error) {
-    console.error("Error guardando day setup:", error);
-    return false;
+    CLOUD_READY = true;
+    CLOUD_FAILED = false;
+    return { ok:true, error:"" };
+  } catch (err) {
+    console.error("Error inesperado guardando caja/inventario en nube:", err);
+    return { ok:false, error: err.message || String(err) };
   }
-  return true;
 }
 
 async function saveDaySetup(dateKey, setup){
@@ -3097,7 +3114,11 @@ async function saveDaySetup(dateKey, setup){
     ...deepCopy(setup),
     updatedAt: nowIso
   };
+
+  // 1) Guarda inmediato en este celular/navegador para que NO desaparezca.
   saveLocalDaySetupAll(DAY_SETUP_CACHE);
+
+  // 2) Luego intenta guardar en Supabase para verlo en vivo en otros equipos.
   return await syncDaySetupToCloud(dateKey);
 }
 
@@ -4998,12 +5019,18 @@ document.querySelectorAll(".item-card").forEach(card => {
 
     adminSaveOpenClose.addEventListener("click", async () => {
       const dateKey = adminDate.value || getDateKeyLocal(new Date());
-      const okCloud = await saveDaySetup(dateKey, readDaySetupFromForm());
+      const setupNow = readDaySetupFromForm();
+
+      // Guarda local y en nube. Aunque falle la nube, el formulario queda guardado y visible en este equipo.
+      const result = await saveDaySetup(dateKey, setupNow);
+
+      // Recalcula todo usando lo recién guardado.
       await renderAdmin(true);
-      if (okCloud) {
-        alert("✅ Datos del día guardados en la nube.");
+
+      if (result && result.ok) {
+        alert("✅ Caja inicial e inventario guardados en la nube. El dueño/moza pueden presionar Actualizar o esperar unos segundos para verlo.");
       } else {
-        alert("⚠️ Datos guardados en este celular, pero no se pudo confirmar la nube. Revisa internet/Supabase y presiona Actualizar.");
+        alert("⚠️ Caja inicial e inventario quedaron guardados en ESTE celular, pero Supabase no confirmó la nube.\n\nPara verlo en vivo en otro celular, revisa que existan las tablas orders_cloud y day_setup_cloud y que permitan INSERT/UPDATE con anon key.\n\nDetalle: " + ((result && result.error) ? result.error : "sin detalle"));
       }
     });
 
@@ -5069,6 +5096,7 @@ document.querySelectorAll(".item-card").forEach(card => {
  adminRefresh.addEventListener("click", async () => {
   await initCloudSync();
   await renderAdmin(false);
+  alert("🔄 Admin actualizado. Si otro celular registró ventas o cambió estados, ya deben verse aquí.");
 });
 
   adminDate.addEventListener("change", async () => {
