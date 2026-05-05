@@ -2946,6 +2946,16 @@ function getDaySetupUpdatedTime(setup){
 function normalizeDaySetup(setup, fallbackUpdatedAt = ""){
   const base = (setup && typeof setup === "object") ? deepCopy(setup) : {};
   if (!base.updatedAt && fallbackUpdatedAt) base.updatedAt = fallbackUpdatedAt;
+  if (!base.stockInit || typeof base.stockInit !== "object") base.stockInit = { oneL:0, halfPlastic:0, glass:0, water:0 };
+  if (!base.stockEnd || typeof base.stockEnd !== "object") base.stockEnd = { oneL:0, halfPlastic:0, glass:0, water:0 };
+  if (!base.stockInitItems || typeof base.stockInitItems !== "object") {
+    base.stockInitItems = {
+      wingsKg:0, potatoBags:0, broasterPieces:0, burgerBread:0, burgerMeat:0,
+      cheese:0, egg:0, chorizo:0, bacon:0
+    };
+  }
+  base.openCash = Number(safeNum(base.openCash).toFixed(2));
+  base.note = String(base.note || "");
   return base;
 }
 
@@ -2972,6 +2982,32 @@ function daySetupHasData(setup){
     safeInt(setup.stockInitItems?.bacon) > 0;
 }
 
+function mergeNumberKeepPositive(currentValue, incomingValue){
+  const currentNum = safeNum(currentValue);
+  const incomingNum = safeNum(incomingValue);
+  // PROTECCIÓN IMPORTANTE: una fila de Supabase con 0 no puede borrar una caja positiva ya guardada.
+  if (currentNum > 0 && incomingNum <= 0) return currentNum;
+  return incomingNum;
+}
+
+function mergeDaySetupKeepingCash(current, incoming){
+  const cur = normalizeDaySetup(current);
+  const inc = normalizeDaySetup(incoming);
+
+  // Si lo que viene está totalmente vacío, no pisa nada.
+  if (daySetupHasData(cur) && !daySetupHasData(inc)) return cur;
+
+  const incomingIsNewer = getDaySetupUpdatedTime(inc) >= getDaySetupUpdatedTime(cur);
+  const base = incomingIsNewer ? deepCopy(inc) : deepCopy(cur);
+  const other = incomingIsNewer ? cur : inc;
+
+  // Aunque la fila nueva tenga nota/stock, NO dejamos que openCash positivo se vuelva 0 por accidente.
+  base.openCash = mergeNumberKeepPositive(other.openCash, base.openCash);
+
+  // Mantiene estructuras completas para evitar undefined al renderizar.
+  return normalizeDaySetup(base, base.updatedAt || base.updated_at || other.updatedAt || other.updated_at || "");
+}
+
 function mergeDaySetupCaches(...sources){
   const out = {};
 
@@ -2989,15 +3025,7 @@ function mergeDaySetupCaches(...sources){
         return;
       }
 
-      // Protección anti-cero: si ya tenemos caja/inventario con datos,
-      // una lectura vacía o antigua de Supabase NO debe pisarla.
-      if (daySetupHasData(current) && !daySetupHasData(normalized)) {
-        return;
-      }
-
-      if (getDaySetupUpdatedTime(normalized) >= getDaySetupUpdatedTime(current)) {
-        out[dateKey] = normalized;
-      }
+      out[dateKey] = mergeDaySetupKeepingCash(current, normalized);
     });
   });
 
@@ -3195,39 +3223,22 @@ function saveOrderLog(log){
   });
 }
 
-function getDefaultDaySetup(){
-  return {
-    openCash: 0,
-    note: "",
-    stockInit: { oneL:0, halfPlastic:0, glass:0, water:0 },
-    stockInitItems: {
-      wingsKg:0, potatoBags:0, broasterPieces:0, burgerBread:0, burgerMeat:0,
-      cheese:0, egg:0, chorizo:0, bacon:0
-    },
-    stockEnd: { oneL:0, halfPlastic:0, glass:0, water:0 },
-    updatedAt: ""
-  };
-}
-
 function getDaySetupAll(){
-  // Al refrescar la página, primero recupera lo guardado en este equipo.
-  // Antes DAY_SETUP_CACHE arrancaba vacío y el admin podía pintar Caja 0.00.
-  DAY_SETUP_CACHE = mergeDaySetupCaches(getLocalDaySetupAll(), DAY_SETUP_CACHE);
   return deepCopy(DAY_SETUP_CACHE);
 }
 
 function getDaySetup(dateKey){
   const all = getDaySetupAll();
-  const def = getDefaultDaySetup();
-  const saved = normalizeDaySetup(all[dateKey] || {});
-
-  return {
-    ...def,
-    ...saved,
-    stockInit: { ...def.stockInit, ...(saved.stockInit || {}) },
-    stockInitItems: { ...def.stockInitItems, ...(saved.stockInitItems || {}) },
-    stockEnd: { ...def.stockEnd, ...(saved.stockEnd || {}) }
-  };
+  return normalizeDaySetup(all[dateKey] || {
+    openCash: 0,
+    note: "",
+    stockInit: { oneL:0, halfPlastic:0, glass:0, water:0 },
+    stockEnd: { oneL:0, halfPlastic:0, glass:0, water:0 },
+    stockInitItems: {
+      wingsKg:0, potatoBags:0, broasterPieces:0, burgerBread:0, burgerMeat:0,
+      cheese:0, egg:0, chorizo:0, bacon:0
+    }
+  });
 }
 
 async function syncDaySetupToCloud(dateKey){
@@ -3308,31 +3319,10 @@ async function syncDaySetupToCloud(dateKey){
 
 async function saveDaySetup(dateKey, setup){
   const nowIso = new Date().toISOString();
-
-  // Primero mezcla lo local para no perder datos al refrescar o al entrar rápido al admin.
-  DAY_SETUP_CACHE = mergeDaySetupCaches(getLocalDaySetupAll(), DAY_SETUP_CACHE);
-
-  const previous = getDaySetup(dateKey);
-  const incoming = normalizeDaySetup(setup || {});
-
-  const next = {
-    ...previous,
-    ...incoming,
-    stockInit: { ...previous.stockInit, ...(incoming.stockInit || {}) },
-    stockInitItems: { ...previous.stockInitItems, ...(incoming.stockInitItems || {}) },
-    stockEnd: { ...previous.stockEnd, ...(incoming.stockEnd || {}) },
+  DAY_SETUP_CACHE[dateKey] = {
+    ...deepCopy(setup),
     updatedAt: nowIso
   };
-
-  // Protección anti-borrado: si ya había caja inicial y por un refresh/carga vacía
-  // llega 0, NO permitimos que pise la caja guardada.
-  if (safeNum(previous.openCash) > 0 && safeNum(incoming.openCash) <= 0) {
-    next.openCash = Number(safeNum(previous.openCash).toFixed(2));
-  } else {
-    next.openCash = Number(safeNum(next.openCash).toFixed(2));
-  }
-
-  DAY_SETUP_CACHE[dateKey] = next;
 
   // 1) Guarda inmediato en este celular/navegador para que NO desaparezca.
   saveLocalDaySetupAll(DAY_SETUP_CACHE);
@@ -3447,8 +3437,16 @@ stockInitBacon.value = safeInt(s.stockInitItems?.bacon) || "";
     }
 
     function readDaySetupFromForm(){
+      const dateKey = adminDate && adminDate.value ? adminDate.value : getDateKeyLocal(new Date());
+      const previousSetup = getDaySetup(dateKey);
+      const rawOpenCash = String(openCashInput.value || "").trim().replace(",", ".");
+      const previousOpenCash = safeNum(previousSetup.openCash);
+      const finalOpenCash = rawOpenCash === "" && previousOpenCash > 0
+        ? previousOpenCash
+        : Number(safeNum(rawOpenCash).toFixed(2));
+
       return {
-        openCash: Number(safeNum(openCashInput.value).toFixed(2)),
+        openCash: finalOpenCash,
         note: String(openCloseNoteInput.value || "").trim(),
         stockInit: {
           oneL: safeInt(stockInit1L.value),
@@ -5276,12 +5274,7 @@ document.querySelectorAll(".item-card").forEach(card => {
     adminUnlocked = true;
     adminAuth.style.display = "none";
     adminContent.style.display = "block";
-
-    const dateKey = getDateKeyLocal(new Date());
-    adminDate.value = dateKey;
-
-    // Carga caja/ventas antes de pintar el formulario.
-    await initCloudSync(dateKey);
+    adminDate.value = getDateKeyLocal(new Date());
     await renderAdmin(true);
   } else {
     adminAuth.style.display = "block";
@@ -5309,12 +5302,9 @@ document.querySelectorAll(".item-card").forEach(card => {
   adminPass.value = "";
   adminAuth.style.display = "none";
   adminContent.style.display = "block";
+  adminDate.value = getDateKeyLocal(new Date());
 
-  const dateKey = getDateKeyLocal(new Date());
-  adminDate.value = dateKey;
-
-  // Antes se pintaba el admin sin esperar la nube/local, por eso Caja podía salir 0.00.
-  await initCloudSync(dateKey);
+  await initCloudSync(adminDate.value);
   await renderAdmin(true);
 });
 
@@ -5359,35 +5349,7 @@ setInterval(async () => {
   if (!adminModal || !adminModal.classList.contains("open")) return;
   const dateKey = adminDate.value || getDateKeyLocal(new Date());
   await initCloudSync(dateKey);
-}, 5000);
-
-// Realtime real por Supabase si la tabla tiene Realtime habilitado.
-// Si no está habilitado, igual queda el respaldo del setInterval de 5 segundos.
-try {
-  supabaseClient
-    .channel("pdm_admin_live_caja")
-    .on("postgres_changes", { event:"*", schema:"public", table:ORDERS_TABLE }, async (payload) => {
-      if (!adminUnlocked || !adminModal || !adminModal.classList.contains("open")) return;
-      const dateKey = adminDate.value || getDateKeyLocal(new Date());
-      const row = payload?.new || payload?.old || {};
-      const rowDate = row.date_key || "";
-      const rowId = String(row.order_id || "");
-      if (rowDate === dateKey || rowId === ("DAY_SETUP_" + dateKey)) {
-        await initCloudSync(dateKey);
-      }
-    })
-    .on("postgres_changes", { event:"*", schema:"public", table:DAY_SETUP_TABLE }, async (payload) => {
-      if (!adminUnlocked || !adminModal || !adminModal.classList.contains("open")) return;
-      const dateKey = adminDate.value || getDateKeyLocal(new Date());
-      const row = payload?.new || payload?.old || {};
-      if (!row.date_key || row.date_key === dateKey) {
-        await initCloudSync(dateKey);
-      }
-    })
-    .subscribe();
-} catch(e) {
-  console.warn("Realtime admin no disponible, se mantiene actualización cada 5 segundos.", e);
-}
+}, 12000);
 
  disableNavWhatsapp();
 if (bottomBar) bottomBar.classList.add("hidden");
@@ -5396,10 +5358,6 @@ renderCart();
 
 adminAuth.style.display = "block";
 adminContent.style.display = "none";
-
-// Carga inmediata desde localStorage para que al actualizar la página no aparezca Caja 0.00.
-ORDER_LOG_CACHE = mergeOrderLogs(getLocalOrderLog(), ORDER_LOG_CACHE);
-DAY_SETUP_CACHE = mergeDaySetupCaches(getLocalDaySetupAll(), DAY_SETUP_CACHE);
 
 initCloudSync(getDateKeyLocal(new Date()));
   const ALITAS_IMG_DEFAULT = "alitas-bbq.JPG";
