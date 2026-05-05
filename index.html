@@ -400,17 +400,6 @@ height:65px;
       color:#fff;
     }
 
-    /* FIX CHECKBOX CELULAR: evita demora/doble toque en checks y botones */
-    input[type="checkbox"], input[type="radio"], label, button, select {
-      touch-action: manipulation;
-    }
-    input[type="checkbox"], input[type="radio"]{
-      width:18px;
-      height:18px;
-      vertical-align:middle;
-      accent-color:#ffd60a;
-    }
-
     button, a.btn{
       padding:7px 10px;
       border-radius:4px;
@@ -443,6 +432,16 @@ height:65px;
       opacity:1;
     }
     #btn-whatsapp.disabled{ background:#555 !important; color:#fff !important; box-shadow:none !important; text-shadow:none !important; }
+
+    #btn-print-client{ background:#0ea5e9; color:#fff; font-weight:700; }
+    #btn-print-kitchen{ background:#22c55e; color:#000; font-weight:700; }
+    #btn-register-sale{ background:#22c55e; color:#052e16; font-weight:800; }
+    /* Ocultar botones internos para clientes */
+#btn-print-kitchen,
+#btn-print-client,
+#btn-register-sale{
+  display:none !important;
+}
 
     .carrito{
       margin-top:30px;
@@ -483,7 +482,7 @@ height:65px;
     }
     #btn-clear{ background:#6c757d; color:#fff; font-weight:bold; }
 
-    #boleta-virtual, #comanda-cocina{
+    #boleta-virtual, #comanda-cocina, #admin-summary-ticket{
       margin-top:15px;
       padding:12px;
       border-radius:6px;
@@ -493,10 +492,11 @@ height:65px;
       line-height:1.45;
       color:#000;
     }
-    #boleta-virtual hr, #comanda-cocina hr{
+    #boleta-virtual hr, #comanda-cocina hr, #admin-summary-ticket hr{
       border:none; border-top:1px dashed #000; margin:6px 0;
     }
     #comanda-cocina{ display:none; }
+    #admin-summary-ticket{ display:none; }
 
     .extras{ margin-top:15px; font-size:13px; }
     .extras-row{ display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap; }
@@ -597,9 +597,284 @@ height:65px;
       gap:8px;
       align-items:center;
       flex-shrink:0;
-      padding-top:0;
+      padding-top:34px;
     }
 
+    .admin-access-btn{
+      position:absolute;
+      top:0;
+      right:0;
+      z-index:4;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid #facc15;
+      background:rgba(17,24,39,.92);
+      color:#fde68a;
+      font-weight:900;
+      font-size:12px;
+      white-space:nowrap;
+      box-shadow:0 0 12px rgba(250,204,21,.45);
+      backdrop-filter:blur(6px);
+    }
+    .admin-access-btn:hover{
+      background:#facc15;
+      color:#111827;
+      opacity:1;
+    }
+    @media (max-width:600px){
+      .social-links{
+        padding-top:32px;
+      }
+      .admin-access-btn{
+        padding:5px 9px;
+        font-size:11px;
+      }
+    }
+
+    .admin-modal{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.92);
+      z-index:9999;
+      display:none;
+    }
+    .admin-modal.open{ display:block; }
+    .admin-box{
+      position:absolute;
+      inset:10px;
+      border-radius:14px;
+      border:1px solid #334155;
+      background:#0b1220;
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+    }
+    .admin-header{
+      padding:10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border-bottom:1px solid #1e293b;
+      background:#020617;
+    }
+    .admin-header h3{
+      margin:0;
+      font-size:16px;
+      color:#fde68a;
+    }
+    .admin-body{
+      padding:10px;
+      overflow:auto;
+      -webkit-overflow-scrolling:touch;
+    }
+
+    .admin-row{
+      display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;
+    }
+    .admin-row button{ border-radius:10px; }
+
+    .admin-card-grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap:10px;
+      margin:10px 0;
+    }
+    .admin-card{
+      background:#020617;
+      border:1px solid #1e293b;
+      border-radius:12px;
+      padding:10px;
+    }
+    .admin-card .label{ font-size:11px; color:#cbd5e1; }
+    .admin-card .value{ font-size:18px; font-weight:900; color:#fde68a; margin-top:4px; }
+
+    .admin-three{
+      display:grid;
+      grid-template-columns: 1.2fr 1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+    @media (max-width:900px){
+      .admin-three{ grid-template-columns:1fr; }
+    }
+
+    .admin-box-list{
+      border:1px solid #1e293b;
+      border-radius:12px;
+      background:#020617;
+      overflow:auto;
+      max-height:360px;
+    }
+    .admin-item{
+      padding:10px;
+      border-bottom:1px dashed #1e293b;
+      color:#e5e7eb;
+      font-size:12px;
+      line-height:1.35;
+    }
+    .admin-item:last-child{ border-bottom:none; }
+    .admin-item .top{
+      display:flex; justify-content:space-between; gap:10px;
+      font-weight:900; color:#fde68a;
+    }
+    .admin-item .meta{ margin-top:4px; color:#93c5fd; }
+    .admin-item .sub{ margin-top:4px; color:#e5e7eb; }
+
+    .pill{
+      display:inline-flex; align-items:center; gap:6px;
+      border:1px solid #334155;
+      background:#0b1220;
+      padding:4px 8px;
+      border-radius:999px;
+      color:#e5e7eb;
+      font-size:11px;
+      white-space:nowrap;
+    }
+    .btn-mini{
+      padding:6px 8px;
+      border-radius:10px;
+      border:1px solid #334155;
+      background:#111827;
+      color:#fde68a;
+      font-size:11px;
+      font-weight:900;
+    }
+
+    .summary-box{
+      border:1px solid #1e293b;
+      border-radius:12px;
+      background:#020617;
+      padding:8px;
+      max-height:260px;
+      overflow:auto;
+      color:#e5e7eb;
+      font-size:12px;
+    }
+    .summary-row{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      padding:6px 0;
+      border-bottom:1px dashed #1e293b;
+    }
+    .summary-row:last-child{ border-bottom:none; }
+    .summary-row b{ color:#fde68a; }
+
+    .print-guide{
+      border:1px dashed #fbbf24;
+      border-radius:12px;
+      padding:10px;
+      background: rgba(251,191,36,0.08);
+      color:#fde68a;
+      font-size:12px;
+      margin:10px 0;
+    }
+    .print-guide b{ color:#fff; }
+
+    .admin-item-annulled{
+      border-left:6px solid #dc2626;
+      background:linear-gradient(90deg, rgba(127,29,29,.55), rgba(23,9,9,.85));
+    }
+    .annulled-total{
+      color:#fecaca !important;
+      font-weight:900;
+      text-shadow:0 0 8px rgba(239,68,68,.35);
+    }
+    .annulled-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      background:#7f1d1d;
+      color:#fff;
+      border:1px solid #ef4444;
+      border-radius:999px;
+      padding:5px 10px;
+      font-size:12px;
+      font-weight:900;
+      box-shadow:0 0 10px rgba(239,68,68,.22);
+    }
+    .btn-annul{
+      background:#b91c1c !important;
+      color:#fff !important;
+      border:1px solid #ef4444 !important;
+    }
+    .btn-reactivate{
+      background:#166534 !important;
+      color:#dcfce7 !important;
+      border:1px solid #22c55e !important;
+    }
+    .btn-disabled-look{
+      opacity:.45;
+      pointer-events:none;
+      filter:grayscale(100%);
+    }
+
+    .admin-form-block{
+      border:1px solid #1e293b;
+      border-radius:12px;
+      background:#020617;
+      padding:10px;
+      margin-top:10px;
+    }
+    .admin-form-block h4{
+      margin:0 0 8px;
+      color:#fde68a;
+      font-size:14px;
+    }
+    .admin-grid-3{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+    }
+    @media (max-width:800px){
+      .admin-grid-3{ grid-template-columns:1fr; }
+    }
+    .admin-field label{
+      display:block;
+      font-size:12px;
+      color:#cbd5e1;
+      margin-bottom:4px;
+    }
+    .admin-field input, .admin-field select{
+      width:100%;
+      box-sizing:border-box;
+      font-size:13px;
+    }
+    .mini-note{
+      font-size:11px;
+      color:#94a3b8;
+      margin-top:6px;
+      line-height:1.35;
+    }
+    .stock-table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:12px;
+      color:#e5e7eb;
+    }
+    .stock-table th,.stock-table td{
+      border-bottom:1px dashed #1e293b;
+      padding:6px;
+      text-align:left;
+    }
+    .stock-table th{ color:#fde68a; }
+    .good{ color:#86efac; font-weight:900; }
+    .bad{ color:#fca5a5; font-weight:900; }
+    .warn{ color:#fde68a; font-weight:900; }
+    .ruleta-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid #fbbf24;
+      color:#fde68a;
+      background:rgba(251,191,36,.12);
+      font-size:11px;
+      font-weight:900;
+      margin-top:4px;
+    }
     /* FASE 2 - ALITAS estilo app */
 #alitas + .menu-grid{
   display:grid;
@@ -757,17 +1032,6 @@ height:65px;
   color:#fff;
   font-size:13px;
 }
-
-
-    /* FIX CHECKS CELULAR: respuesta inmediata en taps */
-    input[type="checkbox"], input[type="radio"], button, select, label{
-      touch-action: manipulation;
-    }
-    input[type="checkbox"], input[type="radio"]{
-      width:18px;
-      height:18px;
-      vertical-align:middle;
-    }
   </style>
 </head>
 
@@ -786,6 +1050,7 @@ height:65px;
       </div>
 
       <div class="social-links">
+  <button id="nav-admin" class="admin-access-btn" type="button">🔐 Admin</button>
   <a class="fb-icon" href="https://www.facebook.com/profile.php?id=100093146827040&sk=about" target="_blank" aria-label="Facebook">f</a>
 
   <a class="fb-icon" 
@@ -929,20 +1194,462 @@ height:65px;
 
       <div class="carrito-actions">
         <button id="btn-clear">Vaciar pedido</button>
+        <button id="btn-print-kitchen" type="button">👨‍🍳 Comanda cocina</button>
+        <button id="btn-print-client" type="button">🧾 Boleta cliente</button>
+        <button id="btn-register-sale" type="button">✅ Registrar venta</button>
         <a id="btn-whatsapp" href="#" target="_blank" class="btn disabled">Enviar pedido por WhatsApp</a>
       </div>
 
       <p id="error-msg" class="error-msg"></p>
 
+      <div id="admin-summary-ticket"></div>
     </div>
   </div>
 
+  <div class="admin-modal" id="adminModal">
+    <div class="admin-box">
+      <div class="admin-header">
+        <h3>🔐 Administrador (local)</h3>
+        <button class="admin-close" id="adminClose" type="button">Cerrar ✖</button>
+      </div>
+      <div class="admin-body">
+        <div id="adminAuth">
+          <label style="display:block; margin-bottom:6px;">Clave:</label>
+          <input type="password" id="adminPass" placeholder="Ingresa clave" style="width:100%;">
+          <div class="help-text">
+            Este admin guarda historial, caja inicial, inventario y premios en <b>este dispositivo</b>.
+          </div>
+          <div class="admin-row" style="margin-top:10px;">
+            <button id="adminLogin" type="button" style="background:#f59e0b;">Ingresar</button>
+          </div>
+        </div>
+
+        <div id="adminContent" style="display:none;">
+          <div class="admin-row">
+            <button id="adminRefresh" type="button" style="background:#3b82f6;color:#fff;font-weight:900;">Actualizar</button>
+            <button id="adminSaveOpenClose" type="button" style="background:#8b5cf6;color:#fff;font-weight:900;">Guardar datos del día</button>
+            <button id="adminPrintSummary" type="button" style="background:#0ea5e9;color:#fff;font-weight:900;">🖨️ Imprimir resumen</button>
+            <button id="adminExport" type="button" style="background:#10b981;color:#052e16;font-weight:900;">Exportar JSON</button>
+            <button id="adminLogout" type="button" style="background:#ef4444;color:#fff;font-weight:900;">Salir</button>
+          </div>
+          <div class="admin-form-block">
+  <h4>🧾 Acciones del pedido actual</h4>
+
+  <div class="admin-row">
+    <button type="button" style="background:#22c55e;color:#000;font-weight:900;"
+      onclick="document.getElementById('btn-print-kitchen').click();">
+      👨‍🍳 Comanda cocina
+    </button>
+
+    <button type="button" style="background:#0ea5e9;color:#fff;font-weight:900;"
+      onclick="document.getElementById('btn-print-client').click();">
+      🧾 Boleta cliente
+    </button>
+
+    <button type="button" style="background:#22c55e;color:#052e16;font-weight:900;"
+      onclick="document.getElementById('btn-register-sale').click();">
+      ✅ Registrar venta
+    </button>
+  </div>
+
+  <div class="mini-note">
+    Estas acciones son solo para administrador o moza. El cliente no las ve en la carta pública.
+  </div>
+</div>
+
+          <div class="print-guide">
+            <div style="font-weight:900;">━━━━━━━━━━ INICIO BLOQUE QUE SE IMPRIME ━━━━━━━━━━</div>
+            <div>Se imprime <b>solo</b> el “Resumen del día” al presionar <b>Imprimir resumen</b>.</div>
+            <div style="font-weight:900; margin-top:6px;">━━━━━━━━━━ FIN BLOQUE QUE SE IMPRIME ━━━━━━━━━━━</div>
+          </div>
+
+          <label style="display:block;margin:8px 0 6px;">Fecha a revisar:</label>
+          <input type="date" id="adminDate" style="width:100%;">
+
+          <div class="admin-form-block">
+            <h4>💵 Caja del día</h4>
+            <div class="admin-grid-3">
+              <div class="admin-field">
+                <label for="openCashInput">Caja inicial</label>
+                <input type="number" id="openCashInput" min="0" step="0.01" placeholder="0.00">
+              </div>
+              <div class="admin-field">
+                <label for="openCloseNoteInput">Observación (opcional)</label>
+                <input type="text" id="openCloseNoteInput" placeholder="Ej: turno tarde / caja entregada">
+              </div>
+              <div class="admin-field">
+                <label style="opacity:0;">espacio</label>
+                <input type="text" value="Solo caja inicial para no confundir" disabled>
+              </div>
+            </div>
+            <div class="mini-note">
+              Se mostrará solo la caja inicial para que la moza no se confunda.
+            </div>
+          </div>
+
+          <div class="admin-form-block">
+            <h4>🥤 Inventario inicial y final de bebidas</h4>
+            <div class="admin-grid-3">
+              <div class="admin-field">
+                <label>Inicial gaseosa 1L</label>
+                <input type="number" id="stockInit1L" min="0" step="1" placeholder="0">
+              </div>
+              <div class="admin-field">
+                <label>Inicial 1/2L plástico</label>
+                <input type="number" id="stockInitHalfPlastic" min="0" step="1" placeholder="0">
+              </div>
+              <div class="admin-field">
+                <label>Inicial vidrio/personal</label>
+                <input type="number" id="stockInitGlass" min="0" step="1" placeholder="0">
+              </div>
+              <div class="admin-field">
+                <label>Inicial agua mineral</label>
+                <input type="number" id="stockInitWater" min="0" step="1" placeholder="0">
+              </div>
+              <div class="admin-field">
+                <label>Final contado 1L</label>
+                <input type="number" id="stockEnd1L" min="0" step="1" placeholder="0">
+              </div>
+              <div class="admin-field">
+                <label>Final contado 1/2L plástico</label>
+                <input type="number" id="stockEndHalfPlastic" min="0" step="1" placeholder="0">
+              </div>
+              <div class="admin-field">
+                <label>Final contado vidrio/personal</label>
+                <input type="number" id="stockEndGlass" min="0" step="1" placeholder="0">
+              </div>
+              <div class="admin-field">
+                <label>Final contado agua mineral</label>
+                <input type="number" id="stockEndWater" min="0" step="1" placeholder="0">
+              </div>
+            </div>
+            <div class="mini-note">
+              El stock teórico se descuenta automáticamente por ventas válidas y por premios que regalen gaseosa personal.
+            </div>
+          </div>
+
+          <div class="admin-card-grid">
+            <div class="admin-card"><div class="label">Pedidos válidos</div><div class="value" id="mOrders">0</div></div>
+            <div class="admin-card"><div class="label">Sin entregar</div><div class="value" id="mPending">0</div></div>
+            <div class="admin-card"><div class="label">Entregadas</div><div class="value" id="mDelivered">0</div></div>
+            <div class="admin-card"><div class="label">Anulados</div><div class="value" id="mCanceled">0</div></div>
+            <div class="admin-card"><div class="label">Venta total (S/)</div><div class="value" id="mSales">0.00</div></div>
+            <div class="admin-card"><div class="label">Efectivo (S/)</div><div class="value" id="mCash">0.00</div></div>
+            <div class="admin-card"><div class="label">Yape (S/)</div><div class="value" id="mYape">0.00</div></div>
+
+            <div class="admin-card"><div class="label">Caja inicial (S/)</div><div class="value" id="mOpenCash">0.00</div></div>
+            <div class="admin-card"><div class="label">Premios usados</div><div class="value" id="mRuletaCount">0</div></div>
+            <div class="admin-card"><div class="label">Bolsas papa 170g</div><div class="value" id="mPotatoBags">0</div></div>
+            <div class="admin-card"><div class="label">Alitas (pzas)</div><div class="value" id="mWingsPieces">0</div></div>
+            <div class="admin-card"><div class="label">Alitas (kg aprox)</div><div class="value" id="mWingsKg">0.00</div></div>
+
+            <div class="admin-card"><div class="label">Presas broaster</div><div class="value" id="mBroasterPieces">0</div></div>
+            <div class="admin-card"><div class="label">Burgers (unidades)</div><div class="value" id="mBurgerUnits">0</div></div>
+            <div class="admin-card"><div class="label">Delivery (S/)</div><div class="value" id="mDelivery">0.00</div></div>
+            <div class="admin-card"><div class="label">Tapers (S/)</div><div class="value" id="mTapers">0.00</div></div>
+            <div class="admin-card"><div class="label">Venta hoy (S/)</div><div class="value" id="mTodaySales">0.00</div></div>
+<div class="admin-card"><div class="label">Venta ayer (S/)</div><div class="value" id="mYesterdaySales">0.00</div></div>
+<div class="admin-card"><div class="label">Semana actual (S/)</div><div class="value" id="mWeekSales">0.00</div></div>
+<div class="admin-card"><div class="label">Promedio diario (S/)</div><div class="value" id="mAvgDailySales">0.00</div></div>
+<div class="admin-card"><div class="label">Compras semana (S/)</div><div class="value" id="mWeeklyPurchases">0.00</div></div>
+            <div class="admin-card"><div class="label">Compras hoy (S/)</div><div class="value" id="mDailyPurchases">0.00</div></div>
+<div class="admin-card"><div class="label">Gastos fijos semana (S/)</div><div class="value" id="mWeeklyFixed">0.00</div></div>
+<div class="admin-card"><div class="label">Gasto total semana (S/)</div><div class="value" id="mWeeklyTotalCost">0.00</div></div>
+          </div>
+<h3 style="margin:12px 0 6px; color:#fde68a;">Gráfico de ventas semanales</h3>
+<div class="summary-box" id="weekChart"></div>
+          <div class="admin-three">
+            <div>
+              <h3 style="margin:10px 0 6px; color:#fde68a;">Resumen por producto (cant.)</h3>
+              <div class="summary-box" id="prodSummary"></div>
+            </div>
+            <div>
+              <h3 style="margin:10px 0 6px; color:#fde68a;">Bebidas (cant.)</h3>
+              <div class="summary-box" id="drinkSummary"></div>
+            </div>
+            <div>
+              <h3 style="margin:10px 0 6px; color:#fde68a;">Premios</h3>
+  <div class="summary-box" id="ruletaSummary"></div>
+</div>
+
+<div>
+  <h3 style="margin:10px 0 6px; color:#fde68a;">Resumen semanal</h3>
+  <div class="summary-box" id="weekSummary"></div>
+  <h3 style="margin:10px 0 6px; color:#fde68a;">Detalle compras semana</h3>
+<div class="summary-box" id="weeklyPurchasesDetail"></div>
+
+<h3 style="margin:10px 0 6px; color:#fde68a;">Detalle gastos fijos</h3>
+<div class="summary-box" id="weeklyFixedDetail"></div>
+</div>
+            </div>
+  
+
+          <h3 style="margin:12px 0 6px; color:#fde68a;">Control de stock bebidas</h3>
+          <div class="admin-form-block" style="margin-top:0;">
+            <table class="stock-table" id="stockControlTable">
+              <thead>
+                <tr>
+                  <th>Bebida</th>
+                  <th>Inicial</th>
+                  <th>Vendidas</th>
+                  <th>Premio</th>
+                  <th>Final teórico</th>
+                  <th>Final contado</th>
+                  <th>Diferencia</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <h3 style="margin:10px 0 6px; color:#fde68a;">Pedidos del día (estado)</h3>
+          <div class="admin-box-list" id="ordersList"></div>
+          <h3 style="margin:10px 0 6px; color:#fde68a;">Stock inicial por insumo</h3>
+
+<div class="admin-form-block">
+  <div class="admin-grid-3">
+    <div class="admin-field">
+      <label for="stockInitWingsKg">Alitas inicial (kg)</label>
+      <input type="number" id="stockInitWingsKg" min="0" step="0.01" placeholder="0.00">
+    </div>
+
+    <div class="admin-field">
+      <label for="stockInitPotatoBags">Papa inicial (bolsas 170g)</label>
+      <input type="number" id="stockInitPotatoBags" min="0" step="1" placeholder="0">
+    </div>
+
+    <div class="admin-field">
+      <label for="stockInitBroasterPieces">Presas broaster inicial</label>
+      <input type="number" id="stockInitBroasterPieces" min="0" step="1" placeholder="0">
+    </div>
+
+    <div class="admin-field">
+      <label for="stockInitBurgerBread">Pan burger inicial</label>
+      <input type="number" id="stockInitBurgerBread" min="0" step="1" placeholder="0">
+    </div>
+
+    <div class="admin-field">
+      <label for="stockInitBurgerMeat">Carne burger inicial</label>
+      <input type="number" id="stockInitBurgerMeat" min="0" step="1" placeholder="0">
+    </div>
+
+    <div class="admin-field">
+      <label for="stockInitCheese">Queso tajada inicial</label>
+      <input type="number" id="stockInitCheese" min="0" step="1" placeholder="0">
+    </div>
+
+    <div class="admin-field">
+      <label for="stockInitEgg">Huevo inicial</label>
+      <input type="number" id="stockInitEgg" min="0" step="1" placeholder="0">
+    </div>
+
+    <div class="admin-field">
+      <label for="stockInitChorizo">Chorizo inicial</label>
+      <input type="number" id="stockInitChorizo" min="0" step="1" placeholder="0">
+    </div>
+
+    <div class="admin-field">
+      <label for="stockInitBacon">Tocino inicial</label>
+      <input type="number" id="stockInitBacon" min="0" step="1" placeholder="0">
+    </div>
+  </div>
+
+  <div class="mini-note">
+    Aquí colocas con cuánto stock empieza el día. Luego se usará para calcular: stock inicial + compras - consumo automático - ajustes.
+  </div>
+</div>
+          <h3 style="margin:10px 0 6px; color:#fde68a;">🛒 Compras del día</h3>
+
+<div class="admin-form-block">
+  <div class="admin-grid-3">
+    <div class="admin-field">
+  <label for="purchaseProductInput">Insumo comprado</label>
+  <select id="purchaseProductInput">
+    <option value="">Selecciona insumo</option>
+    <option value="Alitas kg">Alitas kg</option>
+    <option value="Papa bolsa 170g">Papa bolsa 170g</option>
+    <option value="Presas broaster">Presas broaster</option>
+    <option value="Pan burger">Pan burger</option>
+    <option value="Carne burger">Carne burger</option>
+    <option value="Queso tajada">Queso tajada</option>
+    <option value="Huevo">Huevo</option>
+    <option value="Chorizo">Chorizo</option>
+    <option value="Tocino">Tocino</option>
+    <option value="Gaseosa 1L">Gaseosa 1L</option>
+    <option value="Gaseosa 1/2L plástico">Gaseosa 1/2L plástico</option>
+    <option value="Gaseosa vidrio/personal">Gaseosa vidrio/personal</option>
+    <option value="Agua mineral">Agua mineral</option>
+    <option value="Mayonesa">Mayonesa</option>
+    <option value="Ketchup">Ketchup</option>
+    <option value="Mostaza">Mostaza</option>
+    <option value="Aceite">Aceite</option>
+    <option value="Arroz">Arroz</option>
+    <option value="Hotdog">Hotdog</option>
+    <option value="Bolsas / empaques">Bolsas / empaques</option>
+    <option value="Otro / no inventariable">Otro / no inventariable</option>
+  </select>
+</div>
+
+    <div class="admin-field">
+      <label for="purchaseQtyInput">Cantidad</label>
+      <input type="number" id="purchaseQtyInput" min="0" step="0.01" placeholder="Ej: 10">
+    </div>
+
+    <div class="admin-field">
+      <label for="purchaseUnitInput">Unidad</label>
+      <input type="text" id="purchaseUnitInput" placeholder="Ej: kg, saco, balde, unidad">
+    </div>
+
+    <div class="admin-field">
+      <label for="purchaseCostInput">Costo total S/</label>
+      <input type="number" id="purchaseCostInput" min="0" step="0.01" placeholder="0.00">
+    </div>
+
+    <div class="admin-field">
+      <label for="purchaseNoteInput">Nota</label>
+      <input type="text" id="purchaseNoteInput" placeholder="Ej: compra lunes / mercado">
+    </div>
+
+    <div class="admin-field">
+      <label style="opacity:0;">Guardar</label>
+      <button id="purchaseSaveBtn" type="button" style="background:#10b981;color:#052e16;font-weight:900;width:100%;">
+        Guardar compra
+      </button>
+    </div>
+  </div>
+
+  <div class="mini-note">
+    Selecciona el insumo comprado para que luego el sistema pueda calcular el stock real. Usa "Otro / no inventariable" para gastos que no entran al inventario.
+  </div>
+</div>
+
+<h3 style="margin:10px 0 6px; color:#fde68a;">Compras registradas del día</h3>
+<div class="admin-box-list" id="purchaseList"></div>
+          <h3 style="margin:10px 0 6px; color:#fde68a;">Consumo automático por ventas</h3>
+
+<div class="admin-form-block">
+  <div class="admin-card-grid">
+    <div class="admin-card">
+      <div class="label">Alitas vendidas</div>
+      <div class="value" id="autoWingsPieces">0 pzas</div>
+    </div>
+
+    <div class="admin-card">
+      <div class="label">Alitas aprox.</div>
+      <div class="value" id="autoWingsKg">0.00 kg</div>
+    </div>
+
+    <div class="admin-card">
+      <div class="label">Papas usadas</div>
+      <div class="value" id="autoPotatoBags">0 bolsas</div>
+    </div>
+
+    <div class="admin-card">
+      <div class="label">Presas broaster</div>
+      <div class="value" id="autoBroasterPieces">0</div>
+    </div>
+
+    <div class="admin-card">
+      <div class="label">Burgers vendidas</div>
+      <div class="value" id="autoBurgerUnits">0</div>
+    </div>
+
+    <div class="admin-card">
+      <div class="label">Delivery cobrado</div>
+      <div class="value" id="autoDeliveryTotal">S/ 0.00</div>
+    </div>
+
+    <div class="admin-card">
+      <div class="label">Tapers usados</div>
+      <div class="value" id="autoTapersTotal">S/ 0.00</div>
+    </div>
+  </div>
+
+  <div class="mini-note">
+    Este consumo se calcula automáticamente con los pedidos válidos del día. Los pedidos anulados no se cuentan.
+  </div>
+</div>
+          <h3 style="margin:10px 0 6px; color:#fde68a;">Stock real estimado</h3>
+
+<div class="admin-form-block">
+  <table class="stock-table" id="realStockTable">
+    <thead>
+      <tr>
+        <th>Insumo</th>
+        <th>Inicial</th>
+        <th>Compras</th>
+        <th>Consumo automático</th>
+        <th>Stock estimado</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div class="mini-note">
+    Este stock es estimado: stock inicial + compras del día - consumo automático por ventas válidas.
+  </div>
+</div>
+          <h3 style="margin:10px 0 6px; color:#fde68a;">Consumo manual / ajustes</h3>
+<div class="admin-form-block">
+  <div class="admin-grid-3">
+    <div class="admin-field">
+      <label for="usageItemSelect">Producto</label>
+      <select id="usageItemSelect"></select>
+    </div>
+    <div class="admin-field">
+      <label for="usageQtyInput">Cantidad usada</label>
+      <input type="number" id="usageQtyInput" min="0" step="0.01" placeholder="0.00">
+    </div>
+    <div class="admin-field">
+      <label for="usageUnitInput">Unidad</label>
+      <input type="text" id="usageUnitInput" placeholder="Ej: kg, unidad, bolsa_170g">
+    </div>
+  </div>
+
+  <div class="admin-field" style="margin-top:10px;">
+    <label for="usageNoteInput">Nota</label>
+    <input type="text" id="usageNoteInput" placeholder="Ej: consumo cocina noche / merma / personal">
+  </div>
+
+  <div class="admin-row" style="margin-top:10px;">
+    <button id="usageSaveBtn" type="button" style="background:#10b981;color:#052e16;font-weight:900;">Guardar consumo</button>
+  </div>
+
+  <div class="mini-note">
+    Este bloque es para ajustes manuales: merma, comida del personal, regalos, errores o consumos que no salen automáticamente por ventas.
+  </div>
+</div>
+
+<h3 style="margin:10px 0 6px; color:#fde68a;">Ajustes manuales registrados del día</h3>
+<div class="admin-box-list" id="usageList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 <div class="bottom-bar-mobile hidden" id="bottom-bar">
   <span id="bottom-total">Total: S/ 0.00</span>
   <button id="bottom-ver-pedido">Ver pedido</button>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
+const SUPABASE_URL = "https://defdwzzewzfjuseozwkn.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    persistSession: false
+  }
+});
+const ORDERS_TABLE = "orders_cloud";
+const DAY_SETUP_TABLE = "day_setup_cloud";
+const PURCHASES_TABLE = "daily_purchases";
+
+let ORDER_LOG_CACHE = [];
+let DAY_SETUP_CACHE = {};
+let CLOUD_READY = true;
+let CLOUD_FAILED = false;
+
 function deepCopy(obj){
   return JSON.parse(JSON.stringify(obj));
 }
@@ -950,6 +1657,10 @@ function deepCopy(obj){
     const LOCATION_TEXT_FOR_OWNER = "📍 Ubicación: (cliente enviará su ubicación por WhatsApp)";
     const OPEN_HOUR = 17, OPEN_MIN = 30;
     const CLOSE_HOUR = 24, CLOSE_MIN = 0;
+    const ORDER_LOG_STORAGE_KEY = "pdm_order_log_v16";
+    const DAY_SETUP_STORAGE_KEY = "pdm_day_setup_v16";
+    const ADMIN_PASSWORD = "181221";
+  const ADMIN_SESSION_KEY = "pdm_admin_logged_v1";
     const STICKY_OFFSET = 105;
     const WINGS_PER_KG = 16.5;
 
@@ -1506,7 +2217,7 @@ function deepCopy(obj){
           noneCb.type = "checkbox";
           noneCb.value = "SIN_SALSA";
           noneCb.name = `salsa-none-${item.id}`;
-          noneCb.addEventListener("change", () => actualizarImagenAlitasCard(card));
+          noneCb.addEventListener("change", () => setTimeout(() => actualizarImagenAlitasCard(card), 0));
           noneLabel.appendChild(noneCb);
           noneLabel.appendChild(document.createTextNode(" Sin salsa"));
           noneWrap.appendChild(noneLabel);
@@ -1518,7 +2229,7 @@ function deepCopy(obj){
             cb.type = "checkbox";
             cb.value = sauce;
             cb.name = `salsa-${item.id}`;
-            cb.addEventListener("change", () => actualizarImagenAlitasCard(card));
+            cb.addEventListener("change", () => setTimeout(() => actualizarImagenAlitasCard(card), 0));
             label.appendChild(cb);
             label.appendChild(document.createTextNode(" " + sauce.replace("Salsa ", "")));
             saucesDiv.appendChild(label);
@@ -1529,7 +2240,7 @@ function deepCopy(obj){
           const aparteCb = document.createElement("input");
           aparteCb.type = "checkbox";
           aparteCb.name = `salsa-aparte-${item.id}`;
-          aparteCb.addEventListener("change", () => actualizarImagenAlitasCard(card));
+          aparteCb.addEventListener("change", () => setTimeout(() => actualizarImagenAlitasCard(card), 0));
           aparteLabel.appendChild(aparteCb);
           aparteLabel.appendChild(document.createTextNode(" Salsas aparte"));
           aparteWrapper.appendChild(aparteLabel);
@@ -1633,101 +2344,82 @@ function deepCopy(obj){
 
         const btn = document.createElement("button");
         btn.textContent = "Agregar";
-        btn.addEventListener("click", (e) => {
-          e.preventDefault();
+        btn.addEventListener("click", () => {
+          if (CURRENT_ORDER_LOCKED) {
+            alert("Este pedido ya fue registrado. Vacía el pedido para iniciar uno nuevo.");
+            return;
+          }
 
-          if (btn.dataset.agregando === "1") return;
-          btn.dataset.agregando = "1";
+          const qty = Math.max(1, Number(qtyInput.value) || 1);
 
-          esperarEstadoRealDelCheck(() => {
-            try {
-              if (CURRENT_ORDER_LOCKED) {
-                alert("Este pedido ya fue registrado. Vacía el pedido para iniciar uno nuevo.");
-                return;
-              }
+          let selectedSauces = [];
+          let sauceApart = false;
+          let selectedBrand = null;
+          let noSauce = false;
 
-              const qty = Math.max(1, Number(qtyInput.value) || 1);
+          if (section.sauceMode === "multi") {
+            const noSauceCb = card.querySelector(`input[name="salsa-none-${item.id}"]`);
+            noSauce = !!(noSauceCb && noSauceCb.checked);
 
-              let selectedSauces = [];
-              let sauceApart = false;
-              let selectedBrand = null;
-              let noSauce = false;
+            selectedSauces = Array.from(card.querySelectorAll(`input[name="salsa-${item.id}"]:checked`))
+              .map(el => el.value);
 
-              if (section.sauceMode === "multi") {
-                const noSauceCb = card.querySelector(`input[name="salsa-none-${item.id}"]`);
-                noSauce = !!(noSauceCb && noSauceCb.checked);
+            const maxSalsas = getSauceMaxForItemName(item.name);
 
-                selectedSauces = Array.from(card.querySelectorAll(`input[name="salsa-${item.id}"]`))
-                  .filter(el => el.checked === true)
-                  .map(el => el.value);
-
-                const maxSalsas = getSauceMaxForItemName(item.name);
-
-                if (noSauce && selectedSauces.length > 0) {
-                  alert(`No puedes marcar "Sin salsa" y otras salsas a la vez en "${item.name}".`);
-                  return;
-                }
-                if (!noSauce && selectedSauces.length === 0) {
-                  alert(`Elige al menos 1 salsa o marca "Sin salsa" para "${item.name}".`);
-                  return;
-                }
-                if (selectedSauces.length > maxSalsas) {
-                  alert(`Máximo ${maxSalsas} salsas para "${item.name}".`);
-                  return;
-                }
-
-                const aparteCb = card.querySelector(`input[name="salsa-aparte-${item.id}"]`);
-                sauceApart = !!(aparteCb && aparteCb.checked);
-                if (noSauce) sauceApart = false;
-              }
-
-              if (section.sauceMode === "single") {
-                const sel = card.querySelector(`select[name="salsa-select-${item.id}"]`);
-                if (!sel || !sel.value) {
-                  alert(`Elige una opción de salsa para "${item.name}".`);
-                  return;
-                }
-
-                if (isNoSauceValue(sel.value)) {
-                  noSauce = true;
-                  selectedSauces = [];
-                } else {
-                  selectedSauces = [sel.value];
-                }
-                sauceApart = false;
-              }
-
-              const brandSel = card.querySelector(`select[name="brand-${item.id}"]`);
-              if (brandSel) {
-                if (!brandSel.value) {
-                  alert("Elige la opción (marca).");
-                  return;
-                }
-                selectedBrand = brandSel.value;
-              }
-
-              addToCart(item, qty, selectedSauces, sauceApart, selectedBrand, noSauce);
-
-              // Limpieza doble y segura: al instante y luego de que el navegador repinte.
-              limpiarTarjetaPedido(card);
-              setTimeout(() => limpiarTarjetaPedido(card), 80);
-
-              const originalText = "Agregar";
-              btn.textContent = "✔ Añadido";
-              btn.disabled = true;
-
-              setTimeout(() => {
-                btn.textContent = originalText;
-                btn.disabled = false;
-              }, 350);
-
-            } finally {
-              setTimeout(() => { btn.dataset.agregando = "0"; }, 120);
+            if (noSauce && selectedSauces.length > 0) {
+              alert(`No puedes marcar "Sin salsa" y otras salsas a la vez en "${item.name}".`);
+              return;
             }
-          });
+            if (!noSauce && selectedSauces.length === 0) {
+              alert(`Elige al menos 1 salsa o marca "Sin salsa" para "${item.name}".`);
+              return;
+            }
+            if (selectedSauces.length > maxSalsas) {
+              alert(`Máximo ${maxSalsas} salsas para "${item.name}".`);
+              return;
+            }
+
+            const aparteCb = card.querySelector(`input[name="salsa-aparte-${item.id}"]`);
+            sauceApart = !!(aparteCb && aparteCb.checked);
+            if (noSauce) sauceApart = false;
+          }
+
+          if (section.sauceMode === "single") {
+            const sel = card.querySelector(`select[name="salsa-select-${item.id}"]`);
+            if (!sel || !sel.value) {
+              alert(`Elige una opción de salsa para "${item.name}".`);
+              return;
+            }
+
+            if (isNoSauceValue(sel.value)) {
+              noSauce = true;
+              selectedSauces = [];
+            } else {
+              selectedSauces = [sel.value];
+            }
+            sauceApart = false;
+          }
+
+          const brandSel = card.querySelector(`select[name="brand-${item.id}"]`);
+          if (brandSel) {
+            if (!brandSel.value) { alert("Elige la opción (marca)."); return; }
+            selectedBrand = brandSel.value;
+          }
+          
+addToCart(item, qty, selectedSauces, sauceApart, selectedBrand, noSauce);
+
+// Efecto visual del botón
+const originalText = btn.textContent;
+btn.textContent = "✔ Añadido";
+btn.disabled = true;
+
+setTimeout(() => {
+  btn.textContent = originalText;
+  btn.disabled = false;
+}, 900);
         });
 
-actions.appendChild(qtyInput);
+        actions.appendChild(qtyInput);
         actions.appendChild(btn);
         card.appendChild(actions);
 
@@ -1743,6 +2435,14 @@ actions.appendChild(qtyInput);
         note.style.color = "#ccc";
         note.textContent = section.footerText;
         menuContainer.appendChild(note);
+      }
+    });
+
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest("button");
+      if (!btn) return;
+      if (String(btn.textContent || "").trim().toLowerCase().includes("agregar")) {
+        programarLimpiezaMenu();
       }
     });
 
@@ -1784,7 +2484,92 @@ actions.appendChild(qtyInput);
     const boletaEl = document.getElementById("boleta-virtual");
     const comandaEl = document.getElementById("comanda-cocina");
 
-    // Admin, caja e inventario fueron removidos del index público.
+    const adminModal = document.getElementById("adminModal");
+    const navAdmin = document.getElementById("nav-admin");
+    const adminClose = document.getElementById("adminClose");
+    const adminAuth = document.getElementById("adminAuth");
+    const adminContent = document.getElementById("adminContent");
+    const adminPass = document.getElementById("adminPass");
+    const adminLogin = document.getElementById("adminLogin");
+    const adminLogout = document.getElementById("adminLogout");
+    const adminRefresh = document.getElementById("adminRefresh");
+    const adminPrintSummary = document.getElementById("adminPrintSummary");
+    const adminExport = document.getElementById("adminExport");
+    const adminDate = document.getElementById("adminDate");
+    const adminSaveOpenClose = document.getElementById("adminSaveOpenClose");
+
+    const openCashInput = document.getElementById("openCashInput");
+    const openCloseNoteInput = document.getElementById("openCloseNoteInput");
+
+    const stockInit1L = document.getElementById("stockInit1L");
+    const stockInitHalfPlastic = document.getElementById("stockInitHalfPlastic");
+    const stockInitGlass = document.getElementById("stockInitGlass");
+    const stockInitWater = document.getElementById("stockInitWater");
+  const stockInitWingsKg = document.getElementById("stockInitWingsKg");
+const stockInitPotatoBags = document.getElementById("stockInitPotatoBags");
+const stockInitBroasterPieces = document.getElementById("stockInitBroasterPieces");
+const stockInitBurgerBread = document.getElementById("stockInitBurgerBread");
+const stockInitBurgerMeat = document.getElementById("stockInitBurgerMeat");
+const stockInitCheese = document.getElementById("stockInitCheese");
+const stockInitEgg = document.getElementById("stockInitEgg");
+const stockInitChorizo = document.getElementById("stockInitChorizo");
+const stockInitBacon = document.getElementById("stockInitBacon");
+    const stockEnd1L = document.getElementById("stockEnd1L");
+    const stockEndHalfPlastic = document.getElementById("stockEndHalfPlastic");
+    const stockEndGlass = document.getElementById("stockEndGlass");
+    const stockEndWater = document.getElementById("stockEndWater");
+
+    const mOrders = document.getElementById("mOrders");
+    const mCanceled = document.getElementById("mCanceled");
+    const mSales = document.getElementById("mSales");
+    const mCash = document.getElementById("mCash");
+    const mYape = document.getElementById("mYape");
+    const mDelivery = document.getElementById("mDelivery");
+    const mTapers = document.getElementById("mTapers");
+    const mOpenCash = document.getElementById("mOpenCash");
+    const mRuletaCount = document.getElementById("mRuletaCount");
+
+    const mPotatoBags = document.getElementById("mPotatoBags");
+    const mWingsPieces = document.getElementById("mWingsPieces");
+    const mWingsKg = document.getElementById("mWingsKg");
+    const mBroasterPieces = document.getElementById("mBroasterPieces");
+    const mBurgerUnits = document.getElementById("mBurgerUnits");
+  const autoWingsPieces = document.getElementById("autoWingsPieces");
+const autoWingsKg = document.getElementById("autoWingsKg");
+const autoPotatoBags = document.getElementById("autoPotatoBags");
+const autoBroasterPieces = document.getElementById("autoBroasterPieces");
+const autoBurgerUnits = document.getElementById("autoBurgerUnits");
+const autoDeliveryTotal = document.getElementById("autoDeliveryTotal");
+const autoTapersTotal = document.getElementById("autoTapersTotal");
+
+    const prodSummary = document.getElementById("prodSummary");
+    const drinkSummary = document.getElementById("drinkSummary");
+    const ruletaSummary = document.getElementById("ruletaSummary");
+    const ordersList = document.getElementById("ordersList");
+    const stockControlTableBody = document.querySelector("#stockControlTable tbody");
+  const realStockTableBody = document.querySelector("#realStockTable tbody");
+    const weeklyPurchasesDetail = document.getElementById("weeklyPurchasesDetail");
+const weeklyFixedDetail = document.getElementById("weeklyFixedDetail");
+    const mWeeklyPurchases = document.getElementById("mWeeklyPurchases");
+const mWeeklyFixed = document.getElementById("mWeeklyFixed");
+const mWeeklyTotalCost = document.getElementById("mWeeklyTotalCost");
+  const mDailyPurchases = document.getElementById("mDailyPurchases");
+
+const purchaseProductInput = document.getElementById("purchaseProductInput");
+const purchaseQtyInput = document.getElementById("purchaseQtyInput");
+const purchaseUnitInput = document.getElementById("purchaseUnitInput");
+const purchaseCostInput = document.getElementById("purchaseCostInput");
+const purchaseNoteInput = document.getElementById("purchaseNoteInput");
+const purchaseSaveBtn = document.getElementById("purchaseSaveBtn");
+const purchaseList = document.getElementById("purchaseList");
+
+const PURCHASES_STORAGE_KEY = "pdm_daily_purchases_v1";
+const usageItemSelect = document.getElementById("usageItemSelect");
+const usageQtyInput = document.getElementById("usageQtyInput");
+const usageUnitInput = document.getElementById("usageUnitInput");
+const usageNoteInput = document.getElementById("usageNoteInput");
+const usageSaveBtn = document.getElementById("usageSaveBtn");
+const usageList = document.getElementById("usageList");
  async function getPurchasesFromCloud(){
   const { data, error } = await supabaseClient
     .from(PURCHASES_TABLE)
@@ -2014,6 +2799,104 @@ async function loadUsageToday() {
   `).join("");
 }
 
+purchaseSaveBtn.addEventListener("click", async () => {
+  const product = (purchaseProductInput.value || "").trim();
+  const qty = safeNum(purchaseQtyInput.value);
+  const unit = (purchaseUnitInput.value || "").trim();
+  const cost = safeNum(purchaseCostInput.value);
+  const note = (purchaseNoteInput.value || "").trim();
+
+  const dateKey = adminDate.value || getDateKeyLocal(new Date());
+
+  if (!product) {
+    alert("Escribe el producto comprado.");
+    return;
+  }
+
+  if (!(cost > 0)) {
+    alert("Ingresa un costo válido.");
+    return;
+  }
+
+  const newPurchase = {
+    id: String(Date.now()) + "_" + Math.floor(Math.random() * 9999),
+    date_key: dateKey,
+    product,
+    qty,
+    unit,
+    cost,
+    note,
+    created_at: new Date().toISOString()
+  };
+
+  const { error } = await supabaseClient
+    .from(PURCHASES_TABLE)
+    .insert([newPurchase]);
+
+  if (error) {
+    console.error("Error guardando compra:", error);
+    alert("No se pudo guardar la compra en Supabase.");
+    return;
+  }
+
+  purchaseProductInput.value = "";
+  purchaseQtyInput.value = "";
+  purchaseUnitInput.value = "";
+  purchaseCostInput.value = "";
+  purchaseNoteInput.value = "";
+
+  await renderAdmin();
+
+  alert("Compra guardada en la nube ✅");
+});
+  usageSaveBtn.addEventListener("click", async () => {
+  const item_id = parseInt(usageItemSelect.value, 10);
+  const cantidad = parseFloat(usageQtyInput.value || "0");
+  const unidad = (usageUnitInput.value || "").trim();
+  const nota = (usageNoteInput.value || "").trim();
+  const fecha = getDateKeyLocal(new Date());
+
+  if (!item_id) {
+    alert("Selecciona un producto");
+    return;
+  }
+
+  if (!(cantidad > 0)) {
+    alert("Ingresa una cantidad válida");
+    return;
+  }
+
+  const res = await fetch(SUPABASE_URL + "/rest/v1/inventory_usage", {
+    method: "POST",
+    headers: {
+      "apikey": SUPABASE_ANON_KEY,
+      "Authorization": "Bearer " + SUPABASE_ANON_KEY,
+      "Content-Type": "application/json",
+      "Prefer": "return=representation"
+    },
+    body: JSON.stringify({
+      fecha,
+      item_id,
+      cantidad_usada: cantidad,
+      unidad_uso: unidad,
+      nota
+    })
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    console.error("Error guardando consumo:", errText);
+    alert("No se pudo guardar el consumo");
+    return;
+  }
+
+  usageQtyInput.value = "";
+  usageUnitInput.value = "";
+  usageNoteInput.value = "";
+
+  await loadUsageToday();
+  alert("Consumo guardado ✅");
+});
     let adminUnlocked = false;
 
   function readLocalJSON(key, fallback){
@@ -2312,17 +3195,38 @@ function saveOrderLog(log){
   });
 }
 
+function getDefaultDaySetup(){
+  return {
+    openCash: 0,
+    note: "",
+    stockInit: { oneL:0, halfPlastic:0, glass:0, water:0 },
+    stockInitItems: {
+      wingsKg:0, potatoBags:0, broasterPieces:0, burgerBread:0, burgerMeat:0,
+      cheese:0, egg:0, chorizo:0, bacon:0
+    },
+    stockEnd: { oneL:0, halfPlastic:0, glass:0, water:0 },
+    updatedAt: ""
+  };
+}
+
 function getDaySetupAll(){
+  // Al refrescar la página, primero recupera lo guardado en este equipo.
+  // Antes DAY_SETUP_CACHE arrancaba vacío y el admin podía pintar Caja 0.00.
+  DAY_SETUP_CACHE = mergeDaySetupCaches(getLocalDaySetupAll(), DAY_SETUP_CACHE);
   return deepCopy(DAY_SETUP_CACHE);
 }
 
 function getDaySetup(dateKey){
   const all = getDaySetupAll();
-  return all[dateKey] || {
-    openCash: 0,
-    note: "",
-    stockInit: { oneL:0, halfPlastic:0, glass:0, water:0 },
-    stockEnd: { oneL:0, halfPlastic:0, glass:0, water:0 }
+  const def = getDefaultDaySetup();
+  const saved = normalizeDaySetup(all[dateKey] || {});
+
+  return {
+    ...def,
+    ...saved,
+    stockInit: { ...def.stockInit, ...(saved.stockInit || {}) },
+    stockInitItems: { ...def.stockInitItems, ...(saved.stockInitItems || {}) },
+    stockEnd: { ...def.stockEnd, ...(saved.stockEnd || {}) }
   };
 }
 
@@ -2404,10 +3308,31 @@ async function syncDaySetupToCloud(dateKey){
 
 async function saveDaySetup(dateKey, setup){
   const nowIso = new Date().toISOString();
-  DAY_SETUP_CACHE[dateKey] = {
-    ...deepCopy(setup),
+
+  // Primero mezcla lo local para no perder datos al refrescar o al entrar rápido al admin.
+  DAY_SETUP_CACHE = mergeDaySetupCaches(getLocalDaySetupAll(), DAY_SETUP_CACHE);
+
+  const previous = getDaySetup(dateKey);
+  const incoming = normalizeDaySetup(setup || {});
+
+  const next = {
+    ...previous,
+    ...incoming,
+    stockInit: { ...previous.stockInit, ...(incoming.stockInit || {}) },
+    stockInitItems: { ...previous.stockInitItems, ...(incoming.stockInitItems || {}) },
+    stockEnd: { ...previous.stockEnd, ...(incoming.stockEnd || {}) },
     updatedAt: nowIso
   };
+
+  // Protección anti-borrado: si ya había caja inicial y por un refresh/carga vacía
+  // llega 0, NO permitimos que pise la caja guardada.
+  if (safeNum(previous.openCash) > 0 && safeNum(incoming.openCash) <= 0) {
+    next.openCash = Number(safeNum(previous.openCash).toFixed(2));
+  } else {
+    next.openCash = Number(safeNum(next.openCash).toFixed(2));
+  }
+
+  DAY_SETUP_CACHE[dateKey] = next;
 
   // 1) Guarda inmediato en este celular/navegador para que NO desaparezca.
   saveLocalDaySetupAll(DAY_SETUP_CACHE);
@@ -2776,43 +3701,12 @@ function ensureCloudReady(actionText = "usar el sistema"){
   });
 }
 
-
-function limpiarTarjetaPedido(card){
-  if (!card) return;
-
-  card.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-    cb.checked = false;
-    cb.defaultChecked = false;
-    cb.removeAttribute("checked");
-  });
-
-  card.querySelectorAll("select").forEach(sel => {
-    sel.selectedIndex = 0;
-    sel.value = "";
-  });
-
-  card.querySelectorAll('input[type="number"]').forEach(inp => {
-    inp.value = "1";
-  });
-
-  const img = card.dataset.cardImg || card.dataset.fixedAlitasImg || "alitas-bbq.JPG";
-  card.style.setProperty("--alitas-img", `url("${img}")`);
-  const photo = card.querySelector(".card-photo");
-  if (photo) photo.src = img;
-}
-
-function esperarEstadoRealDelCheck(callback){
-  // En algunos celulares el check se pinta visualmente antes de que JS lea .checked.
-  // Esperamos 2 frames cortos para que el PRIMER click en Agregar ya tome la salsa.
-  requestAnimationFrame(() => {
-    setTimeout(callback, 35);
-  });
-}
-
 function programarLimpiezaMenu(){
-  // Limpieza inmediata y segura: se llama SOLO después de que addToCart ya leyó
-  // las salsas/checks y ya pintó el carrito. Así el primer click agrega y desmarca.
-  limpiarSeleccionMenu();
+  requestAnimationFrame(() => limpiarSeleccionMenu());
+  setTimeout(limpiarSeleccionMenu, 50);
+  setTimeout(limpiarSeleccionMenu, 150);
+  setTimeout(limpiarSeleccionMenu, 400);
+  setTimeout(limpiarSeleccionMenu, 900);
 }
 
 function resetPedidoSiEstaVacio(){
@@ -2874,6 +3768,7 @@ function addToCart(item, qty, sauces, sauceApart, brand, noSauce) {
       cart.splice(index, 1);
       renderCart();
       resetPedidoSiEstaVacio();
+      programarLimpiezaMenu();
     }
 
     function changeQty(index, delta) {
@@ -2886,6 +3781,7 @@ function addToCart(item, qty, sauces, sauceApart, brand, noSauce) {
       if (cart[index].qty <= 0) cart.splice(index, 1);
       renderCart();
       resetPedidoSiEstaVacio();
+      programarLimpiezaMenu();
     }
         function buildClientTicketHTML(ctx){
       let html = `
@@ -3283,13 +4179,11 @@ function addToCart(item, qty, sauces, sauceApart, brand, noSauce) {
         errorMsg.textContent = "";
       }
 
-      if (btnPrintKitchen) btnPrintKitchen.disabled = false;
-      if (btnPrintClient) btnPrintClient.disabled = false;
-      if (btnRegisterSale) {
-        btnRegisterSale.disabled = CURRENT_ORDER_LOCKED;
-        if (CURRENT_ORDER_LOCKED) btnRegisterSale.classList.add("btn-disabled-look");
-        else btnRegisterSale.classList.remove("btn-disabled-look");
-      }
+      btnPrintKitchen.disabled = false;
+      btnPrintClient.disabled = false;
+      btnRegisterSale.disabled = CURRENT_ORDER_LOCKED;
+      if (CURRENT_ORDER_LOCKED) btnRegisterSale.classList.add("btn-disabled-look");
+      else btnRegisterSale.classList.remove("btn-disabled-look");
     }
 
     function isAnnulledOrder(row){
@@ -4307,7 +5201,7 @@ document.querySelectorAll(".item-card").forEach(card => {
 });
       renderCart();
       resetPedidoSiEstaVacio();
-      limpiarSeleccionMenu();
+      programarLimpiezaMenu();
     });
 
     btnWhatsapp.addEventListener("click", (e) => {
@@ -4317,10 +5211,197 @@ document.querySelectorAll(".item-card").forEach(card => {
       }
     });
 
+    btnPrintClient.addEventListener("click", () => {
+      if (!canProceedWithOrder(true)) return;
+      const ctx = getOrderContext();
+      sendToRawBT(buildClientTicketText(ctx));
+    });
+
+    btnPrintKitchen.addEventListener("click", () => {
+      if (!canProceedWithOrder(true)) return;
+      const ctx = getOrderContext();
+      sendToRawBT(buildKitchenTicketText(ctx));
+    });
+
+    btnRegisterSale.addEventListener("click", () => {
+      if (!canProceedWithOrder(true)) return;
+      const ok = registerSale("registrar_venta");
+      if (ok) alert("✅ Venta registrada en Administrador.");
+    });
+
+    adminExport.addEventListener("click", () => {
+      const dateKey = adminDate.value || getDateKeyLocal(new Date());
+      const log = getOrderLog().filter(r => r.dateKey === dateKey);
+      const daySetup = getDaySetup(dateKey);
+      const payload = { business:"EL PATRON DEL MAL", date:dateKey, generatedAt:new Date().toISOString(), daySetup, orders:log };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type:"application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `resumen_${dateKey}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+
+    adminSaveOpenClose.addEventListener("click", async () => {
+      const dateKey = adminDate.value || getDateKeyLocal(new Date());
+      const setupNow = readDaySetupFromForm();
+
+      // Guarda local y en nube. Aunque falle la nube, el formulario queda guardado y visible en este equipo.
+      const result = await saveDaySetup(dateKey, setupNow);
+
+      // Recalcula todo usando lo recién guardado.
+      await renderAdmin(true);
+
+      if (result && result.ok) {
+        alert("✅ Caja inicial e inventario guardados en la nube. El dueño/moza pueden presionar Actualizar o esperar unos segundos para verlo.");
+      } else {
+        alert("⚠️ Caja inicial e inventario quedaron guardados en ESTE celular, pero Supabase no confirmó la nube.\n\nPara verlo en vivo en otro celular, revisa que existan las tablas orders_cloud y day_setup_cloud y que permitan INSERT/UPDATE con anon key.\n\nDetalle: " + ((result && result.error) ? result.error : "sin detalle"));
+      }
+    });
+
+    adminPrintSummary.addEventListener("click", async () => {
+      const dateKey = adminDate.value || getDateKeyLocal(new Date());
+      await saveDaySetup(dateKey, readDaySetupFromForm());
+      const el = document.getElementById("admin-summary-ticket");
+      el.innerHTML = buildAdminSummaryTicketHTML(dateKey);
+      sendToRawBT(buildAdminSummaryTicketText(dateKey));
+    });
+
+  if (navAdmin) navAdmin.addEventListener("click", async () => {
+  adminModal.classList.add("open");
+
+  if (localStorage.getItem(ADMIN_SESSION_KEY) === "1") {
+    adminUnlocked = true;
+    adminAuth.style.display = "none";
+    adminContent.style.display = "block";
+
+    const dateKey = getDateKeyLocal(new Date());
+    adminDate.value = dateKey;
+
+    // Carga caja/ventas antes de pintar el formulario.
+    await initCloudSync(dateKey);
+    await renderAdmin(true);
+  } else {
+    adminAuth.style.display = "block";
+    adminContent.style.display = "none";
+    adminPass.value = "";
+    adminPass.focus();
+  }
+});
+    adminClose.addEventListener("click", () => adminModal.classList.remove("open"));
+
+
+    if (adminPass) adminPass.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") adminLogin.click();
+    });
+
+    adminLogin.addEventListener("click", async () => {
+  if (String(adminPass.value || "") !== ADMIN_PASSWORD) {
+    alert("Clave incorrecta.");
+    return;
+  }
+
+  adminUnlocked = true;
+  localStorage.setItem(ADMIN_SESSION_KEY, "1");
+
+  adminPass.value = "";
+  adminAuth.style.display = "none";
+  adminContent.style.display = "block";
+
+  const dateKey = getDateKeyLocal(new Date());
+  adminDate.value = dateKey;
+
+  // Antes se pintaba el admin sin esperar la nube/local, por eso Caja podía salir 0.00.
+  await initCloudSync(dateKey);
+  await renderAdmin(true);
+});
+
+    adminLogout.addEventListener("click", () => {
+  adminUnlocked = false;
+  localStorage.removeItem(ADMIN_SESSION_KEY);
+
+  adminAuth.style.display = "block";
+  adminContent.style.display = "none";
+  adminPass.value = "";
+
+  alert("Sesión admin cerrada.");
+});
+
+ adminRefresh.addEventListener("click", async () => {
+  const dateKey = adminDate.value || getDateKeyLocal(new Date());
+  await initCloudSync(dateKey);
+  await renderAdmin(true);
+  alert("🔄 Admin actualizado. Caja, ventas y comandas del día recargadas.");
+});
+
+  adminDate.addEventListener("change", async () => {
+  const dateKey = adminDate.value || getDateKeyLocal(new Date());
+  await initCloudSync(dateKey);
+  await renderAdmin(true);
+});
+
+[
+  openCashInput, openCloseNoteInput,
+  stockInit1L, stockInitHalfPlastic, stockInitGlass, stockInitWater,
+  stockEnd1L, stockEndHalfPlastic, stockEndGlass, stockEndWater,
+  stockInitWingsKg, stockInitPotatoBags, stockInitBroasterPieces,
+  stockInitBurgerBread, stockInitBurgerMeat, stockInitCheese,
+  stockInitEgg, stockInitChorizo, stockInitBacon
+].filter(Boolean).forEach(el => el.addEventListener("change", () => {
+  // no renderizar mientras escribes
+}));
+
+// Actualiza el admin automáticamente para que dueño y moza vean ventas/comandas en vivo.
+setInterval(async () => {
+  if (!adminUnlocked) return;
+  if (!adminModal || !adminModal.classList.contains("open")) return;
+  const dateKey = adminDate.value || getDateKeyLocal(new Date());
+  await initCloudSync(dateKey);
+}, 5000);
+
+// Realtime real por Supabase si la tabla tiene Realtime habilitado.
+// Si no está habilitado, igual queda el respaldo del setInterval de 5 segundos.
+try {
+  supabaseClient
+    .channel("pdm_admin_live_caja")
+    .on("postgres_changes", { event:"*", schema:"public", table:ORDERS_TABLE }, async (payload) => {
+      if (!adminUnlocked || !adminModal || !adminModal.classList.contains("open")) return;
+      const dateKey = adminDate.value || getDateKeyLocal(new Date());
+      const row = payload?.new || payload?.old || {};
+      const rowDate = row.date_key || "";
+      const rowId = String(row.order_id || "");
+      if (rowDate === dateKey || rowId === ("DAY_SETUP_" + dateKey)) {
+        await initCloudSync(dateKey);
+      }
+    })
+    .on("postgres_changes", { event:"*", schema:"public", table:DAY_SETUP_TABLE }, async (payload) => {
+      if (!adminUnlocked || !adminModal || !adminModal.classList.contains("open")) return;
+      const dateKey = adminDate.value || getDateKeyLocal(new Date());
+      const row = payload?.new || payload?.old || {};
+      if (!row.date_key || row.date_key === dateKey) {
+        await initCloudSync(dateKey);
+      }
+    })
+    .subscribe();
+} catch(e) {
+  console.warn("Realtime admin no disponible, se mantiene actualización cada 5 segundos.", e);
+}
+
  disableNavWhatsapp();
 if (bottomBar) bottomBar.classList.add("hidden");
 updateMixedPaymentVisibility();
 renderCart();
+
+adminAuth.style.display = "block";
+adminContent.style.display = "none";
+
+// Carga inmediata desde localStorage para que al actualizar la página no aparezca Caja 0.00.
+ORDER_LOG_CACHE = mergeOrderLogs(getLocalOrderLog(), ORDER_LOG_CACHE);
+DAY_SETUP_CACHE = mergeDaySetupCaches(getLocalDaySetupAll(), DAY_SETUP_CACHE);
+
+initCloudSync(getDateKeyLocal(new Date()));
   const ALITAS_IMG_DEFAULT = "alitas-bbq.JPG";
 
 function normalizarTextoSalsa(txt){
@@ -4449,9 +5530,11 @@ document.addEventListener("change", (e) => {
 
 document.addEventListener("click", (e) => {
   if (!e.target.matches('#alitas + .menu-grid input[type="checkbox"]')) return;
-  const card = e.target.closest(".item-card");
-  setTimeout(() => actualizarImagenAlitasCard(card), 0);
-}, false);
+  setTimeout(() => {
+    const card = e.target.closest(".item-card");
+    actualizarImagenAlitasCard(card);
+  }, 0);
+}, true);
   ["customer-name", "customer-dni", "order-comment"].forEach(id => {
   const el = document.getElementById(id);
   if (el) {
