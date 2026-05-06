@@ -1947,6 +1947,23 @@ body.home-screen .hero-carousel{
   box-shadow:0 0 14px rgba(255,214,10,.75);
 }
 
+
+/* En la zona de Tu pedido se ocultan redes laterales para no tapar botones */
+body.cart-view .social-links.floating-social{
+  display:none !important;
+}
+/* Datos del cliente más limpio en carta pública */
+.cliente-datos textarea{
+  min-height:56px;
+}
+@media (max-width:600px){
+  .cliente-datos{ padding:10px !important; }
+  .cliente-datos h3{ font-size:16px; margin-bottom:8px; }
+  .cliente-datos label{ font-size:12px; }
+  .cliente-datos input,
+  .cliente-datos textarea{ font-size:13px; }
+}
+
 </style>
 </head>
 
@@ -2073,10 +2090,6 @@ body.home-screen .hero-carousel{
         <label for="customer-name">Nombre del cliente (opcional):</label>
         <input type="text" id="customer-name" placeholder="Ej: Juan Pérez">
 
-        <label for="customer-dni">DNI del cliente (opcional):</label>
-        <input type="text" id="customer-dni" inputmode="numeric" maxlength="8" placeholder="Ej: 12345678">
-        <div class="help-text">No es obligatorio. Si lo llenan, saldrá en el resumen y en WhatsApp.</div>
-
         <label for="order-comment">Comentario del pedido / nota de moza (opcional):</label>
         <textarea id="order-comment" placeholder="Ej: 8 alitas → 6 acevichada y 2 BBQ / sin cebolla / cliente apurado"></textarea>
         <div class="help-text">Este campo te sirve para pedidos especiales o repartos exactos de salsa.</div>
@@ -2160,7 +2173,6 @@ function pad2(n){ return String(n).padStart(2,"0"); }
 function safeNum(n){ return Number.isFinite(Number(n)) ? Number(n) : 0; }
 function round2(n){ return Number((safeNum(n)).toFixed(2)); }
 function money(n){ return `S/ ${safeNum(n).toFixed(2)}`; }
-function sanitizeDniInput(v){ return String(v || "").replace(/\D/g, "").slice(0,8); }
 function cleanName(n){ return String(n || "").replace(/🔫|💣|👑|🕶|🔥|🍔|🧂|🥤|➕/g, "").trim(); }
 function shortSauces(arr){ return (arr || []).map(s => s.replace("Salsa ", "")).join(", "); }
 function isNoSauceValue(v){ return String(v || "").toUpperCase() === "SIN_SALSA"; }
@@ -2407,7 +2419,6 @@ const bottomCount = document.getElementById("bottom-count");
 const bottomProducts = document.getElementById("bottom-products");
 const bottomVerPedido = document.getElementById("bottom-ver-pedido");
 const inputName = document.getElementById("customer-name");
-const inputDni = document.getElementById("customer-dni");
 const inputComment = document.getElementById("order-comment");
 const paymentRadios = document.querySelectorAll('input[name="payment-method"]');
 const mixedPaymentBox = document.getElementById("mixed-payment-box");
@@ -2654,11 +2665,10 @@ function getCtx(){
   } else if (isPickup) { deliveryTextPrint="Recojo en local"; deliveryTextWA="🚶 Recojo en local (para llevar)"; }
   else if (isEatIn) { deliveryTextPrint="Consumo en local"; deliveryTextWA="🍽️ Comeré en el local"; }
   const total = round2(subtotal + taperFee + deliveryFee);
-  return { subtotal, taperCount, taperFee:round2(taperFee), deliveryFee:round2(deliveryFee), total, taperTextPrint:(isDelivery || isPickup) ? `${taperCount} und (S/ ${taperFee.toFixed(2)})` : "0 und (S/ 0.00)", deliveryTextPrint, deliveryTextWA, name:(inputName?.value||"").trim(), dni:sanitizeDniInput(inputDni?.value||""), comment:(inputComment?.value||"").trim(), paymentMethod:getPaymentMethod(), mixedYape:getPaymentMethod()==="mixto" ? safeNum(mixedYapeInput?.value) : 0, mixedCash:getPaymentMethod()==="mixto" ? safeNum(mixedCashInput?.value) : 0 };
+  return { subtotal, taperCount, taperFee:round2(taperFee), deliveryFee:round2(deliveryFee), total, taperTextPrint:(isDelivery || isPickup) ? `${taperCount} und (S/ ${taperFee.toFixed(2)})` : "0 und (S/ 0.00)", deliveryTextPrint, deliveryTextWA, name:(inputName?.value||"").trim(), comment:(inputComment?.value||"").trim(), paymentMethod:getPaymentMethod(), mixedYape:getPaymentMethod()==="mixto" ? safeNum(mixedYapeInput?.value) : 0, mixedCash:getPaymentMethod()==="mixto" ? safeNum(mixedCashInput?.value) : 0 };
 }
 function getErrors(ctx){
   const errors=[];
-  if (ctx.dni && ctx.dni.length !== 8) errors.push("⚠️ DNI debe tener 8 dígitos o dejarse vacío.");
   if (ctx.paymentMethod === "mixto") {
     const sum = round2(ctx.mixedYape + ctx.mixedCash);
     if (Math.abs(sum - ctx.total) > 0.009) errors.push(`⚠️ Pago mixto no cuadra. Total: S/ ${ctx.total.toFixed(2)} | Yape + efectivo: S/ ${sum.toFixed(2)}.`);
@@ -2670,7 +2680,7 @@ function buildTicket(ctx){
     const details = [e.noSauce ? "Sin salsa" : "", e.sauces?.length ? "Salsa: " + shortSauces(e.sauces) : "", e.sauceApart ? "Salsas aparte" : "", e.brand ? "Marca: " + e.brand : ""].filter(Boolean).join(" | ");
     return `<div style="display:flex;justify-content:space-between;gap:8px"><div>${e.qty} x ${cleanName(e.item.name)}${details ? `<br><small>${details}</small>` : ""}</div><b>${money(e.item.price*e.qty)}</b></div>`;
   }).join("");
-  return `<div style="text-align:center;font-weight:900">EL PATRÓN DEL MAL<br><small>Pedido N° ${dailyOrderNumber()}</small><br><small>Boleta virtual N° ${CURRENT_BOLETA || "------"}</small><br><small>${formatDateTime()}</small></div><hr>${rows}<hr><div style="display:flex;justify-content:space-between"><span>Subtotal</span><b>${money(ctx.subtotal)}</b></div><div style="display:flex;justify-content:space-between"><span>Tapers</span><b>${money(ctx.taperFee)}</b></div><div style="display:flex;justify-content:space-between"><span>Delivery</span><b>${money(ctx.deliveryFee)}</b></div><hr><div style="display:flex;justify-content:space-between;font-size:13px"><b>TOTAL</b><b>${money(ctx.total)}</b></div><hr><small><b>Pago:</b> ${paymentText(ctx)}<br><b>Cliente:</b> ${ctx.name || "No indicado"}${ctx.dni ? `<br><b>DNI:</b> ${ctx.dni}` : ""}<br><b>Tipo:</b> ${ctx.deliveryTextPrint}${ctx.comment ? `<br><b>Comentario:</b> ${ctx.comment}` : ""}</small>`;
+  return `<div style="text-align:center;font-weight:900">EL PATRÓN DEL MAL<br><small>Pedido N° ${dailyOrderNumber()}</small><br><small>Boleta virtual N° ${CURRENT_BOLETA || "------"}</small><br><small>${formatDateTime()}</small></div><hr>${rows}<hr><div style="display:flex;justify-content:space-between"><span>Subtotal</span><b>${money(ctx.subtotal)}</b></div><div style="display:flex;justify-content:space-between"><span>Tapers</span><b>${money(ctx.taperFee)}</b></div><div style="display:flex;justify-content:space-between"><span>Delivery</span><b>${money(ctx.deliveryFee)}</b></div><hr><div style="display:flex;justify-content:space-between;font-size:13px"><b>TOTAL</b><b>${money(ctx.total)}</b></div><hr><small><b>Pago:</b> ${paymentText(ctx)}<br><b>Cliente:</b> ${ctx.name || "No indicado"}<br><b>Tipo:</b> ${ctx.deliveryTextPrint}${ctx.comment ? `<br><b>Comentario:</b> ${ctx.comment}` : ""}</small>`;
 }
 function buildWhatsapp(ctx){
   const lines=[];
@@ -2694,7 +2704,6 @@ function buildWhatsapp(ctx){
   lines.push(`💳 *Pago:* ${paymentTextWA(ctx)}`);
   lines.push("━━━━━━━━━━━━━━━━━━━━");
   lines.push(`👤 *Cliente:* ${ctx.name || "No indicado"}`);
-  if (ctx.dni) lines.push(`🪪 *DNI:* ${ctx.dni}`);
   if (ctx.comment) lines.push(`📝 *Comentario:* ${ctx.comment}`);
   lines.push(LOCATION_TEXT_FOR_OWNER, "", "🙏 ¡Gracias por tu pedido! 🙌");
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join("\n"))}`;
@@ -2822,7 +2831,6 @@ if (bottomVerPedido) bottomVerPedido.addEventListener("click", () => {
   scrollToWithOffset(document.getElementById("carrito"));
 });
 if (inputName) inputName.addEventListener("input", renderCart);
-if (inputDni) inputDni.addEventListener("input", () => { inputDni.value = sanitizeDniInput(inputDni.value); renderCart(); });
 if (inputComment) inputComment.addEventListener("input", renderCart);
 paymentRadios.forEach(r => r.addEventListener("change", renderCart));
 if (mixedYapeInput) mixedYapeInput.addEventListener("input", renderCart);
