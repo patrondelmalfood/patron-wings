@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin - El Patrón del Mal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root{
+      --bg:#020617;
+      --card:#0b1220;
+      --card2:#111827;
+      --line:#1e293b;
+      --gold:#fde68a;
+      --gold2:#facc15;
+      --blue:#38bdf8;
+      --green:#22c55e;
+      --red:#ef4444;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial, sans-serif;
+      background:radial-gradient(circle at top,#111827 0,#020617 50%,#000 100%);
+      color:var(--text);
+      min-height:100vh;
+    }
+    .wrap{max-width:1180px;margin:0 auto;padding:14px}
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      background:rgba(2,6,23,.92);border:1px solid var(--line);border-radius:18px;
+      padding:12px 14px;margin-bottom:12px;position:sticky;top:0;z-index:5;backdrop-filter:blur(10px)
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:52px;height:52px;border-radius:50%;border:2px solid var(--gold2);background:#fff;object-fit:contain}
+    h1{font-size:20px;margin:0;color:var(--gold);line-height:1.2}
+    .sub{font-size:12px;color:var(--muted);margin-top:2px}
+    button,.btn{
+      border:0;border-radius:12px;padding:10px 12px;font-weight:900;cursor:pointer;
+      background:#f59e0b;color:#111827;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px
+    }
+    button:hover,.btn:hover{opacity:.92;transform:translateY(-1px)}
+    button:disabled{opacity:.55;cursor:not-allowed;transform:none}
+    .btn-blue{background:#0284c7;color:#fff}.btn-green{background:#16a34a;color:#052e16}.btn-red{background:#dc2626;color:#fff}.btn-dark{background:#1f2937;color:#fef3c7;border:1px solid #334155}.btn-purple{background:#7c3aed;color:#fff}
+    input,select,textarea{
+      width:100%;padding:10px;border-radius:12px;border:1px solid #334155;background:#020617;color:#fff;font-size:14px
+    }
+    label{font-size:12px;color:#cbd5e1;font-weight:700;display:block;margin-bottom:5px}
+    .login{
+      max-width:420px;margin:70px auto;background:rgba(15,23,42,.96);border:1px solid #334155;border-radius:20px;padding:18px;
+      box-shadow:0 18px 60px rgba(0,0,0,.45)
+    }
+    .login h2{margin:0 0 8px;color:var(--gold)}
+    .grid{display:grid;gap:12px}.grid-2{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:repeat(3,1fr)}.grid-4{grid-template-columns:repeat(4,1fr)}
+    .card{background:rgba(15,23,42,.92);border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.24)}
+    .metric{background:linear-gradient(180deg,#0b1220,#020617);border:1px solid #1e293b;border-radius:18px;padding:14px;min-height:98px}
+    .metric .label{font-size:12px;color:#cbd5e1}.metric .value{font-size:26px;font-weight:900;color:var(--gold);margin-top:8px;word-break:break-word}.metric .hint{font-size:11px;color:var(--muted);margin-top:5px}
+    .section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:18px 0 10px}
+    .section-title h2{font-size:17px;color:var(--gold);margin:0}
+    .controls{display:grid;grid-template-columns:1fr 1fr auto auto auto;gap:10px;align-items:end}
+    .status-pill{display:inline-flex;align-items:center;gap:7px;border:1px solid #334155;border-radius:999px;padding:7px 10px;background:#020617;color:#cbd5e1;font-size:12px}
+    .dot{width:9px;height:9px;border-radius:50%;background:#22c55e;box-shadow:0 0 10px #22c55e}.dot.red{background:#ef4444;box-shadow:0 0 10px #ef4444}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th,td{border-bottom:1px dashed #1e293b;padding:9px;text-align:left;vertical-align:top}th{color:var(--gold);font-size:12px;background:rgba(2,6,23,.55)}
+    .orders{display:grid;gap:10px}
+    .order{background:#020617;border:1px solid #1e293b;border-radius:16px;padding:12px}
+    .order.annulled{border-left:6px solid var(--red);background:linear-gradient(90deg,rgba(127,29,29,.35),#020617)}
+    .orderTop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}.orderTitle{font-weight:900;color:var(--gold)}
+    .small{font-size:12px;color:#cbd5e1;line-height:1.45}.muted{color:var(--muted)}.good{color:#86efac;font-weight:900}.bad{color:#fca5a5;font-weight:900}.warn{color:#fde68a;font-weight:900}
+    .tag{display:inline-flex;padding:4px 8px;border-radius:999px;border:1px solid #334155;background:#0b1220;color:#e5e7eb;font-size:11px;font-weight:900}
+    .tag.pending{border-color:#facc15;color:#fde68a}.tag.done{border-color:#22c55e;color:#86efac}.tag.cancel{border-color:#ef4444;color:#fecaca}
+    .actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.actions button{padding:7px 9px;border-radius:10px;font-size:12px}
+    .note{font-size:12px;color:#94a3b8;line-height:1.45;margin-top:8px}.hide{display:none!important}
+    .summarybox{max-height:340px;overflow:auto}.rowline{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed #1e293b}.rowline b{color:var(--gold)}
+    @media(max-width:850px){.grid-4,.grid-3,.grid-2{grid-template-columns:1fr}.controls{grid-template-columns:1fr}.topbar{position:relative;flex-direction:column;align-items:stretch}.brand{justify-content:center;text-align:center}.topbar .actions{justify-content:center}.metric .value{font-size:22px}}
+    @media print{
+      body{background:#fff;color:#000}.topbar,#loginBox,#controlsCard,#setupCard,#ordersCard,#productsCard,.no-print{display:none!important}.wrap{max-width:none;padding:0}.card,.metric{box-shadow:none;border:0;background:#fff;color:#000}.printOnly{display:block!important}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div id="loginBox" class="login">
+      <h2>🔐 Admin - El Patrón del Mal</h2>
+      <p class="sub">Ingresa la clave para ver ventas, caja y stock en vivo.</p>
+      <label for="adminPass">Clave</label>
+      <input id="adminPass" type="password" placeholder="Clave admin" autocomplete="current-password">
+      <button id="btnLogin" style="width:100%;margin-top:12px">Ingresar</button>
+      <p id="loginError" class="bad small"></p>
+    </div>
+
+    <div id="app" class="hide">
+      <div class="topbar">
+        <div class="brand">
+          <img src="LOGO.jpg" class="logo" alt="Logo">
+          <div>
+            <h1>Panel Admin - El Patrón del Mal</h1>
+            <div class="sub">Ventas, caja, pedidos y stock en vivo</div>
+          </div>
+        </div>
+        <div class="actions">
+          <span class="status-pill"><span id="liveDot" class="dot"></span><span id="liveStatus">Conectando...</span></span>
+          <button id="btnLogout" class="btn-red" type="button">Salir</button>
+        </div>
+      </div>
+
+      <div id="controlsCard" class="card">
+        <div class="controls">
+          <div>
+            <label for="adminDate">Fecha a revisar</label>
+            <input id="adminDate" type="date">
+          </div>
+          <div>
+            <label>Última actualización</label>
+            <div class="status-pill" style="width:100%;border-radius:12px"><span id="lastUpdate">--</span></div>
+          </div>
+          <button id="btnRefresh" class="btn-blue" type="button">Actualizar</button>
+          <button id="btnPrint" class="btn-purple" type="button">Imprimir resumen</button>
+          <a class="btn btn-dark" href="carta_moza_cocina.html" target="_blank">Abrir carta moza</a>
+        </div>
+        <div class="note">Este panel lee los pedidos que la moza registra desde <b>carta_moza_cocina.html</b>. También actualiza solo cada 5 segundos como respaldo.</div>
+      </div>
+
+      <div class="section-title"><h2>📊 Resumen del día</h2></div>
+      <div class="grid grid-4" id="metricsGrid">
+        <div class="metric"><div class="label">Pedidos válidos</div><div class="value" id="mOrders">0</div><div class="hint">No incluye anulados</div></div>
+        <div class="metric"><div class="label">Venta total</div><div class="value" id="mSales">S/ 0.00</div><div class="hint">Efectivo + Yape + mixto</div></div>
+        <div class="metric"><div class="label">Efectivo</div><div class="value" id="mCash">S/ 0.00</div><div class="hint">Dinero físico cobrado</div></div>
+        <div class="metric"><div class="label">Yape</div><div class="value" id="mYape">S/ 0.00</div><div class="hint">Cobros digitales</div></div>
+        <div class="metric"><div class="label">Caja inicial</div><div class="value" id="mOpenCash">S/ 0.00</div><div class="hint">Guardado del día</div></div>
+        <div class="metric"><div class="label">Caja final estimada</div><div class="value" id="mFinalCash">S/ 0.00</div><div class="hint">Caja inicial + efectivo</div></div>
+        <div class="metric"><div class="label">Total día con caja</div><div class="value" id="mFinalAll">S/ 0.00</div><div class="hint">Caja inicial + efectivo + yape</div></div>
+        <div class="metric"><div class="label">Anulados</div><div class="value" id="mCanceled">0</div><div class="hint">Pedidos anulados</div></div>
+        <div class="metric"><div class="label">Pendientes cocina</div><div class="value" id="mPending">0</div><div class="hint">Por preparar / entregar</div></div>
+        <div class="metric"><div class="label">Entregados</div><div class="value" id="mDelivered">0</div><div class="hint">Marcados como entregados</div></div>
+        <div class="metric"><div class="label">Delivery cobrado</div><div class="value" id="mDelivery">S/ 0.00</div><div class="hint">Solo pedidos válidos</div></div>
+        <div class="metric"><div class="label">Tapers</div><div class="value" id="mTapers">S/ 0.00</div><div class="hint">Solo pedidos válidos</div></div>
+      </div>
+
+      <div class="section-title"><h2>💵 Caja inicial y stock de bebidas</h2></div>
+      <div id="setupCard" class="card">
+        <div class="grid grid-3">
+          <div><label for="openCashInput">Caja inicial S/</label><input id="openCashInput" type="number" min="0" step="0.01" placeholder="0.00"></div>
+          <div><label for="setupNoteInput">Observación</label><input id="setupNoteInput" type="text" placeholder="Ej: turno noche"></div>
+          <div style="display:flex;align-items:end"><button id="btnSaveSetup" class="btn-green" type="button" style="width:100%">Guardar caja y stock</button></div>
+        </div>
+
+        <h3 style="color:var(--gold);font-size:15px;margin:16px 0 8px">Stock inicial</h3>
+        <div class="grid grid-4">
+          <div><label>Gaseosa 1L</label><input id="stockInitOneL" type="number" min="0" step="1" placeholder="0"></div>
+          <div><label>Gaseosa 296ml vidrio</label><input id="stockInitGlass" type="number" min="0" step="1" placeholder="0"></div>
+          <div><label>Gaseosa 600ml plástico</label><input id="stockInitPlastic" type="number" min="0" step="1" placeholder="0"></div>
+          <div><label>Agua mineral 750ml</label><input id="stockInitWater" type="number" min="0" step="1" placeholder="0"></div>
+        </div>
+
+        <h3 style="color:var(--gold);font-size:15px;margin:16px 0 8px">Stock final contado</h3>
+        <div class="grid grid-4">
+          <div><label>Final gaseosa 1L</label><input id="stockEndOneL" type="number" min="0" step="1" placeholder="0"></div>
+          <div><label>Final 296ml vidrio</label><input id="stockEndGlass" type="number" min="0" step="1" placeholder="0"></div>
+          <div><label>Final 600ml plástico</label><input id="stockEndPlastic" type="number" min="0" step="1" placeholder="0"></div>
+          <div><label>Final agua 750ml</label><input id="stockEndWater" type="number" min="0" step="1" placeholder="0"></div>
+        </div>
+        <div class="note">La venta de bebidas se descuenta automáticamente desde los pedidos registrados: gaseosa 1L, vidrio, 600ml y agua 750ml.</div>
+      </div>
+
+      <div class="section-title"><h2>🥤 Control de stock bebidas</h2></div>
+      <div class="card summarybox">
+        <table>
+          <thead><tr><th>Bebida</th><th>Inicial</th><th>Vendidas</th><th>Final teórico</th><th>Final contado</th><th>Diferencia</th></tr></thead>
+          <tbody id="stockTableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="grid grid-2" style="margin-top:14px">
+        <div id="productsCard" class="card summarybox">
+          <div class="section-title" style="margin-top:0"><h2>🍗 Resumen por producto</h2></div>
+          <div id="productSummary"></div>
+        </div>
+        <div class="card summarybox">
+          <div class="section-title" style="margin-top:0"><h2>🥤 Bebidas vendidas</h2></div>
+          <div id="drinkSummary"></div>
+        </div>
+      </div>
+
+      <div id="ordersCard" class="section-title"><h2>🧾 Pedidos registrados del día</h2><span class="tag" id="orderCountTag">0 pedidos</span></div>
+      <div class="orders" id="ordersList"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const ADMIN_PASSWORD = "181221";
+    const ADMIN_SESSION_KEY = "pdm_admin_live_logged_v1";
+    const SUPABASE_URL = "https://defdwzzewzfjuseozwkn.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
+    const ORDERS_TABLE = "orders_cloud";
+    const DAY_SETUP_TABLE = "day_setup_cloud";
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth:{ persistSession:false } });
+
+    const els = {};
+    const ids = ["loginBox","app","adminPass","btnLogin","btnLogout","loginError","adminDate","btnRefresh","btnPrint","btnSaveSetup","lastUpdate","liveStatus","liveDot","openCashInput","setupNoteInput","stockInitOneL","stockInitGlass","stockInitPlastic","stockInitWater","stockEndOneL","stockEndGlass","stockEndPlastic","stockEndWater","mOrders","mSales","mCash","mYape","mOpenCash","mFinalCash","mFinalAll","mCanceled","mPending","mDelivered","mDelivery","mTapers","stockTableBody","productSummary","drinkSummary","ordersList","orderCountTag"];
+    ids.forEach(id => els[id] = document.getElementById(id));
+
+    let currentOrders = [];
+    let currentSetup = null;
+    let logged = false;
+    let realtimeReady = false;
+
+    function safeNum(n){ return Number.isFinite(Number(n)) ? Number(n) : 0; }
+    function safeInt(n){ return Math.round(safeNum(n)); }
+    function round2(n){ return Number(safeNum(n).toFixed(2)); }
+    function money(n){ return "S/ " + safeNum(n).toFixed(2); }
+    function pad2(n){ return String(n).padStart(2,"0"); }
+    function getDateKeyLocal(d = new Date()){ return d.getFullYear() + "-" + pad2(d.getMonth()+1) + "-" + pad2(d.getDate()); }
+    function formatTime(d = new Date()){ return pad2(d.getHours()) + ":" + pad2(d.getMinutes()) + ":" + pad2(d.getSeconds()); }
+    function esc(s){ return String(s ?? "").replace(/[&<>'"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;"}[c])); }
+
+    function defaultSetup(){
+      return {
+        openCash:0,
+        note:"",
+        stockInit:{ oneL:0, glass296:0, glass:0, plastic600:0, halfPlastic:0, water750:0, water:0 },
+        stockEnd:{ oneL:0, glass296:0, glass:0, plastic600:0, halfPlastic:0, water750:0, water:0 },
+        updatedAt:null
+      };
+    }
+    function normalizeSetup(s){
+      const d = defaultSetup();
+      const src = s || {};
+      const init = src.stockInit || {};
+      const end = src.stockEnd || {};
+      return {
+        ...d,
+        ...src,
+        openCash: safeNum(src.openCash),
+        note: src.note || "",
+        stockInit:{
+          ...d.stockInit,
+          ...init,
+          oneL: safeInt(init.oneL),
+          glass296: safeInt(init.glass296 ?? init.glass),
+          glass: safeInt(init.glass ?? init.glass296),
+          plastic600: safeInt(init.plastic600 ?? init.halfPlastic),
+          halfPlastic: safeInt(init.halfPlastic ?? init.plastic600),
+          water750: safeInt(init.water750 ?? init.water),
+          water: safeInt(init.water ?? init.water750)
+        },
+        stockEnd:{
+          ...d.stockEnd,
+          ...end,
+          oneL: safeInt(end.oneL),
+          glass296: safeInt(end.glass296 ?? end.glass),
+          glass: safeInt(end.glass ?? end.glass296),
+          plastic600: safeInt(end.plastic600 ?? end.halfPlastic),
+          halfPlastic: safeInt(end.halfPlastic ?? end.plastic600),
+          water750: safeInt(end.water750 ?? end.water),
+          water: safeInt(end.water ?? end.water750)
+        }
+      };
+    }
+    function isSetupInputActive(){
+      const arr = [els.openCashInput,els.setupNoteInput,els.stockInitOneL,els.stockInitGlass,els.stockInitPlastic,els.stockInitWater,els.stockEndOneL,els.stockEndGlass,els.stockEndPlastic,els.stockEndWater];
+      return arr.includes(document.activeElement);
+    }
+    function readSetupFromForm(){
+      return normalizeSetup({
+        openCash: safeNum(els.openCashInput.value),
+        note: els.setupNoteInput.value || "",
+        stockInit:{
+          oneL: safeInt(els.stockInitOneL.value),
+          glass296: safeInt(els.stockInitGlass.value),
+          glass: safeInt(els.stockInitGlass.value),
+          plastic600: safeInt(els.stockInitPlastic.value),
+          halfPlastic: safeInt(els.stockInitPlastic.value),
+          water750: safeInt(els.stockInitWater.value),
+          water: safeInt(els.stockInitWater.value)
+        },
+        stockEnd:{
+          oneL: safeInt(els.stockEndOneL.value),
+          glass296: safeInt(els.stockEndGlass.value),
+          glass: safeInt(els.stockEndGlass.value),
+          plastic600: safeInt(els.stockEndPlastic.value),
+          halfPlastic: safeInt(els.stockEndPlastic.value),
+          water750: safeInt(els.stockEndWater.value),
+          water: safeInt(els.stockEndWater.value)
+        },
+        updatedAt: new Date().toISOString()
+      });
+    }
+    function fillSetupForm(setup){
+      const s = normalizeSetup(setup);
+      els.openCashInput.value = s.openCash ? s.openCash.toFixed(2) : "";
+      els.setupNoteInput.value = s.note || "";
+      els.stockInitOneL.value = s.stockInit.oneL || "";
+      els.stockInitGlass.value = s.stockInit.glass296 || "";
+      els.stockInitPlastic.value = s.stockInit.plastic600 || "";
+      els.stockInitWater.value = s.stockInit.water750 || "";
+      els.stockEndOneL.value = s.stockEnd.oneL || "";
+      els.stockEndGlass.value = s.stockEnd.glass296 || "";
+      els.stockEndPlastic.value = s.stockEnd.plastic600 || "";
+      els.stockEndWater.value = s.stockEnd.water750 || "";
+    }
+
+    function getOrderFromRow(row){ return row && row.data ? row.data : {}; }
+    function getStatus(row){ return String(row.status || getOrderFromRow(row).status || "PENDIENTE").toUpperCase(); }
+    function isTechnicalRow(row){ return getStatus(row) === "DAY_SETUP" || getOrderFromRow(row).__type === "day_setup"; }
+    function isAnnulled(row){ return getStatus(row) === "ANULADO"; }
+    function isDelivered(row){ return getStatus(row) === "ENTREGADO"; }
+    function activeRows(rows){ return (rows || []).filter(r => !isTechnicalRow(r) && !isAnnulled(r)); }
+    function allOrderRows(rows){ return (rows || []).filter(r => !isTechnicalRow(r)); }
+    function cashOf(order){
+      const method = String(order.paymentMethod || "efectivo").toLowerCase();
+      if (method === "mixto") return safeNum(order.mixedCash);
+      if (method === "yape") return 0;
+      return safeNum(order.total);
+    }
+    function yapeOf(order){
+      const method = String(order.paymentMethod || "efectivo").toLowerCase();
+      if (method === "mixto") return safeNum(order.mixedYape);
+      if (method === "yape") return safeNum(order.total);
+      return 0;
+    }
+    function paymentLabel(order){
+      const method = String(order.paymentMethod || "efectivo").toLowerCase();
+      if (method === "mixto") return "Mixto: Yape " + money(order.mixedYape) + " + Efec. " + money(order.mixedCash);
+      if (method === "yape") return "Yape";
+      return "Efectivo";
+    }
+
+    async function loadOrders(dateKey){
+      const { data, error } = await supabaseClient.from(ORDERS_TABLE).select("*").eq("date_key", dateKey).order("updated_at", { ascending:false });
+      if (error) throw error;
+      return data || [];
+    }
+    function newerSetup(a,b){
+      if (!a) return b;
+      if (!b) return a;
+      const ta = new Date(a.updatedAt || 0).getTime();
+      const tb = new Date(b.updatedAt || 0).getTime();
+      return tb > ta ? b : a;
+    }
+    async function loadSetup(dateKey){
+      let setup = null;
+      try {
+        const { data } = await supabaseClient.from(DAY_SETUP_TABLE).select("*").eq("date_key", dateKey).maybeSingle();
+        if (data && data.data) setup = normalizeSetup(data.data);
+      } catch(e) {}
+      try {
+        const { data } = await supabaseClient.from(ORDERS_TABLE).select("*").eq("order_id", "DAY_SETUP_" + dateKey).maybeSingle();
+        if (data && data.data && data.data.setup) setup = newerSetup(setup, normalizeSetup(data.data.setup));
+      } catch(e) {}
+      return normalizeSetup(setup);
+    }
+    async function saveSetup(dateKey, setup){
+      const now = new Date().toISOString();
+      const clean = normalizeSetup({...setup, updatedAt: now});
+      const dayRow = { date_key:dateKey, updated_at:now, data:clean };
+      const setupRow = {
+        order_id:"DAY_SETUP_" + dateKey,
+        date_key:dateKey,
+        boleta_number:"",
+        status:"DAY_SETUP",
+        updated_at:now,
+        data:{ __type:"day_setup", dateKey, setup:clean, updatedAt:now }
+      };
+      const r1 = await supabaseClient.from(DAY_SETUP_TABLE).upsert(dayRow, { onConflict:"date_key" });
+      if (r1.error) throw r1.error;
+      const r2 = await supabaseClient.from(ORDERS_TABLE).upsert(setupRow, { onConflict:"order_id" });
+      if (r2.error) throw r2.error;
+      return clean;
+    }
+
+    function drinkSold(rows){
+      const active = activeRows(rows);
+      const out = { oneL:0, glass296:0, plastic600:0, water750:0 };
+      active.forEach(row => {
+        const order = getOrderFromRow(row);
+        (order.items || []).forEach(item => {
+          const id = Number(item.id);
+          const q = safeInt(item.qty);
+          if (id === 37) out.oneL += q;
+          if (id === 42) out.glass296 += q;
+          if (id === 35) out.plastic600 += q;
+          if (id === 32) out.water750 += q;
+        });
+      });
+      return out;
+    }
+    function productSummary(rows){
+      const map = new Map();
+      activeRows(rows).forEach(row => {
+        const order = getOrderFromRow(row);
+        (order.items || []).forEach(item => {
+          const name = String(item.nameNorm || item.name || "Producto");
+          const prev = map.get(name) || { qty:0, total:0 };
+          prev.qty += safeNum(item.qty);
+          prev.total += safeNum(item.lineTotal || (safeNum(item.qty) * safeNum(item.unitPrice)));
+          map.set(name, prev);
+        });
+      });
+      return Array.from(map.entries()).sort((a,b) => b[1].qty - a[1].qty);
+    }
+    function renderStock(setup, rows){
+      const s = normalizeSetup(setup);
+      const sold = drinkSold(rows);
+      const stockRows = [
+        ["Gaseosa 1L", s.stockInit.oneL, sold.oneL, s.stockEnd.oneL],
+        ["Gaseosa 296ml vidrio", s.stockInit.glass296, sold.glass296, s.stockEnd.glass296],
+        ["Gaseosa 600ml plástico", s.stockInit.plastic600, sold.plastic600, s.stockEnd.plastic600],
+        ["Agua mineral 750ml", s.stockInit.water750, sold.water750, s.stockEnd.water750]
+      ];
+      els.stockTableBody.innerHTML = stockRows.map(r => {
+        const theo = safeInt(r[1]) - safeInt(r[2]);
+        const counted = safeInt(r[3]);
+        const diff = counted - theo;
+        const cls = diff === 0 ? "good" : (diff < 0 ? "bad" : "warn");
+        return `<tr><td><b>${esc(r[0])}</b></td><td>${r[1]}</td><td>${r[2]}</td><td>${theo}</td><td>${counted || ""}</td><td class="${cls}">${diff > 0 ? "+" : ""}${diff}</td></tr>`;
+      }).join("");
+
+      const drinkLines = stockRows.map(r => `<div class="rowline"><span>${esc(r[0])}</span><b>${safeInt(r[2])}</b></div>`).join("");
+      els.drinkSummary.innerHTML = drinkLines || `<div class="muted">Sin bebidas vendidas.</div>`;
+    }
+    function renderProducts(rows){
+      const list = productSummary(rows);
+      if (!list.length) { els.productSummary.innerHTML = `<div class="muted">Sin productos vendidos.</div>`; return; }
+      els.productSummary.innerHTML = list.map(([name,v]) => `<div class="rowline"><span>${esc(name)} <span class="muted">x${v.qty}</span></span><b>${money(v.total)}</b></div>`).join("");
+    }
+    function renderMetrics(setup, rows){
+      const s = normalizeSetup(setup);
+      const orders = allOrderRows(rows);
+      const active = activeRows(rows);
+      const annulled = orders.filter(isAnnulled);
+      const pending = active.filter(r => !isDelivered(r));
+      const delivered = active.filter(isDelivered);
+      let sales = 0, cash = 0, yape = 0, delivery = 0, tapers = 0;
+      active.forEach(row => {
+        const o = getOrderFromRow(row);
+        sales += safeNum(o.total);
+        cash += cashOf(o);
+        yape += yapeOf(o);
+        delivery += safeNum(o.deliveryFee);
+        tapers += safeNum(o.tapersFee);
+      });
+      sales = round2(sales); cash = round2(cash); yape = round2(yape);
+      els.mOrders.textContent = active.length;
+      els.mSales.textContent = money(sales);
+      els.mCash.textContent = money(cash);
+      els.mYape.textContent = money(yape);
+      els.mOpenCash.textContent = money(s.openCash);
+      els.mFinalCash.textContent = money(s.openCash + cash);
+      els.mFinalAll.textContent = money(s.openCash + cash + yape);
+      els.mCanceled.textContent = annulled.length;
+      els.mPending.textContent = pending.length;
+      els.mDelivered.textContent = delivered.length;
+      els.mDelivery.textContent = money(delivery);
+      els.mTapers.textContent = money(tapers);
+      els.orderCountTag.textContent = orders.length + " pedidos";
+    }
+    function statusTag(status){
+      const s = String(status || "PENDIENTE").toUpperCase();
+      if (s === "ENTREGADO") return `<span class="tag done">ENTREGADO</span>`;
+      if (s === "ANULADO") return `<span class="tag cancel">ANULADO</span>`;
+      return `<span class="tag pending">PENDIENTE</span>`;
+    }
+    function orderItemsHtml(order){
+      return (order.items || []).map(item => {
+        const parts = [];
+        if (item.noSauce) parts.push("Sin salsa");
+        if (item.sauces && item.sauces.length) parts.push("Salsa: " + item.sauces.map(s => String(s).replace("Salsa ","")).join(", "));
+        if (item.sauceApart) parts.push("Salsas aparte");
+        if (item.brand) parts.push("Marca: " + item.brand);
+        return `<div class="small">• <b>${safeNum(item.qty)}</b> x ${esc(item.name || "Producto")} ${parts.length ? `<br><span class="muted">${esc(parts.join(" | "))}</span>` : ""}</div>`;
+      }).join("");
+    }
+    function renderOrders(rows){
+      const orders = allOrderRows(rows).sort((a,b) => new Date(b.updated_at || getOrderFromRow(b).updatedAt || 0) - new Date(a.updated_at || getOrderFromRow(a).updatedAt || 0));
+      if (!orders.length) {
+        els.ordersList.innerHTML = `<div class="card muted">Todavía no hay pedidos registrados para esta fecha.</div>`;
+        return;
+      }
+      els.ordersList.innerHTML = orders.map(row => {
+        const order = getOrderFromRow(row);
+        const st = getStatus(row);
+        const ann = st === "ANULADO";
+        const title = order.dailyOrderNumber || ("Boleta " + (order.boletaNumber || row.boleta_number || "--"));
+        return `<div class="order ${ann ? "annulled" : ""}">
+          <div class="orderTop">
+            <div>
+              <div class="orderTitle">${esc(title)} ${statusTag(st)}</div>
+              <div class="small muted">${esc(order.dateTime || order.createdAt || row.updated_at || "")}</div>
+              <div class="small">Cliente: <b>${esc(order.customerName || "No indicado")}</b>${order.customerDni ? ` · DNI: ${esc(order.customerDni)}` : ""}</div>
+              <div class="small">Pago: <b>${esc(paymentLabel(order))}</b> · Total: <b class="warn">${money(order.total)}</b></div>
+              <div class="small">Tipo: ${esc(order.deliveryMode || "")}</div>
+              ${order.comment ? `<div class="small">Nota: <b>${esc(order.comment)}</b></div>` : ""}
+            </div>
+            <div class="small muted">ID: ${esc(row.order_id)}</div>
+          </div>
+          <div style="margin-top:8px">${orderItemsHtml(order)}</div>
+          <div class="actions">
+            <button class="btn-green" onclick="updateStatus('${esc(row.order_id)}','ENTREGADO')">Marcar entregado</button>
+            <button class="btn-dark" onclick="updateStatus('${esc(row.order_id)}','PENDIENTE')">Volver pendiente</button>
+            <button class="btn-red" onclick="updateStatus('${esc(row.order_id)}','ANULADO')">Anular</button>
+          </div>
+        </div>`;
+      }).join("");
+    }
+
+    async function refreshData(forceForm=false){
+      if (!logged) return;
+      const dateKey = els.adminDate.value || getDateKeyLocal();
+      els.adminDate.value = dateKey;
+      setLive(false, "Actualizando...");
+      try {
+        const [setup, rows] = await Promise.all([loadSetup(dateKey), loadOrders(dateKey)]);
+        currentSetup = setup;
+        currentOrders = rows;
+        if (forceForm || !isSetupInputActive()) fillSetupForm(setup);
+        renderMetrics(setup, rows);
+        renderStock(setup, rows);
+        renderProducts(rows);
+        renderOrders(rows);
+        els.lastUpdate.textContent = formatTime();
+        setLive(true, realtimeReady ? "En vivo" : "Actualizado");
+      } catch(err) {
+        console.error(err);
+        setLive(false, "Error Supabase");
+        alert("No pude cargar datos de Supabase: " + (err.message || String(err)));
+      }
+    }
+    function setLive(ok, text){
+      els.liveDot.classList.toggle("red", !ok);
+      els.liveStatus.textContent = text;
+    }
+    async function handleSaveSetup(){
+      const dateKey = els.adminDate.value || getDateKeyLocal();
+      const setup = readSetupFromForm();
+      if (setup.openCash < 0) return alert("Caja inicial no puede ser negativa.");
+      els.btnSaveSetup.disabled = true;
+      els.btnSaveSetup.textContent = "Guardando...";
+      try {
+        currentSetup = await saveSetup(dateKey, setup);
+        await refreshData(true);
+        alert("✅ Caja y stock guardados en vivo.");
+      } catch(err) {
+        console.error(err);
+        alert("No se pudo guardar caja/stock: " + (err.message || String(err)));
+      } finally {
+        els.btnSaveSetup.disabled = false;
+        els.btnSaveSetup.textContent = "Guardar caja y stock";
+      }
+    }
+    async function updateStatus(orderId, status){
+      const row = currentOrders.find(r => String(r.order_id) === String(orderId));
+      if (!row) return alert("No encontré el pedido.");
+      if (status === "ANULADO" && !confirm("¿Seguro que quieres ANULAR este pedido?")) return;
+      const order = {...getOrderFromRow(row), status, updatedAt:new Date().toISOString()};
+      const { error } = await supabaseClient.from(ORDERS_TABLE).update({ status, updated_at:new Date().toISOString(), data:order }).eq("order_id", orderId);
+      if (error) return alert("No se pudo actualizar estado: " + error.message);
+      await refreshData(false);
+    }
+    window.updateStatus = updateStatus;
+
+    function printSummary(){
+      const dateKey = els.adminDate.value || getDateKeyLocal();
+      const html = `
+        <html><head><title>Resumen ${dateKey}</title><style>
+        body{font-family:Arial,sans-serif;color:#000;padding:10px;font-size:12px} h2{text-align:center;margin:4px 0} table{width:100%;border-collapse:collapse}td,th{border-bottom:1px dashed #000;padding:5px;text-align:left}.total{font-size:16px;font-weight:bold}.center{text-align:center}
+        </style></head><body>
+        <h2>EL PATRÓN DEL MAL</h2><div class="center">Resumen admin ${dateKey}<br>${new Date().toLocaleString()}</div><hr>
+        <table>
+          <tr><td>Pedidos válidos</td><td>${esc(els.mOrders.textContent)}</td></tr>
+          <tr><td>Venta total</td><td>${esc(els.mSales.textContent)}</td></tr>
+          <tr><td>Efectivo</td><td>${esc(els.mCash.textContent)}</td></tr>
+          <tr><td>Yape</td><td>${esc(els.mYape.textContent)}</td></tr>
+          <tr><td>Caja inicial</td><td>${esc(els.mOpenCash.textContent)}</td></tr>
+          <tr class="total"><td>Caja final estimada</td><td>${esc(els.mFinalCash.textContent)}</td></tr>
+          <tr><td>Total día con caja</td><td>${esc(els.mFinalAll.textContent)}</td></tr>
+          <tr><td>Anulados</td><td>${esc(els.mCanceled.textContent)}</td></tr>
+        </table><hr>
+        <h3>Stock bebidas</h3>${document.querySelector("#stockTableBody")?.parentElement?.outerHTML || ""}
+        </body></html>`;
+      const w = window.open("", "_blank", "width=380,height=700");
+      w.document.open(); w.document.write(html); w.document.close(); w.focus(); w.print();
+    }
+
+    function showApp(){
+      logged = true;
+      els.loginBox.classList.add("hide");
+      els.app.classList.remove("hide");
+      els.adminDate.value = els.adminDate.value || getDateKeyLocal();
+      refreshData(true);
+    }
+    function login(){
+      if (String(els.adminPass.value || "") !== ADMIN_PASSWORD) {
+        els.loginError.textContent = "Clave incorrecta.";
+        return;
+      }
+      localStorage.setItem(ADMIN_SESSION_KEY,"1");
+      els.adminPass.value = "";
+      els.loginError.textContent = "";
+      showApp();
+    }
+    function logout(){
+      localStorage.removeItem(ADMIN_SESSION_KEY);
+      logged = false;
+      els.app.classList.add("hide");
+      els.loginBox.classList.remove("hide");
+    }
+    function initRealtime(){
+      try {
+        const channel = supabaseClient.channel("pdm-admin-live")
+          .on("postgres_changes", { event:"*", schema:"public", table:ORDERS_TABLE }, () => refreshData(false))
+          .on("postgres_changes", { event:"*", schema:"public", table:DAY_SETUP_TABLE }, () => refreshData(false))
+          .subscribe((status) => {
+            realtimeReady = status === "SUBSCRIBED";
+            setLive(realtimeReady, realtimeReady ? "En vivo" : "Actualizado");
+          });
+      } catch(e) {
+        realtimeReady = false;
+      }
+    }
+
+    els.btnLogin.addEventListener("click", login);
+    els.adminPass.addEventListener("keydown", e => { if (e.key === "Enter") login(); });
+    els.btnLogout.addEventListener("click", logout);
+    els.btnRefresh.addEventListener("click", () => refreshData(true));
+    els.adminDate.addEventListener("change", () => refreshData(true));
+    els.btnSaveSetup.addEventListener("click", handleSaveSetup);
+    els.btnPrint.addEventListener("click", printSummary);
+
+    initRealtime();
+    setInterval(() => refreshData(false), 5000);
+    if (localStorage.getItem(ADMIN_SESSION_KEY) === "1") showApp();
+  </script>
+</body>
+</html>
