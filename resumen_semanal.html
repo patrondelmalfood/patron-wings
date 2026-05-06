@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Resumen semanal - El Patrón del Mal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root{--bg:#020617;--card:#0b1220;--line:#1e293b;--gold:#fde68a;--gold2:#facc15;--text:#e5e7eb;--muted:#94a3b8;--green:#22c55e;--red:#ef4444;--blue:#38bdf8}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,sans-serif;background:radial-gradient(circle at top,#111827 0,#020617 55%,#000 100%);color:var(--text);min-height:100vh}
+    .wrap{max-width:1120px;margin:0 auto;padding:14px}
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;background:rgba(2,6,23,.94);border:1px solid var(--line);border-radius:18px;padding:12px 14px;margin-bottom:12px;position:sticky;top:0;z-index:5;backdrop-filter:blur(10px)}
+    .brand{display:flex;align-items:center;gap:12px}.logo{width:52px;height:52px;border-radius:50%;border:2px solid var(--gold2);background:#fff;object-fit:contain}
+    h1{font-size:20px;margin:0;color:var(--gold)}.sub{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.35}
+    .login{max-width:420px;margin:70px auto;background:rgba(15,23,42,.96);border:1px solid #334155;border-radius:20px;padding:18px;box-shadow:0 18px 60px rgba(0,0,0,.45)}
+    .login h2{margin:0 0 8px;color:var(--gold)}
+    input,button{width:100%;padding:10px;border-radius:12px;border:1px solid #334155;background:#020617;color:#fff;font-size:14px}
+    button{border:0;background:#f59e0b;color:#111827;font-weight:900;cursor:pointer}button:hover{opacity:.92;transform:translateY(-1px)}button:disabled{opacity:.55;cursor:not-allowed;transform:none}
+    .btn{border:0;border-radius:12px;padding:10px 12px;font-weight:900;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;background:#1f2937;color:#fef3c7;border:1px solid #334155;width:auto}
+    .btn-blue{background:#0284c7;color:#fff;border:0}.btn-red{background:#dc2626;color:#fff;border:0}.btn-green{background:#16a34a;color:#052e16;border:0}.btn-purple{background:#7c3aed;color:#fff;border:0}
+    .card{background:rgba(15,23,42,.92);border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.24);margin-bottom:12px}
+    .controls{display:grid;grid-template-columns:1fr auto auto auto auto;gap:10px;align-items:end}
+    label{font-size:12px;color:#cbd5e1;font-weight:700;display:block;margin-bottom:5px}
+    .grid{display:grid;gap:12px}.grid-4{grid-template-columns:repeat(4,1fr)}.grid-3{grid-template-columns:repeat(3,1fr)}
+    .metric{background:linear-gradient(180deg,#0b1220,#020617);border:1px solid #1e293b;border-radius:18px;padding:14px;min-height:96px}.metric .label{font-size:12px;color:#cbd5e1}.metric .value{font-size:26px;font-weight:900;color:var(--gold);margin-top:8px}.metric .hint{font-size:11px;color:var(--muted);margin-top:5px}
+    table{width:100%;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px dashed #1e293b;padding:10px;text-align:left;vertical-align:top}th{color:var(--gold);font-size:12px;background:rgba(2,6,23,.55)}
+    .good{color:#86efac;font-weight:900}.bad{color:#fca5a5;font-weight:900}.warn{color:#fde68a;font-weight:900}.muted{color:var(--muted)}.small{font-size:12px;color:#cbd5e1;line-height:1.4}.tag{display:inline-flex;padding:4px 8px;border-radius:999px;border:1px solid #334155;background:#0b1220;color:#e5e7eb;font-size:11px;font-weight:900}.tag.ok{border-color:#22c55e;color:#86efac}.tag.pending{border-color:#facc15;color:#fde68a}.hide{display:none!important}.note{font-size:12px;color:#94a3b8;line-height:1.45;margin-top:8px}
+    .status-pill{display:inline-flex;align-items:center;gap:7px;border:1px solid #334155;border-radius:999px;padding:7px 10px;background:#020617;color:#cbd5e1;font-size:12px}.dot{width:9px;height:9px;border-radius:50%;background:#22c55e;box-shadow:0 0 10px #22c55e}.dot.red{background:#ef4444;box-shadow:0 0 10px #ef4444}
+    @media(max-width:850px){.topbar{position:relative;flex-direction:column;align-items:stretch}.brand{justify-content:center;text-align:center}.controls,.grid-4,.grid-3{grid-template-columns:1fr}.btn{width:100%}.metric .value{font-size:22px}}
+    @media print{body{background:#fff;color:#000}.topbar,#loginBox,#controlsCard,.no-print{display:none!important}.wrap{max-width:none;padding:0}.card,.metric{box-shadow:none;border:0;background:#fff;color:#000}.metric .value,th{color:#000}td,th{border-bottom:1px dashed #000}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div id="loginBox" class="login">
+      <h2>🔐 Resumen semanal</h2>
+      <p class="sub">Ingresa la clave del dueño.</p>
+      <label for="pass">Clave</label>
+      <input id="pass" type="password" placeholder="Clave">
+      <button id="btnLogin" style="margin-top:10px">Ingresar</button>
+      <div id="loginError" class="bad small" style="margin-top:8px"></div>
+    </div>
+
+    <div id="app" class="hide">
+      <div class="topbar">
+        <div class="brand">
+          <img src="LOGO.jpg" class="logo" alt="Logo">
+          <div>
+            <h1>Resumen semanal</h1>
+            <div class="sub">Cierres guardados de lunes a domingo. Solo lectura: no modifica caja, pedidos ni stock.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+          <span class="status-pill"><span id="liveDot" class="dot"></span><span id="liveStatus">Conectando...</span></span>
+          <a class="btn" href="admin.html" target="_blank">Admin diario</a>
+          <button id="btnLogout" class="btn-red" type="button" style="width:auto">Salir</button>
+        </div>
+      </div>
+
+      <div id="controlsCard" class="card">
+        <div class="controls">
+          <div><label for="weekDate">Selecciona cualquier fecha de la semana</label><input id="weekDate" type="date"></div>
+          <button id="btnPrev" class="btn" type="button">← Semana anterior</button>
+          <button id="btnToday" class="btn-blue" type="button">Semana actual</button>
+          <button id="btnNext" class="btn" type="button">Semana siguiente →</button>
+          <button id="btnPrint" class="btn-purple" type="button">Imprimir</button>
+        </div>
+        <div class="note" id="weekLabel">Semana: --</div>
+      </div>
+
+      <div class="grid grid-4">
+        <div class="metric"><div class="label">Total semana</div><div class="value" id="mWeekTotal">S/ 0.00</div><div class="hint">Efectivo + Yape</div></div>
+        <div class="metric"><div class="label">Efectivo semana</div><div class="value" id="mWeekCash">S/ 0.00</div><div class="hint">Solo venta efectivo</div></div>
+        <div class="metric"><div class="label">Yape semana</div><div class="value" id="mWeekYape">S/ 0.00</div><div class="hint">Cobros digitales</div></div>
+        <div class="metric"><div class="label">Pedidos registrados</div><div class="value" id="mWeekOrders">0</div><div class="hint">Según cierres guardados</div></div>
+      </div>
+
+      <div class="card">
+        <h2 style="font-size:17px;color:var(--gold);margin:0 0 10px">📅 Lunes a domingo</h2>
+        <div style="overflow:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Día</th><th>Fecha</th><th>Estado</th><th>Total venta</th><th>Efectivo</th><th>Yape</th><th>Caja inicial</th><th>Pedidos</th><th>Cerrado</th>
+              </tr>
+            </thead>
+            <tbody id="weekRows"></tbody>
+          </table>
+        </div>
+        <div class="note">La caja inicial se muestra como referencia/sencillo aparte y no se suma al total de venta.</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const ADMIN_PASSWORD = "181221";
+    const SESSION_KEY = "pdm_week_summary_logged_v1";
+    const SUPABASE_URL = "https://defdwzzewzfjuseozwkn.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
+    const CLOSINGS_TABLE = "daily_closings";
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth:{ persistSession:false } });
+    const $ = id => document.getElementById(id);
+    const els = ["loginBox","app","pass","btnLogin","btnLogout","loginError","weekDate","btnPrev","btnToday","btnNext","btnPrint","weekLabel","mWeekTotal","mWeekCash","mWeekYape","mWeekOrders","weekRows","liveDot","liveStatus"].reduce((a,id)=>(a[id]=$(id),a),{});
+    let logged = false, realtimeReady = false;
+    const dayNames = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+    function safeNum(n){ return Number.isFinite(Number(n)) ? Number(n) : 0; }
+    function safeInt(n){ return Math.round(safeNum(n)); }
+    function round2(n){ return Number(safeNum(n).toFixed(2)); }
+    function money(n){ return "S/ " + safeNum(n).toFixed(2); }
+    function pad2(n){ return String(n).padStart(2,"0"); }
+    function dateKey(d){ return d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate()); }
+    function dateFromKey(key){ const [y,m,d] = String(key).split("-").map(Number); return new Date(y,(m||1)-1,d||1); }
+    function esc(s){ return String(s ?? "").replace(/[&<>'"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;"}[c])); }
+    function mondayOf(d){ const x = new Date(d); const day = x.getDay(); const diff = day === 0 ? -6 : 1 - day; x.setDate(x.getDate()+diff); x.setHours(0,0,0,0); return x; }
+    function addDays(d,n){ const x = new Date(d); x.setDate(x.getDate()+n); return x; }
+    function weekRange(){ const base = els.weekDate.value ? dateFromKey(els.weekDate.value) : new Date(); const mon = mondayOf(base); const sun = addDays(mon,6); return { mon, sun, start:dateKey(mon), end:dateKey(sun) }; }
+    function setLive(ok,text){ els.liveDot.classList.toggle("red", !ok); els.liveStatus.textContent = text; }
+    function showApp(){ logged = true; els.loginBox.classList.add("hide"); els.app.classList.remove("hide"); if(!els.weekDate.value) els.weekDate.value = dateKey(new Date()); refresh(); }
+    function login(){ if(String(els.pass.value||"") !== ADMIN_PASSWORD){ els.loginError.textContent = "Clave incorrecta."; return; } localStorage.setItem(SESSION_KEY,"1"); els.pass.value=""; els.loginError.textContent=""; showApp(); }
+    function logout(){ localStorage.removeItem(SESSION_KEY); logged=false; els.app.classList.add("hide"); els.loginBox.classList.remove("hide"); }
+    async function fetchClosings(start,end){ const { data, error } = await supabaseClient.from(CLOSINGS_TABLE).select("*").gte("date_key", start).lte("date_key", end).order("date_key", { ascending:true }); if(error) throw error; return data || []; }
+    function render(rows){ const {mon,sun,start,end}=weekRange(); els.weekLabel.textContent = `Semana del ${pad2(mon.getDate())}/${pad2(mon.getMonth()+1)}/${mon.getFullYear()} al ${pad2(sun.getDate())}/${pad2(sun.getMonth()+1)}/${sun.getFullYear()}`;
+      const map = new Map((rows||[]).map(r => [String(r.date_key), r])); let weekTotal=0, weekCash=0, weekYape=0, weekOrders=0;
+      const trs=[]; for(let i=0;i<7;i++){ const d=addDays(mon,i); const k=dateKey(d); const r=map.get(k); const closed=!!r; const total=safeNum(r?.total_sales); const cash=safeNum(r?.total_cash); const yape=safeNum(r?.total_yape); const orders=safeInt(r?.total_orders); weekTotal+=total; weekCash+=cash; weekYape+=yape; weekOrders+=orders; const closedAt = r?.closed_at ? new Date(r.closed_at).toLocaleString() : "--"; trs.push(`<tr><td><b>${dayNames[d.getDay()]}</b></td><td>${k}</td><td>${closed?'<span class="tag ok">CERRADO</span>':'<span class="tag pending">PENDIENTE</span>'}</td><td class="warn"><b>${money(total)}</b></td><td>${money(cash)}</td><td>${money(yape)}</td><td>${closed?money(r.open_cash):'--'}</td><td>${orders}</td><td class="small">${esc(closedAt)}</td></tr>`); }
+      els.weekRows.innerHTML = trs.join(""); els.mWeekTotal.textContent=money(round2(weekTotal)); els.mWeekCash.textContent=money(round2(weekCash)); els.mWeekYape.textContent=money(round2(weekYape)); els.mWeekOrders.textContent=String(weekOrders); }
+    async function refresh(){ if(!logged) return; setLive(false,"Actualizando..."); try{ const {start,end}=weekRange(); const rows=await fetchClosings(start,end); render(rows); setLive(true,realtimeReady?"En vivo":"Actualizado"); }catch(err){ console.error(err); setLive(false,"Error"); alert("No pude cargar resumen semanal: "+(err.message||String(err))); } }
+    function moveWeek(n){ const base = els.weekDate.value ? dateFromKey(els.weekDate.value) : new Date(); els.weekDate.value = dateKey(addDays(base, n*7)); refresh(); }
+    function printPage(){ window.print(); }
+    function initRealtime(){ try{ supabaseClient.channel("pdm-week-summary-live").on("postgres_changes", {event:"*",schema:"public",table:CLOSINGS_TABLE}, () => refresh()).subscribe(status => { realtimeReady = status === "SUBSCRIBED"; setLive(realtimeReady, realtimeReady?"En vivo":"Actualizado"); }); }catch(e){ realtimeReady=false; } }
+    els.btnLogin.addEventListener("click", login); els.pass.addEventListener("keydown", e => { if(e.key==="Enter") login(); }); els.btnLogout.addEventListener("click", logout); els.weekDate.addEventListener("change", refresh); els.btnPrev.addEventListener("click", () => moveWeek(-1)); els.btnNext.addEventListener("click", () => moveWeek(1)); els.btnToday.addEventListener("click", () => { els.weekDate.value = dateKey(new Date()); refresh(); }); els.btnPrint.addEventListener("click", printPage);
+    initRealtime(); setInterval(refresh, 10000); if(localStorage.getItem(SESSION_KEY)==="1") showApp();
+  </script>
+</body>
+</html>
