@@ -2175,6 +2175,200 @@ body.cart-view .social-links.floating-social{
   .pago-app-card .nota-pago-yape{ font-size:10px; }
 }
 
+
+/* ===== V14: carrito público más simple y profesional ===== */
+.carrito{
+  border-radius:18px !important;
+  border:1px solid rgba(255,159,28,.35) !important;
+  background:linear-gradient(180deg, rgba(28,28,28,.98), rgba(14,14,14,.98)) !important;
+  padding:14px !important;
+}
+.carrito-app-title{
+  display:flex !important;
+  align-items:center !important;
+  gap:10px !important;
+  margin-bottom:12px !important;
+  padding-bottom:10px !important;
+  border-bottom:1px solid rgba(255,159,28,.22) !important;
+}
+.carrito-app-title img{ display:none !important; }
+.cart-title-icon{
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(255,214,10,.13);
+  border:1px solid rgba(255,214,10,.38);
+  box-shadow:0 0 12px rgba(255,214,10,.12);
+  font-size:22px;
+  flex-shrink:0;
+}
+.carrito-app-title h2{
+  margin:0 !important;
+  color:#ff9f1c !important;
+  font-size:23px !important;
+  line-height:1 !important;
+}
+.carrito-app-title p{
+  margin:4px 0 0 !important;
+  color:#cfcfcf !important;
+  font-size:11px !important;
+  line-height:1.25 !important;
+}
+#cart-items{
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+  margin-bottom:12px;
+}
+.cart-item{
+  display:grid !important;
+  grid-template-columns:1fr auto !important;
+  gap:8px !important;
+  align-items:center !important;
+  padding:10px !important;
+  border:1px solid rgba(255,159,28,.22) !important;
+  border-radius:14px !important;
+  background:rgba(0,0,0,.42) !important;
+  box-shadow:0 0 10px rgba(0,0,0,.25) !important;
+}
+.cart-item-info{
+  max-width:none !important;
+  min-width:0;
+}
+.cart-prod-name{
+  display:block;
+  color:#fff;
+  font-size:13px;
+  font-weight:900;
+  line-height:1.2;
+}
+.cart-prod-detail{
+  display:block;
+  color:#cfcfcf;
+  font-size:11px;
+  margin-top:3px;
+  line-height:1.25;
+}
+.cart-item-right{
+  min-width:96px !important;
+  align-items:flex-end !important;
+  gap:6px !important;
+}
+.cart-qty-controls{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:6px !important;
+}
+.cart-qty-controls span{
+  color:#fff;
+  font-size:13px;
+  font-weight:900;
+  min-width:18px !important;
+}
+.btn-qty{
+  width:26px !important;
+  height:26px !important;
+  border-radius:8px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 !important;
+  font-size:15px !important;
+  font-weight:900 !important;
+}
+.cart-subtotal{
+  font-size:12px !important;
+  color:#ffe066 !important;
+  font-weight:900 !important;
+}
+.btn-remove-cart{
+  border-radius:999px !important;
+  background:#e63946 !important;
+  color:#fff !important;
+  font-size:10.5px !important;
+  padding:5px 10px !important;
+}
+#cart-total{
+  margin-top:10px !important;
+  padding:0 !important;
+  background:transparent !important;
+  border:none !important;
+  text-align:initial !important;
+}
+.order-summary-card{
+  border-radius:16px;
+  border:1px solid rgba(255,214,10,.35);
+  background:linear-gradient(180deg, rgba(255,214,10,.10), rgba(0,0,0,.52));
+  padding:12px;
+  box-shadow:0 0 12px rgba(255,214,10,.10);
+}
+.order-summary-card h3{
+  margin:0 0 8px !important;
+  font-size:15px !important;
+  color:#ffd60a !important;
+}
+.summary-row{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:4px 0;
+  font-size:13px;
+  color:#e9e9e9;
+}
+.summary-row b{ color:#fff; }
+.summary-row.total{
+  margin-top:6px;
+  padding-top:9px;
+  border-top:1px dashed rgba(255,255,255,.35);
+  font-size:17px;
+  font-weight:900;
+  color:#ffd60a;
+}
+.summary-row.total b{ color:#ffd60a; }
+.nota-delivery{
+  font-size:10px !important;
+  color:#bdbdbd !important;
+  text-align:center !important;
+  line-height:1.25 !important;
+}
+#boleta-virtual{
+  display:none !important;
+}
+.carrito-actions{
+  gap:8px !important;
+  margin-top:12px !important;
+  margin-bottom:6px !important;
+}
+#btn-clear{
+  border-radius:12px !important;
+  background:#4b5563 !important;
+  color:#fff !important;
+}
+#btn-whatsapp{
+  border-radius:14px !important;
+  background:#ffd60a !important;
+  color:#000 !important;
+  font-size:13px !important;
+  font-weight:1000 !important;
+  padding:12px 14px !important;
+}
+@media (max-width:600px){
+  .carrito{ padding:12px !important; }
+  .cart-title-icon{ width:38px; height:38px; border-radius:12px; font-size:20px; }
+  .carrito-app-title h2{ font-size:21px !important; }
+  .carrito-app-title p{ font-size:10px !important; }
+  .cart-item{ grid-template-columns:1fr auto !important; padding:9px !important; }
+  .cart-prod-name{ font-size:12.5px; }
+  .cart-prod-detail{ font-size:10.5px; }
+  .cart-item-right{ min-width:88px !important; }
+  .summary-row{ font-size:12.5px; }
+  .summary-row.total{ font-size:16px; }
+}
+
 </style>
 </head>
 
@@ -2288,9 +2482,12 @@ body.cart-view .social-links.floating-social{
     <div id="menu"></div>
 
     <div class="carrito" id="carrito">
-      <div class="carrito-escobar">
-        <img src="escobar_phone.gif" alt="El Patrón contestando el teléfono">
-        <h2>Tu pedido</h2>
+      <div class="carrito-escobar carrito-app-title">
+        <div class="cart-title-icon">🛒</div>
+        <div>
+          <h2>Tu pedido</h2>
+          <p>Revisa tus productos antes de enviarlo por WhatsApp.</p>
+        </div>
       </div>
 
       <div id="cart-items"></div>
@@ -2941,14 +3138,14 @@ function renderCart(){
   cart.forEach((e,i)=>{
     const row=document.createElement("div"); row.className="cart-item";
     const details=[e.noSauce?"Sin salsa":"", e.sauces?.length?"Salsa: "+shortSauces(e.sauces):"", e.sauceApart?"Salsas aparte":"", e.brand?"Marca: "+e.brand:""].filter(Boolean).join(" | ");
-    row.innerHTML = `<div class="cart-item-info">${e.item.name}${details ? " | " + details : ""}</div><div class="cart-item-right"><div class="cart-qty-controls"><button class="btn-qty" type="button" data-act="minus">-</button><span>${e.qty}</span><button class="btn-qty" type="button" data-act="plus">+</button></div><div class="cart-subtotal">Subtotal: ${money(e.item.price*e.qty)}</div><button type="button" data-act="remove">Quitar</button></div>`;
+    row.innerHTML = `<div class="cart-item-info"><span class="cart-prod-name">${e.item.name}</span>${details ? `<span class="cart-prod-detail">${details}</span>` : ""}</div><div class="cart-item-right"><div class="cart-qty-controls"><button class="btn-qty" type="button" data-act="minus">−</button><span>${e.qty}</span><button class="btn-qty" type="button" data-act="plus">+</button></div><div class="cart-subtotal">${money(e.item.price*e.qty)}</div><button class="btn-remove-cart" type="button" data-act="remove">Quitar</button></div>`;
     row.querySelector('[data-act="minus"]').addEventListener("click",()=>changeQty(i,-1));
     row.querySelector('[data-act="plus"]').addEventListener("click",()=>changeQty(i,1));
     row.querySelector('[data-act="remove"]').addEventListener("click",()=>removeFromCart(i));
     cartItemsEl.appendChild(row);
   });
   const ctx = getCtx();
-  cartTotalEl.innerHTML = `Subtotal: ${money(ctx.subtotal)}<br>Tapers: 🥡 ${ctx.taperTextPrint}<br>Delivery: ${money(ctx.deliveryFee)}<br><span style="font-size:17px;">Total: ${money(ctx.total)}</span>`;
+  cartTotalEl.innerHTML = `<div class="order-summary-card"><h3>Resumen</h3><div class="summary-row"><span>Productos</span><b>${money(ctx.subtotal)}</b></div><div class="summary-row"><span>Tapers</span><b>${money(ctx.taperFee)}</b></div><div class="summary-row"><span>Delivery</span><b>${money(ctx.deliveryFee)}</b></div><div class="summary-row total"><span>Total a pagar</span><b>${money(ctx.total)}</b></div></div>`;
   const totalQtyBottom = cart.reduce((a,e)=>a + safeNum(e.qty), 0);
   if (bottomBar) bottomBar.classList.remove("hidden");
   if (bottomCount) bottomCount.textContent = String(totalQtyBottom);
