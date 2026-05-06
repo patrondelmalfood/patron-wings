@@ -839,6 +839,329 @@ height:65px;
       margin-top:8px;
       line-height:1.35;
     }
+
+
+/* ===== DISEÑO MOZA / COCINA MEJORADO SIN PERDER FUNCIONES ===== */
+body{
+  max-width:980px;
+}
+.header{
+  padding:12px;
+  border:1px solid rgba(250,204,21,.35);
+  border-radius:18px;
+  background:rgba(2,6,23,.84);
+  box-shadow:0 0 18px rgba(250,204,21,.10);
+}
+.header-logo{
+  border-color:rgba(255,255,255,.85) !important;
+  background:#fff !important;
+  box-shadow:0 0 12px rgba(255,255,255,.12);
+}
+.header-text h1{
+  font-size:24px;
+  line-height:1.05;
+}
+.header-text p:nth-of-type(2){
+  color:#fef3c7;
+  font-weight:700;
+}
+.staff-badge{
+  margin-top:8px;
+}
+.social-links{
+  display:none !important;
+}
+.hero,
+.intro-text,
+.app-hour-card,
+.app-section-question{
+  display:none !important;
+}
+.app-category-list{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:8px;
+  margin:12px 0 18px;
+}
+.app-category-card{
+  min-height:auto;
+  padding:9px 8px;
+  border-radius:14px;
+  justify-content:center;
+  text-align:center;
+  background:rgba(0,0,0,.88);
+}
+.app-category-card img{ display:none; }
+.app-category-card span{ font-size:13px; flex:0 1 auto; }
+.app-category-card b{ display:none; }
+.menu-section-title{
+  justify-content:center !important;
+  text-align:center;
+  border-bottom:1px solid rgba(255,159,28,.65);
+  margin-top:20px;
+  background:linear-gradient(90deg, transparent, rgba(255,159,28,.12), transparent);
+  border-radius:14px 14px 0 0;
+  padding:10px 8px;
+}
+.menu-section-title span{
+  flex:0 1 auto !important;
+  font-size:18px;
+  font-weight:900;
+}
+.section-image{ display:none !important; }
+.carrito{
+  border-radius:20px;
+  border:1px solid rgba(250,204,21,.35);
+  background:linear-gradient(180deg, rgba(24,24,24,.98), rgba(10,10,10,.98));
+  box-shadow:0 0 20px rgba(250,204,21,.10);
+}
+.carrito-escobar{
+  padding:10px 10px 12px;
+  border-bottom:1px solid rgba(250,204,21,.2);
+  margin-bottom:14px;
+}
+.carrito-escobar img{
+  display:none !important;
+}
+.carrito-escobar h2{
+  margin:0;
+  color:#ffb703;
+  font-size:24px;
+}
+.carrito-escobar h2::before{
+  content:"🧾 ";
+}
+.cart-item{
+  background:rgba(15,23,42,.86);
+  border:1px solid rgba(148,163,184,.25);
+  border-radius:14px;
+  padding:10px;
+  margin-bottom:8px;
+  align-items:center;
+}
+.cart-item-info{
+  font-weight:800;
+  color:#f8fafc;
+  max-width:62%;
+  line-height:1.25;
+}
+.cart-item-right{
+  min-width:118px;
+}
+.cart-qty-controls{
+  background:#020617;
+  border:1px solid rgba(250,204,21,.28);
+  border-radius:999px;
+  padding:3px;
+}
+.btn-qty,
+.cart-item button[data-act="remove"],
+.cart-item button{
+  border-radius:999px;
+}
+.cart-subtotal{
+  font-weight:900;
+}
+.staff-card,
+.cash-day-panel,
+.cliente-datos,
+.pago-datos,
+.extras{
+  margin-top:14px !important;
+  padding:14px !important;
+  border-radius:18px !important;
+  border:1px solid rgba(250,204,21,.35) !important;
+  background:rgba(7,10,18,.94) !important;
+  box-shadow:0 0 14px rgba(250,204,21,.08) !important;
+}
+.staff-card-head{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:12px;
+}
+.staff-card-head h3,
+.cliente-datos h3,
+.pago-datos h3,
+.extras h3{
+  margin:0 !important;
+  color:#ffb703 !important;
+  font-size:17px !important;
+}
+.staff-card-head p{
+  margin:3px 0 0;
+  color:#cbd5e1;
+  font-size:12px;
+}
+.staff-icon{
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(250,204,21,.12);
+  border:1px solid rgba(250,204,21,.35);
+  font-size:19px;
+  flex-shrink:0;
+}
+.staff-fields-grid{
+  display:grid;
+  grid-template-columns:1fr 160px;
+  gap:10px;
+}
+.staff-fields-grid label,
+.staff-note-label{
+  display:flex !important;
+  flex-direction:column;
+  gap:5px;
+  font-size:12px;
+  color:#e5e7eb;
+  font-weight:800;
+}
+.cliente-datos input,
+.cliente-datos textarea,
+.pago-datos input[type="number"]{
+  border-radius:12px !important;
+  border:1px solid rgba(250,204,21,.32) !important;
+  background:#020617 !important;
+  padding:10px !important;
+  font-size:14px !important;
+}
+.cliente-datos textarea{
+  min-height:62px;
+}
+.payment-choice-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+.pay-choice{
+  position:relative;
+  display:flex !important;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  min-height:58px;
+  border-radius:14px;
+  border:1px solid rgba(148,163,184,.28);
+  background:#030712;
+  cursor:pointer;
+  margin:0 !important;
+}
+.pay-choice input{
+  position:absolute;
+  opacity:0;
+  pointer-events:none;
+}
+.pay-choice span{ font-size:21px; }
+.pay-choice b{ font-size:12px; color:#fff; }
+.pay-choice:has(input:checked){
+  border-color:#facc15;
+  background:linear-gradient(180deg, rgba(250,204,21,.18), rgba(0,0,0,.82));
+  box-shadow:inset 0 0 12px rgba(250,204,21,.18);
+}
+.delivery-card{
+  display:block;
+}
+.delivery-option{
+  display:grid !important;
+  grid-template-columns:34px 1fr 24px;
+  grid-template-areas:"ico title chk" "ico sub chk";
+  align-items:center;
+  gap:0 9px;
+  padding:10px;
+  border-radius:14px;
+  border:1px solid rgba(148,163,184,.24);
+  background:#030712;
+  margin:8px 0 !important;
+  cursor:pointer;
+}
+.delivery-option span{ grid-area:ico; font-size:21px; }
+.delivery-option b{ grid-area:title; color:#fff; font-size:13px; }
+.delivery-option small{ grid-area:sub; color:#94a3b8; font-size:11px; }
+.delivery-option input{
+  grid-area:chk;
+  width:19px !important;
+  height:19px !important;
+  accent-color:#facc15;
+}
+.delivery-option:has(input:checked){
+  border-color:#facc15;
+  background:rgba(250,204,21,.10);
+}
+.nota-taper,.nota-pago-yape,.help-text{
+  color:#cbd5e1 !important;
+}
+#cart-total{
+  padding:14px;
+  border-radius:16px;
+  border:1px solid rgba(250,204,21,.4);
+  background:#020617;
+  font-size:17px;
+}
+#boleta-virtual,
+#comanda-cocina{
+  border-radius:14px;
+  overflow:hidden;
+  max-width:420px;
+  margin-left:auto;
+  margin-right:auto;
+}
+.carrito-actions{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+.carrito-actions button,
+.carrito-actions a.btn{
+  width:100%;
+  box-sizing:border-box;
+  border-radius:14px;
+  padding:12px 10px;
+  font-size:13px;
+  text-align:center;
+}
+#btn-register-sale{
+  grid-column:1 / -1;
+  font-size:15px;
+  padding:14px 10px;
+}
+#btn-whatsapp{
+  grid-column:1 / -1;
+}
+#order-save-status{
+  text-align:center !important;
+  background:rgba(250,204,21,.08);
+  border-radius:12px;
+  padding:8px;
+}
+.bottom-bar-mobile{
+  border-top:1px solid rgba(250,204,21,.6);
+}
+@media (max-width:700px){
+  body{ padding:10px 8px 76px; }
+  .header{ gap:10px; padding:10px; }
+  .header-logo{ width:58px; height:58px; }
+  .header-text h1{ font-size:20px; }
+  .header-text p{ font-size:11px; }
+  .staff-badge{ font-size:10px; padding:5px 8px; }
+  .app-category-list{ grid-template-columns:repeat(2,1fr); gap:7px; }
+  .app-category-card{ padding:8px 7px; }
+  .app-category-card span{ font-size:12px; }
+  .staff-fields-grid{ grid-template-columns:1fr; }
+  .payment-choice-grid{ grid-template-columns:repeat(3,1fr); }
+  .carrito{ padding:10px; border-radius:18px; }
+  .cart-item{ align-items:flex-start; }
+  .cart-item-info{ max-width:58%; font-size:13px; }
+  .cart-item-right{ min-width:105px; }
+  .carrito-actions{ grid-template-columns:1fr; }
+  #btn-register-sale,#btn-whatsapp{ grid-column:auto; }
+  #alitas + .menu-grid{ gap:8px; }
+  #alitas + .menu-grid .item-card{ border-radius:14px; }
+}
+
 </style>
 </head>
 
@@ -957,56 +1280,72 @@ height:65px;
         </div>
       </div>
 
-      <div class="cliente-datos">
-        <h3>Datos del cliente</h3>
-        <label for="customer-name">Nombre del cliente (opcional):</label>
-        <input type="text" id="customer-name" placeholder="Ej: Juan Pérez">
+      <div class="cliente-datos staff-card">
+        <div class="staff-card-head">
+          <div class="staff-icon">👤</div>
+          <div>
+            <h3>Datos para boleta / comanda</h3>
+            <p>Nombre, DNI si lo piden y nota interna de cocina.</p>
+          </div>
+        </div>
 
-        <label for="customer-dni">DNI del cliente (opcional):</label>
-        <input type="text" id="customer-dni" inputmode="numeric" maxlength="8" placeholder="Ej: 12345678">
-        <div class="help-text">No es obligatorio. Si lo llenan, saldrá en el resumen y en WhatsApp.</div>
+        <div class="staff-fields-grid">
+          <label for="customer-name">Nombre del cliente
+            <input type="text" id="customer-name" placeholder="Ej: Juan Pérez">
+          </label>
 
-        <label for="order-comment">Comentario del pedido / nota de moza (opcional):</label>
-        <textarea id="order-comment" placeholder="Ej: 8 alitas → 6 acevichada y 2 BBQ / sin cebolla / cliente apurado"></textarea>
-        <div class="help-text">Este campo te sirve para pedidos especiales o repartos exactos de salsa.</div>
+          <label for="customer-dni">DNI opcional
+            <input type="text" id="customer-dni" inputmode="numeric" maxlength="8" placeholder="Ej: 12345678">
+          </label>
+        </div>
+
+        <label for="order-comment" class="staff-note-label">Nota de cocina / pedido especial</label>
+        <textarea id="order-comment" placeholder="Ej: sin cebolla / alitas: 6 acevichada y 2 BBQ / cliente apurado"></textarea>
+        <div class="help-text">Esta nota sale en comanda y ayuda a cocina sin modificar el pedido.</div>
       </div>
 
-      <div class="pago-datos">
-        <h3>Forma de pago</h3>
-        <div class="extras-row">
-          <label><input type="radio" name="payment-method" value="efectivo" checked> Efectivo</label>
-          <label><input type="radio" name="payment-method" value="yape"> Yape</label>
-          <label><input type="radio" name="payment-method" value="mixto"> Mixto</label>
+      <div class="pago-datos staff-card">
+        <div class="staff-card-head">
+          <div class="staff-icon">💳</div>
+          <div>
+            <h3>Forma de pago</h3>
+            <p>Elige cómo pagó el cliente antes de registrar la venta.</p>
+          </div>
         </div>
-        <p class="nota-pago-yape">Si pagas con Yape, envía la captura del pago para empezar la preparación.</p>
+        <div class="payment-choice-grid">
+          <label class="pay-choice"><input type="radio" name="payment-method" value="efectivo" checked><span>💵</span><b>Efectivo</b></label>
+          <label class="pay-choice"><input type="radio" name="payment-method" value="yape"><span>📲</span><b>Yape</b></label>
+          <label class="pay-choice"><input type="radio" name="payment-method" value="mixto"><span>💳</span><b>Mixto</b></label>
+        </div>
+        <p class="nota-pago-yape">Si es Yape, confirmar captura/pago antes de preparar.</p>
 
         <div id="mixed-payment-box" class="mixed-payment-box">
           <div class="mixed-payment-grid">
             <div>
-              <label for="mixed-yape">Monto Yape:</label>
+              <label for="mixed-yape">Monto Yape</label>
               <input type="number" id="mixed-yape" min="0" step="0.01" placeholder="0.00">
             </div>
             <div>
-              <label for="mixed-cash">Monto efectivo:</label>
+              <label for="mixed-cash">Monto efectivo</label>
               <input type="number" id="mixed-cash" min="0" step="0.01" placeholder="0.00">
             </div>
           </div>
-          <div class="help-text">Cuando sea pago mixto, la suma de ambos debe ser igual al total del pedido.</div>
+          <div class="help-text">En pago mixto, Yape + efectivo debe cuadrar con el total.</div>
         </div>
       </div>
 
-      <div class="extras">
-        <div class="extras-row">
-          <label><input type="checkbox" id="chk-delivery" checked> Quiero delivery (S/ 3 antes de 10pm / S/ 4 desde 10pm / GRATIS &gt; S/ 100)</label>
-          <img src="delivery.png" alt="Delivery" class="delivery-icon">
+      <div class="extras staff-card delivery-card">
+        <div class="staff-card-head">
+          <div class="staff-icon">🛵</div>
+          <div>
+            <h3>Tipo de entrega</h3>
+            <p>Define si cobra delivery y si corresponde taper.</p>
+          </div>
         </div>
-        <div class="extras-row">
-          <label><input type="checkbox" id="chk-pickup"> Recojo yo mismo en el local (para llevar)</label>
-        </div>
-        <div class="extras-row">
-          <label><input type="checkbox" id="chk-eatin"> Comeré en el local (no se cobra taper)</label>
-        </div>
-        <p class="nota-taper">🥡 Los tapers se calculan automáticamente por plato para delivery o para llevar (no bebidas ni cremas extra).</p>
+        <label class="delivery-option"><input type="checkbox" id="chk-delivery" checked><span>🛵</span><b>Delivery</b><small>S/ 3 antes de 10pm · S/ 4 desde 10pm · gratis &gt; S/ 100</small></label>
+        <label class="delivery-option"><input type="checkbox" id="chk-pickup"><span>🛍️</span><b>Recojo en local</b><small>Pedido para llevar</small></label>
+        <label class="delivery-option"><input type="checkbox" id="chk-eatin"><span>🍽️</span><b>Comer en el local</b><small>No se cobra taper</small></label>
+        <p class="nota-taper">🥡 Tapers automáticos para delivery o para llevar. No aplica a bebidas ni cremas extra.</p>
       </div>
 
       <p id="cart-total">Total: S/ 0.00</p>
