@@ -1258,6 +1258,261 @@ body.home-screen .home-trust-bar small{
   body.home-screen .home-trust-bar div{ min-height:46px !important; }
 }
 
+
+/* =========================================================
+   V4 FINAL: PORTADA PUBLICA TIPO APP
+   - Logo sobre fondo negro
+   - Titulo centrado y mas parecido a referencia
+   - Foto del local mas completa
+   - Barra Cerrado/Abierto reducida
+   - Mantiene Facebook/TikTok/WhatsApp al costado
+   ========================================================= */
+body.home-screen{
+  max-width:430px !important;
+  min-height:100dvh !important;
+  padding:6px 8px 6px !important;
+  overflow-x:hidden !important;
+}
+body.home-screen .page-content{
+  max-width:430px !important;
+  min-height:calc(100dvh - 12px) !important;
+  margin:0 auto !important;
+  display:flex !important;
+  flex-direction:column !important;
+}
+
+/* Cabecera: logo a la izquierda, titulo centrado */
+body.home-screen .header{
+  position:relative !important;
+  height:72px !important;
+  margin:0 0 4px !important;
+  padding:0 52px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:0 !important;
+  flex:0 0 auto !important;
+}
+body.home-screen .header-logo{
+  position:absolute !important;
+  left:2px !important;
+  top:7px !important;
+  width:58px !important;
+  height:58px !important;
+  border-radius:0 !important;
+  border:0 !important;
+  background:#000 !important;
+  box-shadow:none !important;
+  overflow:visible !important;
+}
+body.home-screen .header-logo img{
+  width:100% !important;
+  height:100% !important;
+  object-fit:contain !important;
+  display:block !important;
+}
+body.home-screen .header-text{
+  width:100% !important;
+  text-align:center !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-width:0 !important;
+}
+body.home-screen .header-title-stack{
+  display:flex !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:5px !important;
+  white-space:nowrap !important;
+  line-height:1 !important;
+}
+body.home-screen .title-line{
+  display:inline-block !important;
+  font-size:20px !important;
+  line-height:1 !important;
+  font-weight:900 !important;
+  letter-spacing:.15px !important;
+  text-transform:none !important;
+  color:#ffe8a3 !important;
+  text-shadow:0 0 4px #ffd166, 0 0 8px #ff9f1c, 0 0 12px #ff9f1c !important;
+}
+body.home-screen .title-line:first-child{
+  text-transform:none !important;
+}
+body.home-screen .header-brand-line{
+  margin-top:5px !important;
+  font-size:12px !important;
+  font-weight:800 !important;
+  color:#fff !important;
+  gap:8px !important;
+  justify-content:center !important;
+}
+body.home-screen .header-brand-line::before,
+body.home-screen .header-brand-line::after{
+  flex-basis:24px !important;
+  height:1px !important;
+  background:linear-gradient(90deg, transparent, #ffb703, transparent) !important;
+}
+
+/* Redes sociales laterales */
+.social-links.floating-social{
+  position:fixed !important;
+  right:7px !important;
+  top:145px !important;
+  z-index:50 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:8px !important;
+  padding:0 !important;
+  align-items:center !important;
+}
+.social-links.floating-social .fb-icon{
+  width:39px !important;
+  height:39px !important;
+  font-size:18px !important;
+}
+.social-links.floating-social .fb-icon img{
+  width:21px !important;
+  height:21px !important;
+}
+
+/* Foto del local: mas completa y sin aplastar */
+body.home-screen .hero{
+  margin:2px 0 6px !important;
+  height:clamp(160px, 25dvh, 190px) !important;
+  max-height:none !important;
+  border-radius:15px !important;
+  border:1px solid rgba(255,183,3,.62) !important;
+  flex:0 0 auto !important;
+  background:#050505 !important;
+}
+body.home-screen .hero-home-app img{
+  height:100% !important;
+  min-height:100% !important;
+  width:100% !important;
+  object-fit:cover !important;
+  object-position:center center !important;
+}
+body.home-screen .hero-overlay-copy{
+  left:13px !important;
+  bottom:12px !important;
+  right:12px !important;
+}
+body.home-screen .hero-overlay-copy strong,
+body.home-screen .hero-overlay-copy span{
+  font-size:clamp(17px, 4.5vw, 20px) !important;
+  line-height:1.02 !important;
+  font-weight:900 !important;
+}
+
+/* Barra de abierto/cerrado mas baja para ganar espacio */
+body.home-screen .app-hour-card{
+  min-height:38px !important;
+  margin:5px 0 4px !important;
+  padding:6px 9px !important;
+  border-radius:15px !important;
+  flex:0 0 auto !important;
+}
+body.home-screen .hour-icon{
+  font-size:17px !important;
+  width:22px !important;
+  flex:0 0 22px !important;
+}
+body.home-screen .hour-arrow{ font-size:22px !important; }
+body.home-screen .hour-text strong{
+  font-size:12.5px !important;
+  line-height:1.05 !important;
+  white-space:nowrap !important;
+}
+body.home-screen .hour-text span{
+  font-size:10.5px !important;
+  line-height:1.05 !important;
+  white-space:nowrap !important;
+}
+
+body.home-screen .app-section-question{
+  margin:3px 0 5px !important;
+  gap:6px !important;
+  flex:0 0 auto !important;
+}
+body.home-screen .app-section-question span{ width:44px !important; }
+body.home-screen .app-section-question p{ font-size:11px !important; }
+
+/* Categorias: mas compactas, imagen ancha, texto grande */
+body.home-screen .app-category-list{
+  gap:clamp(5px, .75dvh, 7px) !important;
+  margin-top:4px !important;
+  flex:1 1 auto !important;
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:space-between !important;
+}
+body.home-screen .app-category-card{
+  min-height:clamp(48px, 6.8dvh, 56px) !important;
+  padding:4px 8px !important;
+  border-radius:15px !important;
+  gap:10px !important;
+  flex:0 0 auto !important;
+}
+body.home-screen .app-category-card img{
+  width:clamp(92px, 27vw, 112px) !important;
+  height:clamp(38px, 5.4dvh, 46px) !important;
+  border-radius:12px !important;
+  object-fit:cover !important;
+  object-position:center !important;
+}
+body.home-screen .app-category-card span{
+  font-size:clamp(17px, 4.7vw, 20px) !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+}
+body.home-screen .app-category-card b{ font-size:28px !important; }
+
+/* Franja inferior estilo lineas amarillas */
+body.home-screen .home-trust-bar{
+  margin:6px 0 0 !important;
+  padding:7px 0 0 !important;
+  border-top:1px solid rgba(255,183,3,.78) !important;
+  flex:0 0 auto !important;
+}
+body.home-screen .home-trust-bar div{ min-height:38px !important; }
+body.home-screen .home-trust-bar span{ font-size:15px !important; }
+body.home-screen .home-trust-bar b{
+  font-size:9.5px !important;
+  line-height:1 !important;
+}
+body.home-screen .home-trust-bar small{
+  font-size:7.5px !important;
+  line-height:1 !important;
+}
+
+@media (max-width:390px){
+  body.home-screen .header{ height:66px !important; padding:0 44px !important; }
+  body.home-screen .header-logo{ width:54px !important; height:54px !important; top:6px !important; }
+  body.home-screen .title-line{ font-size:18px !important; }
+  body.home-screen .header-brand-line{ font-size:10.5px !important; margin-top:4px !important; }
+  body.home-screen .hero{ height:clamp(145px, 23dvh, 170px) !important; }
+  .social-links.floating-social{ top:132px !important; right:5px !important; gap:6px !important; }
+  .social-links.floating-social .fb-icon{ width:34px !important; height:34px !important; }
+  body.home-screen .app-hour-card{ min-height:36px !important; padding:5px 8px !important; }
+  body.home-screen .hour-text strong{ font-size:11.8px !important; }
+  body.home-screen .hour-text span{ font-size:10px !important; }
+  body.home-screen .app-category-card{ min-height:clamp(45px, 6.4dvh, 52px) !important; }
+  body.home-screen .app-category-card img{ width:clamp(82px, 25vw, 98px) !important; height:clamp(36px, 5.2dvh, 42px) !important; }
+  body.home-screen .app-category-card span{ font-size:16px !important; }
+  body.home-screen .home-trust-bar div{ min-height:35px !important; }
+}
+
+@media (min-height:760px){
+  body.home-screen .hero{ height:clamp(170px, 24dvh, 198px) !important; }
+  body.home-screen .app-category-card{ min-height:clamp(52px, 7dvh, 60px) !important; }
+  body.home-screen .app-category-card img{ height:clamp(40px, 5.7dvh, 48px) !important; }
+  body.home-screen .home-trust-bar div{ min-height:42px !important; }
+}
+
   </style>
 </head>
 
@@ -1271,8 +1526,8 @@ body.home-screen .home-trust-bar small{
       <div class="header-logo"><img src="LOGO.jpg" alt="Logo El Patrón del Mal"></div>
       <div class="header-text">
         <div class="header-title-stack">
-          <span class="title-line">EL PATRÓN DEL</span>
-          <span class="title-line">MAL</span>
+          <span class="title-line">El Patrón del</span>
+          <span class="title-line">Mal</span>
         </div>
         <div class="header-brand-line">Burger Wings</div>
       </div>
