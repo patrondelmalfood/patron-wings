@@ -1580,7 +1580,7 @@ function renderCashDayUI(){
 
   if (CASH_IS_OPEN && ACTIVE_DATE_KEY) {
     cashDayStatus.classList.remove("closed");
-    cashDayStatus.innerHTML = `🟢 Caja abierta: <b>${formatDateKeyHuman(ACTIVE_DATE_KEY)}</b><br><small>Todo pedido registrado caerá en esa fecha de caja, aunque el reloj pase de medianoche.</small>`;
+    cashDayStatus.innerHTML = `🟢 Caja abierta: <b>${formatDateKeyHuman(ACTIVE_DATE_KEY)}</b><br><small>Todo pedido registrado caerá en esa fecha de caja, aunque el reloj pase de medianoche. La caja inicial es solo sencillo aparte y NO se suma a la venta.</small>`;
   } else {
     cashDayStatus.classList.add("closed");
     cashDayStatus.innerHTML = `🔴 Caja sin abrir.<br><small>Fecha sugerida para abrir: <b>${formatDateKeyHuman(fallback)}</b>.</small>`;
@@ -1727,7 +1727,7 @@ async function closeOperationalDay(){
       total_yape: totals.totalYape,
       total_orders: totals.totalOrders,
       open_cash: round2(openCash),
-      final_cash: round2(openCash + totals.totalCash),
+      final_cash: round2(totals.totalCash),
       closed_at: now,
       updated_at: now,
       data: {
@@ -1738,8 +1738,9 @@ async function closeOperationalDay(){
         totalYape: totals.totalYape,
         totalOrders: totals.totalOrders,
         openCash: round2(openCash),
-        finalCash: round2(openCash + totals.totalCash),
-        rowsRead: (rows || []).length
+        finalCash: round2(totals.totalCash),
+        rowsRead: (rows || []).length,
+        cashMode: "Caja inicial solo referencia/sencillo; NO se suma al efectivo vendido"
       }
     };
     const rClose = await supabaseClient.from(CLOSINGS_TABLE).upsert(closingRow, { onConflict: "date_key" });
@@ -1755,7 +1756,7 @@ async function closeOperationalDay(){
     if (rState.error) throw rState.error;
     CASH_IS_OPEN = false;
     renderCashDayUI();
-    alert(`✅ Día cerrado: ${formatDateKeyHuman(dateKey)}\n\nVenta total: ${money(totals.totalSales)}\nEfectivo: ${money(totals.totalCash)}\nYape: ${money(totals.totalYape)}\nPedidos: ${totals.totalOrders}\n\nYa debe aparecer en el resumen semanal.`);
+    alert(`✅ Día cerrado: ${formatDateKeyHuman(dateKey)}\n\nVenta total: ${money(totals.totalSales)}\nEfectivo vendido: ${money(totals.totalCash)}\nYape: ${money(totals.totalYape)}\nCaja inicial: ${money(openCash)} solo referencia/sencillo, NO se suma.\nPedidos: ${totals.totalOrders}\n\nYa debe aparecer en el resumen semanal.`);
   } catch(err) {
     alert("No se pudo cerrar el día: " + (err.message || String(err)));
   } finally {
