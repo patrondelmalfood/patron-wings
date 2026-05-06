@@ -1060,6 +1060,204 @@ body.home-screen .home-trust-bar small{
   .social-links.floating-social .fb-icon{ width:34px !important; height:34px !important; }
 }
 
+  
+
+/* =========================================================
+   V3 CORREGIDA: PORTADA PUBLICA LLENA MEJOR LA PANTALLA
+   - No deja hueco grande abajo
+   - Conserva Facebook / TikTok / WhatsApp flotantes
+   - Categorias con imagen mas ancha y texto grande
+   ========================================================= */
+body.home-screen{
+  max-width:430px !important;
+  min-height:100dvh !important;
+  padding:6px 8px 6px !important;
+  overflow-x:hidden !important;
+}
+body.home-screen .page-content{
+  max-width:430px !important;
+  min-height:calc(100dvh - 12px) !important;
+  margin:0 auto !important;
+  display:flex !important;
+  flex-direction:column !important;
+}
+
+/* Cabecera compacta, pero no aplastada */
+body.home-screen .header{
+  gap:8px !important;
+  margin:0 0 4px !important;
+  padding-right:45px !important;
+  flex:0 0 auto !important;
+}
+body.home-screen .header-logo{
+  width:68px !important;
+  height:68px !important;
+  border:2px solid rgba(255,255,255,.92) !important;
+  background:#fff !important;
+  box-shadow:0 0 10px rgba(255,255,255,.18) !important;
+}
+body.home-screen .title-line{
+  font-size:23px !important;
+  line-height:.92 !important;
+  letter-spacing:.1px !important;
+}
+body.home-screen .header-brand-line{
+  margin-top:5px !important;
+  font-size:11px !important;
+  gap:6px !important;
+}
+body.home-screen .header-brand-line::before,
+body.home-screen .header-brand-line::after{
+  flex-basis:16px !important;
+}
+
+/* Redes sociales laterales conservadas */
+.social-links.floating-social{
+  position:fixed !important;
+  right:7px !important;
+  top:98px !important;
+  z-index:50 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:8px !important;
+  padding:0 !important;
+  align-items:center !important;
+}
+.social-links.floating-social .fb-icon{
+  width:38px !important;
+  height:38px !important;
+  font-size:18px !important;
+}
+.social-links.floating-social .fb-icon img{
+  width:21px !important;
+  height:21px !important;
+}
+
+/* Imagen principal: mas grande que la version anterior para ocupar pantalla */
+body.home-screen .hero{
+  margin:4px 0 6px !important;
+  height:clamp(142px, 22dvh, 176px) !important;
+  max-height:none !important;
+  border-radius:15px !important;
+  flex:0 0 auto !important;
+}
+body.home-screen .hero-home-app img{
+  height:100% !important;
+  min-height:100% !important;
+  width:100% !important;
+  object-fit:cover !important;
+  object-position:center center !important;
+}
+body.home-screen .hero-overlay-copy{
+  left:12px !important;
+  bottom:10px !important;
+  right:10px !important;
+}
+body.home-screen .hero-overlay-copy strong,
+body.home-screen .hero-overlay-copy span{
+  font-size:clamp(15px, 4.1vw, 18px) !important;
+  line-height:1.02 !important;
+}
+
+/* Horario */
+body.home-screen .app-hour-card{
+  min-height:46px !important;
+  margin:5px 0 4px !important;
+  padding:8px 10px !important;
+  border-radius:16px !important;
+  flex:0 0 auto !important;
+}
+body.home-screen .hour-icon{ font-size:20px !important; }
+body.home-screen .hour-arrow{ font-size:25px !important; }
+body.home-screen .hour-text strong{ font-size:13px !important; line-height:1.05 !important; }
+body.home-screen .hour-text span{ font-size:11px !important; line-height:1.1 !important; }
+
+body.home-screen .app-section-question{
+  margin:4px 0 5px !important;
+  gap:6px !important;
+  flex:0 0 auto !important;
+}
+body.home-screen .app-section-question span{ width:46px !important; }
+body.home-screen .app-section-question p{ font-size:11px !important; }
+
+/* Categorias: ocupan mejor el espacio, con imagen ancha y texto grande */
+body.home-screen .app-category-list{
+  gap:clamp(5px, .85dvh, 8px) !important;
+  margin-top:5px !important;
+  flex:1 1 auto !important;
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:space-between !important;
+}
+body.home-screen .app-category-card{
+  min-height:clamp(50px, 7.4dvh, 59px) !important;
+  padding:5px 8px !important;
+  border-radius:16px !important;
+  gap:10px !important;
+  flex:0 0 auto !important;
+}
+body.home-screen .app-category-card img{
+  width:clamp(90px, 26vw, 112px) !important;
+  height:clamp(40px, 5.8dvh, 48px) !important;
+  border-radius:12px !important;
+  object-fit:cover !important;
+  object-position:center !important;
+}
+body.home-screen .app-category-card span{
+  font-size:clamp(17px, 4.7vw, 20px) !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+}
+body.home-screen .app-category-card b{ font-size:29px !important; }
+
+/* Franja inferior estilo lineas amarillas */
+body.home-screen .home-trust-bar{
+  margin:7px 0 0 !important;
+  padding:8px 0 0 !important;
+  border-top:1px solid rgba(255,183,3,.78) !important;
+  flex:0 0 auto !important;
+}
+body.home-screen .home-trust-bar div{
+  min-height:42px !important;
+}
+body.home-screen .home-trust-bar span{ font-size:16px !important; }
+body.home-screen .home-trust-bar b{
+  font-size:10px !important;
+  line-height:1 !important;
+}
+body.home-screen .home-trust-bar small{
+  font-size:8px !important;
+  line-height:1 !important;
+}
+
+/* Celulares angostos */
+@media (max-width:390px){
+  body.home-screen .header-logo{ width:62px !important; height:62px !important; }
+  body.home-screen .title-line{ font-size:21px !important; }
+  body.home-screen .header{ padding-right:42px !important; }
+  .social-links.floating-social{ top:92px !important; right:5px !important; gap:6px !important; }
+  .social-links.floating-social .fb-icon{ width:34px !important; height:34px !important; }
+  body.home-screen .hero{ height:clamp(132px, 21dvh, 158px) !important; }
+  body.home-screen .app-hour-card{ min-height:43px !important; padding:7px 9px !important; }
+  body.home-screen .app-category-card{
+    min-height:clamp(48px, 7dvh, 55px) !important;
+  }
+  body.home-screen .app-category-card img{
+    width:clamp(82px, 25vw, 98px) !important;
+    height:clamp(38px, 5.5dvh, 44px) !important;
+  }
+  body.home-screen .app-category-card span{ font-size:17px !important; }
+  body.home-screen .home-trust-bar div{ min-height:38px !important; }
+}
+
+/* Celulares altos: aprovechamos el espacio extra sin dejar hueco */
+@media (min-height:740px){
+  body.home-screen .hero{ height:clamp(155px, 23dvh, 185px) !important; }
+  body.home-screen .app-category-card{ min-height:clamp(55px, 7.5dvh, 64px) !important; }
+  body.home-screen .app-category-card img{ height:clamp(44px, 6dvh, 52px) !important; }
+  body.home-screen .home-trust-bar div{ min-height:46px !important; }
+}
+
   </style>
 </head>
 
