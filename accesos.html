@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Accesos Internos - El Patrón del Mal</title>
+
+  <style>
+    :root{
+      --bg:#050505;
+      --card:#111827;
+      --card2:#0b1220;
+      --gold:#ffd60a;
+      --gold2:#ff9f1c;
+      --line:rgba(255,214,10,.45);
+      --text:#f8fafc;
+      --muted:#cbd5e1;
+      --green:#22c55e;
+      --red:#ef4444;
+      --blue:#38bdf8;
+      --purple:#a855f7;
+    }
+
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:Arial, Helvetica, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top, rgba(255,214,10,.10), transparent 32%),
+        radial-gradient(circle at bottom left, rgba(168,85,247,.10), transparent 28%),
+        #000;
+      overflow-x:hidden;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background:
+        linear-gradient(45deg, rgba(255,255,255,.025) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(255,255,255,.025) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(255,255,255,.025) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.025) 75%);
+      background-size:32px 32px;
+      background-position:0 0,0 16px,16px -16px,-16px 0;
+      opacity:.65;
+      pointer-events:none;
+      z-index:0;
+    }
+
+    .wrap{
+      position:relative;
+      z-index:1;
+      width:min(1080px, 94vw);
+      margin:0 auto;
+      padding:28px 0 38px;
+    }
+
+    .top{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:18px;
+      margin-bottom:22px;
+      text-align:center;
+    }
+
+    .logo-box{
+      width:118px;
+      height:118px;
+      border-radius:24px;
+      background:#000;
+      border:1px solid rgba(255,214,10,.35);
+      box-shadow:0 0 22px rgba(255,214,10,.16);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      flex-shrink:0;
+    }
+
+    .logo-box img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      padding:8px;
+    }
+
+    .brand h1{
+      margin:0;
+      font-size:clamp(28px, 5vw, 52px);
+      line-height:.95;
+      text-transform:uppercase;
+      color:#ffe8a3;
+      text-shadow:0 0 6px #ffd166, 0 0 14px #ff9f1c;
+      letter-spacing:.5px;
+    }
+
+    .brand p{
+      margin:8px 0 0;
+      color:var(--muted);
+      font-size:15px;
+      font-weight:700;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      margin-top:10px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(34,197,94,.35);
+      background:rgba(34,197,94,.12);
+      color:#bbf7d0;
+      font-size:13px;
+      font-weight:800;
+    }
+
+    .login-card,
+    .panel{
+      border:1px solid rgba(255,214,10,.28);
+      background:linear-gradient(180deg, rgba(17,24,39,.92), rgba(2,6,23,.94));
+      border-radius:26px;
+      box-shadow:0 18px 45px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.03);
+      padding:22px;
+    }
+
+    .login-card{
+      width:min(460px, 100%);
+      margin:24px auto 0;
+    }
+
+    .login-card h2,
+    .panel-title{
+      margin:0 0 8px;
+      color:var(--gold);
+      font-size:22px;
+    }
+
+    .login-card p{
+      margin:0 0 14px;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.45;
+    }
+
+    .login-row{
+      display:flex;
+      gap:10px;
+    }
+
+    input{
+      width:100%;
+      border-radius:16px;
+      border:1px solid rgba(255,214,10,.25);
+      background:#020617;
+      color:#fff;
+      padding:14px 14px;
+      outline:none;
+      font-size:16px;
+      font-weight:800;
+    }
+
+    input:focus{
+      border-color:var(--gold);
+      box-shadow:0 0 0 3px rgba(255,214,10,.12);
+    }
+
+    button,
+    .btn{
+      border:none;
+      cursor:pointer;
+      border-radius:16px;
+      padding:13px 16px;
+      font-weight:900;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      transition:transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+    }
+
+    button:hover,
+    .btn:hover{
+      transform:translateY(-1px);
+      box-shadow:0 8px 18px rgba(0,0,0,.35);
+    }
+
+    .login-btn{
+      background:var(--gold);
+      color:#000;
+      white-space:nowrap;
+    }
+
+    .error{
+      margin-top:10px;
+      min-height:18px;
+      color:#fecaca;
+      font-size:13px;
+      font-weight:800;
+    }
+
+    .hidden{ display:none !important; }
+
+    .panel{
+      margin-top:22px;
+    }
+
+    .panel-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:18px;
+      flex-wrap:wrap;
+    }
+
+    .panel-sub{
+      margin:0;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .logout{
+      background:rgba(239,68,68,.15);
+      color:#fecaca;
+      border:1px solid rgba(239,68,68,.35);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:18px;
+    }
+
+    .access-card{
+      position:relative;
+      min-height:172px;
+      border-radius:24px;
+      padding:20px;
+      overflow:hidden;
+      background:
+        linear-gradient(145deg, rgba(255,214,10,.10), transparent 42%),
+        linear-gradient(180deg, #111827, #050816);
+      border:1px solid rgba(255,214,10,.28);
+      color:#fff;
+      text-decoration:none;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      box-shadow:0 10px 28px rgba(0,0,0,.38);
+    }
+
+    .access-card::after{
+      content:"";
+      position:absolute;
+      right:-40px;
+      bottom:-60px;
+      width:160px;
+      height:160px;
+      border-radius:50%;
+      background:rgba(255,214,10,.10);
+      filter:blur(2px);
+    }
+
+    .icon{
+      width:54px;
+      height:54px;
+      border-radius:18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:28px;
+      background:#020617;
+      border:1px solid rgba(255,214,10,.28);
+      box-shadow:0 0 16px rgba(255,214,10,.12);
+    }
+
+    .access-card h3{
+      margin:16px 0 6px;
+      color:#ffe8a3;
+      font-size:24px;
+      line-height:1.05;
+      text-transform:uppercase;
+    }
+
+    .access-card p{
+      margin:0;
+      color:#cbd5e1;
+      font-size:14px;
+      line-height:1.35;
+      max-width:88%;
+    }
+
+    .go{
+      margin-top:18px;
+      align-self:flex-start;
+      padding:10px 14px;
+      border-radius:999px;
+      background:var(--gold);
+      color:#000;
+      font-size:13px;
+      font-weight:900;
+    }
+
+    .principal{ border-color:rgba(255,214,10,.46); }
+    .moza{ border-color:rgba(34,197,94,.42); }
+    .admin{ border-color:rgba(56,189,248,.42); }
+    .resumen{ border-color:rgba(168,85,247,.42); }
+
+    .principal .icon{ color:var(--gold); }
+    .moza .icon{ color:var(--green); }
+    .admin .icon{ color:var(--blue); }
+    .resumen .icon{ color:var(--purple); }
+
+    .footer-note{
+      margin:18px 0 0;
+      color:#94a3b8;
+      font-size:12px;
+      text-align:center;
+      line-height:1.45;
+    }
+
+    @media (max-width:720px){
+      .wrap{ padding:18px 0 28px; }
+      .top{
+        flex-direction:column;
+        gap:10px;
+        margin-bottom:14px;
+      }
+      .logo-box{
+        width:96px;
+        height:96px;
+        border-radius:22px;
+      }
+      .brand h1{ font-size:31px; }
+      .brand p{ font-size:13px; }
+      .badge{ font-size:12px; padding:7px 10px; }
+      .login-row{ flex-direction:column; }
+      .grid{ grid-template-columns:1fr; gap:12px; }
+      .access-card{
+        min-height:142px;
+        padding:17px;
+        border-radius:22px;
+      }
+      .access-card h3{ font-size:21px; }
+      .icon{
+        width:48px;
+        height:48px;
+        font-size:25px;
+      }
+      .go{ padding:9px 13px; }
+    }
+
+    @media (min-width:900px){
+      .access-card:hover{
+        transform:translateY(-3px) scale(1.01);
+        border-color:var(--gold);
+        box-shadow:0 16px 34px rgba(0,0,0,.5), 0 0 18px rgba(255,214,10,.13);
+      }
+    }
+
+    @media print{
+      body{ background:#fff; color:#000; }
+      body::before{ display:none; }
+      .login-card, .logout{ display:none; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="wrap">
+    <section class="top">
+      <div class="logo-box">
+        <img src="LOGO.jpg" alt="Logo El Patrón del Mal">
+      </div>
+      <div class="brand">
+        <h1>El Patrón del Mal</h1>
+        <p>Accesos internos del local</p>
+        <div class="badge">🔐 Solo personal autorizado</div>
+      </div>
+    </section>
+
+    <section class="login-card" id="loginBox">
+      <h2>Ingresar</h2>
+      <p>Coloca la clave interna para ver los accesos directos del sistema.</p>
+      <div class="login-row">
+        <input id="passInput" type="password" placeholder="Clave interna" inputmode="numeric" autocomplete="off">
+        <button class="login-btn" id="btnLogin" type="button">Entrar</button>
+      </div>
+      <div class="error" id="loginError"></div>
+    </section>
+
+    <section class="panel hidden" id="panelBox">
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">Panel de accesos</h2>
+          <p class="panel-sub">Entra rápido a cada parte del sistema.</p>
+        </div>
+        <button class="logout" id="btnLogout" type="button">Salir</button>
+      </div>
+
+      <div class="grid">
+        <a class="access-card principal" href="https://patron-wings.vercel.app/">
+          <div>
+            <div class="icon">🍗</div>
+            <h3>Carta principal</h3>
+            <p>Carta pública para clientes. Pedidos por WhatsApp y menú online.</p>
+          </div>
+          <span class="go">Abrir carta →</span>
+        </a>
+
+        <a class="access-card moza" href="https://patron-wings.vercel.app/carta_moza_cocina.html">
+          <div>
+            <div class="icon">👩‍🍳</div>
+            <h3>Carta moza</h3>
+            <p>Registra pedidos, imprime comanda, boleta y envía a cocina.</p>
+          </div>
+          <span class="go">Abrir moza →</span>
+        </a>
+
+        <a class="access-card admin" href="https://patron-wings.vercel.app/admin.html">
+          <div>
+            <div class="icon">📊</div>
+            <h3>Administrador</h3>
+            <p>Ventas del día, efectivo, Yape, caja inicial, pedidos y stock.</p>
+          </div>
+          <span class="go">Abrir admin →</span>
+        </a>
+
+        <a class="access-card resumen" href="https://patron-wings.vercel.app/resumen_semanal.html">
+          <div>
+            <div class="icon">📅</div>
+            <h3>Resumen semanal</h3>
+            <p>Lunes a domingo: total, efectivo, Yape y cierres guardados.</p>
+          </div>
+          <span class="go">Abrir resumen →</span>
+        </a>
+      </div>
+
+      <p class="footer-note">
+        Consejo: guarda este link en el celular del local como acceso directo. La clave solo oculta visualmente esta página; no reemplaza seguridad privada de servidor.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    const CLAVE_INTERNA = "181221";
+    const SESSION_KEY = "pdm_accesos_internos_ok";
+
+    const loginBox = document.getElementById("loginBox");
+    const panelBox = document.getElementById("panelBox");
+    const passInput = document.getElementById("passInput");
+    const btnLogin = document.getElementById("btnLogin");
+    const btnLogout = document.getElementById("btnLogout");
+    const loginError = document.getElementById("loginError");
+
+    function showPanel(){
+      loginBox.classList.add("hidden");
+      panelBox.classList.remove("hidden");
+      loginError.textContent = "";
+      passInput.value = "";
+    }
+
+    function showLogin(){
+      panelBox.classList.add("hidden");
+      loginBox.classList.remove("hidden");
+      setTimeout(() => passInput.focus(), 100);
+    }
+
+    function login(){
+      const value = String(passInput.value || "").trim();
+      if (value !== CLAVE_INTERNA) {
+        loginError.textContent = "Clave incorrecta.";
+        passInput.select();
+        return;
+      }
+      localStorage.setItem(SESSION_KEY, "1");
+      showPanel();
+    }
+
+    btnLogin.addEventListener("click", login);
+    passInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") login();
+    });
+
+    btnLogout.addEventListener("click", () => {
+      localStorage.removeItem(SESSION_KEY);
+      showLogin();
+    });
+
+    if (localStorage.getItem(SESSION_KEY) === "1") {
+      showPanel();
+    } else {
+      showLogin();
+    }
+  </script>
+</body>
+</html>
