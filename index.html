@@ -593,26 +593,117 @@ height:44px;
       font-size:13px;
     }
 
+    /* CARRITO FLOTANTE TIPO APP */
     .bottom-bar-mobile{
       position:fixed;
-      left:0; right:0; bottom:0;
-      padding:8px 12px;
-      background:rgba(0,0,0,.95);
-      border-top:1px solid #ff9f1c;
+      left:50%;
+      right:auto;
+      bottom:14px;
+      transform:translateX(-50%);
+      width:calc(100% - 28px);
+      max-width:390px;
+      min-height:58px;
+      padding:7px 8px;
+      background:linear-gradient(180deg,#ffc533,#ffad00);
+      border:2px solid rgba(0,0,0,.92);
+      border-radius:26px;
       display:none;
-      justify-content:space-between;
       align-items:center;
-      font-size:14px;
-      z-index:5;
-      gap:8px;
-      backdrop-filter:blur(6px);
+      gap:10px;
+      z-index:999;
+      box-shadow:0 8px 22px rgba(0,0,0,.55), 0 0 0 2px rgba(255,214,10,.28);
+      color:#111;
     }
-    .bottom-bar-mobile span{ font-weight:bold; color:#ffe066; }
-    .bottom-bar-mobile button{ font-size:13px; padding:6px 10px; }
     .bottom-bar-mobile.hidden{ display:none !important; }
+    .cart-pill-icon{
+      width:44px;
+      height:44px;
+      border-radius:50%;
+      background:#111;
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:22px;
+      position:relative;
+      flex:0 0 44px;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);
+    }
+    .cart-pill-icon em{
+      position:absolute;
+      top:-7px;
+      right:-4px;
+      min-width:19px;
+      height:19px;
+      padding:0 5px;
+      border-radius:999px;
+      background:#fff;
+      color:#111;
+      border:1px solid #111;
+      font-size:11px;
+      font-style:normal;
+      font-weight:900;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      line-height:1;
+    }
+    .cart-pill-info{
+      flex:1;
+      min-width:0;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      color:#111;
+      font-size:12px;
+      font-weight:900;
+      white-space:nowrap;
+      overflow:hidden;
+    }
+    .cart-pill-info strong{
+      overflow:hidden;
+      text-overflow:ellipsis;
+      font-size:12px;
+    }
+    .cart-pill-info .dot-sep{
+      opacity:.65;
+      font-weight:900;
+    }
+    .cart-pill-info span{
+      font-weight:900;
+      color:#111;
+      font-size:13px;
+    }
+    .bottom-bar-mobile button{
+      border:none;
+      background:#111;
+      color:#fff;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:900;
+      padding:10px 12px;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      box-shadow:none;
+      white-space:nowrap;
+      flex:0 0 auto;
+    }
+    .bottom-bar-mobile button b{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:18px;
+      height:18px;
+      border-radius:50%;
+      background:#fff;
+      color:#111;
+      font-size:15px;
+      line-height:1;
+    }
 
     @media (max-width:600px){
-      body{ padding:10px; }
+      body{ padding:10px; padding-bottom:84px; }
       .gif-dinero{ bottom:70px; left:4px; width:100px; }
       .bottom-bar-mobile{ display:flex; }
       .carrito-actions{ gap:8px; }
@@ -1935,8 +2026,13 @@ body.home-screen .home-trust-bar small{
   </div>
 
 <div class="bottom-bar-mobile hidden" id="bottom-bar">
-  <span id="bottom-total">Total: S/ 0.00</span>
-  <button id="bottom-ver-pedido">Ver pedido</button>
+  <div class="cart-pill-icon">🛒<em id="bottom-count">0</em></div>
+  <div class="cart-pill-info">
+    <strong id="bottom-products">0 productos</strong>
+    <span class="dot-sep">·</span>
+    <span id="bottom-total">S/ 0.00</span>
+  </div>
+  <button id="bottom-ver-pedido" type="button">Ver pedido <b>›</b></button>
 </div>
 
 
@@ -2198,6 +2294,8 @@ const chkPickup = document.getElementById("chk-pickup");
 const chkEatIn = document.getElementById("chk-eatin");
 const bottomBar = document.getElementById("bottom-bar");
 const bottomTotal = document.getElementById("bottom-total");
+const bottomCount = document.getElementById("bottom-count");
+const bottomProducts = document.getElementById("bottom-products");
 const bottomVerPedido = document.getElementById("bottom-ver-pedido");
 const inputName = document.getElementById("customer-name");
 const inputDni = document.getElementById("customer-dni");
@@ -2466,7 +2564,9 @@ function renderCart(){
     cartTotalEl.innerHTML = "Total: S/ 0.00";
     if (boletaEl) boletaEl.innerHTML = "";
     if (bottomBar) bottomBar.classList.add("hidden");
-    if (bottomTotal) bottomTotal.textContent = "Total: S/ 0.00";
+    if (bottomTotal) bottomTotal.textContent = "S/ 0.00";
+    if (bottomCount) bottomCount.textContent = "0";
+    if (bottomProducts) bottomProducts.textContent = "0 productos";
     if (errorMsg) errorMsg.textContent = "";
     btnWhatsapp.href = "#"; btnWhatsapp.classList.add("disabled");
     CURRENT_BOLETA = null;
@@ -2484,8 +2584,11 @@ function renderCart(){
   });
   const ctx = getCtx();
   cartTotalEl.innerHTML = `Subtotal: ${money(ctx.subtotal)}<br>Tapers: 🥡 ${ctx.taperTextPrint}<br>Delivery: ${money(ctx.deliveryFee)}<br><span style="font-size:17px;">Total: ${money(ctx.total)}</span>`;
+  const totalQtyBottom = cart.reduce((a,e)=>a + safeNum(e.qty), 0);
   if (bottomBar) bottomBar.classList.remove("hidden");
-  if (bottomTotal) bottomTotal.textContent = `Total: ${money(ctx.total)}`;
+  if (bottomCount) bottomCount.textContent = String(totalQtyBottom);
+  if (bottomProducts) bottomProducts.textContent = `${totalQtyBottom} ${totalQtyBottom === 1 ? "producto" : "productos"}`;
+  if (bottomTotal) bottomTotal.textContent = money(ctx.total);
   if (boletaEl) boletaEl.innerHTML = buildTicket(ctx);
   const errors = getErrors(ctx);
   if (errors.length) { btnWhatsapp.href="#"; btnWhatsapp.classList.add("disabled"); if (errorMsg) errorMsg.textContent=errors.join("\n"); }
