@@ -1939,6 +1939,14 @@ body.home-screen .hero-carousel{
   }
 }
 
+
+/* Sonido y feedback visual al agregar */
+.item-actions button.add-sound-flash,
+.item-actions button:active{
+  transform:translateY(-1px) scale(1.03);
+  box-shadow:0 0 14px rgba(255,214,10,.75);
+}
+
 </style>
 </head>
 
@@ -2525,13 +2533,50 @@ function renderMenu(selectedCategoryKey = currentCategoryKey){
         const label = document.createElement("label"); label.textContent = item.id === 42 ? "Vidrio: " : (item.id === 37 ? "1L: " : "Marca: "); label.appendChild(sel); actions.appendChild(label);
       }
       const qty = document.createElement("input"); qty.type = "number"; qty.min = "1"; qty.value = "1";
-      const btn = document.createElement("button"); btn.type = "button"; btn.textContent = "Agregar";
+      const btn = document.createElement("button"); btn.type = "button"; btn.textContent = "Agregar"; btn.className = "btn-add-sound";
       btn.addEventListener("click", () => handleAdd(section, item, card, qty, btn));
       actions.appendChild(qty); actions.appendChild(btn); card.appendChild(actions); grid.appendChild(card);
     });
     menuContainer.appendChild(grid);
     if (section.footerText) { const note=document.createElement("div"); note.style.cssText="margin-top:8px;font-size:12px;color:#ccc"; note.textContent=section.footerText; menuContainer.appendChild(note); }
   });
+}
+
+
+function playAddSound(){
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+
+    if (!window.__pdmAudioCtx) {
+      window.__pdmAudioCtx = new AudioContext();
+    }
+    const ctx = window.__pdmAudioCtx;
+    if (ctx.state === "suspended") ctx.resume();
+
+    const now = ctx.currentTime;
+    const master = ctx.createGain();
+    master.gain.setValueAtTime(0.0001, now);
+    master.gain.exponentialRampToValueAtTime(0.16, now + 0.015);
+    master.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
+    master.connect(ctx.destination);
+
+    const osc1 = ctx.createOscillator();
+    osc1.type = "sine";
+    osc1.frequency.setValueAtTime(620, now);
+    osc1.frequency.exponentialRampToValueAtTime(880, now + 0.09);
+    osc1.connect(master);
+    osc1.start(now);
+    osc1.stop(now + 0.18);
+
+    const osc2 = ctx.createOscillator();
+    osc2.type = "triangle";
+    osc2.frequency.setValueAtTime(1240, now + 0.035);
+    osc2.frequency.exponentialRampToValueAtTime(1560, now + 0.13);
+    osc2.connect(master);
+    osc2.start(now + 0.035);
+    osc2.stop(now + 0.16);
+  } catch(e) {}
 }
 
 function handleAdd(section, item, card, qtyInput, btn){
@@ -2555,6 +2600,9 @@ function handleAdd(section, item, card, qtyInput, btn){
   const brandSel = card.querySelector(`select[name="brand-${item.id}"]`);
   if (brandSel) { if (!brandSel.value) return alert("Elige la opción/marca."); brand = brandSel.value; }
   addToCart(item, qty, sauces, sauceApart, brand, noSauce);
+  playAddSound();
+  btn.classList.add("add-sound-flash");
+  setTimeout(() => btn.classList.remove("add-sound-flash"), 220);
   const t = btn.textContent; btn.textContent = "✔ Añadido"; btn.disabled = true;
   setTimeout(() => { btn.textContent = t; btn.disabled = false; }, 850);
 }
