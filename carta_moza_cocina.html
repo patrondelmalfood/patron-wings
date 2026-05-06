@@ -782,7 +782,64 @@ height:65px;
       font-weight:700;
     }
 
-  </style>
+  
+    .cash-day-panel{
+      margin-top:15px;
+      padding:12px;
+      border-radius:12px;
+      border:1px solid #facc15;
+      background:rgba(15,23,42,.92);
+      box-shadow:0 0 12px rgba(250,204,21,.20);
+      font-size:13px;
+    }
+    .cash-day-panel h3{
+      margin:0 0 8px;
+      color:#fde68a;
+      font-size:16px;
+    }
+    .cash-day-status{
+      padding:8px 10px;
+      border-radius:10px;
+      background:#020617;
+      border:1px solid #334155;
+      color:#e5e7eb;
+      line-height:1.35;
+      margin-bottom:10px;
+    }
+    .cash-day-status b{ color:#86efac; }
+    .cash-day-status.closed b{ color:#fca5a5; }
+    .cash-day-actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:end;
+    }
+    .cash-day-actions label{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      color:#cbd5e1;
+      font-size:12px;
+      flex:1 1 170px;
+    }
+    .cash-day-actions input{
+      width:100%;
+      box-sizing:border-box;
+    }
+    .cash-day-actions button{
+      border-radius:10px;
+      font-weight:900;
+    }
+    #btn-open-day{ background:#22c55e; color:#052e16; }
+    #btn-close-day{ background:#ef4444; color:#fff; }
+    #btn-refresh-cash-day{ background:#3b82f6; color:#fff; }
+    .cash-day-mini{
+      color:#94a3b8;
+      font-size:11px;
+      margin-top:8px;
+      line-height:1.35;
+    }
+</style>
 </head>
 
 <body>
@@ -884,6 +941,22 @@ height:65px;
       <div id="cart-items"></div>
       <p id="cart-empty">Aún no has añadido platos.</p>
 
+      <div class="cash-day-panel">
+        <h3>🗓️ Día operativo / caja activa</h3>
+        <div id="cash-day-status" class="cash-day-status closed">Cargando caja activa...</div>
+        <div class="cash-day-actions">
+          <label>Fecha de caja
+            <input type="date" id="cash-day-input">
+          </label>
+          <button id="btn-open-day" type="button">🟢 Abrir día</button>
+          <button id="btn-close-day" type="button">🔒 Cerrar día</button>
+          <button id="btn-refresh-cash-day" type="button">Actualizar</button>
+        </div>
+        <div class="cash-day-mini">
+          Si venden hasta la 1:00am, no importa: mientras la caja siga abierta, las ventas se guardan en la fecha de caja activa. Al terminar el turno, presiona <b>Cerrar día</b>.
+        </div>
+      </div>
+
       <div class="cliente-datos">
         <h3>Datos del cliente</h3>
         <label for="customer-name">Nombre del cliente (opcional):</label>
@@ -968,6 +1041,9 @@ const WHATSAPP_NUMBER = "51944275861";
 const SUPABASE_URL = "https://defdwzzewzfjuseozwkn.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
 const ORDERS_TABLE = "orders_cloud";
+const DAY_SETUP_TABLE = "day_setup_cloud";
+const CASH_STATE_TABLE = "cash_register_state";
+const CLOSINGS_TABLE = "daily_closings";
 const LOCAL_MOZA_BACKUP_KEY = "pdm_moza_orders_backup_v1";
 const supabaseClient = (window.supabase && SUPABASE_URL && SUPABASE_ANON_KEY)
   ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: false } })
@@ -1220,6 +1296,9 @@ let CURRENT_BOLETA = null;
 let CURRENT_ORDER_ID = null;
 let CURRENT_REGISTERED = false;
 let CURRENT_ORDER_LOCKED = false;
+let ACTIVE_DATE_KEY = "";
+let CASH_IS_OPEN = false;
+let CASH_STATE_DATA = {};
 const menuContainer = document.getElementById("menu");
 const cartItemsEl = document.getElementById("cart-items");
 const cartEmptyEl = document.getElementById("cart-empty");
@@ -1246,6 +1325,11 @@ const btnPrintKitchen = document.getElementById("btn-print-kitchen");
 const btnPrintClient = document.getElementById("btn-print-client");
 const btnRegisterSale = document.getElementById("btn-register-sale");
 const orderSaveStatus = document.getElementById("order-save-status");
+const cashDayStatus = document.getElementById("cash-day-status");
+const cashDayInput = document.getElementById("cash-day-input");
+const btnOpenDay = document.getElementById("btn-open-day");
+const btnCloseDay = document.getElementById("btn-close-day");
+const btnRefreshCashDay = document.getElementById("btn-refresh-cash-day");
 
 function renderMenu(){
   if (!menuContainer) return;
@@ -1448,6 +1532,236 @@ function printHTML(html, title="Imprimir"){
 function dateKeyLocal(d = new Date()){
   return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
 }
+function dateFromKeyLocal(key){
+  const parts = String(key || "").split("-").map(Number);
+  if (parts.length !== 3 || parts.some(n => !Number.isFinite(n))) return new Date();
+  return new Date(parts[0], parts[1]-1, parts[2], 12, 0, 0, 0);
+}
+function addDaysToDateKey(key, days){
+  const d = dateFromKeyLocal(key);
+  d.setDate(d.getDate() + Number(days || 0));
+  return dateKeyLocal(d);
+}
+function operationalDefaultDateKey(d = new Date()){
+  const x = new Date(d);
+  // Si son horas de madrugada, normalmente pertenece a la caja del día anterior.
+  if (x.getHours() < 5) x.setDate(x.getDate() - 1);
+  return dateKeyLocal(x);
+}
+function weekRangeForDateKey(key){
+  const d = dateFromKeyLocal(key);
+  const day = d.getDay(); // domingo=0, lunes=1
+  const diffToMonday = day === 0 ? -6 : 1 - day;
+  const monday = new Date(d); monday.setDate(d.getDate() + diffToMonday);
+  const sunday = new Date(monday); sunday.setDate(monday.getDate() + 6);
+  return { weekStart: dateKeyLocal(monday), weekEnd: dateKeyLocal(sunday) };
+}
+function formatDateKeyHuman(key){
+  const d = dateFromKeyLocal(key);
+  const dias = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+  return `${dias[d.getDay()]} ${pad2(d.getDate())}/${pad2(d.getMonth()+1)}/${d.getFullYear()}`;
+}
+function getOrderFromCloudRow(row){
+  return row && row.data ? row.data : {};
+}
+function getStatusFromCloudRow(row){
+  const order = getOrderFromCloudRow(row);
+  return String(row?.status || order.status || "PENDIENTE").toUpperCase();
+}
+function isTechnicalCloudRow(row){
+  const order = getOrderFromCloudRow(row);
+  return getStatusFromCloudRow(row) === "DAY_SETUP" || order.__type === "day_setup";
+}
+function renderCashDayUI(){
+  const fallback = ACTIVE_DATE_KEY || operationalDefaultDateKey();
+  if (cashDayInput && !CASH_IS_OPEN) cashDayInput.value = fallback;
+  if (cashDayInput && CASH_IS_OPEN && ACTIVE_DATE_KEY) cashDayInput.value = ACTIVE_DATE_KEY;
+  if (!cashDayStatus) return;
+
+  if (CASH_IS_OPEN && ACTIVE_DATE_KEY) {
+    cashDayStatus.classList.remove("closed");
+    cashDayStatus.innerHTML = `🟢 Caja abierta: <b>${formatDateKeyHuman(ACTIVE_DATE_KEY)}</b><br><small>Todo pedido registrado caerá en esa fecha de caja, aunque el reloj pase de medianoche.</small>`;
+  } else {
+    cashDayStatus.classList.add("closed");
+    cashDayStatus.innerHTML = `🔴 Caja sin abrir.<br><small>Fecha sugerida para abrir: <b>${formatDateKeyHuman(fallback)}</b>.</small>`;
+  }
+  if (btnCloseDay) btnCloseDay.disabled = !CASH_IS_OPEN;
+}
+async function loadCashRegisterState(){
+  const fallback = operationalDefaultDateKey();
+  if (!supabaseClient) {
+    ACTIVE_DATE_KEY = ACTIVE_DATE_KEY || fallback;
+    CASH_IS_OPEN = false;
+    renderCashDayUI();
+    return { ok:false, error:"Supabase no cargó" };
+  }
+  try {
+    const { data, error } = await supabaseClient
+      .from(CASH_STATE_TABLE)
+      .select("*")
+      .eq("id", 1)
+      .maybeSingle();
+    if (error) throw error;
+    CASH_STATE_DATA = data || {};
+    CASH_IS_OPEN = !!data?.is_open;
+    ACTIVE_DATE_KEY = data?.active_date_key || ACTIVE_DATE_KEY || fallback;
+    renderCashDayUI();
+    return { ok:true, data };
+  } catch(err) {
+    ACTIVE_DATE_KEY = ACTIVE_DATE_KEY || fallback;
+    CASH_IS_OPEN = false;
+    renderCashDayUI();
+    return { ok:false, error: err.message || String(err) };
+  }
+}
+async function openOperationalDay(dateKey, silent=false){
+  dateKey = dateKey || cashDayInput?.value || operationalDefaultDateKey();
+  if (!dateKey) return false;
+  if (!supabaseClient) {
+    alert("Supabase no cargó. No se puede abrir caja en nube.");
+    return false;
+  }
+  try {
+    const now = new Date().toISOString();
+    const { error } = await supabaseClient.from(CASH_STATE_TABLE).upsert({
+      id: 1,
+      active_date_key: dateKey,
+      is_open: true,
+      opened_at: now,
+      closed_at: null,
+      updated_at: now,
+      data: { openedBy: "MOZA_COCINA", openedAt: now, activeDateKey: dateKey }
+    }, { onConflict: "id" });
+    if (error) throw error;
+    ACTIVE_DATE_KEY = dateKey;
+    CASH_IS_OPEN = true;
+    renderCashDayUI();
+    if (!silent) alert(`✅ Caja abierta para ${formatDateKeyHuman(dateKey)}.`);
+    return true;
+  } catch(err) {
+    alert("No se pudo abrir la caja: " + (err.message || String(err)));
+    return false;
+  }
+}
+async function ensureOperationalDayOpen(){
+  await loadCashRegisterState();
+  if (CASH_IS_OPEN && ACTIVE_DATE_KEY) return ACTIVE_DATE_KEY;
+  const suggested = cashDayInput?.value || operationalDefaultDateKey();
+  const ok = confirm(`No hay caja abierta. ¿Abrir caja para ${formatDateKeyHuman(suggested)} y registrar este pedido ahí?`);
+  if (!ok) return "";
+  const opened = await openOperationalDay(suggested, true);
+  return opened ? ACTIVE_DATE_KEY : "";
+}
+async function fetchOpenCashForDate(dateKey){
+  if (!supabaseClient || !dateKey) return 0;
+  try {
+    const r1 = await supabaseClient.from(DAY_SETUP_TABLE).select("data").eq("date_key", dateKey).maybeSingle();
+    if (!r1.error && r1.data?.data) {
+      const d = r1.data.data;
+      const val = d.openCash ?? d.setup?.openCash;
+      if (safeNum(val) > 0) return safeNum(val);
+    }
+  } catch(e) {}
+  try {
+    const r2 = await supabaseClient.from(ORDERS_TABLE).select("data").eq("order_id", "DAY_SETUP_" + dateKey).maybeSingle();
+    if (!r2.error && r2.data?.data) {
+      const d = r2.data.data;
+      return safeNum(d.openCash ?? d.setup?.openCash);
+    }
+  } catch(e) {}
+  return 0;
+}
+function totalsFromOrderRows(rows){
+  let totalSales = 0, totalCash = 0, totalYape = 0, totalOrders = 0;
+  (rows || []).forEach(row => {
+    if (isTechnicalCloudRow(row)) return;
+    const status = getStatusFromCloudRow(row);
+    if (status === "ANULADO" || status === "CANCELADO" || status === "CANCELED") return;
+    const order = getOrderFromCloudRow(row);
+    const total = safeNum(order.total);
+    const method = String(order.paymentMethod || "efectivo").toLowerCase();
+    totalOrders += 1;
+    totalSales += total;
+    if (method === "yape") totalYape += total;
+    else if (method === "mixto") {
+      totalYape += safeNum(order.mixedYape);
+      totalCash += safeNum(order.mixedCash);
+    } else {
+      totalCash += total;
+    }
+  });
+  return {
+    totalSales: round2(totalSales),
+    totalCash: round2(totalCash),
+    totalYape: round2(totalYape),
+    totalOrders
+  };
+}
+async function closeOperationalDay(){
+  await loadCashRegisterState();
+  if (!CASH_IS_OPEN || !ACTIVE_DATE_KEY) {
+    alert("No hay caja abierta para cerrar.");
+    return;
+  }
+  const dateKey = ACTIVE_DATE_KEY;
+  const typed = prompt(`Vas a cerrar la caja de ${formatDateKeyHuman(dateKey)}.\n\nEscribe CERRAR para confirmar:`);
+  if (String(typed || "").trim().toUpperCase() !== "CERRAR") return;
+  if (!supabaseClient) {
+    alert("Supabase no cargó. No se puede cerrar el día en nube.");
+    return;
+  }
+  try {
+    if (btnCloseDay) { btnCloseDay.disabled = true; btnCloseDay.textContent = "Cerrando..."; }
+    const { data: rows, error } = await supabaseClient.from(ORDERS_TABLE).select("*").eq("date_key", dateKey);
+    if (error) throw error;
+    const totals = totalsFromOrderRows(rows || []);
+    const openCash = await fetchOpenCashForDate(dateKey);
+    const week = weekRangeForDateKey(dateKey);
+    const now = new Date().toISOString();
+    const closingRow = {
+      date_key: dateKey,
+      week_start: week.weekStart,
+      week_end: week.weekEnd,
+      total_sales: totals.totalSales,
+      total_cash: totals.totalCash,
+      total_yape: totals.totalYape,
+      total_orders: totals.totalOrders,
+      open_cash: round2(openCash),
+      final_cash: round2(openCash + totals.totalCash),
+      closed_at: now,
+      updated_at: now,
+      data: {
+        closedBy: "MOZA_COCINA",
+        activeDateKey: dateKey,
+        totalSales: totals.totalSales,
+        totalCash: totals.totalCash,
+        totalYape: totals.totalYape,
+        totalOrders: totals.totalOrders,
+        openCash: round2(openCash),
+        finalCash: round2(openCash + totals.totalCash),
+        rowsRead: (rows || []).length
+      }
+    };
+    const rClose = await supabaseClient.from(CLOSINGS_TABLE).upsert(closingRow, { onConflict: "date_key" });
+    if (rClose.error) throw rClose.error;
+    const rState = await supabaseClient.from(CASH_STATE_TABLE).upsert({
+      id: 1,
+      active_date_key: dateKey,
+      is_open: false,
+      closed_at: now,
+      updated_at: now,
+      data: { lastClosing: closingRow.data }
+    }, { onConflict: "id" });
+    if (rState.error) throw rState.error;
+    CASH_IS_OPEN = false;
+    renderCashDayUI();
+    alert(`✅ Día cerrado: ${formatDateKeyHuman(dateKey)}\n\nVenta total: ${money(totals.totalSales)}\nEfectivo: ${money(totals.totalCash)}\nYape: ${money(totals.totalYape)}\nPedidos: ${totals.totalOrders}\n\nYa debe aparecer en el resumen semanal.`);
+  } catch(err) {
+    alert("No se pudo cerrar el día: " + (err.message || String(err)));
+  } finally {
+    if (btnCloseDay) { btnCloseDay.disabled = !CASH_IS_OPEN; btnCloseDay.textContent = "🔒 Cerrar día"; }
+  }
+}
 function normalizeNameForSummary(name){
   return cleanName(name).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
 }
@@ -1457,7 +1771,9 @@ function buildOrderRecord(ctx, source="MOZA_COCINA"){
     id: CURRENT_ORDER_ID,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    dateKey: dateKeyLocal(new Date()),
+    dateKey: ACTIVE_DATE_KEY || operationalDefaultDateKey(new Date()),
+    realDateKey: dateKeyLocal(new Date()),
+    operationalDateKey: ACTIVE_DATE_KEY || operationalDefaultDateKey(new Date()),
     dateTime: formatDateTime(new Date()),
     dailyOrderNumber: dailyOrderNumber(),
     boletaNumber: CURRENT_BOLETA,
@@ -1530,6 +1846,8 @@ async function registerSale(source="MOZA_COCINA"){
     alert("✅ Este pedido ya fue registrado. Para otro pedido, presiona 'Vaciar pedido'.");
     return true;
   }
+  const activeDateKey = await ensureOperationalDayOpen();
+  if (!activeDateKey) return false;
   const order = buildOrderRecord(ctx, source);
   if (btnRegisterSale) { btnRegisterSale.disabled = true; btnRegisterSale.textContent = "Guardando..."; }
   if (orderSaveStatus) orderSaveStatus.textContent = "Guardando pedido en la nube...";
@@ -1656,6 +1974,26 @@ if (btnPrintClient) btnPrintClient.addEventListener("click", () => {
   printHTML(buildTicket(ctx), "Boleta cliente");
 });
 if (btnRegisterSale) btnRegisterSale.addEventListener("click", () => registerSale("MOZA_COCINA"));
+if (btnOpenDay) btnOpenDay.addEventListener("click", async () => {
+  await loadCashRegisterState();
+  if (CASH_IS_OPEN && ACTIVE_DATE_KEY) {
+    alert(`Ya hay una caja abierta: ${formatDateKeyHuman(ACTIVE_DATE_KEY)}. Primero cierra ese día.`);
+    return;
+  }
+  const dateKey = cashDayInput?.value || operationalDefaultDateKey();
+  const ok = confirm(`¿Abrir caja para ${formatDateKeyHuman(dateKey)}?`);
+  if (ok) await openOperationalDay(dateKey);
+});
+if (btnCloseDay) btnCloseDay.addEventListener("click", closeOperationalDay);
+if (btnRefreshCashDay) btnRefreshCashDay.addEventListener("click", async () => {
+  const r = await loadCashRegisterState();
+  if (r.ok) alert("Caja activa actualizada.");
+  else alert("No se pudo actualizar: " + r.error);
+});
+if (cashDayInput) cashDayInput.addEventListener("change", () => {
+  if (!CASH_IS_OPEN) { ACTIVE_DATE_KEY = cashDayInput.value || operationalDefaultDateKey(); renderCashDayUI(); }
+});
+loadCashRegisterState();
 if (btnWhatsapp) btnWhatsapp.addEventListener("click", e => { if (btnWhatsapp.classList.contains("disabled") || !cart.length) { e.preventDefault(); alert("Agrega productos y revisa los datos antes de enviar por WhatsApp."); } });
 </script>
 </body>
