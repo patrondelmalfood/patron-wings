@@ -1209,7 +1209,7 @@ height:65px;
   <div class="admin-modal" id="adminModal">
     <div class="admin-box">
       <div class="admin-header">
-        <h3>🔐 Administrador (local)</h3>
+        <h3>🔐 Administrador (nube) v-24abril</h3>
         <button class="admin-close" id="adminClose" type="button">Cerrar ✖</button>
       </div>
       <div class="admin-body">
@@ -1217,7 +1217,7 @@ height:65px;
           <label style="display:block; margin-bottom:6px;">Clave:</label>
           <input type="password" id="adminPass" placeholder="Ingresa clave" style="width:100%;">
           <div class="help-text">
-            Este admin guarda historial, caja inicial, inventario y premios en <b>este dispositivo</b>.
+            Este admin guarda historial, caja inicial, inventario y premios en <b>Supabase</b> para verlo en cualquier equipo.
           </div>
           <div class="admin-row" style="margin-top:10px;">
             <button id="adminLogin" type="button" style="background:#f59e0b;">Ingresar</button>
@@ -1649,6 +1649,8 @@ let ORDER_LOG_CACHE = [];
 let DAY_SETUP_CACHE = {};
 let CLOUD_READY = true;
 let CLOUD_FAILED = false;
+let ADMIN_DAY_SETUP_SYNCING = false;
+let ADMIN_LAST_DAY_SETUP_SAVE_MS = 0;
 
 function deepCopy(obj){
   return JSON.parse(JSON.stringify(obj));
@@ -2946,6 +2948,16 @@ function getDaySetupUpdatedTime(setup){
 function normalizeDaySetup(setup, fallbackUpdatedAt = ""){
   const base = (setup && typeof setup === "object") ? deepCopy(setup) : {};
   if (!base.updatedAt && fallbackUpdatedAt) base.updatedAt = fallbackUpdatedAt;
+  if (!base.stockInit || typeof base.stockInit !== "object") base.stockInit = { oneL:0, halfPlastic:0, glass:0, water:0 };
+  if (!base.stockEnd || typeof base.stockEnd !== "object") base.stockEnd = { oneL:0, halfPlastic:0, glass:0, water:0 };
+  if (!base.stockInitItems || typeof base.stockInitItems !== "object") {
+    base.stockInitItems = {
+      wingsKg:0, potatoBags:0, broasterPieces:0, burgerBread:0, burgerMeat:0,
+      cheese:0, egg:0, chorizo:0, bacon:0
+    };
+  }
+  base.openCash = Number(safeNum(base.openCash).toFixed(2));
+  base.note = String(base.note || "");
   return base;
 }
 
@@ -2972,6 +2984,32 @@ function daySetupHasData(setup){
     safeInt(setup.stockInitItems?.bacon) > 0;
 }
 
+function mergeNumberKeepPositive(currentValue, incomingValue){
+  const currentNum = safeNum(currentValue);
+  const incomingNum = safeNum(incomingValue);
+  // PROTECCIÓN IMPORTANTE: una fila de Supabase con 0 no puede borrar una caja positiva ya guardada.
+  if (currentNum > 0 && incomingNum <= 0) return currentNum;
+  return incomingNum;
+}
+
+function mergeDaySetupKeepingCash(current, incoming){
+  const cur = normalizeDaySetup(current);
+  const inc = normalizeDaySetup(incoming);
+
+  // Si lo que viene está totalmente vacío, no pisa nada.
+  if (daySetupHasData(cur) && !daySetupHasData(inc)) return cur;
+
+  const incomingIsNewer = getDaySetupUpdatedTime(inc) >= getDaySetupUpdatedTime(cur);
+  const base = incomingIsNewer ? deepCopy(inc) : deepCopy(cur);
+  const other = incomingIsNewer ? cur : inc;
+
+  // Aunque la fila nueva tenga nota/stock, NO dejamos que openCash positivo se vuelva 0 por accidente.
+  base.openCash = mergeNumberKeepPositive(other.openCash, base.openCash);
+
+  // Mantiene estructuras completas para evitar undefined al renderizar.
+  return normalizeDaySetup(base, base.updatedAt || base.updated_at || other.updatedAt || other.updated_at || "");
+}
+
 function mergeDaySetupCaches(...sources){
   const out = {};
 
@@ -2989,15 +3027,7 @@ function mergeDaySetupCaches(...sources){
         return;
       }
 
-      // Protección anti-cero: si ya tenemos caja/inventario con datos,
-      // una lectura vacía o antigua de Supabase NO debe pisarla.
-      if (daySetupHasData(current) && !daySetupHasData(normalized)) {
-        return;
-      }
-
-      if (getDaySetupUpdatedTime(normalized) >= getDaySetupUpdatedTime(current)) {
-        out[dateKey] = normalized;
-      }
+      out[dateKey] = mergeDaySetupKeepingCash(current, normalized);
     });
   });
 
@@ -3201,28 +3231,48 @@ function getDaySetupAll(){
 
 function getDaySetup(dateKey){
   const all = getDaySetupAll();
-  return all[dateKey] || {
+  return normalizeDaySetup(all[dateKey] || {
     openCash: 0,
     note: "",
     stockInit: { oneL:0, halfPlastic:0, glass:0, water:0 },
-    stockEnd: { oneL:0, halfPlastic:0, glass:0, water:0 }
-  };
+    stockEnd: { oneL:0, halfPlastic:0, glass:0, water:0 },
+    stockInitItems: {
+      wingsKg:0, potatoBags:0, broasterPieces:0, burgerBread:0, burgerMeat:0,
+      cheese:0, egg:0, chorizo:0, bacon:0
+    }
+  });
+}
+
+function promiseTimeout(ms, label){
+  return new Promise((_, reject) => {
+    setTimeout(() => reject(new Error(label || "Tiempo de espera agotado")), ms);
+  });
 }
 
 async function syncDaySetupToCloud(dateKey){
-  // SOLUCIÓN FUERTE:
-  // Guardamos la caja/inventario también dentro de orders_cloud con una fila técnica.
-  // Esa tabla ya guarda ventas/comandas correctamente, por eso la usamos como fuente segura en vivo.
+  // MODO 24 DE ABRIL + NUBE:
+  // El flujo que funcionaba guardaba primero DAY_SETUP_CACHE y luego subía day_setup_cloud.
+  // Aquí hacemos eso mismo, y además guardamos una copia técnica en orders_cloud.
+  // Importante: no confirmamos leyendo otra vez, porque en celular puede quedarse esperando y parecer que el botón no funciona.
   try {
     const setup = DAY_SETUP_CACHE[dateKey];
     if (!setup) return { ok:false, error:"No hay datos del día para sincronizar." };
 
     const nowIso = setup.updatedAt || new Date().toISOString();
-    const cleanSetup = { ...deepCopy(setup), updatedAt: nowIso };
+    const cleanSetup = normalizeDaySetup
+      ? normalizeDaySetup({ ...deepCopy(setup), updatedAt: nowIso }, nowIso)
+      : { ...deepCopy(setup), updatedAt: nowIso };
 
-    // 1) Guardado principal y confiable en orders_cloud.
+    const daySetupRequest = supabaseClient
+      .from(DAY_SETUP_TABLE)
+      .upsert([{
+        date_key: dateKey,
+        updated_at: nowIso,
+        data: cleanSetup
+      }], { onConflict:"date_key" });
+
     const setupOrderId = "DAY_SETUP_" + dateKey;
-    const { error: orderSetupError } = await supabaseClient
+    const orderSetupRequest = supabaseClient
       .from(ORDERS_TABLE)
       .upsert([{
         order_id: setupOrderId,
@@ -3236,67 +3286,71 @@ async function syncDaySetupToCloud(dateKey){
           setup: cleanSetup,
           updatedAt: nowIso
         }
-      }], { onConflict: "order_id" });
+      }], { onConflict:"order_id" });
 
-    if (orderSetupError) {
-      console.error("Error guardando caja/inventario en orders_cloud:", orderSetupError);
-      return { ok:false, error: orderSetupError.message || JSON.stringify(orderSetupError) };
-    }
+    const results = await Promise.race([
+      Promise.allSettled([daySetupRequest, orderSetupRequest]),
+      promiseTimeout(8000, "Supabase demoró demasiado guardando la caja inicial")
+    ]);
 
-    // 2) Guardado secundario en day_setup_cloud. Si falla, NO borramos lo ya guardado en orders_cloud.
-    try {
-      const { error: setupTableError } = await supabaseClient
-        .from(DAY_SETUP_TABLE)
-        .upsert([{
-          date_key: dateKey,
-          updated_at: nowIso,
-          data: cleanSetup
-        }], { onConflict: "date_key" });
-
-      if (setupTableError) {
-        console.warn("day_setup_cloud falló, pero orders_cloud sí guardó:", setupTableError);
+    const errors = [];
+    results.forEach((r, idx) => {
+      const name = idx === 0 ? "day_setup_cloud" : "orders_cloud";
+      if (r.status === "rejected") {
+        errors.push(name + ": " + (r.reason?.message || String(r.reason)));
+        return;
       }
-    } catch(e) {
-      console.warn("day_setup_cloud falló, pero orders_cloud sí guardó:", e);
-    }
+      if (r.value && r.value.error) {
+        errors.push(name + ": " + (r.value.error.message || JSON.stringify(r.value.error)));
+      }
+    });
 
-    // 3) Confirmación leyendo la fila técnica desde orders_cloud.
-    const { data: rows, error: readBackError } = await supabaseClient
-      .from(ORDERS_TABLE)
-      .select("order_id,data,updated_at")
-      .eq("order_id", setupOrderId);
-
-    if (readBackError) {
-      console.warn("Guardó, pero no se pudo confirmar lectura desde orders_cloud:", readBackError);
-    } else {
-      const row = (rows || [])[0];
-      const d = row?.data || {};
-      const setupBack = normalizeDaySetup(d.setup || d, row?.updated_at || d.updatedAt || nowIso);
-      DAY_SETUP_CACHE = mergeDaySetupCaches(getLocalDaySetupAll(), DAY_SETUP_CACHE, { [dateKey]: setupBack });
-      saveLocalDaySetupAll(DAY_SETUP_CACHE);
+    // Basta que una de las dos tablas guarde para que la caja no se pierda.
+    if (errors.length >= 2) {
+      console.error("No se pudo guardar caja inicial en Supabase:", errors);
+      return { ok:false, error: errors.join(" | ") };
     }
 
     CLOUD_READY = true;
     CLOUD_FAILED = false;
-    return { ok:true, error:"" };
+    return { ok:true, error: errors.join(" | ") };
   } catch (err) {
     console.error("Error inesperado guardando caja/inventario en nube:", err);
     return { ok:false, error: err.message || String(err) };
   }
 }
 
-async function saveDaySetup(dateKey, setup){
+function saveDaySetup(dateKey, setup){
   const nowIso = new Date().toISOString();
   DAY_SETUP_CACHE[dateKey] = {
     ...deepCopy(setup),
     updatedAt: nowIso
   };
 
-  // 1) Guarda inmediato en este celular/navegador para que NO desaparezca.
+  // Guarda inmediato en este celular/navegador, igual que la versión del 24 de abril.
   saveLocalDaySetupAll(DAY_SETUP_CACHE);
 
-  // 2) Luego intenta guardar en Supabase para verlo en vivo en otros equipos.
-  return await syncDaySetupToCloud(dateKey);
+  // Sube a Supabase en segundo plano. El botón NO se queda pegado esperando internet.
+  ADMIN_DAY_SETUP_SYNCING = true;
+  ADMIN_LAST_DAY_SETUP_SAVE_MS = Date.now();
+
+  const syncPromise = syncDaySetupToCloud(dateKey)
+    .then(result => {
+      ADMIN_DAY_SETUP_SYNCING = false;
+      if (result && result.ok) {
+        console.log("✅ Caja/inventario sincronizados en Supabase", dateKey);
+      } else {
+        console.warn("⚠️ Caja guardada local, pero Supabase no confirmó:", result);
+      }
+      return result;
+    })
+    .catch(err => {
+      ADMIN_DAY_SETUP_SYNCING = false;
+      console.error("⚠️ Caja guardada local, pero falló Supabase:", err);
+      return { ok:false, error: err.message || String(err) };
+    });
+
+  return syncPromise;
 }
 
 async function deleteDaySetupCloud(dateKey){
@@ -3405,8 +3459,16 @@ stockInitBacon.value = safeInt(s.stockInitItems?.bacon) || "";
     }
 
     function readDaySetupFromForm(){
+      const dateKey = adminDate && adminDate.value ? adminDate.value : getDateKeyLocal(new Date());
+      const previousSetup = getDaySetup(dateKey);
+      const rawOpenCash = String(openCashInput.value || "").trim().replace(",", ".");
+      const previousOpenCash = safeNum(previousSetup.openCash);
+      const finalOpenCash = rawOpenCash === "" && previousOpenCash > 0
+        ? previousOpenCash
+        : Number(safeNum(rawOpenCash).toFixed(2));
+
       return {
-        openCash: Number(safeNum(openCashInput.value).toFixed(2)),
+        openCash: finalOpenCash,
         note: String(openCloseNoteInput.value || "").trim(),
         stockInit: {
           oneL: safeInt(stockInit1L.value),
@@ -5202,26 +5264,25 @@ document.querySelectorAll(".item-card").forEach(card => {
     });
 
 
-    adminSaveOpenClose.addEventListener("click", async () => {
+    adminSaveOpenClose.addEventListener("click", () => {
       const dateKey = adminDate.value || getDateKeyLocal(new Date());
       const setupNow = readDaySetupFromForm();
 
-      // Guarda local y en nube. Aunque falle la nube, el formulario queda guardado y visible en este equipo.
-      const result = await saveDaySetup(dateKey, setupNow);
+      // Flujo estable del 24 de abril: guarda, pinta al toque y avisa.
+      // La sincronización a Supabase queda en segundo plano para que el botón no se congele.
+      saveDaySetup(dateKey, setupNow).then(result => {
+        if (!result || !result.ok) {
+          console.warn("Caja guardada localmente, pero Supabase no confirmó:", result);
+        }
+      });
 
-      // Recalcula todo usando lo recién guardado.
-      await renderAdmin(true);
-
-      if (result && result.ok) {
-        alert("✅ Caja inicial e inventario guardados en la nube. El dueño/moza pueden presionar Actualizar o esperar unos segundos para verlo.");
-      } else {
-        alert("⚠️ Caja inicial e inventario quedaron guardados en ESTE celular, pero Supabase no confirmó la nube.\n\nPara verlo en vivo en otro celular, revisa que existan las tablas orders_cloud y day_setup_cloud y que permitan INSERT/UPDATE con anon key.\n\nDetalle: " + ((result && result.error) ? result.error : "sin detalle"));
-      }
+      renderAdmin(true);
+      alert("✅ Datos del día guardados. Caja inicial actualizada.\n\nSi otro equipo no la ve al instante, presiona Actualizar o vuelve a abrir el Admin.");
     });
 
     adminPrintSummary.addEventListener("click", async () => {
       const dateKey = adminDate.value || getDateKeyLocal(new Date());
-      await saveDaySetup(dateKey, readDaySetupFromForm());
+      saveDaySetup(dateKey, readDaySetupFromForm());
       const el = document.getElementById("admin-summary-ticket");
       el.innerHTML = buildAdminSummaryTicketHTML(dateKey);
       sendToRawBT(buildAdminSummaryTicketText(dateKey));
@@ -5235,6 +5296,8 @@ document.querySelectorAll(".item-card").forEach(card => {
     adminAuth.style.display = "none";
     adminContent.style.display = "block";
     adminDate.value = getDateKeyLocal(new Date());
+    const dateKey = adminDate.value || getDateKeyLocal(new Date());
+    await initCloudSync(dateKey);
     await renderAdmin(true);
   } else {
     adminAuth.style.display = "block";
@@ -5264,7 +5327,8 @@ document.querySelectorAll(".item-card").forEach(card => {
   adminContent.style.display = "block";
   adminDate.value = getDateKeyLocal(new Date());
 
-  await renderAdmin();
+  await initCloudSync(adminDate.value);
+  await renderAdmin(true);
 });
 
     adminLogout.addEventListener("click", () => {
@@ -5286,6 +5350,8 @@ document.querySelectorAll(".item-card").forEach(card => {
 });
 
   adminDate.addEventListener("change", async () => {
+  const dateKey = adminDate.value || getDateKeyLocal(new Date());
+  await initCloudSync(dateKey);
   await renderAdmin(true);
 });
 
@@ -5476,6 +5542,312 @@ document.addEventListener("click", (e) => {
     renderCart();
   });
 });
+  console.log("✅ INDEX FUSION 24 ABRIL - caja inicial estable cargado");
   </script>
+
+
+<!-- =========================================================
+  PARCHE FINAL DAILY_CASH - CAJA INICIAL INDEPENDIENTE
+  Este bloque separa la caja inicial del inventario/pedidos.
+  Lee y guarda SOLO en la tabla daily_cash para evitar que
+  day_setup_cloud, orders_cloud, localStorage o renderAdmin la pisen a 0.
+========================================================= -->
+<script>
+(function(){
+  "use strict";
+
+  const CASH_FIX_VERSION = "v-daily-cash-final";
+  const PDM_SUPABASE_URL = "https://defdwzzewzfjuseozwkn.supabase.co";
+  const PDM_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
+  const DAILY_CASH_TABLE = "daily_cash";
+  const CASH_LOCAL_KEY = "pdm_daily_cash_v1";
+
+  function $(id){ return document.getElementById(id); }
+  function num(v){ const n = Number(String(v ?? "").replace(",", ".")); return Number.isFinite(n) ? n : 0; }
+  function pad2(n){ return String(n).padStart(2,"0"); }
+  function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
+  function getDateKey(){
+    const el = $("adminDate");
+    return (el && el.value) ? String(el.value).slice(0,10) : todayKey();
+  }
+  function nowIso(){ return new Date().toISOString(); }
+  function headers(extra={}){
+    return Object.assign({
+      "apikey": PDM_SUPABASE_ANON_KEY,
+      "Authorization": "Bearer " + PDM_SUPABASE_ANON_KEY,
+      "Content-Type": "application/json"
+    }, extra);
+  }
+  function readLocalAll(){
+    try { return JSON.parse(localStorage.getItem(CASH_LOCAL_KEY) || "{}"); }
+    catch(e){ return {}; }
+  }
+  function saveLocalCash(dateKey, openCash, note, updatedAt){
+    const all = readLocalAll();
+    all[dateKey] = {
+      date_key: dateKey,
+      open_cash: Number(num(openCash).toFixed(2)),
+      note: String(note || ""),
+      updated_at: updatedAt || nowIso()
+    };
+    localStorage.setItem(CASH_LOCAL_KEY, JSON.stringify(all));
+    return all[dateKey];
+  }
+  function getLocalCash(dateKey){
+    const row = readLocalAll()[dateKey];
+    if (!row) return null;
+    return {
+      date_key: dateKey,
+      open_cash: num(row.open_cash),
+      note: String(row.note || ""),
+      updated_at: row.updated_at || ""
+    };
+  }
+  function newer(a,b){
+    if (!a) return b || null;
+    if (!b) return a;
+    const ta = Date.parse(a.updated_at || "") || 0;
+    const tb = Date.parse(b.updated_at || "") || 0;
+    return tb > ta ? b : a;
+  }
+  async function fetchJson(url, options={}, timeoutMs=8000){
+    const controller = new AbortController();
+    const t = setTimeout(()=>controller.abort(), timeoutMs);
+    try{
+      const res = await fetch(url, Object.assign({}, options, { signal: controller.signal }));
+      const text = await res.text();
+      if (!res.ok) throw new Error(text || ("HTTP " + res.status));
+      return text ? JSON.parse(text) : null;
+    } finally {
+      clearTimeout(t);
+    }
+  }
+  async function readCashFromDailyTable(dateKey){
+    const url = `${PDM_SUPABASE_URL}/rest/v1/${DAILY_CASH_TABLE}?date_key=eq.${encodeURIComponent(dateKey)}&select=date_key,open_cash,note,updated_at&limit=1`;
+    const rows = await fetchJson(url, { method:"GET", headers: headers() }, 8000);
+    const row = Array.isArray(rows) ? rows[0] : null;
+    if (!row) return null;
+    return {
+      date_key: row.date_key,
+      open_cash: num(row.open_cash),
+      note: String(row.note || ""),
+      updated_at: row.updated_at || ""
+    };
+  }
+  async function readCashFromOldOrdersSetup(dateKey){
+    // Migración de respaldo: si daily_cash aún no existe para la fecha,
+    // toma el valor viejo guardado en orders_cloud DAY_SETUP_YYYY-MM-DD.
+    const setupId = "DAY_SETUP_" + dateKey;
+    const url = `${PDM_SUPABASE_URL}/rest/v1/orders_cloud?order_id=eq.${encodeURIComponent(setupId)}&select=order_id,date_key,updated_at,data&limit=1`;
+    const rows = await fetchJson(url, { method:"GET", headers: headers() }, 8000);
+    const row = Array.isArray(rows) ? rows[0] : null;
+    const setup = row && row.data && row.data.setup ? row.data.setup : null;
+    if (!setup) return null;
+    return {
+      date_key: dateKey,
+      open_cash: num(setup.openCash),
+      note: String(setup.note || ""),
+      updated_at: setup.updatedAt || row.updated_at || ""
+    };
+  }
+  async function writeCashToDailyTable(dateKey, openCash, note){
+    const payload = {
+      date_key: dateKey,
+      open_cash: Number(num(openCash).toFixed(2)),
+      note: String(note || ""),
+      updated_at: nowIso()
+    };
+    const url = `${PDM_SUPABASE_URL}/rest/v1/${DAILY_CASH_TABLE}`;
+    const rows = await fetchJson(url, {
+      method:"POST",
+      headers: headers({ "Prefer":"resolution=merge-duplicates,return=representation" }),
+      body: JSON.stringify(payload)
+    }, 8000);
+    const row = Array.isArray(rows) ? rows[0] : payload;
+    return {
+      date_key: row.date_key || dateKey,
+      open_cash: num(row.open_cash),
+      note: String(row.note || ""),
+      updated_at: row.updated_at || payload.updated_at
+    };
+  }
+  function applyCashToUI(row, options={}){
+    if (!row) return;
+    const openCashInput = $("openCashInput");
+    const noteInput = $("openCloseNoteInput");
+    const mOpenCash = $("mOpenCash");
+    const val = num(row.open_cash).toFixed(2);
+
+    if (openCashInput) {
+      const active = document.activeElement === openCashInput;
+      if (!active || options.forceInput) openCashInput.value = val;
+    }
+    if (noteInput) {
+      const active = document.activeElement === noteInput;
+      if (!active || options.forceInput) noteInput.value = row.note || "";
+    }
+    if (mOpenCash) mOpenCash.textContent = val;
+  }
+  async function loadAndApplyCash(dateKey, options={}){
+    let row = getLocalCash(dateKey);
+    try { row = newer(row, await readCashFromDailyTable(dateKey)); } catch(e){ console.warn("daily_cash no leído:", e.message || e); }
+    if (!row || num(row.open_cash) === 0) {
+      try {
+        const oldRow = await readCashFromOldOrdersSetup(dateKey);
+        row = newer(row, oldRow);
+        // Si migramos desde DAY_SETUP, lo dejamos copiado en daily_cash.
+        if (oldRow && num(oldRow.open_cash) > 0) {
+          try { await writeCashToDailyTable(dateKey, oldRow.open_cash, oldRow.note); } catch(e){}
+        }
+      } catch(e){ console.warn("orders_cloud DAY_SETUP no leído:", e.message || e); }
+    }
+    if (row) {
+      saveLocalCash(dateKey, row.open_cash, row.note, row.updated_at || nowIso());
+      applyCashToUI(row, options);
+    }
+    return row;
+  }
+
+  // Exponer solo por si necesitamos probar desde consola del navegador.
+  window.PDM_CASH_FIX = { loadAndApplyCash, writeCashToDailyTable, getDateKey, version:CASH_FIX_VERSION };
+
+  // Marcar versión visible.
+  function markVersion(){
+    const h = document.querySelector(".admin-header h3");
+    if (h && !h.dataset.cashFixed) {
+      h.innerHTML = "🔐 Administrador (nube) <small style='font-size:12px;color:#93c5fd;'>" + CASH_FIX_VERSION + "</small>";
+      h.dataset.cashFixed = "1";
+    }
+  }
+
+  function patchSaveButton(){
+    const oldBtn = $("adminSaveOpenClose");
+    if (!oldBtn || oldBtn.dataset.dailyCashPatched === "1") return;
+    const btn = oldBtn.cloneNode(true); // elimina listeners antiguos que se quedaban pegados
+    btn.dataset.dailyCashPatched = "1";
+    oldBtn.parentNode.replaceChild(btn, oldBtn);
+
+    btn.addEventListener("click", async function(){
+      const dateKey = getDateKey();
+      const openCashInput = $("openCashInput");
+      const noteInput = $("openCloseNoteInput");
+      const openCash = num(openCashInput ? openCashInput.value : 0);
+      const note = noteInput ? String(noteInput.value || "").trim() : "";
+
+      if (!(openCash >= 0)) {
+        alert("Ingresa una caja inicial válida.");
+        return;
+      }
+
+      const localRow = saveLocalCash(dateKey, openCash, note, nowIso());
+      applyCashToUI(localRow, { forceInput:true });
+
+      btn.disabled = true;
+      const originalText = btn.textContent;
+      btn.textContent = "Guardando caja...";
+
+      // Guardar inventario viejo en segundo plano si existe, pero SIN bloquear la caja.
+      try {
+        if (typeof window.readDaySetupFromForm === "function" && typeof window.saveDaySetup === "function") {
+          setTimeout(function(){
+            try { window.saveDaySetup(dateKey, window.readDaySetupFromForm()); } catch(e){ console.warn("Guardado viejo no bloqueante falló:", e); }
+          }, 50);
+        }
+      } catch(e){}
+
+      try {
+        const cloudRow = await writeCashToDailyTable(dateKey, openCash, note);
+        saveLocalCash(dateKey, cloudRow.open_cash, cloudRow.note, cloudRow.updated_at || nowIso());
+        applyCashToUI(cloudRow, { forceInput:true });
+        alert("✅ Caja inicial guardada en daily_cash. Ya no depende de day_setup ni orders_cloud.");
+      } catch(err) {
+        console.error("No se pudo guardar daily_cash:", err);
+        alert("⚠️ La caja quedó guardada en este equipo, pero NO se pudo guardar en Supabase daily_cash.\n\nEjecuta el SQL de daily_cash o revisa permisos.\n\nDetalle: " + (err.message || err));
+      } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
+        loadAndApplyCash(dateKey, { forceInput:false });
+      }
+    });
+  }
+
+  function patchRefreshButton(){
+    const oldBtn = $("adminRefresh");
+    if (!oldBtn || oldBtn.dataset.dailyCashPatched === "1") return;
+    const btn = oldBtn.cloneNode(true);
+    btn.dataset.dailyCashPatched = "1";
+    oldBtn.parentNode.replaceChild(btn, oldBtn);
+    btn.addEventListener("click", async function(){
+      btn.disabled = true;
+      const txt = btn.textContent;
+      btn.textContent = "Actualizando...";
+      try {
+        if (typeof window.renderAdmin === "function") {
+          try { await window.renderAdmin(false); } catch(e){ console.warn("renderAdmin falló:", e); }
+        }
+        await loadAndApplyCash(getDateKey(), { forceInput:true });
+      } finally {
+        btn.disabled = false;
+        btn.textContent = txt;
+      }
+    });
+  }
+
+  function patchRenderAdmin(){
+    if (window.__pdm_cash_render_patched) return;
+    window.__pdm_cash_render_patched = true;
+    const original = window.renderAdmin;
+    if (typeof original === "function") {
+      window.renderAdmin = async function(){
+        let res;
+        try { res = await original.apply(this, arguments); }
+        finally {
+          markVersion();
+          await loadAndApplyCash(getDateKey(), { forceInput:false });
+        }
+        return res;
+      };
+    }
+  }
+
+  function initPatch(){
+    markVersion();
+    patchRenderAdmin();
+    patchSaveButton();
+    patchRefreshButton();
+    loadAndApplyCash(getDateKey(), { forceInput:false });
+  }
+
+  // Arranque fuerte: al cargar, al abrir admin y por intervalo para ganarle a renders viejos que pongan 0.
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initPatch);
+  } else {
+    initPatch();
+  }
+  document.addEventListener("click", function(e){
+    if (e.target && (e.target.id === "nav-admin" || e.target.closest && e.target.closest("#nav-admin"))) {
+      setTimeout(initPatch, 100);
+      setTimeout(()=>loadAndApplyCash(getDateKey(), { forceInput:false }), 800);
+      setTimeout(()=>loadAndApplyCash(getDateKey(), { forceInput:false }), 2000);
+    }
+  }, true);
+  document.addEventListener("change", function(e){
+    if (e.target && e.target.id === "adminDate") {
+      setTimeout(()=>loadAndApplyCash(getDateKey(), { forceInput:true }), 150);
+    }
+  }, true);
+  let ticks = 0;
+  const timer = setInterval(function(){
+    ticks++;
+    markVersion();
+    patchSaveButton();
+    patchRefreshButton();
+    const modal = $("adminModal");
+    if (modal && modal.classList.contains("open")) loadAndApplyCash(getDateKey(), { forceInput:false });
+    if (ticks > 60) clearInterval(timer);
+  }, 1000);
+})();
+</script>
+
 </body>
 </html>
