@@ -1209,7 +1209,7 @@ height:65px;
   <div class="admin-modal" id="adminModal">
     <div class="admin-box">
       <div class="admin-header">
-        <h3>🔐 Administrador (local)</h3>
+        <h3>🔐 Administrador (nube) <small style="font-size:11px;color:#93c5fd;">v-caja-robusta</small></h3>
         <button class="admin-close" id="adminClose" type="button">Cerrar ✖</button>
       </div>
       <div class="admin-body">
@@ -3097,8 +3097,101 @@ async function readDaySetupCloudRowsForDates(dateKeys){
   return data || [];
 }
 
+
+async function readDaySetupDirectFromCloud(dateKey){
+  const result = {};
+  if (!dateKey) return result;
+
+  // LECTURA DIRECTA Y SEGURA: no depende del filtro date_key.
+  // Esto evita que al actualizar el admin salga 0 si date_key falló o Supabase demoró.
+  try {
+    const setupOrderId = "DAY_SETUP_" + dateKey;
+    const { data: orderRows, error: orderErr } = await supabaseClient
+      .from(ORDERS_TABLE)
+      .select("order_id,date_key,data,updated_at,status")
+      .eq("order_id", setupOrderId)
+      .limit(1);
+
+    if (orderErr) throw orderErr;
+
+    const row = (orderRows || [])[0];
+    if (row) {
+      const d = row.data || {};
+      const setupRaw = d.setup || d.data || d;
+      const setup = normalizeDaySetup(setupRaw, row.updated_at || d.updatedAt || d.updated_at || "");
+      if (daySetupHasData(setup)) {
+        result[dateKey] = setup;
+      }
+    }
+  } catch (err) {
+    console.error("Error lectura directa DAY_SETUP en orders_cloud:", err);
+  }
+
+  try {
+    const { data: dayRows, error: dayErr } = await supabaseClient
+      .from(DAY_SETUP_TABLE)
+      .select("date_key,data,updated_at")
+      .eq("date_key", dateKey)
+      .order("updated_at", { ascending:false })
+      .limit(1);
+
+    if (dayErr) throw dayErr;
+
+    const row = (dayRows || [])[0];
+    if (row) {
+      const setup = normalizeDaySetup(row.data || {}, row.updated_at || "");
+      const current = result[dateKey];
+      result[dateKey] = current ? mergeDaySetupKeepingCash(setup, current) : setup;
+    }
+  } catch (err) {
+    console.error("Error lectura directa en day_setup_cloud:", err);
+  }
+
+  return result;
+}
+
+async function readOrdersCloudRowsRobustForDates(dateKeys){
+  const wanted = Array.isArray(dateKeys) && dateKeys.length ? dateKeys : [getDateKeyLocal(new Date())];
+  const byId = new Map();
+
+  // 1) Primero intenta por date_key, que es rápido.
+  try {
+    const rows = await readOrdersCloudRowsForDates(wanted);
+    (rows || []).forEach(r => byId.set(String(r.order_id || JSON.stringify(r.data || {})), r));
+  } catch (err) {
+    console.error("Error leyendo pedidos por date_key:", err);
+  }
+
+  // 2) Refuerzo: trae últimos registros y filtra por data.dateKey/date_key/order_id.
+  // Así recupera ventas aunque date_key de columna esté vacío o mal escrito.
+  try {
+    const { data, error } = await supabaseClient
+      .from(ORDERS_TABLE)
+      .select("order_id,date_key,data,updated_at,status")
+      .order("updated_at", { ascending:false })
+      .limit(3000);
+
+    if (error) throw error;
+
+    const wantedSet = new Set(wanted);
+    (data || []).forEach(row => {
+      const d = row.data || {};
+      const rowId = String(row.order_id || "");
+      const dateKey = row.date_key || d.dateKey || d.date_key || (rowId.startsWith("DAY_SETUP_") ? rowId.replace("DAY_SETUP_", "") : "");
+      if (wantedSet.has(dateKey)) {
+        byId.set(rowId || JSON.stringify(d), row);
+      }
+    });
+  } catch (err) {
+    console.error("Error leyendo pedidos de respaldo:", err);
+  }
+
+  return Array.from(byId.values());
+}
+
 async function initCloudSync(focusDateKey){
-  const dateKeys = getCloudSyncDateKeys(focusDateKey || (adminDate && adminDate.value) || getDateKeyLocal(new Date()));
+  const mainDateKey = focusDateKey || (adminDate && adminDate.value) || getDateKeyLocal(new Date());
+  const dateKeys = getCloudSyncDateKeys(mainDateKey);
 
   // Carga datos locales primero para que el admin nunca aparezca vacío.
   ORDER_LOG_CACHE = mergeOrderLogs(getLocalOrderLog(), ORDER_LOG_CACHE);
@@ -3108,8 +3201,22 @@ async function initCloudSync(focusDateKey){
   let setupOk = false;
   const cloudDaySetupFromOrders = {};
 
+  // FIX PRINCIPAL CAJA INICIAL:
+  // Lee la caja del día directo por order_id=DAY_SETUP_YYYY-MM-DD antes de renderizar.
+  // Esto es la fuente más segura y evita que vuelva a 0 al actualizar.
   try {
-    const ordersRows = await readOrdersCloudRowsForDates(dateKeys);
+    const directSetup = await readDaySetupDirectFromCloud(mainDateKey);
+    if (directSetup && Object.keys(directSetup).length) {
+      DAY_SETUP_CACHE = mergeDaySetupCaches(getLocalDaySetupAll(), DAY_SETUP_CACHE, directSetup);
+      saveLocalDaySetupAll(DAY_SETUP_CACHE);
+      setupOk = true;
+    }
+  } catch(e) {
+    console.error("Error en lectura directa de caja inicial:", e);
+  }
+
+  try {
+    const ordersRows = await readOrdersCloudRowsRobustForDates(dateKeys);
 
     // Pedidos normales: ignora las filas técnicas de caja/inventario.
     const cloudOrders = (ordersRows || [])
@@ -5249,7 +5356,8 @@ document.querySelectorAll(".item-card").forEach(card => {
       // Guarda local y en nube. Aunque falle la nube, el formulario queda guardado y visible en este equipo.
       const result = await saveDaySetup(dateKey, setupNow);
 
-      // Recalcula todo usando lo recién guardado.
+      // Relee directo desde Supabase y recalcula todo usando lo recién guardado.
+      await initCloudSync(dateKey);
       await renderAdmin(true);
 
       if (result && result.ok) {
@@ -5276,9 +5384,8 @@ document.querySelectorAll(".item-card").forEach(card => {
     adminContent.style.display = "block";
     adminDate.value = getDateKeyLocal(new Date());
 
-    // FIX CAJA INICIAL:
-    // Antes se pintaba el admin sin esperar la nube. Eso podía mostrar 0.00.
-    // Ahora primero cargamos Supabase/localStorage y recién después renderizamos.
+    // FIX CAJA INICIAL ROBUSTO:
+    // primero trae Supabase por order_id directo y recién después pinta el admin.
     const dateKey = adminDate.value || getDateKeyLocal(new Date());
     await initCloudSync(dateKey);
     await renderAdmin(true);
@@ -5355,6 +5462,7 @@ setInterval(async () => {
   if (!adminModal || !adminModal.classList.contains("open")) return;
   const dateKey = adminDate.value || getDateKeyLocal(new Date());
   await initCloudSync(dateKey);
+  await renderAdmin(false);
 }, 12000);
 
  disableNavWhatsapp();
@@ -5365,7 +5473,7 @@ renderCart();
 adminAuth.style.display = "block";
 adminContent.style.display = "none";
 
-initCloudSync(getDateKeyLocal(new Date()));
+initCloudSync(getDateKeyLocal(new Date())).catch(err => console.error("No se pudo iniciar sincronización nube:", err));
   const ALITAS_IMG_DEFAULT = "alitas-bbq.JPG";
 
 function normalizarTextoSalsa(txt){
