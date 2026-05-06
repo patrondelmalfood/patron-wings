@@ -744,6 +744,89 @@ height:65px;
   color:#fff;
   font-size:13px;
 }
+
+    /* HOME TIPO APP: en la pantalla inicial solo se ven accesos directos */
+    .home-trust-bar{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:8px;
+      margin:12px 0 10px;
+      padding:10px 8px;
+      border-radius:16px;
+      border:1px solid rgba(255,159,28,.55);
+      background:rgba(0,0,0,.82);
+      box-shadow:0 0 12px rgba(255,159,28,.18);
+    }
+    .home-trust-bar div{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      gap:2px;
+      min-height:50px;
+      border-right:1px solid rgba(255,159,28,.45);
+    }
+    .home-trust-bar div:last-child{ border-right:none; }
+    .home-trust-bar span{ font-size:20px; color:#ffd60a; }
+    .home-trust-bar b{ font-size:11px; color:#fff; }
+    .home-trust-bar small{ font-size:10px; color:#bbb; }
+
+    .section-toolbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin:14px 0 10px;
+      padding:10px;
+      border-radius:14px;
+      border:1px solid #ff9f1c;
+      background:rgba(0,0,0,.88);
+      position:sticky;
+      top:0;
+      z-index:6;
+    }
+    .section-toolbar strong{
+      color:#ffe066;
+      text-align:center;
+      flex:1;
+      font-size:14px;
+    }
+    .section-toolbar button{
+      border-radius:999px;
+      background:#111827;
+      color:#ffe066;
+      border:1px solid #ff9f1c;
+      font-weight:900;
+      white-space:nowrap;
+    }
+    .section-toolbar #btn-go-cart{ background:#ffd60a; color:#000; }
+    .hidden-section{ display:none !important; }
+    body.home-screen #menu,
+    body.home-screen #carrito{ display:none !important; }
+    body.home-screen #bottom-bar{ display:none !important; }
+    body.home-screen{ min-height:100vh; }
+
+    @media (max-width:600px){
+      body.home-screen{ padding-bottom:10px; }
+      body.home-screen .hero{ max-height:210px; margin-bottom:10px; }
+      body.home-screen .intro-text{ display:none; }
+      body.home-screen .app-category-card{ min-height:68px; padding:7px 9px; }
+      body.home-screen .app-category-card img{ width:78px; height:54px; }
+      body.home-screen .app-category-card span{ font-size:17px; }
+      body.home-screen .app-hour-card{ margin:10px 0 7px; padding:10px 12px; }
+      body.home-screen .app-section-question{ margin:6px 0 8px; }
+      .section-toolbar{
+        gap:6px;
+        padding:8px;
+      }
+      .section-toolbar button{
+        font-size:11px;
+        padding:7px 8px;
+      }
+      .section-toolbar strong{ font-size:12px; }
+    }
+
   </style>
 </head>
 
@@ -802,37 +885,49 @@ height:65px;
 </div>
     <section class="app-category-list">
 
-  <a href="#alitas" class="app-category-card">
+  <a href="#" class="app-category-card" data-cat="alitas">
   <img src="cat-alitas.png">
   <span>Alitas 🔥</span>
   <b>›</b>
 </a>
 
-  <a href="#hamburguesas" class="app-category-card">
+  <a href="#" class="app-category-card" data-cat="hamburguesas">
     <img src="cat-hamburguesa.png">
     <span>Hamburguesas 🍔</span>
     <b>›</b>
   </a>
 
-  <a href="#cartel" class="app-category-card">
+  <a href="#" class="app-category-card" data-cat="cartel">
     <img src="cat-cartel.png">
     <span>Platos del cartel 🔥</span>
     <b>›</b>
   </a>
 
-  <a href="#cremas" class="app-category-card">
+  <a href="#" class="app-category-card" data-cat="cremas">
     <img src="cat-cremas.jpg">
     <span>Cremas extras 🧂</span>
     <b>›</b>
   </a>
 
-  <a href="#bebidas" class="app-category-card">
+  <a href="#" class="app-category-card" data-cat="bebidas">
     <img src="cat-bebidas.png">
     <span>Bebidas 🥤</span>
     <b>›</b>
   </a>
 
 </section>
+
+    <div class="home-trust-bar" id="home-trust-bar">
+      <div><span>🛵</span><b>Envío rápido</b><small>A todo Trujillo</small></div>
+      <div><span>🛡️</span><b>Pago seguro</b><small>100% protegido</small></div>
+      <div><span>👍</span><b>Calidad</b><small>Siempre premium</small></div>
+    </div>
+
+    <div class="section-toolbar hidden-section" id="section-toolbar">
+      <button type="button" id="btn-back-home">← Volver al inicio</button>
+      <strong id="section-current-title">Sección</strong>
+      <button type="button" id="btn-go-cart">Ver pedido</button>
+    </div>
 
     <div id="menu"></div>
 
@@ -1185,11 +1280,72 @@ const mixedYapeInput = document.getElementById("mixed-yape");
 const mixedCashInput = document.getElementById("mixed-cash");
 const errorMsg = document.getElementById("error-msg");
 const boletaEl = document.getElementById("boleta-virtual");
+const sectionToolbar = document.getElementById("section-toolbar");
+const sectionCurrentTitle = document.getElementById("section-current-title");
+const btnBackHome = document.getElementById("btn-back-home");
+const btnGoCart = document.getElementById("btn-go-cart");
+const homeTrustBar = document.getElementById("home-trust-bar");
+let currentCategoryKey = null;
 
-function renderMenu(){
+const CATEGORY_GROUPS = {
+  alitas: { title: "🔥 Alitas", keys: ["alitas", "agregado_alitas", "snack"] },
+  hamburguesas: { title: "🍔 Hamburguesas", keys: ["hamburguesas"] },
+  cartel: { title: "🔥 Platos del cartel", keys: ["cartel", "agregado_broaster", "extras"] },
+  cremas: { title: "🧂 Cremas extras", keys: ["cremas"] },
+  bebidas: { title: "🥤 Bebidas", keys: ["bebidas"] }
+};
+
+function sectionInternalKey(section){
+  if (section.anchorId) return section.anchorId;
+  const n = String(section.name || "").toLowerCase();
+  if (n.includes("agregado de alitas")) return "agregado_alitas";
+  if (n.includes("snack")) return "snack";
+  if (n.includes("agregado broaster")) return "agregado_broaster";
+  return "otros";
+}
+function isSectionInCategory(section, categoryKey){
+  const group = CATEGORY_GROUPS[categoryKey];
+  if (!group) return false;
+  return group.keys.includes(sectionInternalKey(section));
+}
+function showHome(){
+  currentCategoryKey = null;
+  document.body.classList.add("home-screen");
+  if (sectionToolbar) sectionToolbar.classList.add("hidden-section");
+  if (homeTrustBar) homeTrustBar.classList.remove("hidden-section");
+  if (menuContainer) { menuContainer.innerHTML = ""; menuContainer.classList.add("hidden-section"); }
+  window.scrollTo({ top:0, behavior:"smooth" });
+}
+function showCategory(categoryKey){
+  if (!CATEGORY_GROUPS[categoryKey]) return;
+  currentCategoryKey = categoryKey;
+  document.body.classList.remove("home-screen");
+  if (sectionToolbar) sectionToolbar.classList.remove("hidden-section");
+  if (homeTrustBar) homeTrustBar.classList.add("hidden-section");
+  if (sectionCurrentTitle) sectionCurrentTitle.textContent = CATEGORY_GROUPS[categoryKey].title;
+  renderMenu(categoryKey);
+  setTimeout(() => scrollToWithOffset(menuContainer, 75), 30);
+}
+function initCategoryNavigation(){
+  document.querySelectorAll(".app-category-card[data-cat]").forEach(card => {
+    card.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      showCategory(card.dataset.cat);
+    });
+  });
+  if (btnBackHome) btnBackHome.addEventListener("click", showHome);
+  if (btnGoCart) btnGoCart.addEventListener("click", () => scrollToWithOffset(document.getElementById("carrito"), 75));
+}
+
+function renderMenu(selectedCategoryKey = currentCategoryKey){
   if (!menuContainer) return;
   menuContainer.innerHTML = "";
-  SECTIONS.forEach(section => {
+  if (!selectedCategoryKey) {
+    menuContainer.classList.add("hidden-section");
+    return;
+  }
+  menuContainer.classList.remove("hidden-section");
+  SECTIONS.filter(section => isSectionInCategory(section, selectedCategoryKey)).forEach(section => {
     const titleRow = document.createElement("div");
     titleRow.className = "menu-section-title";
     if (section.anchorId) titleRow.id = section.anchorId;
@@ -1410,7 +1566,8 @@ function renderCart(){
 function clearCart(){ cart=[]; CURRENT_BOLETA=null; if(mixedYapeInput) mixedYapeInput.value=""; if(mixedCashInput) mixedCashInput.value=""; renderCart(); programarLimpiezaMenu(); }
 function scrollToWithOffset(el, offset=STICKY_OFFSET){ if(!el) return; const y = el.getBoundingClientRect().top + window.pageYOffset - offset; window.scrollTo({top:y, behavior:"smooth"}); }
 
-renderMenu();
+initCategoryNavigation();
+showHome();
 renderCart();
 if (btnClear) btnClear.addEventListener("click", clearCart);
 if (bottomVerPedido) bottomVerPedido.addEventListener("click", () => scrollToWithOffset(document.getElementById("carrito")));
