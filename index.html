@@ -5275,6 +5275,12 @@ document.querySelectorAll(".item-card").forEach(card => {
     adminAuth.style.display = "none";
     adminContent.style.display = "block";
     adminDate.value = getDateKeyLocal(new Date());
+
+    // FIX CAJA INICIAL:
+    // Antes se pintaba el admin sin esperar la nube. Eso podía mostrar 0.00.
+    // Ahora primero cargamos Supabase/localStorage y recién después renderizamos.
+    const dateKey = adminDate.value || getDateKeyLocal(new Date());
+    await initCloudSync(dateKey);
     await renderAdmin(true);
   } else {
     adminAuth.style.display = "block";
