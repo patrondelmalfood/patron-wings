@@ -1965,6 +1965,83 @@ body.cart-view .social-links.floating-social{
 }
 
 
+
+/* ===== Datos del cliente estilo app: simple y sin comentario para no confundir ===== */
+.cliente-app-card{
+  border:1px solid rgba(255,159,28,.34) !important;
+  background:linear-gradient(180deg, rgba(22,22,22,.97), rgba(8,8,8,.97)) !important;
+  border-radius:16px !important;
+  padding:12px !important;
+  box-shadow:0 0 14px rgba(255,159,28,.10);
+}
+.cliente-app-head{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:12px;
+}
+.cliente-app-icon{
+  width:38px;
+  height:38px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(255,214,10,.14);
+  border:1px solid rgba(255,214,10,.45);
+  color:#ffd60a;
+  box-shadow:0 0 10px rgba(255,214,10,.16);
+  font-size:20px;
+  flex-shrink:0;
+}
+.cliente-app-head h3{
+  margin:0 !important;
+  color:#ffb703;
+  font-size:17px !important;
+  line-height:1.15;
+}
+.cliente-app-head p{
+  margin:3px 0 0;
+  color:#bfc7d5;
+  font-size:11px;
+  line-height:1.25;
+}
+.cliente-name-box{
+  display:block;
+  margin:0 !important;
+}
+.cliente-name-box span{
+  display:block;
+  color:#f8f8f8;
+  font-weight:800;
+  font-size:12px;
+  margin-bottom:6px;
+}
+.cliente-name-box input{
+  width:100%;
+  border-radius:12px !important;
+  border:1px solid rgba(255,214,10,.35) !important;
+  background:#050505 !important;
+  color:#fff !important;
+  padding:12px 13px !important;
+  font-size:15px !important;
+  font-weight:700;
+  outline:none;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.03);
+}
+.cliente-name-box input:focus{
+  border-color:#ffd60a !important;
+  box-shadow:0 0 0 3px rgba(255,214,10,.14), inset 0 0 0 1px rgba(255,255,255,.04);
+}
+@media (max-width:600px){
+  .cliente-app-card{ padding:11px !important; }
+  .cliente-app-icon{ width:34px; height:34px; border-radius:12px; font-size:18px; }
+  .cliente-app-head{ gap:9px; margin-bottom:10px; }
+  .cliente-app-head h3{ font-size:16px !important; }
+  .cliente-app-head p{ font-size:10px; }
+  .cliente-name-box input{ padding:10px 12px !important; font-size:14px !important; }
+}
+
 /* ===== Mejoras visuales: pago y entrega en carrito público ===== */
 .pago-app-card,
 .entrega-app-card{
@@ -2219,14 +2296,19 @@ body.cart-view .social-links.floating-social{
       <div id="cart-items"></div>
       <p id="cart-empty">Aún no has añadido platos.</p>
 
-      <div class="cliente-datos">
-        <h3>Datos del cliente</h3>
-        <label for="customer-name">Nombre del cliente (opcional):</label>
-        <input type="text" id="customer-name" placeholder="Ej: Juan Pérez">
+      <div class="cliente-datos cliente-app-card">
+        <div class="cliente-app-head">
+          <div class="cliente-app-icon">👤</div>
+          <div>
+            <h3>¿A nombre de quién va?</h3>
+            <p>Solo necesitamos tu nombre para identificar el pedido.</p>
+          </div>
+        </div>
 
-        <label for="order-comment">Comentario del pedido / nota de moza (opcional):</label>
-        <textarea id="order-comment" placeholder="Ej: 8 alitas → 6 acevichada y 2 BBQ / sin cebolla / cliente apurado"></textarea>
-        <div class="help-text">Este campo te sirve para pedidos especiales o repartos exactos de salsa.</div>
+        <label class="cliente-name-box" for="customer-name">
+          <span>Nombre del cliente</span>
+          <input type="text" id="customer-name" placeholder="Ej: Juan Pérez">
+        </label>
       </div>
 
       <div class="pago-datos pago-app-card">
