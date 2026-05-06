@@ -120,6 +120,7 @@
           <a class="btn btn-dark" href="carta_moza_cocina.html" target="_blank">Abrir carta moza</a>
         </div>
         <div class="note">Este panel lee los pedidos que la moza registra desde <b>carta_moza_cocina.html</b>. También actualiza solo cada 5 segundos como respaldo.</div>
+        <div class="note" id="activeCashStatus" style="border:1px dashed #334155;border-radius:12px;padding:10px;background:#020617">Cargando caja activa...</div>
       </div>
 
       <div class="section-title"><h2>📊 Resumen del día</h2></div>
@@ -128,9 +129,9 @@
         <div class="metric"><div class="label">Venta total</div><div class="value" id="mSales">S/ 0.00</div><div class="hint">Efectivo + Yape + mixto</div></div>
         <div class="metric"><div class="label">Efectivo</div><div class="value" id="mCash">S/ 0.00</div><div class="hint">Dinero físico cobrado</div></div>
         <div class="metric"><div class="label">Yape</div><div class="value" id="mYape">S/ 0.00</div><div class="hint">Cobros digitales</div></div>
-        <div class="metric"><div class="label">Caja inicial</div><div class="value" id="mOpenCash">S/ 0.00</div><div class="hint">Guardado del día</div></div>
-        <div class="metric"><div class="label">Caja final estimada</div><div class="value" id="mFinalCash">S/ 0.00</div><div class="hint">Caja inicial + efectivo</div></div>
-        <div class="metric"><div class="label">Total día con caja</div><div class="value" id="mFinalAll">S/ 0.00</div><div class="hint">Caja inicial + efectivo + yape</div></div>
+        <div class="metric"><div class="label">Caja inicial</div><div class="value" id="mOpenCash">S/ 0.00</div><div class="hint">Sencillo aparte; no suma a venta</div></div>
+        <div class="metric"><div class="label">Efectivo a entregar</div><div class="value" id="mFinalCash">S/ 0.00</div><div class="hint">Solo efectivo vendido; sin caja inicial</div></div>
+        <div class="metric"><div class="label">Total venta final</div><div class="value" id="mFinalAll">S/ 0.00</div><div class="hint">Efectivo + Yape; sin caja inicial</div></div>
         <div class="metric"><div class="label">Anulados</div><div class="value" id="mCanceled">0</div><div class="hint">Pedidos anulados</div></div>
         <div class="metric"><div class="label">Pendientes cocina</div><div class="value" id="mPending">0</div><div class="hint">Por preparar / entregar</div></div>
         <div class="metric"><div class="label">Entregados</div><div class="value" id="mDelivered">0</div><div class="hint">Marcados como entregados</div></div>
@@ -138,10 +139,10 @@
         <div class="metric"><div class="label">Tapers</div><div class="value" id="mTapers">S/ 0.00</div><div class="hint">Solo pedidos válidos</div></div>
       </div>
 
-      <div class="section-title"><h2>💵 Caja inicial y stock de bebidas</h2></div>
+      <div class="section-title"><h2>💵 Caja inicial aparte y stock de bebidas</h2></div>
       <div id="setupCard" class="card">
         <div class="grid grid-3">
-          <div><label for="openCashInput">Caja inicial S/</label><input id="openCashInput" type="number" min="0" step="0.01" placeholder="0.00"></div>
+          <div><label for="openCashInput">Caja inicial / sencillo S/</label><input id="openCashInput" type="number" min="0" step="0.01" placeholder="0.00"></div>
           <div><label for="setupNoteInput">Observación</label><input id="setupNoteInput" type="text" placeholder="Ej: turno noche"></div>
           <div style="display:flex;align-items:end"><button id="btnSaveSetup" class="btn-green" type="button" style="width:100%">Guardar caja y stock</button></div>
         </div>
@@ -161,7 +162,7 @@
           <div><label>Final 600ml plástico</label><input id="stockEndPlastic" type="number" min="0" step="1" placeholder="0"></div>
           <div><label>Final agua 750ml</label><input id="stockEndWater" type="number" min="0" step="1" placeholder="0"></div>
         </div>
-        <div class="note">La venta de bebidas se descuenta automáticamente desde los pedidos registrados: gaseosa 1L, vidrio, 600ml y agua 750ml.</div>
+        <div class="note">La venta de bebidas se descuenta automáticamente desde los pedidos registrados: gaseosa 1L, vidrio, 600ml y agua 750ml. La caja inicial es solo sencillo aparte y NO se suma a la venta.</div>
       </div>
 
       <div class="section-title"><h2>🥤 Control de stock bebidas</h2></div>
@@ -196,16 +197,21 @@
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
     const ORDERS_TABLE = "orders_cloud";
     const DAY_SETUP_TABLE = "day_setup_cloud";
+    const CASH_STATE_TABLE = "cash_register_state";
+    const CLOSINGS_TABLE = "daily_closings";
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth:{ persistSession:false } });
 
     const els = {};
-    const ids = ["loginBox","app","adminPass","btnLogin","btnLogout","loginError","adminDate","btnRefresh","btnPrint","btnSaveSetup","lastUpdate","liveStatus","liveDot","openCashInput","setupNoteInput","stockInitOneL","stockInitGlass","stockInitPlastic","stockInitWater","stockEndOneL","stockEndGlass","stockEndPlastic","stockEndWater","mOrders","mSales","mCash","mYape","mOpenCash","mFinalCash","mFinalAll","mCanceled","mPending","mDelivered","mDelivery","mTapers","stockTableBody","productSummary","drinkSummary","ordersList","orderCountTag"];
+    const ids = ["loginBox","app","adminPass","btnLogin","btnLogout","loginError","adminDate","btnRefresh","btnPrint","btnSaveSetup","lastUpdate","liveStatus","liveDot","openCashInput","setupNoteInput","stockInitOneL","stockInitGlass","stockInitPlastic","stockInitWater","stockEndOneL","stockEndGlass","stockEndPlastic","stockEndWater","mOrders","mSales","mCash","mYape","mOpenCash","mFinalCash","mFinalAll","mCanceled","mPending","mDelivered","mDelivery","mTapers","stockTableBody","productSummary","drinkSummary","ordersList","orderCountTag","activeCashStatus"];
     ids.forEach(id => els[id] = document.getElementById(id));
 
     let currentOrders = [];
     let currentSetup = null;
     let logged = false;
     let realtimeReady = false;
+    let activeDateKey = "";
+    let cashIsOpen = false;
+    let userChangedDate = false;
 
     function safeNum(n){ return Number.isFinite(Number(n)) ? Number(n) : 0; }
     function safeInt(n){ return Math.round(safeNum(n)); }
@@ -213,6 +219,12 @@
     function money(n){ return "S/ " + safeNum(n).toFixed(2); }
     function pad2(n){ return String(n).padStart(2,"0"); }
     function getDateKeyLocal(d = new Date()){ return d.getFullYear() + "-" + pad2(d.getMonth()+1) + "-" + pad2(d.getDate()); }
+    function dateFromKeyLocal(key){ const [y,m,d] = String(key || getDateKeyLocal()).split("-").map(Number); return new Date(y, (m||1)-1, d||1); }
+    function formatDateKeyHuman(key){
+      const d = dateFromKeyLocal(key);
+      const dias = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+      return `${dias[d.getDay()]} ${pad2(d.getDate())}/${pad2(d.getMonth()+1)}/${d.getFullYear()}`;
+    }
     function formatTime(d = new Date()){ return pad2(d.getHours()) + ":" + pad2(d.getMinutes()) + ":" + pad2(d.getSeconds()); }
     function esc(s){ return String(s ?? "").replace(/[&<>'"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;"}[c])); }
 
@@ -328,6 +340,27 @@
       return "Efectivo";
     }
 
+    async function loadCashRegisterState(){
+      try {
+        const { data, error } = await supabaseClient.from(CASH_STATE_TABLE).select("*").eq("id",1).maybeSingle();
+        if (error) throw error;
+        cashIsOpen = !!data?.is_open;
+        activeDateKey = data?.active_date_key || "";
+        if (els.activeCashStatus) {
+          if (cashIsOpen && activeDateKey) {
+            els.activeCashStatus.innerHTML = `🟢 <b>Caja activa:</b> ${formatDateKeyHuman(activeDateKey)}<br><small>El admin está leyendo el día operativo. Si la venta pasa de medianoche, sigue cayendo en esta fecha hasta que la moza cierre día.</small>`;
+          } else {
+            els.activeCashStatus.innerHTML = `🔴 <b>No hay caja abierta.</b><br><small>Puedes revisar una fecha manualmente. La moza debe abrir día desde su carta antes de vender.</small>`;
+          }
+        }
+        if (cashIsOpen && activeDateKey && !userChangedDate) els.adminDate.value = activeDateKey;
+        return data;
+      } catch(err) {
+        if (els.activeCashStatus) els.activeCashStatus.innerHTML = `⚠️ No pude leer caja activa: ${esc(err.message || String(err))}`;
+        return null;
+      }
+    }
+    
     async function loadOrders(dateKey){
       const { data, error } = await supabaseClient.from(ORDERS_TABLE).select("*").eq("date_key", dateKey).order("updated_at", { ascending:false });
       if (error) throw error;
@@ -448,8 +481,8 @@
       els.mCash.textContent = money(cash);
       els.mYape.textContent = money(yape);
       els.mOpenCash.textContent = money(s.openCash);
-      els.mFinalCash.textContent = money(s.openCash + cash);
-      els.mFinalAll.textContent = money(s.openCash + cash + yape);
+      els.mFinalCash.textContent = money(cash);
+      els.mFinalAll.textContent = money(sales);
       els.mCanceled.textContent = annulled.length;
       els.mPending.textContent = pending.length;
       els.mDelivered.textContent = delivered.length;
@@ -508,9 +541,10 @@
 
     async function refreshData(forceForm=false){
       if (!logged) return;
-      const dateKey = els.adminDate.value || getDateKeyLocal();
-      els.adminDate.value = dateKey;
       setLive(false, "Actualizando...");
+      await loadCashRegisterState();
+      const dateKey = els.adminDate.value || activeDateKey || getDateKeyLocal();
+      els.adminDate.value = dateKey;
       try {
         const [setup, rows] = await Promise.all([loadSetup(dateKey), loadOrders(dateKey)]);
         currentSetup = setup;
@@ -533,7 +567,7 @@
       els.liveStatus.textContent = text;
     }
     async function handleSaveSetup(){
-      const dateKey = els.adminDate.value || getDateKeyLocal();
+      const dateKey = els.adminDate.value || activeDateKey || getDateKeyLocal();
       const setup = readSetupFromForm();
       if (setup.openCash < 0) return alert("Caja inicial no puede ser negativa.");
       els.btnSaveSetup.disabled = true;
@@ -541,7 +575,7 @@
       try {
         currentSetup = await saveSetup(dateKey, setup);
         await refreshData(true);
-        alert("✅ Caja y stock guardados en vivo.");
+        alert("✅ Caja inicial aparte y stock guardados en vivo.");
       } catch(err) {
         console.error(err);
         alert("No se pudo guardar caja/stock: " + (err.message || String(err)));
@@ -573,9 +607,9 @@
           <tr><td>Venta total</td><td>${esc(els.mSales.textContent)}</td></tr>
           <tr><td>Efectivo</td><td>${esc(els.mCash.textContent)}</td></tr>
           <tr><td>Yape</td><td>${esc(els.mYape.textContent)}</td></tr>
-          <tr><td>Caja inicial</td><td>${esc(els.mOpenCash.textContent)}</td></tr>
-          <tr class="total"><td>Caja final estimada</td><td>${esc(els.mFinalCash.textContent)}</td></tr>
-          <tr><td>Total día con caja</td><td>${esc(els.mFinalAll.textContent)}</td></tr>
+          <tr><td>Caja inicial / sencillo aparte</td><td>${esc(els.mOpenCash.textContent)}</td></tr>
+          <tr class="total"><td>Efectivo a entregar</td><td>${esc(els.mFinalCash.textContent)}</td></tr>
+          <tr><td>Total venta final</td><td>${esc(els.mFinalAll.textContent)}</td></tr>
           <tr><td>Anulados</td><td>${esc(els.mCanceled.textContent)}</td></tr>
         </table><hr>
         <h3>Stock bebidas</h3>${document.querySelector("#stockTableBody")?.parentElement?.outerHTML || ""}
@@ -584,11 +618,12 @@
       w.document.open(); w.document.write(html); w.document.close(); w.focus(); w.print();
     }
 
-    function showApp(){
+    async function showApp(){
       logged = true;
       els.loginBox.classList.add("hide");
       els.app.classList.remove("hide");
-      els.adminDate.value = els.adminDate.value || getDateKeyLocal();
+      await loadCashRegisterState();
+      els.adminDate.value = els.adminDate.value || activeDateKey || getDateKeyLocal();
       refreshData(true);
     }
     function login(){
@@ -612,6 +647,7 @@
         const channel = supabaseClient.channel("pdm-admin-live")
           .on("postgres_changes", { event:"*", schema:"public", table:ORDERS_TABLE }, () => refreshData(false))
           .on("postgres_changes", { event:"*", schema:"public", table:DAY_SETUP_TABLE }, () => refreshData(false))
+          .on("postgres_changes", { event:"*", schema:"public", table:CASH_STATE_TABLE }, () => { userChangedDate = false; refreshData(true); })
           .subscribe((status) => {
             realtimeReady = status === "SUBSCRIBED";
             setLive(realtimeReady, realtimeReady ? "En vivo" : "Actualizado");
@@ -625,7 +661,7 @@
     els.adminPass.addEventListener("keydown", e => { if (e.key === "Enter") login(); });
     els.btnLogout.addEventListener("click", logout);
     els.btnRefresh.addEventListener("click", () => refreshData(true));
-    els.adminDate.addEventListener("change", () => refreshData(true));
+    els.adminDate.addEventListener("change", () => { userChangedDate = true; refreshData(true); });
     els.btnSaveSetup.addEventListener("click", handleSaveSetup);
     els.btnPrint.addEventListener("click", printSummary);
 
