@@ -262,27 +262,29 @@ height:44px;
     #boleta-virtual { scroll-margin-top: 105px; }
 
     .menu-section-title{
-      margin-top:25px; margin-bottom:8px;
+      margin-top:20px;
+      margin-bottom:12px;
       border-bottom:2px solid #ff9f1c;
-      padding-bottom:4px;
-      font-size:15px;
-      display:flex; align-items:center; justify-content:space-between;
+      padding:8px 0 10px;
+      font-size:19px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
       gap:10px;
+      text-align:center;
+      background:linear-gradient(90deg, transparent, rgba(255,159,28,.08), transparent);
     }
     .menu-section-title span{
-      flex:1;
+      flex:0 1 auto;
+      width:100%;
       color:#ffd166;
-      text-shadow:0 0 3px #ff9f1c, 0 0 6px #ff9f1c;
+      font-weight:900;
+      text-align:center;
+      text-shadow:0 0 3px #ff9f1c, 0 0 8px #ff9f1c;
       animation: sectionGlow 1.5s infinite alternate;
     }
-    .section-image{
-      max-width:110px; max-height:70px;
-      border-radius:6px;
-      overflow:hidden;
-      border:1px solid #333;
-      flex-shrink:0;
-    }
-    .section-image img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .section-image{ display:none !important; }
+    .section-image img{ display:none !important; }
 
     .menu-grid{
       display:grid;
@@ -1863,6 +1865,15 @@ body.home-screen .home-trust-bar small{
   .social-links.floating-social .fb-icon{ width:38px !important; height:38px !important; }
 }
 
+    @media (max-width:600px){
+      .menu-section-title{
+        margin-top:16px;
+        margin-bottom:10px;
+        font-size:18px;
+        padding:7px 0 9px;
+      }
+    }
+
   </style>
 </head>
 
@@ -2388,11 +2399,6 @@ function renderMenu(selectedCategoryKey = currentCategoryKey){
     titleRow.className = "menu-section-title";
     if (section.anchorId) titleRow.id = section.anchorId;
     titleRow.innerHTML = `<span>${section.name}</span>`;
-    if (section.image) {
-      const w = document.createElement("div"); w.className = "section-image";
-      const img = document.createElement("img"); img.src = section.image; img.alt = section.name;
-      w.appendChild(img); titleRow.appendChild(w);
-    }
     menuContainer.appendChild(titleRow);
     const grid = document.createElement("div"); grid.className = "menu-grid";
     section.items.forEach(item => {
