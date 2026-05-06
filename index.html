@@ -615,6 +615,18 @@ height:44px;
       color:#111;
     }
     .bottom-bar-mobile.hidden{ display:none !important; }
+    /* Cuando el cliente está viendo el carrito, ocultamos el carrito flotante
+       para que se vea completo el botón Enviar pedido por WhatsApp. */
+    body.cart-view .bottom-bar-mobile{
+      display:none !important;
+    }
+    body.cart-view{
+      padding-bottom:18px !important;
+    }
+    body.cart-view #carrito{
+      padding-bottom:28px;
+    }
+
     .cart-pill-icon{
       width:44px;
       height:44px;
@@ -2597,11 +2609,45 @@ function renderCart(){
 function clearCart(){ cart=[]; CURRENT_BOLETA=null; if(mixedYapeInput) mixedYapeInput.value=""; if(mixedCashInput) mixedCashInput.value=""; renderCart(); programarLimpiezaMenu(); }
 function scrollToWithOffset(el, offset=STICKY_OFFSET){ if(!el) return; const y = el.getBoundingClientRect().top + window.pageYOffset - offset; window.scrollTo({top:y, behavior:"smooth"}); }
 
+function initCartFloatingGuard(){
+  const cartBox = document.getElementById("carrito");
+  if (!cartBox) return;
+
+  const setCartView = (isCartView) => {
+    document.body.classList.toggle("cart-view", !!isCartView);
+  };
+
+  if ("IntersectionObserver" in window) {
+    const obs = new IntersectionObserver((entries) => {
+      const entry = entries[0];
+      setCartView(entry && entry.isIntersecting && entry.intersectionRatio > 0.18);
+    }, {
+      root: null,
+      threshold: [0, 0.18, 0.35],
+      rootMargin: "0px 0px -18% 0px"
+    });
+    obs.observe(cartBox);
+  } else {
+    const checkCartView = () => {
+      const r = cartBox.getBoundingClientRect();
+      const h = window.innerHeight || document.documentElement.clientHeight;
+      setCartView(r.top < h * 0.72 && r.bottom > h * 0.18);
+    };
+    window.addEventListener("scroll", checkCartView, { passive:true });
+    window.addEventListener("resize", checkCartView);
+    checkCartView();
+  }
+}
+
 initCategoryNavigation();
+initCartFloatingGuard();
 showHome();
 renderCart();
 if (btnClear) btnClear.addEventListener("click", clearCart);
-if (bottomVerPedido) bottomVerPedido.addEventListener("click", () => scrollToWithOffset(document.getElementById("carrito")));
+if (bottomVerPedido) bottomVerPedido.addEventListener("click", () => {
+  document.body.classList.add("cart-view");
+  scrollToWithOffset(document.getElementById("carrito"));
+});
 if (inputName) inputName.addEventListener("input", renderCart);
 if (inputDni) inputDni.addEventListener("input", () => { inputDni.value = sanitizeDniInput(inputDni.value); renderCart(); });
 if (inputComment) inputComment.addEventListener("input", renderCart);
