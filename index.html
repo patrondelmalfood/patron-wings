@@ -895,6 +895,171 @@ height:44px;
       .section-toolbar strong{ font-size:12px; }
     }
 
+  
+
+/* ===============================
+   VERSION ULTRA COMPACTA PORTADA PUBLICA
+   =============================== */
+body.home-screen{
+  max-width:430px !important;
+  padding:6px 8px 4px !important;
+}
+body.home-screen .page-content{
+  max-width:430px !important;
+  margin:0 auto !important;
+}
+body.home-screen .header{
+  gap:8px !important;
+  margin:0 0 3px !important;
+  padding-right:44px !important;
+}
+body.home-screen .header-logo{
+  width:64px !important;
+  height:64px !important;
+  border:2px solid rgba(255,255,255,.9) !important;
+  box-shadow:0 0 10px rgba(255,255,255,.15) !important;
+}
+body.home-screen .title-line{
+  font-size:22px !important;
+  line-height:.92 !important;
+  letter-spacing:.1px !important;
+}
+body.home-screen .header-brand-line{
+  margin-top:5px !important;
+  font-size:11px !important;
+  gap:6px !important;
+}
+body.home-screen .header-brand-line::before,
+body.home-screen .header-brand-line::after{
+  flex-basis:16px !important;
+}
+
+/* Redes sociales conservadas al costado */
+.social-links.floating-social{
+  position:fixed !important;
+  right:7px !important;
+  top:96px !important;
+  z-index:50 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:8px !important;
+  padding:0 !important;
+  align-items:center !important;
+}
+.social-links.floating-social .fb-icon{
+  width:38px !important;
+  height:38px !important;
+  font-size:18px !important;
+}
+.social-links.floating-social .fb-icon img{
+  width:21px !important;
+  height:21px !important;
+}
+
+body.home-screen .hero{
+  margin:4px 0 5px !important;
+  max-height:132px !important;
+  height:132px !important;
+  border-radius:14px !important;
+}
+body.home-screen .hero-home-app img{
+  height:132px !important;
+  min-height:132px !important;
+  object-fit:cover !important;
+  object-position:center center !important;
+}
+body.home-screen .hero-overlay-copy{
+  left:12px !important;
+  bottom:9px !important;
+  right:10px !important;
+}
+body.home-screen .hero-overlay-copy strong,
+body.home-screen .hero-overlay-copy span{
+  font-size:15px !important;
+  line-height:1.02 !important;
+}
+
+body.home-screen .app-hour-card{
+  min-height:42px !important;
+  margin:5px 0 4px !important;
+  padding:7px 9px !important;
+  border-radius:15px !important;
+}
+body.home-screen .hour-icon{ font-size:19px !important; }
+body.home-screen .hour-arrow{ font-size:24px !important; }
+body.home-screen .hour-text strong{ font-size:13px !important; line-height:1.05 !important; }
+body.home-screen .hour-text span{ font-size:11px !important; line-height:1.1 !important; }
+
+body.home-screen .app-section-question{
+  margin:4px 0 5px !important;
+  gap:6px !important;
+}
+body.home-screen .app-section-question span{
+  width:45px !important;
+}
+body.home-screen .app-section-question p{
+  font-size:11px !important;
+}
+
+body.home-screen .app-category-list{
+  gap:5px !important;
+  margin-top:5px !important;
+}
+body.home-screen .app-category-card{
+  min-height:47px !important;
+  padding:4px 8px !important;
+  border-radius:15px !important;
+  gap:10px !important;
+}
+body.home-screen .app-category-card img{
+  width:94px !important;
+  height:40px !important;
+  border-radius:12px !important;
+  object-fit:cover !important;
+  object-position:center !important;
+}
+body.home-screen .app-category-card span{
+  font-size:18px !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+}
+body.home-screen .app-category-card b{
+  font-size:28px !important;
+}
+
+body.home-screen .home-trust-bar{
+  margin:6px 0 0 !important;
+  padding:7px 0 0 !important;
+  border-top:1px solid rgba(255,183,3,.75) !important;
+}
+body.home-screen .home-trust-bar div{
+  min-height:35px !important;
+}
+body.home-screen .home-trust-bar span{
+  font-size:14px !important;
+}
+body.home-screen .home-trust-bar b{
+  font-size:9px !important;
+  line-height:1 !important;
+}
+body.home-screen .home-trust-bar small{
+  font-size:7.5px !important;
+  line-height:1 !important;
+}
+
+@media (max-width:390px){
+  body.home-screen .title-line{ font-size:20px !important; }
+  body.home-screen .header-logo{ width:58px !important; height:58px !important; }
+  body.home-screen .header{ padding-right:42px !important; }
+  body.home-screen .hero{ height:122px !important; max-height:122px !important; }
+  body.home-screen .hero-home-app img{ height:122px !important; min-height:122px !important; }
+  body.home-screen .app-category-card{ min-height:44px !important; }
+  body.home-screen .app-category-card img{ width:84px !important; height:37px !important; }
+  body.home-screen .app-category-card span{ font-size:16px !important; }
+  .social-links.floating-social{ top:88px !important; right:5px !important; gap:6px !important; }
+  .social-links.floating-social .fb-icon{ width:34px !important; height:34px !important; }
+}
+
   </style>
 </head>
 
@@ -913,6 +1078,16 @@ height:44px;
         </div>
         <div class="header-brand-line">Burger Wings</div>
       </div>
+    </div>
+
+    <div class="social-links floating-social" aria-label="Redes sociales">
+      <a class="fb-icon" href="https://www.facebook.com/profile.php?id=100093146827040&sk=about" target="_blank" aria-label="Facebook">f</a>
+      <a class="fb-icon" href="https://www.tiktok.com/@fastfoodpatrondelmal" target="_blank" aria-label="TikTok" style="background:#000; border:1px solid #fff; box-shadow:0 0 8px rgba(255,255,255,.8); font-size:15px;">
+        <img src="tiktok.png" style="width:20px; height:20px; object-fit:contain;">
+      </a>
+      <a class="fb-icon" href="https://wa.me/51944275861" target="_blank" aria-label="WhatsApp" style="background:#25D366; border:1px solid #fff; box-shadow:0 0 8px rgba(37,211,102,.9); display:flex; align-items:center; justify-content:center;">
+        <img src="whatsapp.png" style="width:20px; height:20px; object-fit:contain;">
+      </a>
     </div>
 
     <div class="hero hero-home-app">
