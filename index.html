@@ -38,36 +38,36 @@
     .app-category-list{
   display:flex;
   flex-direction:column;
-  gap:12px;
-  margin-top:15px;
+  gap:8px;
+  margin-top:8px;
 }
 
 .app-category-card{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:12px;
-  padding:10px;
-  min-height:82px;
-  border-radius:16px;
+  gap:10px;
+  padding:6px 8px;
+  min-height:58px;
+  border-radius:18px;
   border:1px solid #ff9f1c;
-  background:rgba(0,0,0,.85);
+  background:rgba(0,0,0,.88);
   text-decoration:none;
   color:#fff;
   font-weight:700;
   font-size:16px;
-  box-shadow:0 0 10px rgba(255,159,28,.2);
+  box-shadow:0 0 10px rgba(255,159,28,.18);
 }
 
 .app-category-card img{
-width:90px;
-height:65px;
+width:72px;
+height:44px;
   object-fit:cover;
-  border-radius:12px;
+  border-radius:999px;
 }
     .app-category-card span{
   flex:1;
-  font-size:18px;
+  font-size:15px;
 }
 
 .app-category-card b{
@@ -111,19 +111,43 @@ height:65px;
     h1,h2,h3{ color:#ff9f1c; margin:10px 0; }
     p{ margin:4px 0; }
 
-    .header{ display:flex; align-items:center; gap:15px; margin-bottom:10px; position:relative; }
+    .header{ display:flex; align-items:center; gap:12px; margin-bottom:8px; position:relative; }
     .header-logo{
-      width:70px; height:70px; border-radius:50%;
-      overflow:hidden; border:2px solid #ff9f1c;
+      width:82px; height:82px; border-radius:50%;
+      overflow:hidden; border:2px solid rgba(255,255,255,.85);
+      box-shadow:0 0 12px rgba(255,255,255,.12);
       flex-shrink:0; background:#fff;
     }
     .header-logo img{ width:100%; height:100%; object-fit:contain; }
-    .header-text{ flex:1; }
-    .header-text h1{
-      margin:0; font-size:26px; letter-spacing:1px;
-      text-transform:uppercase; color:#ffe066;
+    .header-text{ flex:1; min-width:0; }
+    .header-title-stack{ display:flex; flex-direction:column; line-height:.92; }
+    .title-line{
+      display:block;
+      font-size:25px;
+      font-weight:900;
+      letter-spacing:.2px;
+      text-transform:uppercase;
+      color:#ffe8a3;
       text-shadow:0 0 4px #ffd166, 0 0 8px #ff9f1c, 0 0 12px #ff9f1c;
       animation: latir 1.6s infinite ease-in-out, tituloGlow 2s infinite alternate;
+    }
+    .header-brand-line{
+      margin-top:6px;
+      color:#f5f5f5;
+      font-size:13px;
+      font-weight:700;
+      letter-spacing:.3px;
+      text-transform:none;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .header-brand-line::before,
+    .header-brand-line::after{
+      content:"";
+      flex:0 0 18px;
+      height:1px;
+      background:linear-gradient(90deg, transparent, #ffb703, transparent);
     }
     .header-text p{ margin:2px 0; font-size:13px; color:#ddd; }
 
@@ -162,13 +186,32 @@ height:65px;
     .closed-dot{ width:10px; height:10px; border-radius:50%; background:#ff4d4d; box-shadow:0 0 10px rgba(255,77,77,.70); }
 
     .hero{
-      margin:12px 0 18px;
-      border-radius:10px;
+      margin:8px 0 10px;
+      border-radius:18px;
       overflow:hidden;
-      border:2px solid #333;
-      max-height:260px;
+      border:1px solid rgba(255,183,3,.55);
+      max-height:168px;
+      position:relative;
+      box-shadow:0 0 14px rgba(255,183,3,.12);
     }
     .hero img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .hero-home-app img{ min-height:148px; }
+    .hero-overlay-copy{
+      position:absolute;
+      left:14px;
+      bottom:12px;
+      right:14px;
+      text-shadow:0 2px 10px rgba(0,0,0,.9);
+    }
+    .hero-overlay-copy strong,
+    .hero-overlay-copy span{
+      display:block;
+      font-size:15px;
+      font-weight:900;
+      line-height:1.02;
+    }
+    .hero-overlay-copy strong{ color:#ffffff; }
+    .hero-overlay-copy span{ color:#ffb703; margin-top:2px; }
     .intro-text{ text-align:center; font-size:14px; color:#eee; margin-bottom:10px; }
 
     .mini-nav{
@@ -222,7 +265,7 @@ height:65px;
       margin-top:25px; margin-bottom:8px;
       border-bottom:2px solid #ff9f1c;
       padding-bottom:4px;
-      font-size:18px;
+      font-size:15px;
       display:flex; align-items:center; justify-content:space-between;
       gap:10px;
     }
@@ -645,7 +688,7 @@ height:65px;
 }
 
 #alitas + .menu-grid .item-price{
-  font-size:17px;
+  font-size:15px;
   color:#ffd60a;
 }
 
@@ -749,13 +792,11 @@ height:65px;
     .home-trust-bar{
       display:grid;
       grid-template-columns:repeat(3,1fr);
-      gap:8px;
-      margin:12px 0 10px;
-      padding:10px 8px;
-      border-radius:16px;
-      border:1px solid rgba(255,159,28,.55);
-      background:rgba(0,0,0,.82);
-      box-shadow:0 0 12px rgba(255,159,28,.18);
+      gap:0;
+      margin:8px 0 6px;
+      padding:10px 4px 0;
+      border-top:1px solid rgba(255,183,3,.75);
+      background:transparent;
     }
     .home-trust-bar div{
       display:flex;
@@ -764,11 +805,19 @@ height:65px;
       justify-content:center;
       text-align:center;
       gap:2px;
-      min-height:50px;
-      border-right:1px solid rgba(255,159,28,.45);
+      min-height:40px;
+      position:relative;
     }
-    .home-trust-bar div:last-child{ border-right:none; }
-    .home-trust-bar span{ font-size:20px; color:#ffd60a; }
+    .home-trust-bar div:not(:last-child)::after{
+      content:"";
+      position:absolute;
+      right:0;
+      top:5px;
+      bottom:5px;
+      width:1px;
+      background:rgba(255,183,3,.55);
+    }
+    .home-trust-bar span{ font-size:18px; color:#ffd60a; }
     .home-trust-bar b{ font-size:11px; color:#fff; }
     .home-trust-bar small{ font-size:10px; color:#bbb; }
 
@@ -808,14 +857,33 @@ height:65px;
     body.home-screen{ min-height:100vh; }
 
     @media (max-width:600px){
-      body.home-screen{ padding-bottom:10px; }
-      body.home-screen .hero{ max-height:210px; margin-bottom:10px; }
-      body.home-screen .intro-text{ display:none; }
-      body.home-screen .app-category-card{ min-height:68px; padding:7px 9px; }
-      body.home-screen .app-category-card img{ width:78px; height:54px; }
-      body.home-screen .app-category-card span{ font-size:17px; }
-      body.home-screen .app-hour-card{ margin:10px 0 7px; padding:10px 12px; }
-      body.home-screen .app-section-question{ margin:6px 0 8px; }
+      body{ padding:12px 10px; }
+      .gif-dinero{ display:none; }
+      .header{ gap:10px; margin-bottom:4px; }
+      .header-logo{ width:72px; height:72px; }
+      .title-line{ font-size:22px; line-height:.95; }
+      .header-brand-line{ font-size:11px; gap:6px; }
+      .social-links{ display:none !important; }
+      body.home-screen{ padding-bottom:8px; }
+      body.home-screen .hero{ max-height:155px; margin-bottom:6px; }
+      body.home-screen .hero-home-app img{ min-height:142px; }
+      .hero-overlay-copy{ left:12px; right:12px; bottom:10px; }
+      .hero-overlay-copy strong,
+      .hero-overlay-copy span{ font-size:16px; }
+      body.home-screen .app-category-card{ min-height:56px; padding:5px 8px; }
+      body.home-screen .app-category-card img{ width:68px; height:42px; }
+      body.home-screen .app-category-card span{ font-size:15px; }
+      body.home-screen .app-hour-card{ margin:6px 0 5px; padding:8px 9px; }
+      .app-hour-card{ border-radius:16px; }
+      .hour-icon{ font-size:22px; }
+      .hour-text strong{ font-size:14px; }
+      .hour-text span{ font-size:12px; }
+      body.home-screen .app-section-question{ margin:5px 0 7px; }
+      .app-section-question p{ font-size:11px; }
+      .home-trust-bar{ margin-top:6px; padding-top:7px; }
+      .home-trust-bar span{ font-size:15px; }
+      .home-trust-bar b{ font-size:9px; }
+      .home-trust-bar small{ font-size:8px; }
       .section-toolbar{
         gap:6px;
         padding:8px;
@@ -836,38 +904,24 @@ height:65px;
   <div class="gif-dinero"><img src="dinero.gif" alt="Dinero cayendo"></div>
 
   <div class="page-content">
-    <div class="header">
+    <div class="header compact-home-header">
       <div class="header-logo"><img src="LOGO.jpg" alt="Logo El Patrón del Mal"></div>
       <div class="header-text">
-        <h1>El Patrón del Mal</h1>
-        <p>Alitas, hamburguesas, mostritos y más.</p>
-        <p>Haz tu pedido online y recíbelo por delivery o para recoger.</p>
+        <div class="header-title-stack">
+          <span class="title-line">EL PATRÓN DEL</span>
+          <span class="title-line">MAL</span>
+        </div>
+        <div class="header-brand-line">Burger Wings</div>
       </div>
-
-      <div class="social-links">
-  <a class="fb-icon" href="https://www.facebook.com/profile.php?id=100093146827040&sk=about" target="_blank" aria-label="Facebook">f</a>
-
-  <a class="fb-icon" 
-     href="https://www.tiktok.com/@fastfoodpatrondelmal" 
-     target="_blank" 
-     aria-label="TikTok"
-     style="background:#000; border:1px solid #fff; box-shadow:0 0 8px rgba(255,255,255,.8); font-size:15px;">
-    <img src="tiktok.png" style="width:20px; height:20px; object-fit:contain;">
-  </a>
-        <a class="fb-icon" 
-   href="https://wa.me/51944275861" 
-   target="_blank" 
-   aria-label="WhatsApp"
-   style="background:#25D366; border:1px solid #fff; box-shadow:0 0 8px rgba(37,211,102,.9); display:flex; align-items:center; justify-content:center;">
-  <img src="whatsapp.png" style="width:20px; height:20px; object-fit:contain;">
-</a>
-</div>
     </div>
 
-
-    <div class="hero"><img src="FOTO DEL LOCAL 1.jpg" alt="Local El Patrón del Mal"></div>
-
-    <p class="intro-text">Selecciona tus platos favoritos, revisa tu pedido y envíalo directo por WhatsApp a nuestro número.</p>
+    <div class="hero hero-home-app">
+      <img src="FOTO DEL LOCAL 1.jpg" alt="Local El Patrón del Mal">
+      <div class="hero-overlay-copy">
+        <strong>Sabor callejero.</strong>
+        <span>Actitud de barrio.</span>
+      </div>
+    </div>
 
     <div class="app-hour-card">
   <div class="hour-icon">🕘</div>
@@ -918,7 +972,7 @@ height:65px;
 </section>
 
     <div class="home-trust-bar" id="home-trust-bar">
-      <div><span>🛵</span><b>Envío rápido</b><small>A todo Trujillo</small></div>
+      <div><span>🛵</span><b>Envío rápido</b><small>A todo SANTA</small></div>
       <div><span>🛡️</span><b>Pago seguro</b><small>100% protegido</small></div>
       <div><span>👍</span><b>Calidad</b><small>Siempre premium</small></div>
     </div>
