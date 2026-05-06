@@ -3379,29 +3379,69 @@ function getOrderTimeText(order){
       }
     }
 
-    function loadDaySetupIntoForm(dateKey){
+    function loadDaySetupIntoForm(dateKey, keepExistingIfEmpty = false){
       const s = getDaySetup(dateKey);
-      openCashInput.value = safeNum(s.openCash) ? safeNum(s.openCash).toFixed(2) : "";
-      openCloseNoteInput.value = s.note || "";
 
-      stockInit1L.value = safeInt(s.stockInit?.oneL) || "";
-      stockInitHalfPlastic.value = safeInt(s.stockInit?.halfPlastic) || "";
-      stockInitGlass.value = safeInt(s.stockInit?.glass) || "";
-      stockInitWater.value = safeInt(s.stockInit?.water) || "";
-      stockInitWingsKg.value = safeNum(s.stockInitItems?.wingsKg) || "";
-stockInitPotatoBags.value = safeInt(s.stockInitItems?.potatoBags) || "";
-stockInitBroasterPieces.value = safeInt(s.stockInitItems?.broasterPieces) || "";
-stockInitBurgerBread.value = safeInt(s.stockInitItems?.burgerBread) || "";
-stockInitBurgerMeat.value = safeInt(s.stockInitItems?.burgerMeat) || "";
-stockInitCheese.value = safeInt(s.stockInitItems?.cheese) || "";
-stockInitEgg.value = safeInt(s.stockInitItems?.egg) || "";
-stockInitChorizo.value = safeInt(s.stockInitItems?.chorizo) || "";
-stockInitBacon.value = safeInt(s.stockInitItems?.bacon) || "";
+      const setMoney = (el, value) => {
+        if (!el) return;
+        const n = safeNum(value);
+        if (n > 0) {
+          el.value = n.toFixed(2);
+        } else if (!keepExistingIfEmpty) {
+          el.value = "";
+        }
+      };
 
-      stockEnd1L.value = safeInt(s.stockEnd?.oneL) || "";
-      stockEndHalfPlastic.value = safeInt(s.stockEnd?.halfPlastic) || "";
-      stockEndGlass.value = safeInt(s.stockEnd?.glass) || "";
-      stockEndWater.value = safeInt(s.stockEnd?.water) || "";
+      const setInt = (el, value) => {
+        if (!el) return;
+        const n = safeInt(value);
+        if (n > 0) {
+          el.value = String(n);
+        } else if (!keepExistingIfEmpty) {
+          el.value = "";
+        }
+      };
+
+      const setNum = (el, value) => {
+        if (!el) return;
+        const n = safeNum(value);
+        if (n > 0) {
+          el.value = String(n);
+        } else if (!keepExistingIfEmpty) {
+          el.value = "";
+        }
+      };
+
+      setMoney(openCashInput, s.openCash);
+
+      if (openCloseNoteInput) {
+        const note = String(s.note || "");
+        if (note) {
+          openCloseNoteInput.value = note;
+        } else if (!keepExistingIfEmpty) {
+          openCloseNoteInput.value = "";
+        }
+      }
+
+      setInt(stockInit1L, s.stockInit?.oneL);
+      setInt(stockInitHalfPlastic, s.stockInit?.halfPlastic);
+      setInt(stockInitGlass, s.stockInit?.glass);
+      setInt(stockInitWater, s.stockInit?.water);
+
+      setNum(stockInitWingsKg, s.stockInitItems?.wingsKg);
+      setInt(stockInitPotatoBags, s.stockInitItems?.potatoBags);
+      setInt(stockInitBroasterPieces, s.stockInitItems?.broasterPieces);
+      setInt(stockInitBurgerBread, s.stockInitItems?.burgerBread);
+      setInt(stockInitBurgerMeat, s.stockInitItems?.burgerMeat);
+      setInt(stockInitCheese, s.stockInitItems?.cheese);
+      setInt(stockInitEgg, s.stockInitItems?.egg);
+      setInt(stockInitChorizo, s.stockInitItems?.chorizo);
+      setInt(stockInitBacon, s.stockInitItems?.bacon);
+
+      setInt(stockEnd1L, s.stockEnd?.oneL);
+      setInt(stockEndHalfPlastic, s.stockEnd?.halfPlastic);
+      setInt(stockEndGlass, s.stockEnd?.glass);
+      setInt(stockEndWater, s.stockEnd?.water);
     }
 
     function readDaySetupFromForm(){
@@ -4603,8 +4643,14 @@ function addToCart(item, qty, sauces, sauceApart, brand, noSauce) {
         stockInitBurgerBread, stockInitBurgerMeat, stockInitCheese,
         stockInitEgg, stockInitChorizo, stockInitBacon
       ].filter(Boolean);
-      const isEditingDaySetup = daySetupInputs.includes(document.activeElement);
-      if (forceForm || !isEditingDaySetup) loadDaySetupIntoForm(dateKey);
+
+      const isEditingDaySetup = daySetupInputs.some(input => document.activeElement === input);
+
+      // Protección anti-borrado visual:
+      // si la moza/dueño está escribiendo caja o inventario, no recargamos esos campos.
+      if (forceForm || !isEditingDaySetup) {
+        loadDaySetupIntoForm(dateKey);
+      }
 
       const daySetup = getDaySetup(dateKey);
       const log = getOrderLog();
@@ -5204,18 +5250,32 @@ document.querySelectorAll(".item-card").forEach(card => {
 
     adminSaveOpenClose.addEventListener("click", async () => {
       const dateKey = adminDate.value || getDateKeyLocal(new Date());
+
+      if (!String(openCashInput.value || "").trim()) {
+        alert("⚠️ Ingresa la caja inicial antes de guardar.");
+        openCashInput.focus();
+        return;
+      }
+
       const setupNow = readDaySetupFromForm();
+
+      if (safeNum(setupNow.openCash) < 0) {
+        alert("⚠️ La caja inicial no puede ser negativa.");
+        openCashInput.focus();
+        return;
+      }
 
       // Guarda local y en nube. Aunque falle la nube, el formulario queda guardado y visible en este equipo.
       const result = await saveDaySetup(dateKey, setupNow);
 
-      // Recalcula todo usando lo recién guardado.
-      await renderAdmin(true);
+      // Recalcula sin forzar borrado visual; luego vuelve a cargar lo recién guardado.
+      await renderAdmin(false);
+      loadDaySetupIntoForm(dateKey, true);
 
       if (result && result.ok) {
-        alert("✅ Caja inicial e inventario guardados en la nube. El dueño/moza pueden presionar Actualizar o esperar unos segundos para verlo.");
+        alert(`✅ Guardado en la NUBE\n\nCaja inicial: S/ ${safeNum(setupNow.openCash).toFixed(2)}\nInventario cargado\n\nDueño/moza lo verán en vivo al actualizar.`);
       } else {
-        alert("⚠️ Caja inicial e inventario quedaron guardados en ESTE celular, pero Supabase no confirmó la nube.\n\nPara verlo en vivo en otro celular, revisa que existan las tablas orders_cloud y day_setup_cloud y que permitan INSERT/UPDATE con anon key.\n\nDetalle: " + ((result && result.error) ? result.error : "sin detalle"));
+        alert("⚠️ Guardado LOCAL, pero Supabase no confirmó la nube.\n\nEn este celular NO se debe borrar al actualizar. Para verlo en otro celular revisa conexión, tabla orders_cloud/day_setup_cloud y permisos INSERT/UPDATE.\n\nDetalle: " + ((result && result.error) ? result.error : "sin detalle"));
       }
     });
 
