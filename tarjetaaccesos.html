@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Accesos Tarjeta VIP - El Patrón del Mal</title>
+
+  <style>
+    :root{
+      --bg:#020202;
+      --bg2:#020617;
+      --panel:#0b1220;
+      --gold:#facc15;
+      --gold2:#ff9f1c;
+      --gold-soft:#fde68a;
+      --text:#f8fafc;
+      --muted:#94a3b8;
+      --green:#22c55e;
+      --blue:#38bdf8;
+      --red:#ef4444;
+      --purple:#a855f7;
+    }
+
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:Arial, Helvetica, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(250,204,21,.17), transparent 30%),
+        radial-gradient(circle at 0% 100%, rgba(255,159,28,.10), transparent 28%),
+        radial-gradient(circle at 100% 80%, rgba(56,189,248,.08), transparent 25%),
+        linear-gradient(180deg, #000 0%, var(--bg2) 100%);
+      padding:18px;
+      position:relative;
+      overflow-x:hidden;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background:
+        linear-gradient(45deg, rgba(255,255,255,.025) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(255,255,255,.025) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(255,255,255,.025) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.025) 75%);
+      background-size:30px 30px;
+      background-position:0 0,0 15px,15px -15px,-15px 0;
+      opacity:.55;
+      pointer-events:none;
+      z-index:0;
+    }
+
+    .wrap{
+      width:100%;
+      max-width:1020px;
+      margin:0 auto;
+      position:relative;
+      z-index:1;
+    }
+
+    .hero{
+      position:relative;
+      overflow:hidden;
+      border-radius:34px;
+      border:1px solid rgba(250,204,21,.36);
+      background:
+        radial-gradient(circle at top, rgba(250,204,21,.16), transparent 38%),
+        linear-gradient(180deg, rgba(17,24,39,.86), rgba(2,6,23,.92));
+      padding:26px 20px 24px;
+      box-shadow:
+        0 22px 55px rgba(0,0,0,.55),
+        0 0 32px rgba(250,204,21,.10),
+        inset 0 0 0 1px rgba(255,255,255,.035);
+      text-align:center;
+      margin-bottom:18px;
+    }
+
+    .hero::before{
+      content:"";
+      position:absolute;
+      right:-95px;
+      top:-120px;
+      width:260px;
+      height:260px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(250,204,21,.22), transparent 70%);
+      pointer-events:none;
+    }
+
+    .logo-stage{
+      width:142px;
+      height:142px;
+      margin:0 auto 12px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:radial-gradient(circle, rgba(250,204,21,.20), transparent 72%);
+      box-shadow:0 0 30px rgba(250,204,21,.14);
+      position:relative;
+      z-index:1;
+    }
+
+    .logo{
+      width:116px;
+      height:116px;
+      object-fit:cover;
+      border-radius:50%;
+      background:#000;
+      border:2px solid rgba(255,255,255,.92);
+      box-shadow:0 0 20px rgba(250,204,21,.28);
+    }
+
+    .hero h1{
+      position:relative;
+      z-index:1;
+      margin:0;
+      color:var(--gold);
+      font-size:clamp(31px, 6vw, 58px);
+      line-height:.95;
+      text-transform:uppercase;
+      text-shadow:
+        0 0 9px rgba(250,204,21,.50),
+        0 0 24px rgba(255,159,28,.24);
+      letter-spacing:.7px;
+    }
+
+    .hero .line{
+      width:min(420px, 84vw);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+      margin:12px auto 0;
+      color:#fff;
+      font-size:16px;
+      font-weight:900;
+    }
+
+    .hero .line::before,
+    .hero .line::after{
+      content:"";
+      flex:1;
+      height:1px;
+      background:linear-gradient(90deg, transparent, var(--gold2), transparent);
+    }
+
+    .hero p{
+      position:relative;
+      z-index:1;
+      margin:12px auto 0;
+      max-width:680px;
+      color:#dbeafe;
+      font-size:14px;
+      line-height:1.45;
+      font-weight:700;
+    }
+
+    .badge{
+      position:relative;
+      z-index:1;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      margin-top:13px;
+      padding:9px 13px;
+      border-radius:999px;
+      border:1px solid rgba(34,197,94,.34);
+      background:rgba(34,197,94,.12);
+      color:#bbf7d0;
+      font-size:13px;
+      font-weight:900;
+    }
+
+    .login-card{
+      width:min(480px, 100%);
+      margin:18px auto 0;
+      border:1px solid rgba(250,204,21,.28);
+      background:
+        radial-gradient(circle at top right, rgba(250,204,21,.08), transparent 32%),
+        linear-gradient(180deg, rgba(17,24,39,.96), rgba(2,6,23,.96));
+      border-radius:26px;
+      padding:22px;
+      box-shadow:0 18px 45px rgba(0,0,0,.45);
+    }
+
+    .login-card h2{
+      margin:0 0 7px;
+      color:var(--gold);
+      font-size:23px;
+      text-transform:uppercase;
+    }
+
+    .login-card p{
+      margin:0 0 14px;
+      color:#cbd5e1;
+      font-size:14px;
+      line-height:1.4;
+    }
+
+    .login-row{
+      display:flex;
+      gap:10px;
+    }
+
+    input{
+      width:100%;
+      border-radius:16px;
+      border:1px solid #334155;
+      background:#020617;
+      color:#fff;
+      padding:14px 15px;
+      outline:none;
+      font-size:16px;
+      font-weight:800;
+    }
+
+    input::placeholder{ color:#64748b; }
+
+    input:focus{
+      border-color:var(--gold);
+      box-shadow:0 0 0 3px rgba(250,204,21,.12);
+    }
+
+    button, .btn{
+      border:none;
+      cursor:pointer;
+      border-radius:16px;
+      padding:13px 16px;
+      font-weight:900;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      transition:transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+    }
+
+    button:hover, .btn:hover{
+      transform:translateY(-1px);
+      box-shadow:0 10px 20px rgba(0,0,0,.28);
+    }
+
+    .login-btn{
+      background:linear-gradient(180deg, #fde047, #facc15);
+      color:#111827;
+      white-space:nowrap;
+    }
+
+    .error{
+      min-height:18px;
+      margin-top:10px;
+      color:#fecaca;
+      font-size:13px;
+      font-weight:800;
+    }
+
+    .hidden{ display:none !important; }
+
+    .panel{
+      margin-top:18px;
+      border:1px solid rgba(250,204,21,.30);
+      background:
+        radial-gradient(circle at top right, rgba(250,204,21,.08), transparent 32%),
+        linear-gradient(180deg, rgba(17,24,39,.94), rgba(2,6,23,.96));
+      border-radius:30px;
+      padding:22px;
+      box-shadow:0 18px 45px rgba(0,0,0,.45);
+    }
+
+    .panel-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:18px;
+      padding-bottom:14px;
+      border-bottom:1px solid rgba(250,204,21,.18);
+      flex-wrap:wrap;
+    }
+
+    .panel-title{
+      margin:0;
+      color:var(--gold);
+      font-size:25px;
+      line-height:1;
+    }
+
+    .panel-sub{
+      margin:7px 0 0;
+      color:#cbd5e1;
+      font-size:14px;
+    }
+
+    .logout{
+      background:rgba(239,68,68,.15);
+      color:#fecaca;
+      border:1px solid rgba(239,68,68,.35);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:16px;
+    }
+
+    .access-card{
+      position:relative;
+      min-height:210px;
+      overflow:hidden;
+      color:#fff;
+      text-decoration:none;
+      border-radius:26px;
+      border:1px solid rgba(250,204,21,.30);
+      background:
+        radial-gradient(circle at top left, rgba(250,204,21,.14), transparent 36%),
+        linear-gradient(145deg, #050505 0%, #111827 58%, #020617 100%);
+      padding:18px;
+      box-shadow:
+        0 14px 34px rgba(0,0,0,.36),
+        inset 0 0 0 1px rgba(255,255,255,.03);
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+
+    .access-card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(120deg, transparent 0%, rgba(255,255,255,.055) 46%, transparent 55%),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.014) 0 1px, transparent 1px 9px);
+      opacity:.75;
+      pointer-events:none;
+    }
+
+    .access-card::after{
+      content:"VIP";
+      position:absolute;
+      right:-15px;
+      bottom:14px;
+      color:rgba(255,255,255,.045);
+      font-size:58px;
+      font-weight:900;
+      letter-spacing:2px;
+      pointer-events:none;
+    }
+
+    .access-card:hover{
+      transform:translateY(-3px);
+      border-color:rgba(250,204,21,.70);
+      box-shadow:
+        0 18px 38px rgba(0,0,0,.46),
+        0 0 22px rgba(250,204,21,.13);
+    }
+
+    .card-content{
+      position:relative;
+      z-index:1;
+    }
+
+    .icon{
+      width:54px;
+      height:54px;
+      border-radius:18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:28px;
+      background:#020617;
+      border:1px solid rgba(250,204,21,.30);
+      box-shadow:0 0 16px rgba(250,204,21,.12);
+      margin-bottom:14px;
+    }
+
+    .access-card h3{
+      margin:0 0 8px;
+      color:#fff4bf;
+      font-size:23px;
+      line-height:1.04;
+      text-transform:uppercase;
+    }
+
+    .access-card p{
+      margin:0;
+      color:#cbd5e1;
+      font-size:14px;
+      line-height:1.36;
+      max-width:92%;
+    }
+
+    .go{
+      position:relative;
+      z-index:1;
+      margin-top:18px;
+      align-self:flex-start;
+      padding:10px 14px;
+      border-radius:999px;
+      background:linear-gradient(180deg, #fde047, #facc15);
+      color:#111827;
+      font-size:13px;
+      font-weight:900;
+    }
+
+    .registro{ border-color:rgba(34,197,94,.42); }
+    .login{ border-color:rgba(250,204,21,.46); }
+    .admin{ border-color:rgba(56,189,248,.42); }
+
+    .registro .icon{ color:var(--green); }
+    .login .icon{ color:var(--gold); }
+    .admin .icon{ color:var(--blue); }
+
+    .footer-note{
+      margin:18px 0 0;
+      text-align:center;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.45;
+    }
+
+    @media (max-width:820px){
+      .grid{ grid-template-columns:1fr; }
+      .access-card{ min-height:165px; }
+    }
+
+    @media (max-width:520px){
+      body{ padding:12px; }
+      .hero{
+        padding:22px 14px 20px;
+        border-radius:27px;
+      }
+      .logo-stage{
+        width:118px;
+        height:118px;
+      }
+      .logo{
+        width:96px;
+        height:96px;
+      }
+      .hero h1{
+        font-size:31px;
+      }
+      .hero .line{
+        font-size:14px;
+      }
+      .login-row{
+        flex-direction:column;
+      }
+      .panel{
+        padding:16px;
+        border-radius:24px;
+      }
+      .panel-head{
+        align-items:flex-start;
+      }
+      .logout{
+        width:100%;
+      }
+      .access-card{
+        border-radius:22px;
+        padding:17px;
+      }
+      .access-card h3{
+        font-size:21px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <div class="logo-stage">
+        <img src="LOGO.jpg" alt="El Patrón del Mal" class="logo">
+      </div>
+
+      <h1>Accesos Tarjeta VIP</h1>
+      <div class="line">El Patrón del Mal</div>
+      <p>Panel interno para entrar rápido al registro de clientes, login de tarjeta virtual y administración de sellos.</p>
+      <div class="badge">🔐 Solo personal del local</div>
+    </section>
+
+    <section class="login-card" id="loginBox">
+      <h2>Ingresar</h2>
+      <p>Coloca la clave interna para ver los accesos directos.</p>
+      <div class="login-row">
+        <input id="passInput" type="password" placeholder="Clave interna" inputmode="numeric" autocomplete="off">
+        <button class="login-btn" id="btnLogin" type="button">Entrar</button>
+      </div>
+      <div class="error" id="loginError"></div>
+    </section>
+
+    <section class="panel hidden" id="panelBox">
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">Panel de accesos</h2>
+          <p class="panel-sub">Elige una opción para abrirla directamente.</p>
+        </div>
+        <button class="logout" id="btnLogout" type="button">Salir</button>
+      </div>
+
+      <div class="grid">
+        <a class="access-card registro" href="https://patron-wings.vercel.app/registro.html">
+          <div class="card-content">
+            <div class="icon">📝</div>
+            <h3>Registro</h3>
+            <p>Crear cuenta nueva para clientes que desean acumular sellos y premios.</p>
+          </div>
+          <span class="go">Abrir registro →</span>
+        </a>
+
+        <a class="access-card login" href="https://patron-wings.vercel.app/login.html">
+          <div class="card-content">
+            <div class="icon">💳</div>
+            <h3>Login tarjeta</h3>
+            <p>Ingreso del cliente para ver su tarjeta virtual, sellos y premios disponibles.</p>
+          </div>
+          <span class="go">Abrir login →</span>
+        </a>
+
+        <a class="access-card admin" href="https://patron-wings.vercel.app/admin-sellos.html">
+          <div class="card-content">
+            <div class="icon">🏅</div>
+            <h3>Admin sellos</h3>
+            <p>Buscar clientes, sumar sellos, entregar premios y revisar historial.</p>
+          </div>
+          <span class="go">Abrir admin →</span>
+        </a>
+      </div>
+
+      <p class="footer-note">
+        Sube este archivo como <b>tarjetaaccesos.html</b>. La clave oculta visualmente el panel, pero no reemplaza seguridad privada de servidor.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    const CLAVE_INTERNA = "181221";
+    const SESSION_KEY = "pdm_tarjeta_accesos_ok";
+
+    const loginBox = document.getElementById("loginBox");
+    const panelBox = document.getElementById("panelBox");
+    const passInput = document.getElementById("passInput");
+    const btnLogin = document.getElementById("btnLogin");
+    const btnLogout = document.getElementById("btnLogout");
+    const loginError = document.getElementById("loginError");
+
+    function showPanel(){
+      loginBox.classList.add("hidden");
+      panelBox.classList.remove("hidden");
+      loginError.textContent = "";
+      passInput.value = "";
+    }
+
+    function showLogin(){
+      panelBox.classList.add("hidden");
+      loginBox.classList.remove("hidden");
+      setTimeout(() => passInput.focus(), 100);
+    }
+
+    function login(){
+      const value = String(passInput.value || "").trim();
+      if (value !== CLAVE_INTERNA) {
+        loginError.textContent = "Clave incorrecta.";
+        passInput.select();
+        return;
+      }
+
+      localStorage.setItem(SESSION_KEY, "1");
+      showPanel();
+    }
+
+    btnLogin.addEventListener("click", login);
+
+    passInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") login();
+    });
+
+    btnLogout.addEventListener("click", () => {
+      localStorage.removeItem(SESSION_KEY);
+      showLogin();
+    });
+
+    if (localStorage.getItem(SESSION_KEY) === "1") {
+      showPanel();
+    } else {
+      showLogin();
+    }
+  </script>
+</body>
+</html>
