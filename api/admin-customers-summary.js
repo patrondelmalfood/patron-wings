@@ -1,13 +1,7 @@
-const SUPABASE_URL =
-  process.env.SUPABASE_URL ||
-  process.env.NEXT_PUBLIC_SUPABASE_URL ||
-  "https://defdwzzewzfjuseozwkn.supabase.co";
+const SUPABASE_URL = "https://defdwzzewzfjuseozwkn.supabase.co";
 
 const SUPABASE_KEY =
-  process.env.SUPABASE_SERVICE_ROLE_KEY ||
-  process.env.SUPABASE_SERVICE_KEY ||
-  process.env.SUPABASE_ANON_KEY ||
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmZzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYXNlIiwicmVmIjoiZGVmZHd6emV3emZqdXNlb3p3a24iLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc3Mzc4MTg1MywiZXhwIjoyMDg5MzU3ODUzfQ.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
 
 const CUSTOMER_TABLE_CANDIDATES = [
   "customers",
@@ -34,7 +28,12 @@ const CARD_TABLE_CANDIDATES = [
 
 function getFirst(obj, keys, fallback = "") {
   for (const key of keys) {
-    if (obj && obj[key] !== undefined && obj[key] !== null && obj[key] !== "") {
+    if (
+      obj &&
+      obj[key] !== undefined &&
+      obj[key] !== null &&
+      obj[key] !== ""
+    ) {
       return obj[key];
     }
   }
@@ -72,14 +71,14 @@ async function supabaseSelect(table, limit = 5000) {
   }
 
   if (!response.ok) {
-    const message =
+    const error = new Error(
       json && json.message
         ? json.message
         : typeof json === "string"
           ? json
-          : "Error consultando Supabase";
+          : "Error consultando Supabase"
+    );
 
-    const error = new Error(message);
     error.status = response.status;
     error.body = json;
     throw error;
@@ -94,7 +93,10 @@ async function findExistingTable(candidates) {
   for (const table of candidates) {
     try {
       const data = await supabaseSelect(table, 1);
-      return { table, sample: data || [] };
+      return {
+        table,
+        sample: data || []
+      };
     } catch (err) {
       errors.push({
         table,
@@ -104,7 +106,11 @@ async function findExistingTable(candidates) {
     }
   }
 
-  return { table: null, sample: [], errors };
+  return {
+    table: null,
+    sample: [],
+    errors
+  };
 }
 
 module.exports = async function handler(req, res) {
@@ -124,13 +130,6 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    if (!SUPABASE_URL || !SUPABASE_KEY) {
-      return res.status(500).json({
-        ok: false,
-        error: "Faltan datos de Supabase."
-      });
-    }
-
     const customerTableInfo = await findExistingTable(CUSTOMER_TABLE_CANDIDATES);
     const cardTableInfo = await findExistingTable(CARD_TABLE_CANDIDATES);
 
@@ -195,20 +194,36 @@ module.exports = async function handler(req, res) {
       );
 
       const celular = String(
-        getFirst(customer, ["celular", "phone", "telefono", "whatsapp"], cardPhone || "-")
+        getFirst(
+          customer,
+          ["celular", "phone", "telefono", "whatsapp"],
+          cardPhone || "-"
+        )
       );
 
       const sellosActuales = safeNumber(
-        getFirst(card, ["sellos_actuales", "stamps", "sellos", "current_stamps"], 0)
+        getFirst(
+          card,
+          ["sellos_actuales", "stamps", "sellos", "current_stamps"],
+          0
+        )
       );
 
       const metaSellos =
         safeNumber(
-          getFirst(card, ["meta_sellos", "goal_stamps", "meta", "max_stamps"], 20)
+          getFirst(
+            card,
+            ["meta_sellos", "goal_stamps", "meta", "max_stamps"],
+            20
+          )
         ) || 20;
 
       const premioPendiente = safeBool(
-        getFirst(card, ["premio_pendiente", "reward_pending", "pending_reward"], false)
+        getFirst(
+          card,
+          ["premio_pendiente", "reward_pending", "pending_reward"],
+          false
+        )
       );
 
       rows.push({
@@ -227,11 +242,17 @@ module.exports = async function handler(req, res) {
         getFirst(customer, ["celular", "phone", "telefono", "whatsapp"], "")
       );
 
-      const exists = rows.some((item) => String(item.celular) === String(celular));
+      const exists = rows.some(
+        (item) => String(item.celular) === String(celular)
+      );
 
       if (!exists) {
         rows.push({
-          nombre: getFirst(customer, ["nombre", "name", "full_name"], "Cliente sin nombre"),
+          nombre: getFirst(
+            customer,
+            ["nombre", "name", "full_name"],
+            "Cliente sin nombre"
+          ),
           celular: celular || "-",
           sellos_actuales: 0,
           meta_sellos: 20,
@@ -256,11 +277,15 @@ module.exports = async function handler(req, res) {
       }));
 
     const totalCustomers = rows.length;
+
     const totalStamps = rows.reduce(
       (sum, item) => sum + safeNumber(item.sellos_actuales),
       0
     );
-    const pendingRewards = rows.filter((item) => item.premio_pendiente).length;
+
+    const pendingRewards = rows.filter(
+      (item) => item.premio_pendiente
+    ).length;
 
     return res.status(200).json({
       ok: true,
