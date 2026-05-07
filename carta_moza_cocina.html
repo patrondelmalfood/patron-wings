@@ -1882,13 +1882,10 @@ function addDaysToDateKey(key, days){
   return dateKeyLocal(d);
 }
 function operationalDefaultDateKey(d = new Date()){
-  // Fecha sugerida para ABRIR una caja nueva: siempre el día actual del celular.
-  // Si la caja queda abierta pasando medianoche, ACTIVE_DATE_KEY mantiene la fecha correcta.
-  return dateKeyLocal(new Date(d));
-}
-function getCashInputDateKey(){
-  const v = cashDayInput?.value || "";
-  return /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : operationalDefaultDateKey();
+  // Fecha sugerida para ABRIR caja: siempre el día actual del celular/navegador.
+  // Si la caja ya está abierta, se respeta ACTIVE_DATE_KEY aunque pase medianoche.
+  const x = new Date(d);
+  return dateKeyLocal(x);
 }
 function weekRangeForDateKey(key){
   const d = dateFromKeyLocal(key);
@@ -1915,12 +1912,9 @@ function isTechnicalCloudRow(row){
   return getStatusFromCloudRow(row) === "DAY_SETUP" || order.__type === "day_setup";
 }
 function renderCashDayUI(){
-  const fallback = CASH_IS_OPEN && ACTIVE_DATE_KEY
-    ? ACTIVE_DATE_KEY
-    : (getCashInputDateKey ? getCashInputDateKey() : operationalDefaultDateKey());
-
+  const fallback = (CASH_IS_OPEN && ACTIVE_DATE_KEY) ? ACTIVE_DATE_KEY : operationalDefaultDateKey();
+  if (cashDayInput && !CASH_IS_OPEN) cashDayInput.value = cashDayInput.value || fallback;
   if (cashDayInput && CASH_IS_OPEN && ACTIVE_DATE_KEY) cashDayInput.value = ACTIVE_DATE_KEY;
-  if (cashDayInput && !CASH_IS_OPEN && !cashDayInput.value) cashDayInput.value = fallback;
   if (!cashDayStatus) return;
 
   if (CASH_IS_OPEN && ACTIVE_DATE_KEY) {
@@ -1949,15 +1943,11 @@ async function loadCashRegisterState(){
     if (error) throw error;
     CASH_STATE_DATA = data || {};
     CASH_IS_OPEN = !!data?.is_open;
-    if (CASH_IS_OPEN && data?.active_date_key) {
-      ACTIVE_DATE_KEY = data.active_date_key;
-    } else {
-      ACTIVE_DATE_KEY = getCashInputDateKey ? getCashInputDateKey() : (ACTIVE_DATE_KEY || fallback);
-    }
+    ACTIVE_DATE_KEY = (CASH_IS_OPEN && data?.active_date_key) ? data.active_date_key : fallback;
     renderCashDayUI();
     return { ok:true, data };
   } catch(err) {
-    ACTIVE_DATE_KEY = getCashInputDateKey ? getCashInputDateKey() : (ACTIVE_DATE_KEY || fallback);
+    ACTIVE_DATE_KEY = ACTIVE_DATE_KEY || fallback;
     CASH_IS_OPEN = false;
     renderCashDayUI();
     return { ok:false, error: err.message || String(err) };
@@ -1993,8 +1983,7 @@ async function openOperationalDay(dateKey, silent=false){
   }
 }
 async function ensureOperationalDayOpen(){
-  await if (cashDayInput && !cashDayInput.value) cashDayInput.value = operationalDefaultDateKey();
-loadCashRegisterState();
+  await loadCashRegisterState();
   if (CASH_IS_OPEN && ACTIVE_DATE_KEY) return ACTIVE_DATE_KEY;
   const suggested = cashDayInput?.value || operationalDefaultDateKey();
   const ok = confirm(`No hay caja abierta. ¿Abrir caja para ${formatDateKeyHuman(suggested)} y registrar este pedido ahí?`);
@@ -2326,18 +2315,20 @@ if (btnPrintClient) btnPrintClient.addEventListener("click", () => {
 });
 if (btnRegisterSale) btnRegisterSale.addEventListener("click", () => registerSale("MOZA_COCINA"));
 if (btnOpenDay) btnOpenDay.addEventListener("click", async () => {
-  // Guardamos la fecha elegida ANTES de consultar Supabase, porque loadCashRegisterState()
-  // puede volver a pintar el campo y en madrugada antes lo regresaba al día anterior.
-  const selectedDateKey = getCashInputDateKey();
-  await loadCashRegisterState();
+  // Guardamos la fecha elegida ANTES de consultar Supabase para que no se cambie por zona horaria ni por un valor anterior.
+  const selectedDateKey = cashDayInput?.value || operationalDefaultDateKey();
+  const r = await loadCashRegisterState();
+  if (!r.ok) {
+    alert("No se pudo consultar caja activa: " + (r.error || "Error desconocido"));
+    return;
+  }
   if (CASH_IS_OPEN && ACTIVE_DATE_KEY) {
     alert(`Ya hay una caja abierta: ${formatDateKeyHuman(ACTIVE_DATE_KEY)}. Primero cierra ese día.`);
     return;
   }
-  const dateKey = selectedDateKey;
-  if (cashDayInput) cashDayInput.value = dateKey;
-  const ok = confirm(`¿Abrir caja para ${formatDateKeyHuman(dateKey)}?`);
-  if (ok) await openOperationalDay(dateKey);
+  if (cashDayInput) cashDayInput.value = selectedDateKey;
+  const ok = confirm(`¿Abrir caja para ${formatDateKeyHuman(selectedDateKey)}?`);
+  if (ok) await openOperationalDay(selectedDateKey);
 });
 if (btnCloseDay) btnCloseDay.addEventListener("click", closeOperationalDay);
 if (btnRefreshCashDay) btnRefreshCashDay.addEventListener("click", async () => {
@@ -2346,7 +2337,7 @@ if (btnRefreshCashDay) btnRefreshCashDay.addEventListener("click", async () => {
   else alert("No se pudo actualizar: " + r.error);
 });
 if (cashDayInput) cashDayInput.addEventListener("change", () => {
-  if (!CASH_IS_OPEN) { ACTIVE_DATE_KEY = getCashInputDateKey(); renderCashDayUI(); }
+  if (!CASH_IS_OPEN) { ACTIVE_DATE_KEY = cashDayInput.value || operationalDefaultDateKey(); renderCashDayUI(); }
 });
 loadCashRegisterState();
 if (btnWhatsapp) btnWhatsapp.addEventListener("click", e => { if (btnWhatsapp.classList.contains("disabled") || !cart.length) { e.preventDefault(); alert("Agrega productos y revisa los datos antes de enviar por WhatsApp."); } });
