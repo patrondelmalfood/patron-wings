@@ -4,13 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mi tarjeta virtual - El Patrón del Mal</title>
+
   <style>
     :root{
-      --bg:#000814;
-      --card:#001233;
+      --bg:#020202;
+      --panel:#0b1220;
+      --panel2:#111827;
       --gold:#facc15;
+      --gold2:#ff9f1c;
       --gold-soft:#fde68a;
-      --text:#fff8dc;
+      --text:#f8fafc;
       --muted:#94a3b8;
       --line:#334155;
       --ok:#16a34a;
@@ -21,110 +24,73 @@
 
     body{
       margin:0;
-      font-family: Arial, sans-serif;
-      background:
-        radial-gradient(circle at top, rgba(250,204,21,0.10), transparent 25%),
-        linear-gradient(180deg, #000814 0%, #00122b 100%);
-      color:var(--text);
       min-height:100vh;
+      font-family:Arial, Helvetica, sans-serif;
+      color:var(--text);
       display:flex;
       justify-content:center;
       align-items:center;
-      padding:22px;
+      padding:18px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(250,204,21,.16), transparent 30%),
+        radial-gradient(circle at 0% 100%, rgba(255,159,28,.10), transparent 28%),
+        linear-gradient(180deg, #000 0%, #020617 100%);
+      overflow-x:hidden;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background:
+        linear-gradient(45deg, rgba(255,255,255,.025) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(255,255,255,.025) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(255,255,255,.025) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.025) 75%);
+      background-size:30px 30px;
+      background-position:0 0,0 15px,15px -15px,-15px 0;
+      opacity:.55;
+      pointer-events:none;
+      z-index:0;
     }
 
     .wrap{
       width:100%;
-      max-width:900px;
-    }
-
-    .card{
-      background:rgba(0,18,51,0.98);
-      border:1px solid var(--gold);
-      border-radius:28px;
-      padding:26px;
-      box-shadow:
-        0 0 28px rgba(250,204,21,0.12),
-        0 10px 40px rgba(0,0,0,0.45);
-      overflow:hidden;
-      position:relative;
-    }
-
-    .card::before{
-      content:"";
-      position:absolute;
-      inset:-120px auto auto -120px;
-      width:240px;
-      height:240px;
-      border-radius:50%;
-      background:radial-gradient(circle, rgba(250,204,21,0.18), transparent 70%);
-      pointer-events:none;
-    }
-
-    .top{
-      display:flex;
-      align-items:center;
-      gap:18px;
-      margin-bottom:18px;
-      flex-wrap:wrap;
+      max-width:920px;
       position:relative;
       z-index:1;
     }
 
-    .logo{
-      width:92px;
-      height:92px;
-      border-radius:50%;
-      object-fit:cover;
-      border:2px solid var(--gold);
-      background:#fff;
-      box-shadow:0 0 16px rgba(250,204,21,0.28);
-      flex-shrink:0;
+    .top-brand{
+      text-align:center;
+      margin-bottom:14px;
     }
 
-    .title-box{
-      flex:1;
-      min-width:220px;
-    }
-
-    .title{
+    .top-brand h1{
       margin:0;
-      font-size:34px;
-      line-height:1.05;
       color:var(--gold);
-      font-weight:900;
+      font-size:clamp(26px, 5vw, 42px);
+      line-height:1;
       text-transform:uppercase;
-      letter-spacing:1px;
-      text-shadow:0 0 10px rgba(250,204,21,0.30);
+      text-shadow:0 0 9px rgba(250,204,21,.45), 0 0 18px rgba(255,159,28,.22);
+      letter-spacing:.7px;
     }
 
-    .subtitle{
-      margin:8px 0 0;
+    .top-brand p{
+      margin:7px 0 0;
       color:#dbeafe;
-      font-size:16px;
-    }
-
-    .chip{
-      display:inline-block;
-      margin-top:10px;
-      padding:7px 12px;
-      border-radius:999px;
-      border:1px solid rgba(250,204,21,0.35);
-      background:rgba(0,0,0,0.25);
-      color:var(--gold-soft);
+      font-size:14px;
       font-weight:700;
-      font-size:13px;
     }
 
     .status{
-      margin-top:18px;
-      padding:14px 16px;
+      margin:12px auto;
+      padding:12px 14px;
       border-radius:16px;
       font-size:14px;
       display:none;
       line-height:1.45;
-      position:relative;
-      z-index:1;
+      max-width:720px;
     }
 
     .status.ok{
@@ -143,122 +109,320 @@
 
     .loading{
       text-align:center;
+      margin:14px auto;
       padding:16px;
       color:#dbeafe;
       font-size:15px;
-      position:relative;
-      z-index:1;
+      border-radius:18px;
+      background:rgba(0,0,0,.24);
+      border:1px solid rgba(255,255,255,.06);
+      max-width:720px;
     }
 
-    .content{
-      display:none;
-      position:relative;
-      z-index:1;
+    .content{ display:none; }
+
+    .card-scene{
+      width:100%;
+      max-width:720px;
+      margin:0 auto;
+      perspective:1400px;
     }
 
-    .info{
-      margin-top:18px;
+    .loyalty-card{
+      width:100%;
+      min-height:440px;
+      position:relative;
+      transform-style:preserve-3d;
+      transition:transform .75s cubic-bezier(.2,.8,.2,1);
+    }
+
+    .loyalty-card.flipped{
+      transform:rotateY(180deg);
+    }
+
+    .card-face{
+      position:absolute;
+      inset:0;
+      backface-visibility:hidden;
+      border-radius:32px;
+      overflow:hidden;
+      border:1px solid rgba(250,204,21,.38);
+      background:#050505;
+      box-shadow:
+        0 22px 55px rgba(0,0,0,.58),
+        0 0 28px rgba(250,204,21,.10),
+        inset 0 0 0 1px rgba(255,255,255,.04);
+      padding:26px;
+    }
+
+    .card-front{
+      background:
+        radial-gradient(circle at 20% 0%, rgba(250,204,21,.18), transparent 34%),
+        radial-gradient(circle at 90% 90%, rgba(255,159,28,.10), transparent 34%),
+        linear-gradient(145deg, #050505 0%, #111 52%, #020202 100%);
+    }
+
+    .card-front::before,
+    .card-back::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(120deg, transparent 0%, rgba(255,255,255,.06) 46%, transparent 55%),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.018) 0 1px, transparent 1px 9px);
+      pointer-events:none;
+      opacity:.75;
+    }
+
+    .card-back{
+      transform:rotateY(180deg);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(250,204,21,.16), transparent 34%),
+        linear-gradient(145deg, #020617 0%, #050505 55%, #111827 100%);
+    }
+
+    .face-content{
+      position:relative;
+      z-index:1;
+      height:100%;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .front-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:14px;
+    }
+
+    .logo-wrap{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      min-width:0;
+    }
+
+    .logo{
+      width:92px;
+      height:92px;
+      border-radius:50%;
+      object-fit:cover;
+      background:#000;
+      border:2px solid rgba(255,255,255,.95);
+      box-shadow:0 0 18px rgba(255,255,255,.12), 0 0 22px rgba(250,204,21,.18);
+      flex-shrink:0;
+    }
+
+    .brand-name{
+      min-width:0;
+    }
+
+    .brand-name strong{
+      display:block;
+      color:var(--gold);
+      font-size:clamp(22px, 4.5vw, 38px);
+      line-height:.95;
+      text-transform:uppercase;
+      text-shadow:0 0 10px rgba(250,204,21,.40);
+    }
+
+    .brand-name span{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-top:8px;
+      color:#fff;
+      font-size:15px;
+      font-weight:900;
+      letter-spacing:.4px;
+    }
+
+    .brand-name span::before,
+    .brand-name span::after{
+      content:"";
+      width:28px;
+      height:1px;
+      background:linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .vip{
+      text-align:right;
+      color:#fff;
+      font-weight:900;
+      font-size:24px;
+      line-height:1;
+      letter-spacing:1px;
+    }
+
+    .vip small{
+      display:block;
+      margin-top:5px;
+      color:var(--gold-soft);
+      font-size:12px;
+      letter-spacing:2px;
+    }
+
+    .chip-row{
+      margin-top:38px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+    }
+
+    .chip{
+      width:70px;
+      height:52px;
+      border-radius:12px;
+      background:
+        linear-gradient(135deg, #cfcfcf, #f7f7f7 40%, #9ca3af);
+      position:relative;
+      box-shadow:inset 0 0 0 1px rgba(0,0,0,.25);
+      flex-shrink:0;
+    }
+
+    .chip::before,
+    .chip::after{
+      content:"";
+      position:absolute;
+      background:rgba(0,0,0,.22);
+    }
+
+    .chip::before{
+      left:0;
+      right:0;
+      top:50%;
+      height:1px;
+    }
+
+    .chip::after{
+      top:0;
+      bottom:0;
+      left:50%;
+      width:1px;
+    }
+
+    .counter-pill{
+      padding:11px 15px;
+      border-radius:999px;
+      background:rgba(250,204,21,.12);
+      border:1px solid rgba(250,204,21,.30);
+      color:var(--gold-soft);
+      font-weight:900;
+      text-align:right;
+    }
+
+    .counter-pill b{
+      color:var(--gold);
+      font-size:22px;
+    }
+
+    .front-info{
+      margin-top:auto;
       display:grid;
-      grid-template-columns:repeat(2,1fr);
+      grid-template-columns:1.35fr .85fr;
       gap:12px;
+      align-items:end;
     }
 
-    .info-card{
-      background:rgba(0,0,0,0.26);
-      border:1px solid #1e293b;
+    .data-block{
+      background:rgba(255,255,255,.045);
+      border:1px solid rgba(255,255,255,.08);
       border-radius:18px;
       padding:14px;
     }
 
-    .info-label{
+    .data-label{
       color:var(--muted);
-      font-size:12px;
-      margin-bottom:8px;
+      font-size:11px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      margin-bottom:6px;
     }
 
-    .info-value{
+    .data-value{
       color:#fff;
       font-size:18px;
-      font-weight:800;
+      font-weight:900;
       word-break:break-word;
     }
 
-    .progress-box{
-      margin-top:22px;
-      background:rgba(0,0,0,0.26);
-      border:1px solid #1e293b;
-      border-radius:22px;
-      padding:18px;
+    .tap-hint{
+      margin-top:14px;
+      text-align:center;
+      color:#cbd5e1;
+      font-size:13px;
+      font-weight:800;
     }
 
-    .progress-head{
+    .back-head{
       display:flex;
-      justify-content:space-between;
       align-items:center;
+      justify-content:space-between;
       gap:12px;
-      flex-wrap:wrap;
       margin-bottom:14px;
     }
 
-    .progress-head h2{
+    .back-head h2{
       margin:0;
-      font-size:20px;
       color:var(--gold-soft);
+      font-size:24px;
+      line-height:1;
     }
 
-    .big-counter{
-      font-size:18px;
+    .back-badge{
+      padding:8px 12px;
+      border-radius:999px;
+      background:var(--gold);
+      color:#111827;
       font-weight:900;
-      color:var(--gold);
+      font-size:14px;
+      white-space:nowrap;
     }
 
     .bar{
       width:100%;
       height:14px;
-      background:#0f172a;
+      background:#020617;
       border:1px solid #1e293b;
       border-radius:999px;
       overflow:hidden;
+      margin-bottom:14px;
     }
 
     .bar-fill{
       height:100%;
       width:0%;
-      background:linear-gradient(90deg, #facc15, #fde68a);
+      background:linear-gradient(90deg, #facc15, #fff2a6);
       border-radius:999px;
       transition:width .35s ease;
-      box-shadow:0 0 12px rgba(250,204,21,0.35);
+      box-shadow:0 0 12px rgba(250,204,21,.42);
     }
 
     .stamps{
-      margin-top:20px;
       display:grid;
       grid-template-columns:repeat(5,1fr);
-      gap:12px;
+      gap:10px;
+      margin-top:8px;
     }
 
     .stamp{
       aspect-ratio:1/1;
       border-radius:50%;
-      border:2px solid rgba(250,204,21,0.35);
-      background:
-        radial-gradient(circle at top, rgba(250,204,21,0.12), rgba(0,0,0,0.18)),
-        #020617;
+      border:2px solid rgba(250,204,21,.34);
+      background:radial-gradient(circle at 35% 20%, rgba(250,204,21,.14), rgba(0,0,0,.18)), #020617;
       display:flex;
       align-items:center;
       justify-content:center;
       position:relative;
       overflow:hidden;
-      transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
-    }
-
-    .stamp:hover{
-      transform:translateY(-2px);
     }
 
     .stamp img{
-      width:62%;
-      height:62%;
+      width:64%;
+      height:64%;
       object-fit:contain;
       border-radius:50%;
       background:#fff;
@@ -266,87 +430,87 @@
       transition:filter .2s ease, opacity .2s ease, transform .2s ease;
     }
 
+    .stamp.empty{
+      border-style:dashed;
+      border-color:rgba(148,163,184,.35);
+    }
+
     .stamp.empty img{
-      opacity:.20;
+      opacity:.16;
       filter:grayscale(100%);
-      transform:scale(.92);
+      transform:scale(.90);
     }
 
     .stamp.filled{
       border-color:var(--gold);
-      box-shadow:0 0 18px rgba(250,204,21,0.22);
-    }
-
-    .stamp.filled img{
-      opacity:1;
-      filter:none;
-      transform:scale(1);
+      box-shadow:0 0 18px rgba(250,204,21,.24);
+      background:radial-gradient(circle at top, rgba(250,204,21,.24), rgba(0,0,0,.18)), #020617;
     }
 
     .stamp-number{
       position:absolute;
-      bottom:6px;
-      right:8px;
-      font-size:11px;
+      bottom:5px;
+      right:6px;
+      font-size:10px;
       font-weight:900;
       color:#e5e7eb;
-      background:rgba(0,0,0,0.58);
+      background:rgba(0,0,0,.62);
       border-radius:999px;
-      padding:2px 6px;
-      border:1px solid rgba(255,255,255,0.10);
+      padding:2px 5px;
+      border:1px solid rgba(255,255,255,.10);
     }
 
     .reward-box{
-      margin-top:20px;
+      margin-top:14px;
       border-radius:18px;
-      padding:16px;
-      font-weight:700;
-      font-size:15px;
-      background:rgba(0,0,0,0.24);
-      border:1px solid #1e293b;
-      color:#cbd5e1;
+      padding:14px;
+      font-weight:800;
+      font-size:14px;
+      background:linear-gradient(180deg, rgba(250,204,21,.09), rgba(0,0,0,.20));
+      border:1px solid rgba(250,204,21,.20);
+      color:#fef3c7;
       line-height:1.45;
     }
 
     .levels{
-      margin-top:20px;
+      margin-top:16px;
       display:grid;
       grid-template-columns:repeat(2,1fr);
-      gap:12px;
+      gap:10px;
     }
 
     .level-card{
-      background:rgba(0,0,0,0.26);
+      background:rgba(0,0,0,.26);
       border:1px solid #1e293b;
-      border-radius:18px;
-      padding:14px;
+      border-radius:16px;
+      padding:12px;
     }
 
     .level-card.unlocked{
-      border-color:rgba(250,204,21,0.55);
-      box-shadow:0 0 16px rgba(250,204,21,0.12);
-      background:linear-gradient(180deg, rgba(250,204,21,0.10), rgba(0,0,0,0.18));
+      border-color:rgba(250,204,21,.60);
+      box-shadow:0 0 16px rgba(250,204,21,.12);
+      background:linear-gradient(180deg, rgba(250,204,21,.10), rgba(0,0,0,.18));
     }
 
     .level-top{
       display:flex;
       justify-content:space-between;
       align-items:center;
-      gap:10px;
-      margin-bottom:8px;
+      gap:8px;
+      margin-bottom:7px;
       flex-wrap:wrap;
     }
 
     .level-title{
       color:var(--gold-soft);
-      font-size:16px;
+      font-size:15px;
       font-weight:900;
     }
 
     .level-pill{
-      font-size:12px;
+      font-size:11px;
       font-weight:900;
-      padding:4px 8px;
+      padding:4px 7px;
       border-radius:999px;
       border:1px solid #334155;
       background:#0f172a;
@@ -354,19 +518,20 @@
     }
 
     .level-card.unlocked .level-pill{
-      border-color:rgba(250,204,21,0.45);
+      border-color:rgba(250,204,21,.48);
       color:#fff3bf;
-      background:rgba(250,204,21,0.12);
+      background:rgba(250,204,21,.12);
     }
 
     .level-desc{
       color:#dbeafe;
-      font-size:14px;
-      line-height:1.4;
+      font-size:13px;
+      line-height:1.35;
     }
 
-    .actions{
-      margin-top:20px;
+    .controls{
+      max-width:720px;
+      margin:14px auto 0;
       display:flex;
       gap:10px;
       flex-wrap:wrap;
@@ -377,14 +542,20 @@
       min-width:160px;
       padding:14px 16px;
       border:none;
-      border-radius:14px;
+      border-radius:16px;
       font-size:16px;
       font-weight:900;
       cursor:pointer;
+      transition:transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+    }
+
+    .btn:hover{
+      transform:translateY(-1px);
+      box-shadow:0 10px 20px rgba(0,0,0,.28);
     }
 
     .btn-primary{
-      background:var(--gold);
+      background:linear-gradient(180deg, #fde047, #facc15);
       color:#111827;
     }
 
@@ -395,84 +566,194 @@
     }
 
     .foot{
-      margin-top:16px;
+      max-width:720px;
+      margin:14px auto 0;
       text-align:center;
       color:var(--muted);
       font-size:13px;
+      line-height:1.45;
     }
 
     @media (max-width:700px){
-      .title{ font-size:28px; }
-      .info{ grid-template-columns:1fr; }
-      .levels{ grid-template-columns:1fr; }
-      .stamps{ grid-template-columns:repeat(5,1fr); gap:10px; }
+      body{ align-items:flex-start; padding:12px; }
+      .loyalty-card{ min-height:620px; }
+      .card-face{ padding:20px; border-radius:26px; }
+      .front-head{
+        align-items:center;
+      }
+      .logo-wrap{
+        gap:11px;
+      }
+      .logo{
+        width:76px;
+        height:76px;
+      }
+      .brand-name strong{
+        font-size:25px;
+      }
+      .vip{
+        font-size:18px;
+      }
+      .vip small{
+        font-size:10px;
+      }
+      .chip-row{
+        margin-top:30px;
+      }
+      .front-info{
+        grid-template-columns:1fr;
+      }
+      .back-head h2{
+        font-size:21px;
+      }
+      .stamps{
+        grid-template-columns:repeat(4,1fr);
+        gap:9px;
+      }
+      .levels{
+        grid-template-columns:1fr;
+      }
+      .controls{
+        flex-direction:column;
+      }
+      .btn{
+        min-width:100%;
+      }
     }
 
-    @media (max-width:520px){
-      .card{ padding:18px; border-radius:22px; }
-      .title{ font-size:22px; }
-      .subtitle{ font-size:14px; }
-      .stamps{ grid-template-columns:repeat(5,1fr); gap:8px; }
-      .stamp-number{ font-size:10px; right:5px; bottom:5px; }
+    @media (max-width:420px){
+      .top-brand h1{ font-size:24px; }
+      .loyalty-card{ min-height:650px; }
+      .card-face{ padding:17px; border-radius:22px; }
+      .front-head{
+        gap:8px;
+      }
+      .logo{
+        width:66px;
+        height:66px;
+      }
+      .brand-name strong{
+        font-size:21px;
+      }
+      .brand-name span{
+        font-size:12px;
+      }
+      .brand-name span::before,
+      .brand-name span::after{
+        width:18px;
+      }
+      .vip{
+        font-size:15px;
+      }
+      .chip{
+        width:58px;
+        height:42px;
+      }
+      .counter-pill{
+        font-size:12px;
+      }
+      .counter-pill b{
+        font-size:18px;
+      }
+      .data-value{
+        font-size:16px;
+      }
+      .stamps{
+        gap:7px;
+      }
+      .stamp-number{
+        font-size:9px;
+        right:4px;
+        bottom:4px;
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="wrap">
-    <div class="card">
-      <div class="top">
-        <img src="LOGO.jpg" alt="Logo" class="logo">
-        <div class="title-box">
-          <h1 class="title">Mi Tarjeta Virtual</h1>
-          <p class="subtitle">Sella tus compras y gana premios en El Patrón del Mal</p>
-          <div class="chip" id="chipText">Cargando sesión...</div>
+    <div class="top-brand">
+      <h1>Tarjeta Virtual</h1>
+      <p>El Patrón del Mal · Burger Wings</p>
+    </div>
+
+    <div id="statusOk" class="status ok"></div>
+    <div id="statusErr" class="status err"></div>
+
+    <div id="loading" class="loading">Consultando tu tarjeta...</div>
+
+    <div id="content" class="content">
+      <div class="card-scene">
+        <div class="loyalty-card" id="loyaltyCard">
+          <section class="card-face card-front">
+            <div class="face-content">
+              <div class="front-head">
+                <div class="logo-wrap">
+                  <img src="LOGO.jpg" alt="Logo" class="logo">
+                  <div class="brand-name">
+                    <strong>El Patrón<br>del Mal</strong>
+                    <span>Burger Wings</span>
+                  </div>
+                </div>
+                <div class="vip">
+                  VIP
+                  <small>LOYALTY</small>
+                </div>
+              </div>
+
+              <div class="chip-row">
+                <div class="chip"></div>
+                <div class="counter-pill">
+                  Sellos<br><b id="frontCounter">0 / 20</b>
+                </div>
+              </div>
+
+              <div class="front-info">
+                <div class="data-block">
+                  <div class="data-label">Cliente</div>
+                  <div class="data-value" id="clienteNombre">-</div>
+                </div>
+                <div class="data-block">
+                  <div class="data-label">Celular</div>
+                  <div class="data-value" id="clienteCelular">-</div>
+                </div>
+              </div>
+
+              <div class="tap-hint">Toca “Ver sellos” para mirar la parte trasera</div>
+            </div>
+          </section>
+
+          <section class="card-face card-back">
+            <div class="face-content">
+              <div class="back-head">
+                <h2>🏅 Mis sellos</h2>
+                <div class="back-badge" id="bigCounter">0 / 20</div>
+              </div>
+
+              <div class="bar">
+                <div class="bar-fill" id="barFill"></div>
+              </div>
+
+              <div class="stamps" id="stampsGrid"></div>
+
+              <div class="reward-box" id="rewardBox">
+                Sigue acumulando sellos para reclamar tus premios.
+              </div>
+
+              <div class="levels" id="levelsBox"></div>
+            </div>
+          </section>
         </div>
       </div>
 
-      <div id="statusOk" class="status ok"></div>
-      <div id="statusErr" class="status err"></div>
+      <div class="controls">
+        <button class="btn btn-primary" id="btnFlip" type="button">Ver sellos</button>
+        <button class="btn btn-secondary" id="btnLogout">Cerrar sesión</button>
+        <button class="btn btn-secondary" id="btnLogin">Ir a login</button>
+      </div>
 
-      <div id="loading" class="loading">Consultando tu tarjeta...</div>
-
-      <div id="content" class="content">
-        <div class="info">
-          <div class="info-card">
-            <div class="info-label">Cliente</div>
-            <div class="info-value" id="clienteNombre">-</div>
-          </div>
-          <div class="info-card">
-            <div class="info-label">Celular</div>
-            <div class="info-value" id="clienteCelular">-</div>
-          </div>
-        </div>
-
-        <div class="progress-box">
-          <div class="progress-head">
-            <h2>Sellos acumulados</h2>
-            <div class="big-counter" id="bigCounter">0 / 20</div>
-          </div>
-
-          <div class="bar">
-            <div class="bar-fill" id="barFill"></div>
-          </div>
-
-          <div class="stamps" id="stampsGrid"></div>
-
-          <div class="reward-box" id="rewardBox">
-            Sigue acumulando sellos para reclamar tus premios.
-          </div>
-
-          <div class="levels" id="levelsBox"></div>
-        </div>
-
-        <div class="actions">
-          <button class="btn btn-secondary" id="btnLogout">Cerrar sesión</button>
-          <button class="btn btn-primary" id="btnLogin">Ir a login</button>
-        </div>
-
-        <div class="foot">
-          Presenta esta tarjeta virtual en el local para validar tus sellos y premios.
-        </div>
+      <div class="foot">
+        Presenta esta tarjeta virtual en el local para validar tus sellos y premios.
       </div>
     </div>
   </div>
@@ -491,10 +772,13 @@
     const statusErr = document.getElementById("statusErr");
     const loading = document.getElementById("loading");
     const content = document.getElementById("content");
-    const chipText = document.getElementById("chipText");
+
+    const loyaltyCard = document.getElementById("loyaltyCard");
+    const btnFlip = document.getElementById("btnFlip");
 
     const clienteNombre = document.getElementById("clienteNombre");
     const clienteCelular = document.getElementById("clienteCelular");
+    const frontCounter = document.getElementById("frontCounter");
     const bigCounter = document.getElementById("bigCounter");
     const barFill = document.getElementById("barFill");
     const stampsGrid = document.getElementById("stampsGrid");
@@ -598,7 +882,6 @@
 
       if (!token) {
         showErr("No has iniciado sesión.");
-        chipText.textContent = "Sesión requerida";
         loading.style.display = "none";
         content.style.display = "block";
         renderStamps(0, 20);
@@ -619,7 +902,6 @@
         if (!res.ok) {
           localStorage.removeItem(TOKEN_KEY);
           showErr(data.error + (data.detail ? ": " + data.detail : ""));
-          chipText.textContent = "Sesión inválida";
           loading.style.display = "none";
           content.style.display = "block";
           renderStamps(0, 20);
@@ -638,9 +920,9 @@
 
         clienteNombre.textContent = customer.nombre || "-";
         clienteCelular.textContent = customer.celular || "-";
+        frontCounter.textContent = actuales + " / " + meta;
         bigCounter.textContent = actuales + " / " + meta;
         barFill.style.width = progress + "%";
-        chipText.textContent = "Sesión iniciada";
 
         renderStamps(actuales, meta);
         renderLevels(actuales);
@@ -656,7 +938,6 @@
         content.style.display = "block";
       } catch (err) {
         showErr("No se pudo consultar la tarjeta: " + (err.message || String(err)));
-        chipText.textContent = "Error";
         loading.style.display = "none";
         content.style.display = "block";
         renderStamps(0, 20);
@@ -664,6 +945,16 @@
         rewardBox.textContent = "Vuelve a intentar en unos segundos.";
       }
     }
+
+    btnFlip.addEventListener("click", () => {
+      loyaltyCard.classList.toggle("flipped");
+      btnFlip.textContent = loyaltyCard.classList.contains("flipped") ? "Ver tarjeta" : "Ver sellos";
+    });
+
+    loyaltyCard.addEventListener("click", () => {
+      loyaltyCard.classList.toggle("flipped");
+      btnFlip.textContent = loyaltyCard.classList.contains("flipped") ? "Ver tarjeta" : "Ver sellos";
+    });
 
     btnLogout.addEventListener("click", () => {
       localStorage.removeItem(TOKEN_KEY);
