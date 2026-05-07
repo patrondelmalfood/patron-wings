@@ -4,224 +4,575 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ingresar - El Patrón del Mal</title>
+
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #000814;
-      color: #fff8dc;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-      box-sizing: border-box;
+    :root{
+      --bg:#020202;
+      --panel:#0b1220;
+      --panel2:#111827;
+      --gold:#facc15;
+      --gold2:#ff9f1c;
+      --gold-soft:#fde68a;
+      --text:#f8fafc;
+      --muted:#94a3b8;
+      --ok:#16a34a;
+      --bad:#dc2626;
+      --line:#334155;
     }
 
-    .card {
-      width: 100%;
-      max-width: 430px;
-      background: #001233;
-      border: 1px solid #facc15;
-      border-radius: 22px;
-      padding: 26px;
-      box-shadow: 0 0 25px rgba(250, 204, 21, 0.18);
-      box-sizing: border-box;
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:Arial, Helvetica, sans-serif;
+      color:var(--text);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:18px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(250,204,21,.16), transparent 30%),
+        radial-gradient(circle at 0% 100%, rgba(255,159,28,.10), transparent 28%),
+        linear-gradient(180deg, #000 0%, #020617 100%);
+      overflow-x:hidden;
+      position:relative;
     }
 
-    .brand {
-      text-align: center;
-      margin-bottom: 22px;
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background:
+        linear-gradient(45deg, rgba(255,255,255,.025) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(255,255,255,.025) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(255,255,255,.025) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.025) 75%);
+      background-size:30px 30px;
+      background-position:0 0,0 15px,15px -15px,-15px 0;
+      opacity:.55;
+      pointer-events:none;
+      z-index:0;
     }
 
-    .brand-logo {
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid #facc15;
-      margin-bottom: 12px;
-      background: #000;
-      box-shadow: 0 0 12px rgba(250, 204, 21, 0.35);
+    .page{
+      width:100%;
+      max-width:470px;
+      position:relative;
+      z-index:1;
     }
 
-    .brand h1 {
-      margin: 0 0 8px;
-      font-size: 28px;
-      line-height: 1.1;
-      color: #facc15;
-      font-weight: 900;
-      letter-spacing: 1px;
+    .top-brand{
+      text-align:center;
+      margin-bottom:14px;
     }
 
-    .brand p {
-      margin: 0;
-      color: #d1d5db;
-      font-size: 15px;
+    .top-brand h1{
+      margin:0;
+      color:var(--gold);
+      font-size:clamp(26px, 7vw, 39px);
+      line-height:1;
+      text-transform:uppercase;
+      text-shadow:0 0 9px rgba(250,204,21,.45), 0 0 18px rgba(255,159,28,.22);
+      letter-spacing:.7px;
+    }
+
+    .top-brand p{
+      margin:7px 0 0;
+      color:#dbeafe;
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .credit-card{
+      position:relative;
+      border-radius:30px;
+      overflow:hidden;
+      min-height:245px;
+      border:1px solid rgba(250,204,21,.42);
+      background:
+        radial-gradient(circle at 20% 0%, rgba(250,204,21,.20), transparent 34%),
+        radial-gradient(circle at 90% 90%, rgba(255,159,28,.12), transparent 34%),
+        linear-gradient(145deg, #050505 0%, #111 52%, #020202 100%);
+      box-shadow:
+        0 20px 52px rgba(0,0,0,.58),
+        0 0 28px rgba(250,204,21,.10),
+        inset 0 0 0 1px rgba(255,255,255,.04);
+      padding:22px;
+      margin-bottom:16px;
+    }
+
+    .credit-card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(120deg, transparent 0%, rgba(255,255,255,.07) 46%, transparent 55%),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.018) 0 1px, transparent 1px 9px);
+      pointer-events:none;
+      opacity:.75;
+    }
+
+    .credit-card::after{
+      content:"VIP";
+      position:absolute;
+      right:-18px;
+      bottom:20px;
+      font-size:74px;
+      font-weight:900;
+      color:rgba(255,255,255,.045);
+      letter-spacing:2px;
+      pointer-events:none;
+    }
+
+    .card-inner{
+      position:relative;
+      z-index:1;
+      min-height:200px;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .card-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+    }
+
+    .logo-wrap{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:0;
+    }
+
+    .logo{
+      width:72px;
+      height:72px;
+      border-radius:50%;
+      object-fit:cover;
+      background:#000;
+      border:2px solid rgba(255,255,255,.95);
+      box-shadow:0 0 18px rgba(255,255,255,.12), 0 0 22px rgba(250,204,21,.18);
+      flex-shrink:0;
+    }
+
+    .brand-name strong{
+      display:block;
+      color:var(--gold);
+      font-size:25px;
+      line-height:.95;
+      text-transform:uppercase;
+      text-shadow:0 0 10px rgba(250,204,21,.40);
+    }
+
+    .brand-name span{
+      display:flex;
+      align-items:center;
+      gap:7px;
+      margin-top:7px;
+      color:#fff;
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.3px;
+    }
+
+    .brand-name span::before,
+    .brand-name span::after{
+      content:"";
+      width:18px;
+      height:1px;
+      background:linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .vip-box{
+      text-align:right;
+      color:#fff;
+      font-weight:900;
+      font-size:18px;
+      line-height:1;
+      letter-spacing:1px;
+    }
+
+    .vip-box small{
+      display:block;
+      margin-top:5px;
+      color:var(--gold-soft);
+      font-size:10px;
+      letter-spacing:1.5px;
+    }
+
+    .chip-row{
+      margin-top:27px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .chip{
+      width:58px;
+      height:42px;
+      border-radius:10px;
+      background:linear-gradient(135deg, #cfcfcf, #f7f7f7 40%, #9ca3af);
+      position:relative;
+      box-shadow:inset 0 0 0 1px rgba(0,0,0,.25);
+      flex-shrink:0;
+    }
+
+    .chip::before,
+    .chip::after{
+      content:"";
+      position:absolute;
+      background:rgba(0,0,0,.22);
+    }
+
+    .chip::before{
+      left:0;
+      right:0;
+      top:50%;
+      height:1px;
+    }
+
+    .chip::after{
+      top:0;
+      bottom:0;
+      left:50%;
+      width:1px;
+    }
+
+    .card-label{
+      padding:10px 13px;
+      border-radius:999px;
+      background:rgba(250,204,21,.12);
+      border:1px solid rgba(250,204,21,.30);
+      color:var(--gold-soft);
+      font-weight:900;
+      text-align:right;
+      font-size:12px;
+    }
+
+    .card-label b{
+      color:#fff;
+      font-size:15px;
+    }
+
+    .card-bottom{
+      margin-top:auto;
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      gap:14px;
+    }
+
+    .card-data{
+      min-width:0;
+    }
+
+    .card-data .label{
+      color:var(--muted);
+      font-size:10px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      margin-bottom:5px;
+    }
+
+    .card-data .value{
+      color:#fff;
+      font-size:15px;
+      font-weight:900;
+      letter-spacing:.8px;
+    }
+
+    .card-data .number{
+      font-size:18px;
+      letter-spacing:2px;
+    }
+
+    .form-card{
+      width:100%;
+      background:
+        radial-gradient(circle at top right, rgba(250,204,21,.08), transparent 32%),
+        linear-gradient(180deg, rgba(17,24,39,.96), rgba(2,6,23,.96));
+      border:1px solid rgba(250,204,21,.28);
+      border-radius:26px;
+      padding:22px;
+      box-shadow:
+        0 18px 45px rgba(0,0,0,.45),
+        inset 0 0 0 1px rgba(255,255,255,.035);
+    }
+
+    .form-title{
+      margin:0 0 5px;
+      color:var(--gold);
+      font-size:24px;
+      line-height:1;
+      text-transform:uppercase;
+    }
+
+    .form-subtitle{
+      margin:0 0 16px;
+      color:#cbd5e1;
+      font-size:14px;
+      line-height:1.4;
     }
 
     label {
-      display: block;
-      margin: 14px 0 6px;
-      color: #fde68a;
-      font-weight: 700;
-      font-size: 15px;
+      display:block;
+      margin:14px 0 7px;
+      color:var(--gold-soft);
+      font-weight:800;
+      font-size:14px;
     }
 
     input {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 14px;
-      border-radius: 12px;
-      border: 1px solid #334155;
-      background: #000;
-      color: #fff;
-      font-size: 16px;
-      outline: none;
+      width:100%;
+      box-sizing:border-box;
+      padding:14px 15px;
+      border-radius:15px;
+      border:1px solid #334155;
+      background:#020617;
+      color:#fff;
+      font-size:16px;
+      outline:none;
+      transition:border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+    }
+
+    input::placeholder{
+      color:#64748b;
     }
 
     input:focus {
-      border-color: #facc15;
-      box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.15);
+      border-color:var(--gold);
+      box-shadow:0 0 0 3px rgba(250,204,21,.12);
+      transform:translateY(-1px);
     }
 
     .password-wrap {
-      position: relative;
+      position:relative;
     }
 
     .password-wrap input {
-      padding-right: 56px;
+      padding-right:58px;
     }
 
     .toggle-pass {
-      position: absolute;
-      top: 50%;
-      right: 8px;
-      transform: translateY(-50%);
-      border: 1px solid #334155;
-      background: #0f172a;
-      color: #fde68a;
-      border-radius: 10px;
-      padding: 8px 10px;
-      font-size: 18px;
-      line-height: 1;
-      cursor: pointer;
-      width: auto;
-      min-width: 42px;
-      margin-top: 0;
+      position:absolute;
+      top:50%;
+      right:8px;
+      transform:translateY(-50%);
+      border:1px solid #334155;
+      background:#0f172a;
+      color:var(--gold-soft);
+      border-radius:12px;
+      padding:8px 10px;
+      font-size:18px;
+      line-height:1;
+      cursor:pointer;
+      width:auto;
+      min-width:42px;
+      margin-top:0;
     }
 
     .toggle-pass:hover {
-      border-color: #facc15;
+      border-color:var(--gold);
     }
 
-    button {
-      width: 100%;
-      margin-top: 20px;
-      padding: 15px;
-      border: 0;
-      border-radius: 14px;
-      background: #facc15;
-      color: #111827;
-      font-weight: 900;
-      font-size: 17px;
-      cursor: pointer;
+    .login-btn {
+      width:100%;
+      margin-top:20px;
+      padding:15px;
+      border:0;
+      border-radius:16px;
+      background:linear-gradient(180deg, #fde047, #facc15);
+      color:#111827;
+      font-weight:900;
+      font-size:17px;
+      cursor:pointer;
+      box-shadow:0 10px 22px rgba(250,204,21,.18);
+      transition:transform .12s ease, box-shadow .12s ease, opacity .12s ease;
     }
 
-    button:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
+    .login-btn:hover{
+      transform:translateY(-1px);
+      box-shadow:0 12px 26px rgba(250,204,21,.22);
+    }
+
+    .login-btn:disabled {
+      opacity:.72;
+      cursor:not-allowed;
     }
 
     .msg {
-      margin-top: 16px;
-      padding: 12px;
-      border-radius: 12px;
-      display: none;
-      font-size: 14px;
-      line-height: 1.4;
-      word-break: break-word;
+      margin-top:14px;
+      padding:12px 13px;
+      border-radius:14px;
+      display:none;
+      font-size:14px;
+      line-height:1.45;
+      word-break:break-word;
     }
 
     .ok {
-      background: #052e16;
-      color: #bbf7d0;
-      border: 1px solid #16a34a;
+      background:#052e16;
+      color:#bbf7d0;
+      border:1px solid var(--ok);
     }
 
     .err {
-      background: #450a0a;
-      color: #fecaca;
-      border: 1px solid #dc2626;
+      background:#450a0a;
+      color:#fecaca;
+      border:1px solid var(--bad);
     }
 
     .mini {
-      margin-top: 14px;
-      text-align: center;
-      color: #94a3b8;
-      font-size: 13px;
+      margin-top:16px;
+      text-align:center;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.45;
     }
 
     .link-register {
-      margin-top: 14px;
-      text-align: center;
-      font-size: 14px;
+      margin-top:14px;
+      text-align:center;
+      font-size:14px;
+      color:#cbd5e1;
     }
 
     .link-register a {
-      color: #facc15;
-      text-decoration: none;
-      font-weight: 700;
+      color:var(--gold);
+      text-decoration:none;
+      font-weight:900;
+    }
+
+    .link-register a:hover{
+      text-decoration:underline;
+    }
+
+    @media (max-width:430px){
+      body{ padding:12px; align-items:flex-start; }
+      .top-brand h1{ font-size:25px; }
+      .credit-card{
+        border-radius:24px;
+        padding:17px;
+        min-height:220px;
+      }
+      .card-inner{ min-height:186px; }
+      .logo{ width:60px; height:60px; }
+      .brand-name strong{ font-size:20px; }
+      .brand-name span{ font-size:11px; }
+      .vip-box{ font-size:15px; }
+      .chip-row{ margin-top:21px; }
+      .chip{ width:50px; height:37px; }
+      .card-label{ font-size:11px; padding:9px 11px; }
+      .card-label b{ font-size:13px; }
+      .card-bottom{ gap:9px; }
+      .card-data .number{ font-size:15px; letter-spacing:1.2px; }
+      .form-card{
+        padding:19px;
+        border-radius:23px;
+      }
+      .form-title{ font-size:22px; }
+    }
+
+    @media (max-width:350px){
+      .vip-box{ display:none; }
+      .brand-name strong{ font-size:18px; }
+      .card-data .number{ font-size:14px; }
     }
   </style>
 </head>
+
 <body>
-  <div class="card">
-    <div class="brand">
-      <img src="LOGO.jpg" alt="El Patrón del Mal" class="brand-logo">
-      <h1>INGRESAR</h1>
-      <p>Accede a tu tarjeta virtual</p>
-    </div>
+  <main class="page">
+    <section class="top-brand">
+      <h1>El Patrón del Mal</h1>
+      <p>Tarjeta virtual de sellos y premios</p>
+    </section>
 
-    <label for="celular">Celular</label>
-    <input
-      id="celular"
-      type="text"
-      placeholder="Tu número"
-      inputmode="numeric"
-      autocomplete="tel"
-      autocapitalize="off"
-      autocorrect="off"
-      spellcheck="false"
-    >
+    <section class="credit-card">
+      <div class="card-inner">
+        <div class="card-head">
+          <div class="logo-wrap">
+            <img src="LOGO.jpg" alt="El Patrón del Mal" class="logo">
+            <div class="brand-name">
+              <strong>El Patrón<br>del Mal</strong>
+              <span>Burger Wings</span>
+            </div>
+          </div>
+          <div class="vip-box">
+            VIP
+            <small>LOGIN</small>
+          </div>
+        </div>
 
-    <label for="password">Contraseña</label>
-    <div class="password-wrap">
+        <div class="chip-row">
+          <div class="chip"></div>
+          <div class="card-label">
+            Acceso<br><b>Cliente VIP</b>
+          </div>
+        </div>
+
+        <div class="card-bottom">
+          <div class="card-data">
+            <div class="label">Tarjeta virtual</div>
+            <div class="value number">**** **** **** 2026</div>
+          </div>
+          <div class="card-data">
+            <div class="label">Club</div>
+            <div class="value">Premios</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="form-card">
+      <h2 class="form-title">Ingresar</h2>
+      <p class="form-subtitle">Accede a tu tarjeta virtual para ver tus sellos y premios.</p>
+
+      <label for="celular">Celular</label>
       <input
-        id="password"
-        type="password"
-        placeholder="Tu contraseña"
-        autocomplete="current-password"
+        id="celular"
+        type="text"
+        placeholder="Ej: 944275861"
+        inputmode="numeric"
+        autocomplete="tel"
         autocapitalize="off"
         autocorrect="off"
         spellcheck="false"
       >
-      <button type="button" class="toggle-pass" id="togglePassword" aria-label="Mostrar contraseña">👁</button>
-    </div>
 
-    <button id="btnLogin">Entrar</button>
+      <label for="password">Contraseña</label>
+      <div class="password-wrap">
+        <input
+          id="password"
+          type="password"
+          placeholder="Tu contraseña"
+          autocomplete="current-password"
+          autocapitalize="off"
+          autocorrect="off"
+          spellcheck="false"
+        >
+        <button type="button" class="toggle-pass" id="togglePassword" aria-label="Mostrar contraseña">👁</button>
+      </div>
 
-    <div id="msgOk" class="msg ok"></div>
-    <div id="msgErr" class="msg err"></div>
+      <button id="btnLogin" class="login-btn">Entrar a mi tarjeta</button>
 
-    <div class="mini">
-      Ingresa para ver tus sellos y premios.
-    </div>
+      <div id="msgOk" class="msg ok"></div>
+      <div id="msgErr" class="msg err"></div>
 
-    <div class="link-register">
-      ¿No tienes cuenta? <a href="/registro.html">Regístrate</a>
-    </div>
-  </div>
+      <div class="mini">
+        Ingresa para ver tus sellos acumulados y premios disponibles.
+      </div>
+
+      <div class="link-register">
+        ¿No tienes cuenta? <a href="/registro.html">Regístrate</a>
+      </div>
+    </section>
+  </main>
 
   <script>
     const TOKEN_KEY = "pdm_customer_token";
