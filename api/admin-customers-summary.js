@@ -1,7 +1,7 @@
 const SUPABASE_URL = "https://defdwzzewzfjuseozwkn.supabase.co";
 
 const SUPABASE_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYXNlIiwicmVmIjoiZGVmZHd6emV3emZqdXNlb3p3a24iLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc3Mzc4MTg1MywiZXhwIjoyMDg5MzU3ODUzfQ.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
 
 const CUSTOMER_TABLE_CANDIDATES = [
   "customers",
@@ -64,6 +64,7 @@ async function supabaseSelect(table, limit = 5000) {
   const text = await response.text();
 
   let json = null;
+
   try {
     json = text ? JSON.parse(text) : null;
   } catch {
@@ -93,6 +94,7 @@ async function findExistingTable(candidates) {
   for (const table of candidates) {
     try {
       const data = await supabaseSelect(table, 1);
+
       return {
         table,
         sample: data || []
@@ -101,7 +103,8 @@ async function findExistingTable(candidates) {
       errors.push({
         table,
         status: err.status || null,
-        message: err.message || String(err)
+        message: err.message || String(err),
+        body: err.body || null
       });
     }
   }
@@ -175,7 +178,11 @@ module.exports = async function handler(req, res) {
 
     cards.forEach((card) => {
       const customerId = String(
-        getFirst(card, ["customer_id", "cliente_id", "clienteId", "user_id"], "")
+        getFirst(
+          card,
+          ["customer_id", "cliente_id", "clienteId", "user_id"],
+          ""
+        )
       );
 
       const cardPhone = String(
