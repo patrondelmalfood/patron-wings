@@ -96,7 +96,7 @@
           <img src="LOGO.jpg" class="logo" alt="Logo">
           <div>
             <h1>Panel Admin - El Patrón del Mal</h1>
-            <div class="sub">Ventas, caja, pedidos y stock en vivo</div>
+            <div class="sub">Ventas, caja y pedidos en vivo</div>
           </div>
         </div>
         <div class="actions">
@@ -139,38 +139,38 @@
         <div class="metric"><div class="label">Tapers</div><div class="value" id="mTapers">S/ 0.00</div><div class="hint">Solo pedidos válidos</div></div>
       </div>
 
-      <div class="section-title"><h2>💵 Caja inicial aparte y stock de bebidas</h2></div>
+      <div class="section-title"><h2>💵 Caja inicial / cambio sencillo</h2></div>
       <div id="setupCard" class="card">
-        <div class="grid grid-3">
-          <div><label for="openCashInput">Caja inicial / sencillo S/</label><input id="openCashInput" type="number" min="0" step="0.01" placeholder="0.00"></div>
-          <div><label for="setupNoteInput">Observación</label><input id="setupNoteInput" type="text" placeholder="Ej: turno noche"></div>
-          <div style="display:flex;align-items:end"><button id="btnSaveSetup" class="btn-green" type="button" style="width:100%">Guardar caja y stock</button></div>
-        </div>
-
-        <h3 style="color:var(--gold);font-size:15px;margin:16px 0 8px">Stock inicial</h3>
         <div class="grid grid-4">
-          <div><label>Gaseosa 1L</label><input id="stockInitOneL" type="number" min="0" step="1" placeholder="0"></div>
-          <div><label>Gaseosa 296ml vidrio</label><input id="stockInitGlass" type="number" min="0" step="1" placeholder="0"></div>
-          <div><label>Gaseosa 600ml plástico</label><input id="stockInitPlastic" type="number" min="0" step="1" placeholder="0"></div>
-          <div><label>Agua mineral 750ml</label><input id="stockInitWater" type="number" min="0" step="1" placeholder="0"></div>
+          <div>
+            <label for="openCashInput">Caja inicial / cambio sencillo S/</label>
+            <input id="openCashInput" type="number" min="0" step="0.01" placeholder="0.00">
+          </div>
+
+          <div>
+            <label for="mozaInput">Moza</label>
+            <input id="mozaInput" type="text" placeholder="Ej: Rosa">
+          </div>
+
+          <div>
+            <label for="shiftInput">Turno</label>
+            <select id="shiftInput">
+              <option value="">Seleccionar turno</option>
+              <option value="Mañana">Mañana</option>
+              <option value="Tarde">Tarde</option>
+              <option value="Noche">Noche</option>
+              <option value="Completo">Completo</option>
+            </select>
+          </div>
+
+          <div style="display:flex;align-items:end">
+            <button id="btnSaveSetup" class="btn-green" type="button" style="width:100%">Guardar caja</button>
+          </div>
         </div>
 
-        <h3 style="color:var(--gold);font-size:15px;margin:16px 0 8px">Stock final contado</h3>
-        <div class="grid grid-4">
-          <div><label>Final gaseosa 1L</label><input id="stockEndOneL" type="number" min="0" step="1" placeholder="0"></div>
-          <div><label>Final 296ml vidrio</label><input id="stockEndGlass" type="number" min="0" step="1" placeholder="0"></div>
-          <div><label>Final 600ml plástico</label><input id="stockEndPlastic" type="number" min="0" step="1" placeholder="0"></div>
-          <div><label>Final agua 750ml</label><input id="stockEndWater" type="number" min="0" step="1" placeholder="0"></div>
+        <div class="note">
+          La caja inicial es solo cambio sencillo aparte y <b>NO se suma a la venta</b>. El inventario/stock de bebidas se manejará después en un módulo separado.
         </div>
-        <div class="note">La venta de bebidas se descuenta automáticamente desde los pedidos registrados: gaseosa 1L, vidrio, 600ml y agua 750ml. La caja inicial es solo sencillo aparte y NO se suma a la venta.</div>
-      </div>
-
-      <div class="section-title"><h2>🥤 Control de stock bebidas</h2></div>
-      <div class="card summarybox">
-        <table>
-          <thead><tr><th>Bebida</th><th>Inicial</th><th>Vendidas</th><th>Final teórico</th><th>Final contado</th><th>Diferencia</th></tr></thead>
-          <tbody id="stockTableBody"></tbody>
-        </table>
       </div>
 
       <div class="grid grid-2" style="margin-top:14px">
@@ -202,7 +202,7 @@
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth:{ persistSession:false } });
 
     const els = {};
-    const ids = ["loginBox","app","adminPass","btnLogin","btnLogout","loginError","adminDate","btnRefresh","btnPrint","btnSaveSetup","lastUpdate","liveStatus","liveDot","openCashInput","setupNoteInput","stockInitOneL","stockInitGlass","stockInitPlastic","stockInitWater","stockEndOneL","stockEndGlass","stockEndPlastic","stockEndWater","mOrders","mSales","mCash","mYape","mOpenCash","mFinalCash","mFinalAll","mCanceled","mPending","mDelivered","mDelivery","mTapers","stockTableBody","productSummary","drinkSummary","ordersList","orderCountTag","activeCashStatus"];
+    const ids = ["loginBox","app","adminPass","btnLogin","btnLogout","loginError","adminDate","btnRefresh","btnPrint","btnSaveSetup","lastUpdate","liveStatus","liveDot","openCashInput","mozaInput","shiftInput","mOrders","mSales","mCash","mYape","mOpenCash","mFinalCash","mFinalAll","mCanceled","mPending","mDelivered","mDelivery","mTapers","productSummary","drinkSummary","ordersList","orderCountTag","activeCashStatus"];
     ids.forEach(id => els[id] = document.getElementById(id));
 
     let currentOrders = [];
@@ -231,87 +231,43 @@
     function defaultSetup(){
       return {
         openCash:0,
+        moza:"",
+        shift:"",
         note:"",
-        stockInit:{ oneL:0, glass296:0, glass:0, plastic600:0, halfPlastic:0, water750:0, water:0 },
-        stockEnd:{ oneL:0, glass296:0, glass:0, plastic600:0, halfPlastic:0, water750:0, water:0 },
         updatedAt:null
       };
     }
     function normalizeSetup(s){
       const d = defaultSetup();
       const src = s || {};
-      const init = src.stockInit || {};
-      const end = src.stockEnd || {};
       return {
         ...d,
         ...src,
         openCash: safeNum(src.openCash),
+        moza: src.moza || src.mozaName || "",
+        shift: src.shift || src.turno || "",
         note: src.note || "",
-        stockInit:{
-          ...d.stockInit,
-          ...init,
-          oneL: safeInt(init.oneL),
-          glass296: safeInt(init.glass296 ?? init.glass),
-          glass: safeInt(init.glass ?? init.glass296),
-          plastic600: safeInt(init.plastic600 ?? init.halfPlastic),
-          halfPlastic: safeInt(init.halfPlastic ?? init.plastic600),
-          water750: safeInt(init.water750 ?? init.water),
-          water: safeInt(init.water ?? init.water750)
-        },
-        stockEnd:{
-          ...d.stockEnd,
-          ...end,
-          oneL: safeInt(end.oneL),
-          glass296: safeInt(end.glass296 ?? end.glass),
-          glass: safeInt(end.glass ?? end.glass296),
-          plastic600: safeInt(end.plastic600 ?? end.halfPlastic),
-          halfPlastic: safeInt(end.halfPlastic ?? end.plastic600),
-          water750: safeInt(end.water750 ?? end.water),
-          water: safeInt(end.water ?? end.water750)
-        }
+        updatedAt: src.updatedAt || null
       };
     }
     function isSetupInputActive(){
-      const arr = [els.openCashInput,els.setupNoteInput,els.stockInitOneL,els.stockInitGlass,els.stockInitPlastic,els.stockInitWater,els.stockEndOneL,els.stockEndGlass,els.stockEndPlastic,els.stockEndWater];
+      const arr = [els.openCashInput, els.mozaInput, els.shiftInput];
       return arr.includes(document.activeElement);
     }
     function readSetupFromForm(){
       return normalizeSetup({
         openCash: safeNum(els.openCashInput.value),
-        note: els.setupNoteInput.value || "",
-        stockInit:{
-          oneL: safeInt(els.stockInitOneL.value),
-          glass296: safeInt(els.stockInitGlass.value),
-          glass: safeInt(els.stockInitGlass.value),
-          plastic600: safeInt(els.stockInitPlastic.value),
-          halfPlastic: safeInt(els.stockInitPlastic.value),
-          water750: safeInt(els.stockInitWater.value),
-          water: safeInt(els.stockInitWater.value)
-        },
-        stockEnd:{
-          oneL: safeInt(els.stockEndOneL.value),
-          glass296: safeInt(els.stockEndGlass.value),
-          glass: safeInt(els.stockEndGlass.value),
-          plastic600: safeInt(els.stockEndPlastic.value),
-          halfPlastic: safeInt(els.stockEndPlastic.value),
-          water750: safeInt(els.stockEndWater.value),
-          water: safeInt(els.stockEndWater.value)
-        },
+        moza: els.mozaInput.value || "",
+        shift: els.shiftInput.value || "",
+        note: "",
         updatedAt: new Date().toISOString()
       });
     }
     function fillSetupForm(setup){
       const s = normalizeSetup(setup);
       els.openCashInput.value = s.openCash ? s.openCash.toFixed(2) : "";
-      els.setupNoteInput.value = s.note || "";
-      els.stockInitOneL.value = s.stockInit.oneL || "";
-      els.stockInitGlass.value = s.stockInit.glass296 || "";
-      els.stockInitPlastic.value = s.stockInit.plastic600 || "";
-      els.stockInitWater.value = s.stockInit.water750 || "";
-      els.stockEndOneL.value = s.stockEnd.oneL || "";
-      els.stockEndGlass.value = s.stockEnd.glass296 || "";
-      els.stockEndPlastic.value = s.stockEnd.plastic600 || "";
-      els.stockEndWater.value = s.stockEnd.water750 || "";
+      els.mozaInput.value = s.moza || "";
+      els.shiftInput.value = s.shift || "";
     }
 
     function getOrderFromRow(row){ return row && row.data ? row.data : {}; }
@@ -434,25 +390,18 @@
       });
       return Array.from(map.entries()).sort((a,b) => b[1].qty - a[1].qty);
     }
-    function renderStock(setup, rows){
-      const s = normalizeSetup(setup);
+    function renderDrinks(rows){
       const sold = drinkSold(rows);
-      const stockRows = [
-        ["Gaseosa 1L", s.stockInit.oneL, sold.oneL, s.stockEnd.oneL],
-        ["Gaseosa 296ml vidrio", s.stockInit.glass296, sold.glass296, s.stockEnd.glass296],
-        ["Gaseosa 600ml plástico", s.stockInit.plastic600, sold.plastic600, s.stockEnd.plastic600],
-        ["Agua mineral 750ml", s.stockInit.water750, sold.water750, s.stockEnd.water750]
+      const drinkRows = [
+        ["Gaseosa 1L", sold.oneL],
+        ["Gaseosa 296ml vidrio", sold.glass296],
+        ["Gaseosa 600ml plástico", sold.plastic600],
+        ["Agua mineral 750ml", sold.water750]
       ];
-      els.stockTableBody.innerHTML = stockRows.map(r => {
-        const theo = safeInt(r[1]) - safeInt(r[2]);
-        const counted = safeInt(r[3]);
-        const diff = counted - theo;
-        const cls = diff === 0 ? "good" : (diff < 0 ? "bad" : "warn");
-        return `<tr><td><b>${esc(r[0])}</b></td><td>${r[1]}</td><td>${r[2]}</td><td>${theo}</td><td>${counted || ""}</td><td class="${cls}">${diff > 0 ? "+" : ""}${diff}</td></tr>`;
-      }).join("");
-
-      const drinkLines = stockRows.map(r => `<div class="rowline"><span>${esc(r[0])}</span><b>${safeInt(r[2])}</b></div>`).join("");
-      els.drinkSummary.innerHTML = drinkLines || `<div class="muted">Sin bebidas vendidas.</div>`;
+      const hasAny = drinkRows.some(r => safeInt(r[1]) > 0);
+      els.drinkSummary.innerHTML = hasAny
+        ? drinkRows.map(r => `<div class="rowline"><span>${esc(r[0])}</span><b>${safeInt(r[1])}</b></div>`).join("")
+        : `<div class="muted">Sin bebidas vendidas.</div>`;
     }
     function renderProducts(rows){
       const list = productSummary(rows);
@@ -551,7 +500,7 @@
         currentOrders = rows;
         if (forceForm || !isSetupInputActive()) fillSetupForm(setup);
         renderMetrics(setup, rows);
-        renderStock(setup, rows);
+        renderDrinks(rows);
         renderProducts(rows);
         renderOrders(rows);
         els.lastUpdate.textContent = formatTime();
@@ -575,13 +524,13 @@
       try {
         currentSetup = await saveSetup(dateKey, setup);
         await refreshData(true);
-        alert("✅ Caja inicial aparte y stock guardados en vivo.");
+        alert("✅ Caja inicial, moza y turno guardados en vivo.");
       } catch(err) {
         console.error(err);
-        alert("No se pudo guardar caja/stock: " + (err.message || String(err)));
+        alert("No se pudo guardar caja: " + (err.message || String(err)));
       } finally {
         els.btnSaveSetup.disabled = false;
-        els.btnSaveSetup.textContent = "Guardar caja y stock";
+        els.btnSaveSetup.textContent = "Guardar caja";
       }
     }
     async function updateStatus(orderId, status){
@@ -608,11 +557,12 @@
           <tr><td>Efectivo</td><td>${esc(els.mCash.textContent)}</td></tr>
           <tr><td>Yape</td><td>${esc(els.mYape.textContent)}</td></tr>
           <tr><td>Caja inicial / sencillo aparte</td><td>${esc(els.mOpenCash.textContent)}</td></tr>
+          <tr><td>Moza</td><td>${esc(currentSetup?.moza || "-")}</td></tr>
+          <tr><td>Turno</td><td>${esc(currentSetup?.shift || "-")}</td></tr>
           <tr class="total"><td>Efectivo a entregar</td><td>${esc(els.mFinalCash.textContent)}</td></tr>
           <tr><td>Total venta final</td><td>${esc(els.mFinalAll.textContent)}</td></tr>
           <tr><td>Anulados</td><td>${esc(els.mCanceled.textContent)}</td></tr>
-        </table><hr>
-        <h3>Stock bebidas</h3>${document.querySelector("#stockTableBody")?.parentElement?.outerHTML || ""}
+        </table>
         </body></html>`;
       const w = window.open("", "_blank", "width=380,height=700");
       w.document.open(); w.document.write(html); w.document.close(); w.focus(); w.print();
