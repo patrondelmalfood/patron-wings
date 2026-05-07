@@ -53,9 +53,7 @@ async function getCustomerByPhone(celular) {
 
   const data = await supabaseRequest(
     `${CUSTOMER_TABLE}?select=*&celular=eq.${phone}&limit=1`,
-    {
-      method: "GET"
-    }
+    { method: "GET" }
   );
 
   return Array.isArray(data) && data.length ? data[0] : null;
@@ -66,14 +64,16 @@ async function deleteCardsByCustomerId(customerId) {
 
   const id = encodeURIComponent(customerId);
 
-  const deleted = await supabaseRequest(
-    `${CARD_TABLE}?customer_id=eq.${id}`,
-    {
-      method: "DELETE"
-    }
-  );
+  try {
+    const deleted = await supabaseRequest(
+      `${CARD_TABLE}?customer_id=eq.${id}`,
+      { method: "DELETE" }
+    );
 
-  return Array.isArray(deleted) ? deleted.length : 0;
+    return Array.isArray(deleted) ? deleted.length : 0;
+  } catch (err) {
+    return 0;
+  }
 }
 
 async function deleteCardsByPhone(celular) {
@@ -82,9 +82,7 @@ async function deleteCardsByPhone(celular) {
   try {
     const deleted = await supabaseRequest(
       `${CARD_TABLE}?celular=eq.${phone}`,
-      {
-        method: "DELETE"
-      }
+      { method: "DELETE" }
     );
 
     return Array.isArray(deleted) ? deleted.length : 0;
@@ -98,9 +96,7 @@ async function deleteCustomerByPhone(celular) {
 
   const deleted = await supabaseRequest(
     `${CUSTOMER_TABLE}?celular=eq.${phone}`,
-    {
-      method: "DELETE"
-    }
+    { method: "DELETE" }
   );
 
   return Array.isArray(deleted) ? deleted.length : 0;
@@ -148,7 +144,8 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    const customerId = customer.id || customer.customer_id || customer.cliente_id || "";
+    const customerId =
+      customer.id || customer.customer_id || customer.cliente_id || "";
 
     const deletedCardsById = await deleteCardsByCustomerId(customerId);
     const deletedCardsByPhone = await deleteCardsByPhone(celular);
