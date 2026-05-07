@@ -364,6 +364,17 @@
       margin-top:3px;
     }
 
+
+    .ranking-delete{
+      margin-top:8px;
+      padding:7px 10px;
+      border-radius:12px;
+      font-size:12px;
+      background:linear-gradient(180deg, #f87171, #ef4444);
+      color:#fff;
+      width:auto;
+    }
+
     .ranking-pending{
       display:inline-flex;
       margin-top:5px;
@@ -945,6 +956,7 @@
               <button class="btn-orange" id="btnClaimReward">Entregar premio</button>
               <button class="btn-blue" id="btnRefresh">Actualizar</button>
               <button class="btn-red" id="btnClear">Limpiar</button>
+              <button class="btn-red" id="btnDeleteCustomer" type="button" style="grid-column:1 / -1;">🗑️ Eliminar cuenta del cliente</button>
             </div>
 
             <div class="stamp-note" id="stampNote">
@@ -1003,6 +1015,7 @@
     const btnClaimReward = document.getElementById("btnClaimReward");
     const btnRefresh = document.getElementById("btnRefresh");
     const btnClear = document.getElementById("btnClear");
+    const btnDeleteCustomer = document.getElementById("btnDeleteCustomer");
     const rewardNote = document.getElementById("rewardNote");
 
     const msgOk = document.getElementById("msgOk");
@@ -1065,6 +1078,7 @@
               <div class="ranking-name">${nombre}</div>
               <div class="ranking-phone">📱 ${celular}</div>
               ${pendiente}
+              <button class="ranking-delete" type="button" data-delete-phone="${celular}">🗑️ Eliminar</button>
             </div>
             <div class="ranking-stamps">
               ${sellos} / ${meta}
@@ -1337,6 +1351,68 @@
       }
     }
 
+
+    async function deleteCustomerByPhone(celular) {
+      const cleanCel = String(celular || "").replace(/\D/g, "").trim();
+
+      hideMessages();
+
+      if (!cleanCel) {
+        showErr("No encontré el celular del cliente para eliminar.");
+        return;
+      }
+
+      const ok = confirm(
+        "⚠️ Vas a eliminar esta cuenta VIP completa.\\n\\nCelular: " +
+        cleanCel +
+        "\\n\\nSe eliminará el cliente, su tarjeta y su historial si existe.\\n\\n¿Deseas continuar?"
+      );
+
+      if (!ok) return;
+
+      const typed = prompt('Para confirmar escribe: ELIMINAR');
+
+      if (String(typed || "").trim().toUpperCase() !== "ELIMINAR") {
+        showErr("Eliminación cancelada. No escribiste ELIMINAR.");
+        return;
+      }
+
+      try {
+        if (btnDeleteCustomer) {
+          btnDeleteCustomer.disabled = true;
+          btnDeleteCustomer.textContent = "Eliminando...";
+        }
+
+        const res = await fetch("/api/admin-delete-customer", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            celular: cleanCel
+          })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || !data.ok) {
+          showErr((data.error || "No se pudo eliminar.") + (data.detail ? ": " + data.detail : ""));
+          return;
+        }
+
+        clearView();
+        await loadCustomersSummary(true);
+        showOk("✅ Cliente eliminado correctamente.");
+      } catch (err) {
+        showErr("Error inesperado eliminando cliente: " + (err.message || String(err)));
+      } finally {
+        if (btnDeleteCustomer) {
+          btnDeleteCustomer.disabled = false;
+          btnDeleteCustomer.textContent = "🗑️ Eliminar cuenta del cliente";
+        }
+      }
+    }
+
     async function addStamp() {
       hideMessages();
 
@@ -1445,6 +1521,16 @@
     btnClaimReward.addEventListener("click", claimReward);
     btnRefresh.addEventListener("click", searchCustomer);
     btnClear.addEventListener("click", clearView);
+    btnDeleteCustomer.addEventListener("click", () => {
+      const celular = currentCustomer?.celular || clienteCelular.textContent || "";
+      deleteCustomerByPhone(celular);
+    });
+
+    rankingList.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-delete-phone]");
+      if (!btn) return;
+      deleteCustomerByPhone(btn.getAttribute("data-delete-phone"));
+    });
 
     btnShowRanking.addEventListener("click", () => {
       rankingPanel.classList.add("show");
