@@ -1871,10 +1871,23 @@ function printHTML(html, title="Imprimir"){
 function dateKeyLocal(d = new Date()){
   return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
 }
+function normalizeDateKeyInput(key){
+  // IMPORTANTE: nunca usar new Date("YYYY-MM-DD") porque en celular puede bajar 1 día por zona horaria.
+  const raw = String(key || "").trim();
+  const m = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return operationalDefaultDateKey ? operationalDefaultDateKey() : dateKeyLocal(new Date());
+  return `${m[1]}-${m[2]}-${m[3]}`;
+}
 function dateFromKeyLocal(key){
-  const parts = String(key || "").split("-").map(Number);
-  if (parts.length !== 3 || parts.some(n => !Number.isFinite(n))) return new Date();
-  return new Date(parts[0], parts[1]-1, parts[2], 12, 0, 0, 0);
+  const fixed = normalizeDateKeyInput(key);
+  const [y,m,d] = fixed.split("-").map(Number);
+  // Hora 12:00 para evitar saltos por zona horaria/cambio de día.
+  return new Date(y, m - 1, d, 12, 0, 0, 0);
+}
+function getSelectedCashDateKey(){
+  // Lee exactamente lo que la moza seleccionó en el input de fecha.
+  const v = cashDayInput && cashDayInput.value ? cashDayInput.value : operationalDefaultDateKey();
+  return normalizeDateKeyInput(v);
 }
 function addDaysToDateKey(key, days){
   const d = dateFromKeyLocal(key);
@@ -1954,7 +1967,7 @@ async function loadCashRegisterState(){
   }
 }
 async function openOperationalDay(dateKey, silent=false){
-  dateKey = dateKey || cashDayInput?.value || operationalDefaultDateKey();
+  dateKey = normalizeDateKeyInput(dateKey || (cashDayInput && cashDayInput.value) || operationalDefaultDateKey());
   if (!dateKey) return false;
   if (!supabaseClient) {
     alert("Supabase no cargó. No se puede abrir caja en nube.");
@@ -1985,7 +1998,7 @@ async function openOperationalDay(dateKey, silent=false){
 async function ensureOperationalDayOpen(){
   await loadCashRegisterState();
   if (CASH_IS_OPEN && ACTIVE_DATE_KEY) return ACTIVE_DATE_KEY;
-  const suggested = cashDayInput?.value || operationalDefaultDateKey();
+  const suggested = getSelectedCashDateKey();
   const ok = confirm(`No hay caja abierta. ¿Abrir caja para ${formatDateKeyHuman(suggested)} y registrar este pedido ahí?`);
   if (!ok) return "";
   const opened = await openOperationalDay(suggested, true);
@@ -2320,7 +2333,7 @@ if (btnOpenDay) btnOpenDay.addEventListener("click", async () => {
     alert(`Ya hay una caja abierta: ${formatDateKeyHuman(ACTIVE_DATE_KEY)}. Primero cierra ese día.`);
     return;
   }
-  const dateKey = cashDayInput?.value || operationalDefaultDateKey();
+  const dateKey = getSelectedCashDateKey();
   const ok = confirm(`¿Abrir caja para ${formatDateKeyHuman(dateKey)}?`);
   if (ok) await openOperationalDay(dateKey);
 });
@@ -2331,7 +2344,7 @@ if (btnRefreshCashDay) btnRefreshCashDay.addEventListener("click", async () => {
   else alert("No se pudo actualizar: " + r.error);
 });
 if (cashDayInput) cashDayInput.addEventListener("change", () => {
-  if (!CASH_IS_OPEN) { ACTIVE_DATE_KEY = cashDayInput.value || operationalDefaultDateKey(); renderCashDayUI(); }
+  if (!CASH_IS_OPEN) { ACTIVE_DATE_KEY = getSelectedCashDateKey(); renderCashDayUI(); }
 });
 loadCashRegisterState();
 if (btnWhatsapp) btnWhatsapp.addEventListener("click", e => { if (btnWhatsapp.classList.contains("disabled") || !cart.length) { e.preventDefault(); alert("Agrega productos y revisa los datos antes de enviar por WhatsApp."); } });
