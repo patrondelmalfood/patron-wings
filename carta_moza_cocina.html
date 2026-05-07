@@ -1871,23 +1871,10 @@ function printHTML(html, title="Imprimir"){
 function dateKeyLocal(d = new Date()){
   return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
 }
-function normalizeDateKeyInput(key){
-  // IMPORTANTE: nunca usar new Date("YYYY-MM-DD") porque en celular puede bajar 1 día por zona horaria.
-  const raw = String(key || "").trim();
-  const m = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (!m) return operationalDefaultDateKey ? operationalDefaultDateKey() : dateKeyLocal(new Date());
-  return `${m[1]}-${m[2]}-${m[3]}`;
-}
 function dateFromKeyLocal(key){
-  const fixed = normalizeDateKeyInput(key);
-  const [y,m,d] = fixed.split("-").map(Number);
-  // Hora 12:00 para evitar saltos por zona horaria/cambio de día.
-  return new Date(y, m - 1, d, 12, 0, 0, 0);
-}
-function getSelectedCashDateKey(){
-  // Lee exactamente lo que la moza seleccionó en el input de fecha.
-  const v = cashDayInput && cashDayInput.value ? cashDayInput.value : operationalDefaultDateKey();
-  return normalizeDateKeyInput(v);
+  const parts = String(key || "").split("-").map(Number);
+  if (parts.length !== 3 || parts.some(n => !Number.isFinite(n))) return new Date();
+  return new Date(parts[0], parts[1]-1, parts[2], 12, 0, 0, 0);
 }
 function addDaysToDateKey(key, days){
   const d = dateFromKeyLocal(key);
@@ -1895,10 +1882,13 @@ function addDaysToDateKey(key, days){
   return dateKeyLocal(d);
 }
 function operationalDefaultDateKey(d = new Date()){
-  const x = new Date(d);
-  // Si son horas de madrugada, normalmente pertenece a la caja del día anterior.
-  if (x.getHours() < 5) x.setDate(x.getDate() - 1);
-  return dateKeyLocal(x);
+  // Fecha sugerida para ABRIR una caja nueva: siempre el día actual del celular.
+  // Si la caja queda abierta pasando medianoche, ACTIVE_DATE_KEY mantiene la fecha correcta.
+  return dateKeyLocal(new Date(d));
+}
+function getCashInputDateKey(){
+  const v = cashDayInput?.value || "";
+  return /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : operationalDefaultDateKey();
 }
 function weekRangeForDateKey(key){
   const d = dateFromKeyLocal(key);
@@ -1925,9 +1915,12 @@ function isTechnicalCloudRow(row){
   return getStatusFromCloudRow(row) === "DAY_SETUP" || order.__type === "day_setup";
 }
 function renderCashDayUI(){
-  const fallback = ACTIVE_DATE_KEY || operationalDefaultDateKey();
-  if (cashDayInput && !CASH_IS_OPEN) cashDayInput.value = fallback;
+  const fallback = CASH_IS_OPEN && ACTIVE_DATE_KEY
+    ? ACTIVE_DATE_KEY
+    : (getCashInputDateKey ? getCashInputDateKey() : operationalDefaultDateKey());
+
   if (cashDayInput && CASH_IS_OPEN && ACTIVE_DATE_KEY) cashDayInput.value = ACTIVE_DATE_KEY;
+  if (cashDayInput && !CASH_IS_OPEN && !cashDayInput.value) cashDayInput.value = fallback;
   if (!cashDayStatus) return;
 
   if (CASH_IS_OPEN && ACTIVE_DATE_KEY) {
@@ -1956,18 +1949,22 @@ async function loadCashRegisterState(){
     if (error) throw error;
     CASH_STATE_DATA = data || {};
     CASH_IS_OPEN = !!data?.is_open;
-    ACTIVE_DATE_KEY = data?.active_date_key || ACTIVE_DATE_KEY || fallback;
+    if (CASH_IS_OPEN && data?.active_date_key) {
+      ACTIVE_DATE_KEY = data.active_date_key;
+    } else {
+      ACTIVE_DATE_KEY = getCashInputDateKey ? getCashInputDateKey() : (ACTIVE_DATE_KEY || fallback);
+    }
     renderCashDayUI();
     return { ok:true, data };
   } catch(err) {
-    ACTIVE_DATE_KEY = ACTIVE_DATE_KEY || fallback;
+    ACTIVE_DATE_KEY = getCashInputDateKey ? getCashInputDateKey() : (ACTIVE_DATE_KEY || fallback);
     CASH_IS_OPEN = false;
     renderCashDayUI();
     return { ok:false, error: err.message || String(err) };
   }
 }
 async function openOperationalDay(dateKey, silent=false){
-  dateKey = normalizeDateKeyInput(dateKey || (cashDayInput && cashDayInput.value) || operationalDefaultDateKey());
+  dateKey = dateKey || cashDayInput?.value || operationalDefaultDateKey();
   if (!dateKey) return false;
   if (!supabaseClient) {
     alert("Supabase no cargó. No se puede abrir caja en nube.");
@@ -1996,9 +1993,10 @@ async function openOperationalDay(dateKey, silent=false){
   }
 }
 async function ensureOperationalDayOpen(){
-  await loadCashRegisterState();
+  await if (cashDayInput && !cashDayInput.value) cashDayInput.value = operationalDefaultDateKey();
+loadCashRegisterState();
   if (CASH_IS_OPEN && ACTIVE_DATE_KEY) return ACTIVE_DATE_KEY;
-  const suggested = getSelectedCashDateKey();
+  const suggested = cashDayInput?.value || operationalDefaultDateKey();
   const ok = confirm(`No hay caja abierta. ¿Abrir caja para ${formatDateKeyHuman(suggested)} y registrar este pedido ahí?`);
   if (!ok) return "";
   const opened = await openOperationalDay(suggested, true);
@@ -2328,12 +2326,16 @@ if (btnPrintClient) btnPrintClient.addEventListener("click", () => {
 });
 if (btnRegisterSale) btnRegisterSale.addEventListener("click", () => registerSale("MOZA_COCINA"));
 if (btnOpenDay) btnOpenDay.addEventListener("click", async () => {
+  // Guardamos la fecha elegida ANTES de consultar Supabase, porque loadCashRegisterState()
+  // puede volver a pintar el campo y en madrugada antes lo regresaba al día anterior.
+  const selectedDateKey = getCashInputDateKey();
   await loadCashRegisterState();
   if (CASH_IS_OPEN && ACTIVE_DATE_KEY) {
     alert(`Ya hay una caja abierta: ${formatDateKeyHuman(ACTIVE_DATE_KEY)}. Primero cierra ese día.`);
     return;
   }
-  const dateKey = getSelectedCashDateKey();
+  const dateKey = selectedDateKey;
+  if (cashDayInput) cashDayInput.value = dateKey;
   const ok = confirm(`¿Abrir caja para ${formatDateKeyHuman(dateKey)}?`);
   if (ok) await openOperationalDay(dateKey);
 });
@@ -2344,7 +2346,7 @@ if (btnRefreshCashDay) btnRefreshCashDay.addEventListener("click", async () => {
   else alert("No se pudo actualizar: " + r.error);
 });
 if (cashDayInput) cashDayInput.addEventListener("change", () => {
-  if (!CASH_IS_OPEN) { ACTIVE_DATE_KEY = getSelectedCashDateKey(); renderCashDayUI(); }
+  if (!CASH_IS_OPEN) { ACTIVE_DATE_KEY = getCashInputDateKey(); renderCashDayUI(); }
 });
 loadCashRegisterState();
 if (btnWhatsapp) btnWhatsapp.addEventListener("click", e => { if (btnWhatsapp.classList.contains("disabled") || !cart.length) { e.preventDefault(); alert("Agrega productos y revisa los datos antes de enviar por WhatsApp."); } });
