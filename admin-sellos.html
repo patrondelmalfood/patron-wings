@@ -4,127 +4,193 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Sellos - El Patrón del Mal</title>
+
   <style>
     :root{
-      --bg:#000814;
-      --card:#001233;
+      --bg:#020202;
+      --bg2:#020617;
+      --panel:#0b1220;
+      --panel2:#111827;
       --gold:#facc15;
+      --gold2:#ff9f1c;
       --gold-soft:#fde68a;
-      --text:#fff8dc;
+      --text:#f8fafc;
       --muted:#94a3b8;
+      --muted2:#cbd5e1;
       --line:#334155;
       --ok:#16a34a;
       --bad:#dc2626;
+      --green:#22c55e;
+      --orange:#fb923c;
+      --blue:#38bdf8;
+      --red:#ef4444;
     }
 
     *{ box-sizing:border-box; }
 
     body{
       margin:0;
-      font-family: Arial, sans-serif;
-      background:
-        radial-gradient(circle at top, rgba(250,204,21,0.10), transparent 25%),
-        linear-gradient(180deg, #000814 0%, #00122b 100%);
-      color:var(--text);
       min-height:100vh;
-      padding:22px;
+      font-family:Arial, Helvetica, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top, rgba(250,204,21,.15), transparent 30%),
+        radial-gradient(circle at bottom left, rgba(255,159,28,.10), transparent 28%),
+        linear-gradient(180deg, #000 0%, var(--bg2) 100%);
+      padding:20px;
+      position:relative;
+      overflow-x:hidden;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background:
+        linear-gradient(45deg, rgba(255,255,255,.025) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(255,255,255,.025) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(255,255,255,.025) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.025) 75%);
+      background-size:30px 30px;
+      background-position:0 0,0 15px,15px -15px,-15px 0;
+      opacity:.52;
+      pointer-events:none;
+      z-index:0;
     }
 
     .wrap{
       width:100%;
-      max-width:860px;
+      max-width:1060px;
       margin:0 auto;
+      position:relative;
+      z-index:1;
     }
 
-    .card{
-      background:rgba(0,18,51,0.98);
-      border:1px solid var(--gold);
-      border-radius:28px;
-      padding:26px;
+    .shell{
+      background:
+        radial-gradient(circle at top right, rgba(250,204,21,.10), transparent 30%),
+        linear-gradient(180deg, rgba(17,24,39,.96), rgba(2,6,23,.96));
+      border:1px solid rgba(250,204,21,.30);
+      border-radius:30px;
+      padding:22px;
       box-shadow:
-        0 0 28px rgba(250,204,21,0.12),
-        0 10px 40px rgba(0,0,0,0.45);
+        0 22px 55px rgba(0,0,0,.55),
+        0 0 30px rgba(250,204,21,.08),
+        inset 0 0 0 1px rgba(255,255,255,.035);
+      overflow:hidden;
+      position:relative;
+    }
+
+    .shell::before{
+      content:"";
+      position:absolute;
+      right:-120px;
+      top:-130px;
+      width:300px;
+      height:300px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(250,204,21,.18), transparent 70%);
+      pointer-events:none;
     }
 
     .top{
+      position:relative;
+      z-index:1;
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:18px;
       margin-bottom:18px;
       flex-wrap:wrap;
+      padding-bottom:16px;
+      border-bottom:1px solid rgba(250,204,21,.18);
     }
 
     .top-left{
       display:flex;
       align-items:center;
-      gap:18px;
-      flex-wrap:wrap;
+      gap:16px;
+      min-width:0;
     }
 
-    .logo{
+    .logo-stage{
       width:88px;
       height:88px;
       border-radius:50%;
-      object-fit:cover;
-      border:2px solid var(--gold);
-      background:#fff;
-      box-shadow:0 0 16px rgba(250,204,21,0.28);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:radial-gradient(circle, rgba(250,204,21,.18), transparent 72%);
+      box-shadow:0 0 24px rgba(250,204,21,.12);
       flex-shrink:0;
+    }
+
+    .logo{
+      width:72px;
+      height:72px;
+      border-radius:50%;
+      object-fit:cover;
+      border:2px solid rgba(255,255,255,.92);
+      background:#000;
+      box-shadow:0 0 17px rgba(250,204,21,.26);
     }
 
     .title{
       margin:0;
-      font-size:32px;
+      font-size:clamp(28px, 4vw, 42px);
+      line-height:1;
       color:var(--gold);
       font-weight:900;
       text-transform:uppercase;
-      letter-spacing:1px;
+      letter-spacing:.8px;
+      text-shadow:0 0 10px rgba(250,204,21,.34), 0 0 18px rgba(255,159,28,.16);
     }
 
     .subtitle{
-      margin:6px 0 0;
+      margin:8px 0 0;
       color:#dbeafe;
-      font-size:15px;
+      font-size:14px;
+      line-height:1.4;
     }
 
-    .search-box{
-      margin-top:18px;
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    input{
-      flex:1;
-      min-width:200px;
-      width:100%;
-      box-sizing:border-box;
-      padding:14px;
-      border-radius:12px;
-      border:1px solid #334155;
-      background:#000;
-      color:#fff;
-      font-size:16px;
-      outline:none;
-    }
-
-    input:focus{
-      border-color:#facc15;
-      box-shadow:0 0 0 2px rgba(250, 204, 21, 0.15);
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      margin-top:8px;
+      padding:7px 11px;
+      border-radius:999px;
+      border:1px solid rgba(34,197,94,.32);
+      background:rgba(34,197,94,.10);
+      color:#bbf7d0;
+      font-size:12px;
+      font-weight:900;
     }
 
     button{
       padding:14px 18px;
       border:none;
-      border-radius:14px;
-      font-size:16px;
+      border-radius:16px;
+      font-size:15px;
       font-weight:900;
       cursor:pointer;
+      transition:transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+    }
+
+    button:hover{
+      transform:translateY(-1px);
+      box-shadow:0 10px 20px rgba(0,0,0,.28);
+    }
+
+    button:disabled{
+      opacity:.72;
+      cursor:not-allowed;
+      transform:none;
+      box-shadow:none;
     }
 
     .btn-primary{
-      background:var(--gold);
+      background:linear-gradient(180deg, #fde047, #facc15);
       color:#111827;
     }
 
@@ -135,111 +201,305 @@
     }
 
     .btn-green{
-      background:#22c55e;
+      background:linear-gradient(180deg, #4ade80, #22c55e);
       color:#052e16;
     }
 
     .btn-red{
-      background:#ef4444;
+      background:linear-gradient(180deg, #f87171, #ef4444);
       color:#fff;
     }
 
     .btn-orange{
-      background:#fb923c;
+      background:linear-gradient(180deg, #fdba74, #fb923c);
       color:#3f1d00;
     }
 
+    .btn-blue{
+      background:linear-gradient(180deg, #7dd3fc, #38bdf8);
+      color:#082f49;
+    }
+
+    .search-panel{
+      position:relative;
+      z-index:1;
+      background:rgba(0,0,0,.24);
+      border:1px solid rgba(250,204,21,.20);
+      border-radius:24px;
+      padding:16px;
+      margin-bottom:16px;
+    }
+
+    .search-title{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+      flex-wrap:wrap;
+    }
+
+    .search-title h2{
+      margin:0;
+      color:var(--gold-soft);
+      font-size:20px;
+      line-height:1;
+    }
+
+    .search-title span{
+      color:#cbd5e1;
+      font-size:13px;
+      font-weight:800;
+    }
+
+    .search-box{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:10px;
+    }
+
+    input{
+      width:100%;
+      box-sizing:border-box;
+      padding:14px 15px;
+      border-radius:15px;
+      border:1px solid #334155;
+      background:#020617;
+      color:#fff;
+      font-size:16px;
+      outline:none;
+      transition:border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+    }
+
+    input::placeholder{ color:#64748b; }
+
+    input:focus{
+      border-color:var(--gold);
+      box-shadow:0 0 0 3px rgba(250,204,21,.12);
+      transform:translateY(-1px);
+    }
+
     .msg{
-      margin-top:16px;
-      padding:12px;
-      border-radius:12px;
+      margin-top:14px;
+      padding:12px 13px;
+      border-radius:14px;
       display:none;
       font-size:14px;
-      line-height:1.4;
+      line-height:1.45;
       word-break:break-word;
     }
 
     .ok{
       background:#052e16;
       color:#bbf7d0;
-      border:1px solid #16a34a;
+      border:1px solid var(--ok);
     }
 
     .err{
       background:#450a0a;
       color:#fecaca;
-      border:1px solid #dc2626;
+      border:1px solid var(--bad);
     }
 
     .result{
-      margin-top:20px;
+      position:relative;
+      z-index:1;
+      margin-top:16px;
       display:none;
-      background:rgba(0,0,0,0.24);
+    }
+
+    .client-layout{
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:16px;
+      align-items:start;
+    }
+
+    .client-card,
+    .reward-box,
+    .history-card{
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.28), rgba(15,23,42,.72));
       border:1px solid #1e293b;
-      border-radius:22px;
-      padding:18px;
+      border-radius:24px;
+      padding:16px;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.025);
+    }
+
+    .client-card{
+      border-color:rgba(250,204,21,.24);
+    }
+
+    .client-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:14px;
+      padding-bottom:12px;
+      border-bottom:1px solid rgba(250,204,21,.16);
+    }
+
+    .client-head h2{
+      margin:0;
+      color:var(--gold);
+      font-size:22px;
+      line-height:1;
+    }
+
+    .client-status{
+      padding:7px 10px;
+      border-radius:999px;
+      background:rgba(250,204,21,.12);
+      border:1px solid rgba(250,204,21,.28);
+      color:var(--gold-soft);
+      font-size:12px;
+      font-weight:900;
+      white-space:nowrap;
     }
 
     .info{
       display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:12px;
+      grid-template-columns:repeat(2,1fr);
+      gap:10px;
     }
 
     .info-card{
-      background:rgba(0,0,0,0.26);
-      border:1px solid #1e293b;
+      background:rgba(0,0,0,.26);
+      border:1px solid rgba(148,163,184,.22);
       border-radius:18px;
       padding:14px;
     }
 
     .info-label{
       color:var(--muted);
-      font-size:12px;
-      margin-bottom:8px;
+      font-size:11px;
+      margin-bottom:7px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.4px;
     }
 
     .info-value{
       color:#fff;
       font-size:18px;
-      font-weight:800;
+      font-weight:900;
       word-break:break-word;
     }
 
-    .actions{
-      margin-top:18px;
+    .info-value.gold{
+      color:var(--gold);
+      font-size:24px;
+      text-shadow:0 0 9px rgba(250,204,21,.16);
+    }
+
+    .progress-area{
+      margin-top:14px;
+    }
+
+    .progress-row{
       display:flex;
+      justify-content:space-between;
+      align-items:center;
       gap:10px;
-      flex-wrap:wrap;
+      color:#cbd5e1;
+      font-size:13px;
+      font-weight:800;
+      margin-bottom:8px;
+    }
+
+    .bar{
+      width:100%;
+      height:13px;
+      background:#020617;
+      border:1px solid #1e293b;
+      border-radius:999px;
+      overflow:hidden;
+    }
+
+    .bar-fill{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg, #facc15, #fff2a6);
+      border-radius:999px;
+      transition:width .35s ease;
+      box-shadow:0 0 12px rgba(250,204,21,.42);
+    }
+
+    .actions{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:10px;
+    }
+
+    .actions button{
+      width:100%;
     }
 
     .reward-box{
-      margin-top:18px;
-      padding:16px;
-      border-radius:18px;
-      background:rgba(0,0,0,0.24);
-      border:1px solid #1e293b;
+      margin-bottom:16px;
+      border-color:rgba(250,204,21,.24);
     }
 
-    .reward-title{
-      margin:0 0 10px;
+    .box-title{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin:0 0 12px;
       color:var(--gold-soft);
-      font-size:16px;
+      font-size:18px;
       font-weight:900;
     }
 
     .reward-note{
       margin-top:10px;
       color:#cbd5e1;
-      font-size:14px;
-      line-height:1.4;
+      font-size:13px;
+      line-height:1.45;
     }
 
     .stamp-note{
-      margin-top:14px;
-      color:#cbd5e1;
+      margin-top:12px;
+      color:#fef3c7;
       font-size:14px;
-      line-height:1.4;
+      line-height:1.45;
+      padding:12px;
+      border-radius:16px;
+      background:rgba(250,204,21,.08);
+      border:1px solid rgba(250,204,21,.16);
+    }
+
+    .history-card{
+      border-color:rgba(148,163,184,.22);
+    }
+
+    .history-list{
+      max-height:320px;
+      overflow:auto;
+      padding-right:4px;
+    }
+
+    .history-item{
+      padding:12px;
+      border:1px solid rgba(148,163,184,.16);
+      background:rgba(0,0,0,.20);
+      border-radius:16px;
+      margin-bottom:10px;
+    }
+
+    .history-item:last-child{
+      margin-bottom:0;
+    }
+
+    .history-item div{
+      font-size:13px;
+      color:#dbeafe;
+      line-height:1.45;
+    }
+
+    .history-item b{
+      color:var(--gold-soft);
     }
 
     .mini{
@@ -247,64 +507,133 @@
       text-align:center;
       color:#94a3b8;
       font-size:13px;
+      line-height:1.45;
     }
 
     .lock-screen{
-      max-width:430px;
-      margin:80px auto 0;
+      max-width:460px;
+      min-height:calc(100vh - 40px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
 
-    .lock-screen .card{
+    .lock-card{
+      width:100%;
       text-align:center;
+      background:
+        radial-gradient(circle at top, rgba(250,204,21,.13), transparent 34%),
+        linear-gradient(180deg, rgba(17,24,39,.96), rgba(2,6,23,.96));
+      border:1px solid rgba(250,204,21,.34);
+      border-radius:30px;
+      padding:28px 22px;
+      box-shadow:
+        0 22px 55px rgba(0,0,0,.55),
+        0 0 28px rgba(250,204,21,.10),
+        inset 0 0 0 1px rgba(255,255,255,.035);
+    }
+
+    .lock-logo-stage{
+      width:122px;
+      height:122px;
+      margin:0 auto 14px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:radial-gradient(circle, rgba(250,204,21,.18), transparent 72%);
+      box-shadow:0 0 28px rgba(250,204,21,.12);
+    }
+
+    .lock-logo{
+      width:100px;
+      height:100px;
+      border-radius:50%;
+      object-fit:cover;
+      border:2px solid rgba(255,255,255,.92);
+      background:#000;
+      box-shadow:0 0 18px rgba(250,204,21,.26);
     }
 
     .lock-title{
       margin:0 0 8px;
-      font-size:30px;
+      font-size:31px;
+      line-height:1;
       color:var(--gold);
       font-weight:900;
       text-transform:uppercase;
+      text-shadow:0 0 10px rgba(250,204,21,.34);
     }
 
     .lock-subtitle{
       margin:0 0 18px;
       color:#dbeafe;
-      font-size:15px;
+      font-size:14px;
+      line-height:1.45;
     }
 
-    .hidden{
-      display:none !important;
-    }
+    .hidden{ display:none !important; }
 
-    .history-item{
-      padding:10px 0;
-      border-bottom:1px solid #1e293b;
-    }
-
-    .history-item:last-child{
-      border-bottom:none;
-    }
-
-    @media (max-width:800px){
-      .info{ grid-template-columns:1fr 1fr; }
+    @media (max-width:900px){
+      .client-layout{
+        grid-template-columns:1fr;
+      }
     }
 
     @media (max-width:700px){
-      .title{ font-size:26px; }
-      .info{ grid-template-columns:1fr; }
-      .search-box{ flex-direction:column; }
-      .search-box button{ width:100%; }
-      .actions button{ width:100%; }
-      .top{ align-items:flex-start; }
+      body{ padding:12px; }
+      .shell{ padding:16px; border-radius:24px; }
+      .top{
+        align-items:flex-start;
+      }
+      .top-left{
+        align-items:center;
+      }
+      .logo-stage{
+        width:74px;
+        height:74px;
+      }
+      .logo{
+        width:60px;
+        height:60px;
+      }
+      .title{ font-size:25px; }
+      .subtitle{ font-size:13px; }
+      .search-box{
+        grid-template-columns:1fr;
+      }
+      .search-box button{
+        width:100%;
+      }
+      .info{
+        grid-template-columns:1fr;
+      }
+      .actions{
+        grid-template-columns:1fr;
+      }
+      .top > button{
+        width:100%;
+      }
+      .client-head{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+      .lock-screen{
+        min-height:calc(100vh - 24px);
+      }
     }
   </style>
 </head>
+
 <body>
   <div id="lockScreen" class="wrap lock-screen">
-    <div class="card">
-      <img src="LOGO.jpg" alt="Logo" class="logo">
+    <div class="lock-card">
+      <div class="lock-logo-stage">
+        <img src="LOGO.jpg" alt="Logo" class="lock-logo">
+      </div>
+
       <h1 class="lock-title">Acceso Admin</h1>
-      <p class="lock-subtitle">Ingresa la clave para abrir el panel de sellos.</p>
+      <p class="lock-subtitle">Ingresa la clave para abrir el panel profesional de sellos y premios.</p>
 
       <input
         id="adminPassword"
@@ -316,7 +645,7 @@
         spellcheck="false"
       >
 
-      <button class="btn-primary" id="btnUnlock" style="width:100%; margin-top:14px;">Entrar</button>
+      <button class="btn-primary" id="btnUnlock" style="width:100%; margin-top:14px;">Entrar al panel</button>
 
       <div id="lockMsgOk" class="msg ok"></div>
       <div id="lockMsgErr" class="msg err"></div>
@@ -324,90 +653,127 @@
   </div>
 
   <div id="adminPanel" class="wrap hidden">
-    <div class="card">
+    <div class="shell">
       <div class="top">
         <div class="top-left">
-          <img src="LOGO.jpg" alt="Logo" class="logo">
+          <div class="logo-stage">
+            <img src="LOGO.jpg" alt="Logo" class="logo">
+          </div>
           <div>
             <h1 class="title">Admin de Sellos</h1>
-            <p class="subtitle">Busca clientes por celular y gestiona sellos y premios</p>
+            <p class="subtitle">Busca clientes por celular, suma sellos y registra premios entregados.</p>
+            <div class="badge">🟢 Panel activo · El Patrón del Mal</div>
           </div>
         </div>
+
         <button class="btn-red" id="btnLogout">Salir</button>
       </div>
 
-      <div class="search-box">
-        <input
-          id="buscarCelular"
-          type="text"
-          placeholder="Escribe el celular del cliente"
-          inputmode="numeric"
-          autocomplete="off"
-          autocapitalize="off"
-          autocorrect="off"
-          spellcheck="false"
-        >
-        <button class="btn-primary" id="btnBuscar">Buscar cliente</button>
-      </div>
-
-      <div id="msgOk" class="msg ok"></div>
-      <div id="msgErr" class="msg err"></div>
-
-      <div id="result" class="result">
-        <div class="info">
-          <div class="info-card">
-            <div class="info-label">Cliente</div>
-            <div class="info-value" id="clienteNombre">-</div>
-          </div>
-          <div class="info-card">
-            <div class="info-label">Celular</div>
-            <div class="info-value" id="clienteCelular">-</div>
-          </div>
-          <div class="info-card">
-            <div class="info-label">Sellos actuales</div>
-            <div class="info-value" id="clienteSellos">0 / 20</div>
-          </div>
-          <div class="info-card">
-            <div class="info-label">Premio pendiente</div>
-            <div class="info-value" id="clientePremio">No</div>
-          </div>
+      <div class="search-panel">
+        <div class="search-title">
+          <h2>🔎 Buscar cliente</h2>
+          <span>Ingresa el celular registrado en la tarjeta virtual</span>
         </div>
 
-        <div class="actions">
-          <button class="btn-green" id="btnAddStamp">+1 sello</button>
-          <button class="btn-orange" id="btnClaimReward">Entregar premio</button>
-          <button class="btn-secondary" id="btnRefresh">Actualizar</button>
-          <button class="btn-red" id="btnClear">Limpiar</button>
-        </div>
-
-        <div class="reward-box">
-          <div class="reward-title">Nota del premio entregado</div>
+        <div class="search-box">
           <input
-            id="rewardNote"
+            id="buscarCelular"
             type="text"
-            placeholder="Ej: premio 5 sellos - gaseosa"
+            placeholder="Ej: 944275861"
+            inputmode="numeric"
             autocomplete="off"
             autocapitalize="off"
             autocorrect="off"
             spellcheck="false"
           >
-          <div class="reward-note">
-            Aquí escribe qué premio entregaste, por ejemplo: gaseosa, salchimix, burger clásica o plato de alitas.
-          </div>
+          <button class="btn-primary" id="btnBuscar">Buscar cliente</button>
         </div>
 
-        <div class="reward-box">
-          <div class="reward-title">Historial reciente</div>
-          <div id="historyBox" class="reward-note">Aquí aparecerán los últimos movimientos del cliente.</div>
-        </div>
+        <div id="msgOk" class="msg ok"></div>
+        <div id="msgErr" class="msg err"></div>
+      </div>
 
-        <div class="stamp-note" id="stampNote">
-          Busca un cliente para comenzar.
+      <div id="result" class="result">
+        <div class="client-layout">
+          <section class="client-card">
+            <div class="client-head">
+              <h2>👤 Datos del cliente</h2>
+              <div class="client-status" id="clienteEstado">Cliente cargado</div>
+            </div>
+
+            <div class="info">
+              <div class="info-card">
+                <div class="info-label">Cliente</div>
+                <div class="info-value" id="clienteNombre">-</div>
+              </div>
+
+              <div class="info-card">
+                <div class="info-label">Celular</div>
+                <div class="info-value" id="clienteCelular">-</div>
+              </div>
+
+              <div class="info-card">
+                <div class="info-label">Sellos actuales</div>
+                <div class="info-value gold" id="clienteSellos">0 / 20</div>
+              </div>
+
+              <div class="info-card">
+                <div class="info-label">Premio pendiente</div>
+                <div class="info-value" id="clientePremio">No</div>
+              </div>
+            </div>
+
+            <div class="progress-area">
+              <div class="progress-row">
+                <span>Progreso de tarjeta</span>
+                <span id="progressText">0%</span>
+              </div>
+              <div class="bar">
+                <div class="bar-fill" id="barFill"></div>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="btn-green" id="btnAddStamp">+1 sello</button>
+              <button class="btn-orange" id="btnClaimReward">Entregar premio</button>
+              <button class="btn-blue" id="btnRefresh">Actualizar</button>
+              <button class="btn-red" id="btnClear">Limpiar</button>
+            </div>
+
+            <div class="stamp-note" id="stampNote">
+              Busca un cliente para comenzar.
+            </div>
+          </section>
+
+          <aside>
+            <section class="reward-box">
+              <div class="box-title">🎁 Premio entregado</div>
+              <input
+                id="rewardNote"
+                type="text"
+                placeholder="Ej: premio 5 sellos - 1LT DE BEBIDA"
+                autocomplete="off"
+                autocapitalize="off"
+                autocorrect="off"
+                spellcheck="false"
+              >
+              <div class="reward-note">
+                Escribe qué premio entregaste antes de presionar <b>Entregar premio</b>.
+              </div>
+            </section>
+
+            <section class="history-card">
+              <div class="box-title">📋 Historial reciente</div>
+              <div id="historyBox" class="reward-note history-list">
+                Aquí aparecerán los últimos movimientos del cliente.
+              </div>
+            </section>
+          </aside>
         </div>
       </div>
 
       <div class="mini">
-        Panel simple para moza o administrador. Ahora registra sellos y también premios entregados con historial.
+        Panel para administrador o moza: suma sellos, entrega premios y revisa movimientos del cliente.
       </div>
     </div>
   </div>
@@ -440,8 +806,11 @@
     const clienteCelular = document.getElementById("clienteCelular");
     const clienteSellos = document.getElementById("clienteSellos");
     const clientePremio = document.getElementById("clientePremio");
+    const clienteEstado = document.getElementById("clienteEstado");
     const stampNote = document.getElementById("stampNote");
     const historyBox = document.getElementById("historyBox");
+    const barFill = document.getElementById("barFill");
+    const progressText = document.getElementById("progressText");
 
     let currentCustomer = null;
     let currentCard = null;
@@ -483,7 +852,7 @@
     function openPanel() {
       lockScreen.classList.add("hidden");
       adminPanel.classList.remove("hidden");
-      buscarCelular.focus();
+      setTimeout(() => buscarCelular.focus(), 100);
     }
 
     function closePanel() {
@@ -492,7 +861,7 @@
       lockScreen.classList.remove("hidden");
       adminPassword.value = "";
       hideLockMessages();
-      adminPassword.focus();
+      setTimeout(() => adminPassword.focus(), 100);
     }
 
     function tryAutoLogin() {
@@ -529,7 +898,7 @@
       if (stamps >= 20) return "premio 20 sellos - plato de alitas";
       if (stamps >= 15) return "premio 15 sellos - burger clásica";
       if (stamps >= 10) return "premio 10 sellos - salchimix";
-      if (stamps >= 5) return "premio 5 sellos - gaseosa";
+      if (stamps >= 5) return "premio 5 sellos - 1LT DE BEBIDA";
       return "";
     }
 
@@ -596,11 +965,15 @@
       const actuales = Number(currentCard?.sellos_actuales || 0);
       const meta = Math.max(20, Number(currentCard?.meta_sellos || 20));
       const premioPendiente = !!currentCard?.premio_pendiente;
+      const progress = Math.min(100, Math.round((actuales / meta) * 100));
 
       clienteNombre.textContent = currentCustomer?.nombre || "-";
       clienteCelular.textContent = currentCustomer?.celular || "-";
       clienteSellos.textContent = `${actuales} / ${meta}`;
       clientePremio.textContent = premioPendiente ? "Sí" : "No";
+      clienteEstado.textContent = premioPendiente ? "Premio pendiente" : "Cliente cargado";
+      progressText.textContent = progress + "%";
+      barFill.style.width = progress + "%";
 
       if (premioPendiente) {
         stampNote.textContent = `Cliente tiene premio pendiente. Si ya se entregó, registra la nota y presiona "Entregar premio".`;
@@ -629,6 +1002,9 @@
       clienteCelular.textContent = "-";
       clienteSellos.textContent = "0 / 20";
       clientePremio.textContent = "No";
+      clienteEstado.textContent = "Cliente cargado";
+      progressText.textContent = "0%";
+      barFill.style.width = "0%";
       stampNote.textContent = "Busca un cliente para comenzar.";
       historyBox.innerHTML = "Aquí aparecerán los últimos movimientos del cliente.";
       result.style.display = "none";
