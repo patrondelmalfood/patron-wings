@@ -1,13 +1,13 @@
-const { createClient } = require("@supabase/supabase-js");
-
 const SUPABASE_URL =
   process.env.SUPABASE_URL ||
-  process.env.NEXT_PUBLIC_SUPABASE_URL;
+  process.env.NEXT_PUBLIC_SUPABASE_URL ||
+  "https://defdwzzewzfjuseozwkn.supabase.co";
 
 const SUPABASE_KEY =
   process.env.SUPABASE_SERVICE_ROLE_KEY ||
   process.env.SUPABASE_SERVICE_KEY ||
-  process.env.SUPABASE_ANON_KEY;
+  process.env.SUPABASE_ANON_KEY ||
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmZzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
 
 const CUSTOMER_TABLE_CANDIDATES = [
   "customers",
@@ -50,36 +50,61 @@ function safeBool(value) {
   return value === true || value === "true" || value === 1 || value === "1";
 }
 
-async function findExistingTable(supabase, candidates) {
+async function supabaseSelect(table, limit = 5000) {
+  const url = `${SUPABASE_URL}/rest/v1/${table}?select=*&limit=${limit}`;
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`,
+      "Content-Type": "application/json"
+    }
+  });
+
+  const text = await response.text();
+
+  let json = null;
+  try {
+    json = text ? JSON.parse(text) : null;
+  } catch {
+    json = text;
+  }
+
+  if (!response.ok) {
+    const message =
+      json && json.message
+        ? json.message
+        : typeof json === "string"
+          ? json
+          : "Error consultando Supabase";
+
+    const error = new Error(message);
+    error.status = response.status;
+    error.body = json;
+    throw error;
+  }
+
+  return Array.isArray(json) ? json : [];
+}
+
+async function findExistingTable(candidates) {
   const errors = [];
 
   for (const table of candidates) {
-    const { data, error } = await supabase
-      .from(table)
-      .select("*")
-      .limit(1);
-
-    if (!error) {
+    try {
+      const data = await supabaseSelect(table, 1);
       return { table, sample: data || [] };
+    } catch (err) {
+      errors.push({
+        table,
+        status: err.status || null,
+        message: err.message || String(err)
+      });
     }
-
-    errors.push({
-      table,
-      message: error.message
-    });
   }
 
   return { table: null, sample: [], errors };
-}
-
-async function loadAllRows(supabase, table) {
-  const { data, error } = await supabase
-    .from(table)
-    .select("*")
-    .limit(5000);
-
-  if (error) throw error;
-  return data || [];
 }
 
 module.exports = async function handler(req, res) {
@@ -93,6 +118,7 @@ module.exports = async function handler(req, res) {
 
   if (req.method !== "GET") {
     return res.status(405).json({
+      ok: false,
       error: "Método no permitido. Usa GET."
     });
   }
@@ -100,34 +126,21 @@ module.exports = async function handler(req, res) {
   try {
     if (!SUPABASE_URL || !SUPABASE_KEY) {
       return res.status(500).json({
-        error: "Faltan variables de entorno de Supabase.",
-        detail: "Revisa SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY en Vercel."
+        ok: false,
+        error: "Faltan datos de Supabase."
       });
     }
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
-      auth: {
-        persistSession: false
-      }
-    });
-
-    const customerTableInfo = await findExistingTable(
-      supabase,
-      CUSTOMER_TABLE_CANDIDATES
-    );
-
-    const cardTableInfo = await findExistingTable(
-      supabase,
-      CARD_TABLE_CANDIDATES
-    );
+    const customerTableInfo = await findExistingTable(CUSTOMER_TABLE_CANDIDATES);
+    const cardTableInfo = await findExistingTable(CARD_TABLE_CANDIDATES);
 
     if (!customerTableInfo.table || !cardTableInfo.table) {
-      return res.status(500).json({
-        error: "No pude detectar las tablas de clientes o tarjetas.",
-        detail: "Pásame captura del error para ajustar el nombre exacto de tus tablas.",
+      return res.status(200).json({
+        ok: false,
+        error: "No pude detectar automáticamente las tablas de clientes o tarjetas.",
         detected: {
-          customerTable: customerTableInfo.table,
-          cardTable: cardTableInfo.table
+          customers: customerTableInfo.table,
+          cards: cardTableInfo.table
         },
         tried: {
           customerTables: CUSTOMER_TABLE_CANDIDATES,
@@ -140,32 +153,47 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    const customers = await loadAllRows(supabase, customerTableInfo.table);
-    const cards = await loadAllRows(supabase, cardTableInfo.table);
+    const customers = await supabaseSelect(customerTableInfo.table, 5000);
+    const cards = await supabaseSelect(cardTableInfo.table, 5000);
 
     const customerById = new Map();
     const customerByPhone = new Map();
 
-    customers.forEach((c) => {
-      const id = String(getFirst(c, ["id", "customer_id", "cliente_id"], "") || "");
-      const celular = String(getFirst(c, ["celular", "phone", "telefono", "whatsapp"], "") || "").replace(/\D/g, "");
+    customers.forEach((customer) => {
+      const id = String(
+        getFirst(customer, ["id", "customer_id", "cliente_id"], "")
+      );
 
-      if (id) customerById.set(id, c);
-      if (celular) customerByPhone.set(celular, c);
+      const celular = String(
+        getFirst(customer, ["celular", "phone", "telefono", "whatsapp"], "")
+      ).replace(/\D/g, "");
+
+      if (id) customerById.set(id, customer);
+      if (celular) customerByPhone.set(celular, customer);
     });
 
     const rows = [];
 
     cards.forEach((card) => {
-      const customerId = String(getFirst(card, ["customer_id", "cliente_id", "clienteId", "user_id"], "") || "");
-      const cardPhone = String(getFirst(card, ["celular", "phone", "telefono", "whatsapp"], "") || "").replace(/\D/g, "");
+      const customerId = String(
+        getFirst(card, ["customer_id", "cliente_id", "clienteId", "user_id"], "")
+      );
+
+      const cardPhone = String(
+        getFirst(card, ["celular", "phone", "telefono", "whatsapp"], "")
+      ).replace(/\D/g, "");
 
       const customer =
         customerById.get(customerId) ||
         customerByPhone.get(cardPhone) ||
         null;
 
-      const nombre = getFirst(customer, ["nombre", "name", "full_name"], "Cliente sin nombre");
+      const nombre = getFirst(
+        customer,
+        ["nombre", "name", "full_name"],
+        "Cliente sin nombre"
+      );
+
       const celular = String(
         getFirst(customer, ["celular", "phone", "telefono", "whatsapp"], cardPhone || "-")
       );
@@ -174,9 +202,10 @@ module.exports = async function handler(req, res) {
         getFirst(card, ["sellos_actuales", "stamps", "sellos", "current_stamps"], 0)
       );
 
-      const metaSellos = safeNumber(
-        getFirst(card, ["meta_sellos", "goal_stamps", "meta", "max_stamps"], 20)
-      ) || 20;
+      const metaSellos =
+        safeNumber(
+          getFirst(card, ["meta_sellos", "goal_stamps", "meta", "max_stamps"], 20)
+        ) || 20;
 
       const premioPendiente = safeBool(
         getFirst(card, ["premio_pendiente", "reward_pending", "pending_reward"], false)
@@ -198,7 +227,7 @@ module.exports = async function handler(req, res) {
         getFirst(customer, ["celular", "phone", "telefono", "whatsapp"], "")
       );
 
-      const exists = rows.some((r) => String(r.celular) === String(celular));
+      const exists = rows.some((item) => String(item.celular) === String(celular));
 
       if (!exists) {
         rows.push({
@@ -218,6 +247,7 @@ module.exports = async function handler(req, res) {
         if (b.sellos_actuales !== a.sellos_actuales) {
           return b.sellos_actuales - a.sellos_actuales;
         }
+
         return String(a.nombre).localeCompare(String(b.nombre));
       })
       .map((item, index) => ({
@@ -226,7 +256,10 @@ module.exports = async function handler(req, res) {
       }));
 
     const totalCustomers = rows.length;
-    const totalStamps = rows.reduce((sum, item) => sum + safeNumber(item.sellos_actuales), 0);
+    const totalStamps = rows.reduce(
+      (sum, item) => sum + safeNumber(item.sellos_actuales),
+      0
+    );
     const pendingRewards = rows.filter((item) => item.premio_pendiente).length;
 
     return res.status(200).json({
@@ -241,9 +274,12 @@ module.exports = async function handler(req, res) {
       ranking
     });
   } catch (err) {
-    return res.status(500).json({
+    return res.status(200).json({
+      ok: false,
       error: "Error cargando resumen de clientes.",
-      detail: err.message || String(err)
+      detail: err.message || String(err),
+      status: err.status || null,
+      body: err.body || null
     });
   }
 };
