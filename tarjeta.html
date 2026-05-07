@@ -450,64 +450,169 @@
 
     .rewards-panel{
       max-width:980px;
-      margin:14px auto 0;
-      border-radius:24px;
-      padding:16px;
-      border:1px solid rgba(250,204,21,.28);
-      background:linear-gradient(180deg, rgba(17,24,39,.86), rgba(2,6,23,.92));
-      box-shadow:0 14px 36px rgba(0,0,0,.35);
+      margin:16px auto 0;
+      border-radius:32px;
+      padding:20px;
+      border:1px solid rgba(250,204,21,.46);
+      background:
+        radial-gradient(circle at 12% 0%, rgba(250,204,21,.20), transparent 30%),
+        radial-gradient(circle at 92% 18%, rgba(255,159,28,.12), transparent 30%),
+        linear-gradient(180deg, rgba(17,24,39,.94), rgba(2,6,23,.96));
+      box-shadow:
+        0 18px 48px rgba(0,0,0,.50),
+        0 0 28px rgba(250,204,21,.13),
+        inset 0 0 0 1px rgba(255,255,255,.04);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .rewards-panel::before{
+      content:"";
+      position:absolute;
+      right:-90px;
+      top:-120px;
+      width:260px;
+      height:260px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(250,204,21,.23), transparent 68%);
+      pointer-events:none;
+    }
+
+    .rewards-panel::after{
+      content:"";
+      position:absolute;
+      left:-60px;
+      bottom:-85px;
+      width:190px;
+      height:190px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(255,159,28,.12), transparent 70%);
+      pointer-events:none;
     }
 
     .rewards-title{
+      position:relative;
+      z-index:1;
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:10px;
-      margin-bottom:12px;
+      gap:14px;
+      margin-bottom:16px;
+      padding-bottom:14px;
+      border-bottom:1px solid rgba(250,204,21,.22);
     }
 
     .rewards-title h2{
       margin:0;
       color:var(--gold);
-      font-size:22px;
+      font-size:25px;
       line-height:1;
+      text-shadow:0 0 12px rgba(250,204,21,.36), 0 0 20px rgba(255,159,28,.18);
+      display:flex;
+      align-items:center;
+      gap:9px;
     }
 
     .rewards-title span{
-      color:#cbd5e1;
+      color:#e2e8f0;
       font-size:13px;
-      font-weight:800;
+      font-weight:900;
+      text-align:right;
+      max-width:360px;
     }
 
     .levels{
+      position:relative;
+      z-index:1;
       display:grid;
       grid-template-columns:repeat(4,1fr);
-      gap:10px;
+      gap:13px;
     }
 
     .level-card{
-      background:rgba(0,0,0,.26);
-      border:1px solid #1e293b;
-      border-radius:16px;
-      padding:12px;
-      min-height:110px;
+      position:relative;
+      overflow:hidden;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.38), rgba(15,23,42,.78));
+      border:1px solid rgba(148,163,184,.25);
+      border-radius:24px;
+      padding:15px 13px 14px;
+      min-height:154px;
       display:flex;
       flex-direction:column;
       justify-content:space-between;
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.026),
+        0 10px 22px rgba(0,0,0,.22);
+    }
+
+    .level-card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.09), transparent 38%),
+        radial-gradient(circle at top, rgba(250,204,21,.08), transparent 58%);
+      opacity:.75;
+      pointer-events:none;
+    }
+
+    .level-card::after{
+      content:"PREMIO";
+      position:absolute;
+      right:-24px;
+      top:16px;
+      transform:rotate(38deg);
+      font-size:10px;
+      font-weight:900;
+      letter-spacing:1.5px;
+      color:rgba(255,255,255,.13);
+      border-top:1px solid rgba(255,255,255,.12);
+      border-bottom:1px solid rgba(255,255,255,.12);
+      padding:3px 26px;
+      pointer-events:none;
     }
 
     .level-card.unlocked{
-      border-color:rgba(250,204,21,.60);
-      box-shadow:0 0 16px rgba(250,204,21,.12);
-      background:linear-gradient(180deg, rgba(250,204,21,.10), rgba(0,0,0,.18));
+      border-color:rgba(250,204,21,.76);
+      box-shadow:
+        0 0 20px rgba(250,204,21,.17),
+        0 10px 24px rgba(0,0,0,.28),
+        inset 0 0 0 1px rgba(250,204,21,.16);
+      background:
+        radial-gradient(circle at top, rgba(250,204,21,.23), transparent 55%),
+        linear-gradient(180deg, rgba(250,204,21,.13), rgba(0,0,0,.24));
+    }
+
+    .level-medal{
+      position:relative;
+      z-index:1;
+      width:46px;
+      height:46px;
+      border-radius:18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:25px;
+      background:#020617;
+      border:1px solid rgba(250,204,21,.34);
+      margin-bottom:11px;
+      box-shadow:0 0 15px rgba(250,204,21,.15);
+    }
+
+    .level-card.unlocked .level-medal{
+      background:linear-gradient(180deg, rgba(250,204,21,.18), rgba(2,6,23,.98));
+      box-shadow:0 0 18px rgba(250,204,21,.25);
     }
 
     .level-top{
+      position:relative;
+      z-index:1;
       display:flex;
       justify-content:space-between;
       align-items:center;
       gap:8px;
-      margin-bottom:7px;
+      margin-bottom:8px;
       flex-wrap:wrap;
     }
 
@@ -515,12 +620,14 @@
       color:var(--gold-soft);
       font-size:15px;
       font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.25px;
     }
 
     .level-pill{
-      font-size:11px;
+      font-size:10px;
       font-weight:900;
-      padding:4px 7px;
+      padding:5px 8px;
       border-radius:999px;
       border:1px solid #334155;
       background:#0f172a;
@@ -528,15 +635,35 @@
     }
 
     .level-card.unlocked .level-pill{
-      border-color:rgba(250,204,21,.48);
-      color:#fff3bf;
-      background:rgba(250,204,21,.12);
+      border-color:rgba(250,204,21,.50);
+      color:#111827;
+      background:linear-gradient(180deg, #fde047, #facc15);
+      box-shadow:0 0 10px rgba(250,204,21,.18);
     }
 
     .level-desc{
+      position:relative;
+      z-index:1;
       color:#dbeafe;
       font-size:13px;
       line-height:1.35;
+    }
+
+    .level-desc b{
+      color:#fff4bf;
+      font-size:13px;
+      text-transform:uppercase;
+      letter-spacing:.2px;
+    }
+
+    .level-reward{
+      display:block;
+      margin-top:7px;
+      color:#ffffff;
+      font-size:16px;
+      font-weight:900;
+      line-height:1.2;
+      text-shadow:0 0 8px rgba(250,204,21,.14);
     }
 
     .controls{
@@ -623,10 +750,25 @@
       }
       .levels{
         grid-template-columns:1fr;
-        gap:8px;
+        gap:9px;
       }
       .level-card{
         min-height:auto;
+        padding:13px;
+        border-radius:20px;
+      }
+      .level-medal{
+        width:38px;
+        height:38px;
+        border-radius:14px;
+        font-size:21px;
+        margin-bottom:8px;
+      }
+      .rewards-title h2{
+        font-size:22px;
+      }
+      .rewards-title span{
+        text-align:left;
       }
       .controls{
         flex-direction:column;
@@ -717,8 +859,8 @@
 
       <section class="rewards-panel">
         <div class="rewards-title">
-          <h2>🎁 Premios disponibles</h2>
-          <span>Se desbloquean según tus sellos acumulados</span>
+          <h2>🎁 Club de Premios</h2>
+          <span>Sube de nivel con tus compras y reclama premios exclusivos del Patrón</span>
         </div>
         <div class="levels" id="levelsBox"></div>
       </section>
@@ -738,10 +880,10 @@
     const TOKEN_KEY = "pdm_customer_token";
 
     const REWARD_LEVELS = [
-      { stamps: 5,  title: "Primer premio",  reward: "1 gaseosa gratis" },
-      { stamps: 10, title: "Segundo premio", reward: "1 salchimix gratis" },
-      { stamps: 15, title: "Tercer premio",  reward: "1 burger clásica gratis" },
-      { stamps: 20, title: "Gran premio",    reward: "1 plato de alitas gratis" }
+      { stamps: 5,  title: "Nivel Bronce",  reward: "1LT DE BEBIDA" },
+      { stamps: 10, title: "Nivel Plata", reward: "1 salchimix gratis" },
+      { stamps: 15, title: "Nivel Oro",  reward: "1 burger clásica gratis" },
+      { stamps: 20, title: "Nivel Diamante",    reward: "1 plato de alitas gratis" }
     ];
 
     const statusOk = document.getElementById("statusOk");
@@ -800,11 +942,17 @@
     function renderLevels(actuales) {
       levelsBox.innerHTML = "";
 
-      REWARD_LEVELS.forEach(level => {
+      const medals = ["🥉", "🥈", "🥇", "💎"];
+
+      REWARD_LEVELS.forEach((level, index) => {
         const unlocked = actuales >= level.stamps;
 
         const card = document.createElement("div");
         card.className = "level-card" + (unlocked ? " unlocked" : "");
+
+        const medal = document.createElement("div");
+        medal.className = "level-medal";
+        medal.textContent = medals[index] || "🎁";
 
         const top = document.createElement("div");
         top.className = "level-top";
@@ -819,11 +967,12 @@
 
         const desc = document.createElement("div");
         desc.className = "level-desc";
-        desc.innerHTML = `<b>${level.title}:</b> ${level.reward}`;
+        desc.innerHTML = `<b>${level.title}</b><span class="level-reward">${level.reward}</span>`;
 
         top.appendChild(title);
         top.appendChild(pill);
 
+        card.appendChild(medal);
         card.appendChild(top);
         card.appendChild(desc);
 
