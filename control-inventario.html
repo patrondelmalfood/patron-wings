@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Control de Inventario y Producción - El Patrón del Mal</title>
+  <style>
+    :root{--gold:#facc15;--gold2:#ff9f1c;--bg:#020617;--card:#07101f;--muted:#94a3b8;--ok:#22c55e;--bad:#ef4444;--blue:#38bdf8;}
+    *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#000;color:#fff;padding:14px;}
+    body:before{content:"";position:fixed;inset:0;background:radial-gradient(circle at top,#3a2600 0,#050505 35%,#000 100%);z-index:-2}
+    .wrap{max-width:1180px;margin:0 auto}.header{display:flex;gap:12px;align-items:center;background:rgba(2,6,23,.92);border:1px solid rgba(250,204,21,.45);border-radius:22px;padding:14px;box-shadow:0 0 20px rgba(250,204,21,.12);margin-bottom:14px}.logo{width:70px;height:70px;border-radius:50%;object-fit:contain;background:#fff;border:2px solid var(--gold)}
+    h1{margin:0;color:var(--gold);font-size:24px;line-height:1.05} .sub{color:#cbd5e1;font-size:13px;margin-top:4px}.badge{display:inline-block;margin-top:6px;background:#052e16;color:#86efac;border:1px solid #16a34a;padding:5px 9px;border-radius:999px;font-weight:900;font-size:12px}
+    .topbar{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:end;margin-bottom:14px}.panel{background:rgba(7,16,31,.96);border:1px solid rgba(250,204,21,.35);border-radius:18px;padding:14px;box-shadow:0 0 14px rgba(250,204,21,.07)}
+    label{display:block;color:#fde68a;font-size:12px;font-weight:900;margin-bottom:5px} input,textarea{width:100%;padding:11px;border-radius:12px;border:1px solid #334155;background:#020617;color:#fff;font-size:14px} textarea{min-height:60px;resize:vertical} button{border:0;border-radius:12px;padding:12px 13px;font-weight:900;cursor:pointer;background:var(--gold);color:#111827} button.blue{background:#0ea5e9;color:#fff}button.red{background:#ef4444;color:#fff}button.green{background:#22c55e;color:#052e16}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.metric{padding:14px;border-radius:16px;background:#020617;border:1px solid rgba(148,163,184,.25)}.metric small{color:#94a3b8;font-weight:700}.metric b{display:block;font-size:24px;color:#fef3c7;margin-top:6px}.metric.warn b{color:#fca5a5}.metric.ok b{color:#86efac}.section-title{margin:22px 0 10px;color:#ffb703;font-size:18px;border-bottom:1px solid rgba(250,204,21,.35);padding-bottom:8px}.input-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.input-card{background:#030712;border:1px solid rgba(148,163,184,.24);border-radius:14px;padding:10px}.input-card span{display:block;font-size:11px;color:#94a3b8;margin-top:4px}.table-wrap{overflow:auto;border-radius:14px;border:1px solid rgba(148,163,184,.25)}table{width:100%;border-collapse:collapse;background:#020617;min-width:760px}th,td{padding:10px;border-bottom:1px solid rgba(148,163,184,.16);text-align:left;font-size:13px}th{color:#fde68a;background:#111827;position:sticky;top:0}td.num{text-align:right;font-weight:900}.positive{color:#86efac}.negative{color:#fca5a5}.muted{color:#94a3b8}.small{font-size:12px;color:#cbd5e1;line-height:1.45}.status{white-space:pre-line;margin-top:10px;padding:10px;border-radius:12px;background:#020617;border:1px solid #334155;color:#e5e7eb}.actions{display:flex;gap:8px;flex-wrap:wrap}.note{background:#1e293b;border:1px solid rgba(148,163,184,.3);border-radius:14px;padding:12px;color:#cbd5e1;font-size:13px}.hide{display:none!important}
+    @media(max-width:850px){.topbar{grid-template-columns:1fr}.grid,.grid2,.input-grid{grid-template-columns:1fr 1fr}.header{align-items:flex-start}.logo{width:58px;height:58px}h1{font-size:20px}.actions button{width:100%}}
+    @media(max-width:520px){.grid,.grid2,.input-grid{grid-template-columns:1fr}body{padding:10px}.panel{padding:11px}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <img class="logo" src="LOGO.jpg" alt="El Patrón del Mal">
+    <div>
+      <h1>📦 Control de Inventario y Producción</h1>
+      <div class="sub">Entradas diarias + consumo automático según pedidos registrados por la moza.</div>
+      <span class="badge">Conectado a Supabase / orders_cloud</span>
+    </div>
+  </div>
+
+  <div class="topbar">
+    <div class="panel">
+      <label>Fecha de inventario</label>
+      <input type="date" id="dateKey">
+      <div class="small" id="activeDayText">Cargando caja activa...</div>
+    </div>
+    <button class="blue" id="btnLoad">🔄 Cargar día</button>
+    <button class="green" id="btnSave">💾 Guardar entradas</button>
+  </div>
+
+  <div class="grid" id="mainMetrics"></div>
+
+  <div class="section-title">📥 Entradas del día / Compras</div>
+  <div class="panel">
+    <div class="note" style="margin-bottom:12px">Aquí solo van productos que compras o ingresas como stock. No se toma en cuenta Limonada Frozen 1L, vasos de chicha, vasos de maracuyá ni vasos de hielo porque no son compras directas de inventario.</div>
+    <div class="input-grid" id="entriesGrid"></div>
+    <label style="margin-top:12px">Nota de compra / observación</label>
+    <textarea id="entryNote" placeholder="Ej: Compré 100 bolsas papa, 50 carnes, 40 panes..."></textarea>
+    <div class="status" id="saveStatus">Ingresa tus compras y presiona guardar.</div>
+  </div>
+
+  <div class="section-title">📊 Stock estimado actual</div>
+  <div class="table-wrap"><table id="stockTable"></table></div>
+
+  <div class="section-title">🔥 Consumo por producción</div>
+  <div class="grid2">
+    <div class="panel">
+      <h3 style="margin-top:0;color:#facc15">🍟 Papa / 🍔 Burger / 🍗 Cocina</h3>
+      <div class="table-wrap"><table id="productionTable"></table></div>
+    </div>
+    <div class="panel">
+      <h3 style="margin-top:0;color:#facc15">🥤 Bebidas vendidas</h3>
+      <div class="table-wrap"><table id="drinksTable"></table></div>
+    </div>
+  </div>
+
+  <div class="section-title">🧾 Pedidos leídos del día</div>
+  <div class="panel">
+    <div class="actions">
+      <button class="blue" id="btnRefresh">Actualizar pedidos</button>
+      <button class="red" id="btnClearLocal">Limpiar entradas locales de este día</button>
+    </div>
+    <div class="status" id="ordersStatus">Sin cargar.</div>
+    <div class="table-wrap"><table id="ordersTable"></table></div>
+  </div>
+
+  <div class="section-title">⚙️ Equivalencias usadas</div>
+  <div class="note">
+    <b>Este archivo ya trae tus equivalencias:</b><br>
+    4, 5 y 6 alitas = 1 bolsa de papa · 8 alitas = 2 · 10 alitas = 3 · 15 alitas = 4 · 30 alitas = 7.<br>
+    Todas las burgers descuentan 1 bolsa de papa + 1 pan. Pablo Escobar descuenta 2 carnes; las demás burgers 1 carne.<br>
+    Platos del Cartel descuentan papa y presas broaster: Sicario 2 presas, Plata o Plomo 3, El Capo 2, Presa extra 1. El Informante descuenta papa, pero no presa broaster porque es pechuga plancha.
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://defdwzzewzfjuseozwkn.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs".replace('eyJpc3MiOiJIUzI1NiIs','eyJpc3MiOiJIUzI1NiIs');
+// Clave correcta directa:
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
+// Si arriba alguna vez falla, reemplaza SB_KEY por la misma anon key de carta_moza_cocina.html.
+const ORDERS_TABLE = "orders_cloud";
+const CASH_STATE_TABLE = "cash_register_state";
+const INVENTORY_PREFIX = "INVENTORY_";
+const LOCAL_PREFIX = "pdm_inventory_entries_";
+const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SB_KEY, { auth:{ persistSession:false } }) : null;
+
+const ENTRY_FIELDS = [
+  ["potatoBags","🍟 Bolsas de papa 180g","unidades"],
+  ["burgerMeat","🥩 Carnes de burger","unidades"],
+  ["burgerBuns","🍞 Pan de hamburguesa","unidades"],
+  ["wingsKg","🍗 Kilos de alitas","kg"],
+  ["broasterPieces","🍗 Presas broaster","presas"],
+  ["chaufaPortions","🍚 Porciones de chaufa","porciones"],
+  ["sodaOneL","🥤 Gaseosa 1L","unidades"],
+  ["sodaGlass","🥤 Gaseosa vidrio mediana","unidades"],
+  ["sodaHalfPlastic","🥤 Gaseosa 600ml plástico","unidades"],
+  ["water","💧 Agua mineral","unidades"],
+  ["chichaOneL","🟣 Chicha 1L","unidades"],
+  ["maracuyaOneL","🟡 Maracuyá 1L","unidades"],
+  ["tapers","🥡 Tapers","unidades"],
+  ["bagsDelivery","🛍️ Bolsas delivery","unidades"]
+];
+
+const NAMES = Object.fromEntries(ENTRY_FIELDS.map(x => [x[0], x[1]]));
+function pad2(n){return String(n).padStart(2,"0")}
+function todayKey(){const d=new Date();return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`}
+function n(v){const x=Number(v);return Number.isFinite(x)?x:0}
+function round2(x){return Number(n(x).toFixed(2))}
+function fmt(x){return Number.isInteger(n(x)) ? String(n(x)) : n(x).toFixed(2)}
+function humanDate(key){if(!key)return ""; const [y,m,d]=key.split("-"); return `${d}/${m}/${y}`}
+function norm(s){return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[🔫💣👑🕶🔥🍔🧂🥤➕]/g,"").trim()}
+
+const CONSUMPTION_BY_ID = {
+  20:{potatoBags:1,wingsPieces:4}, 1:{potatoBags:1,wingsPieces:5}, 2:{potatoBags:1,wingsPieces:6}, 21:{potatoBags:2,wingsPieces:8},
+  3:{potatoBags:3,wingsPieces:10}, 4:{potatoBags:4,wingsPieces:15}, 5:{potatoBags:7,wingsPieces:30},
+  6:{potatoBags:1,wingsPieces:4,chaufaPortions:1}, 7:{potatoBags:1,wingsPieces:5,chorizo:1,hotdog:1}, 8:{potatoBags:2,chorizo:1,hotdog:1,eggs:1}, 9:{potatoBags:1,chaufaPortions:1},
+  64:{wingsPieces:1},
+  12:{potatoBags:1,burgerMeat:1,burgerBuns:1}, 13:{potatoBags:1,burgerMeat:1,burgerBuns:1,eggs:1}, 14:{potatoBags:1,burgerMeat:1,burgerBuns:1,chorizo:1,tocino:1}, 15:{potatoBags:1,burgerMeat:2,burgerBuns:1,eggs:1,tocino:1}, 16:{potatoBags:1,burgerMeat:1,burgerBuns:1},
+  60:{potatoBags:2,broasterPieces:2}, 61:{potatoBags:2,broasterPieces:3}, 62:{potatoBags:1,broasterPieces:2,chaufaPortions:1}, 63:{potatoBags:2}, 65:{broasterPieces:1},
+  23:{chaufaPortions:1}, 24:{potatoBags:1},
+  30:{maracuyaOneL:1}, 31:{chichaOneL:1}, 32:{water:1}, 42:{sodaGlass:1}, 35:{sodaHalfPlastic:1}, 37:{sodaOneL:1}
+};
+const NAME_FALLBACK = [
+  ["4 alitas",{potatoBags:1,wingsPieces:4}], ["5 alitas",{potatoBags:1,wingsPieces:5}], ["6 alitas",{potatoBags:1,wingsPieces:6}], ["8 alitas",{potatoBags:2,wingsPieces:8}], ["10 alitas",{potatoBags:3,wingsPieces:10}], ["15 alitas",{potatoBags:4,wingsPieces:15}], ["30 alitas",{potatoBags:7,wingsPieces:30}],
+  ["chaufi alitas",{potatoBags:1,wingsPieces:4,chaufaPortions:1}], ["salchi alitas",{potatoBags:1,wingsPieces:5}], ["salchi mix",{potatoBags:2}], ["golpe de la dea",{potatoBags:1}],
+  ["burger clasica",{potatoBags:1,burgerMeat:1,burgerBuns:1}], ["burger royal",{potatoBags:1,burgerMeat:1,burgerBuns:1}], ["burger premium",{potatoBags:1,burgerMeat:1,burgerBuns:1}], ["burger pablo",{potatoBags:1,burgerMeat:2,burgerBuns:1}], ["burger crispy",{potatoBags:1,burgerMeat:1,burgerBuns:1}],
+  ["sicario",{potatoBags:2,broasterPieces:2}], ["plata o plomo",{potatoBags:2,broasterPieces:3}], ["el capo",{potatoBags:1,broasterPieces:2,chaufaPortions:1}], ["informante",{potatoBags:2}], ["presa broaster extra",{broasterPieces:1}]
+];
+function getMap(item){return CONSUMPTION_BY_ID[Number(item.id)] || (NAME_FALLBACK.find(([k]) => norm(item.name).includes(k))||[])[1] || {}}
+function addTo(obj,key,val){obj[key]=round2(n(obj[key])+n(val))}
+function calculateTapers(order){
+  const mode = norm(order.deliveryMode || "");
+  if (!(mode.includes("delivery") || mode.includes("recojo") || mode.includes("llevar"))) return 0;
+  let count = 0, extraWings = 0;
+  (order.items||[]).forEach(e=>{
+    const id=Number(e.id), q=n(e.qty);
+    if ([29,30,31,32,35,37,38,42,44,45,39,40,41].includes(id)) return;
+    if (id===64){extraWings += q; return;}
+    if (id===21 || id===3) count += 2*q; else if (id===4) count += 3*q; else if (id===5) count += 4*q; else count += q;
+  });
+  if (extraWings > 5) count += 1;
+  return count;
+}
+function emptyEntries(){const o={}; ENTRY_FIELDS.forEach(([k])=>o[k]=0); return o}
+function renderInputs(entries){
+  const grid=document.getElementById("entriesGrid"); grid.innerHTML="";
+  ENTRY_FIELDS.forEach(([key,label,unit])=>{
+    const div=document.createElement("div"); div.className="input-card";
+    div.innerHTML=`<label>${label}</label><input type="number" min="0" step="0.01" id="in_${key}" value="${entries[key]||0}"><span>${unit}</span>`;
+    grid.appendChild(div);
+  });
+}
+function readInputs(){const e=emptyEntries(); ENTRY_FIELDS.forEach(([k])=> e[k]=n(document.getElementById("in_"+k)?.value)); return e}
+function localKey(dateKey){return LOCAL_PREFIX + dateKey}
+function saveLocal(dateKey,obj){localStorage.setItem(localKey(dateKey), JSON.stringify(obj))}
+function loadLocal(dateKey){try{return JSON.parse(localStorage.getItem(localKey(dateKey))||"null")}catch{return null}}
+async function loadActiveDay(){
+  const dateInput=document.getElementById("dateKey");
+  if(!supabaseClient){dateInput.value=todayKey(); return}
+  try{
+    const {data,error}=await supabaseClient.from(CASH_STATE_TABLE).select("*").eq("id",1).maybeSingle();
+    if(error) throw error;
+    const dk = data?.is_open && data?.active_date_key ? data.active_date_key : todayKey();
+    dateInput.value = dk;
+    document.getElementById("activeDayText").textContent = data?.is_open ? `🟢 Caja activa: ${humanDate(dk)}` : `🔴 Sin caja abierta. Usando fecha de hoy: ${humanDate(dk)}`;
+  }catch(err){dateInput.value=todayKey(); document.getElementById("activeDayText").textContent="No pude leer caja activa. Usando fecha de hoy."}
+}
+async function loadInventoryEntry(dateKey){
+  const local = loadLocal(dateKey);
+  let cloud = null;
+  if(supabaseClient){
+    try{
+      const {data,error}=await supabaseClient.from(ORDERS_TABLE).select("*").eq("order_id",INVENTORY_PREFIX+dateKey).maybeSingle();
+      if(error) throw error;
+      cloud = data?.data || null;
+    }catch(err){console.warn(err)}
+  }
+  return cloud || local || {dateKey, entries:emptyEntries(), note:""};
+}
+async function saveInventory(){
+  const dateKey=document.getElementById("dateKey").value || todayKey();
+  const payload={__type:"inventory_entry",dateKey,entries:readInputs(),note:document.getElementById("entryNote").value.trim(),updatedAt:new Date().toISOString()};
+  saveLocal(dateKey,payload);
+  const st=document.getElementById("saveStatus"); st.textContent="Guardando entradas...";
+  if(!supabaseClient){st.textContent="⚠️ Guardado local. Supabase no cargó."; await reloadAll(); return}
+  try{
+    const {error}=await supabaseClient.from(ORDERS_TABLE).upsert({order_id:INVENTORY_PREFIX+dateKey,date_key:dateKey,boleta_number:"",status:"INVENTORY",updated_at:new Date().toISOString(),data:payload},{onConflict:"order_id"});
+    if(error) throw error;
+    st.textContent="✅ Entradas guardadas en Supabase y local.";
+  }catch(err){st.textContent="⚠️ Guardado local, pero no confirmó nube: "+(err.message||String(err));}
+  await reloadAll();
+}
+async function loadOrders(dateKey){
+  if(!supabaseClient) return [];
+  const {data,error}=await supabaseClient.from(ORDERS_TABLE).select("*").eq("date_key",dateKey).order("updated_at",{ascending:false}).limit(1000);
+  if(error) throw error;
+  return (data||[]).map(r=>r.data).filter(o=>o && !o.__type && String(o.status||"")!=="DAY_SETUP" && String(o.status||"")!=="INVENTORY" && Array.isArray(o.items));
+}
+function calculateConsumption(orders){
+  const used={}; const product={}; const drinks={}; let ventas=0,total=0;
+  orders.forEach(order=>{
+    ventas++; total += n(order.total); addTo(used,"tapers",calculateTapers(order));
+    (order.items||[]).forEach(item=>{
+      const q=n(item.qty), name=item.name||"Producto";
+      product[name]=(product[name]||0)+q;
+      const map=getMap(item);
+      Object.entries(map).forEach(([k,v])=>addTo(used,k,n(v)*q));
+      if([29,30,31,32,35,37,38,42,44,45].includes(Number(item.id))) drinks[name]=(drinks[name]||0)+q;
+    });
+  });
+  if(used.wingsPieces) used.wingsKg = round2(used.wingsPieces / 16);
+  return {used,product,drinks,ventas,total};
+}
+function renderMetrics(entries, used, meta){
+  const restPapa=n(entries.potatoBags)-n(used.potatoBags), restCarnes=n(entries.burgerMeat)-n(used.burgerMeat), restPanes=n(entries.burgerBuns)-n(used.burgerBuns), restPresas=n(entries.broasterPieces)-n(used.broasterPieces);
+  const cards=[
+    ["Pedidos registrados",meta.ventas||0,""], ["Venta total leída","S/ "+n(meta.total).toFixed(2),""],
+    ["Papa restante",fmt(restPapa)+" bolsas",restPapa<0?"warn":"ok"], ["Carnes burger restantes",fmt(restCarnes)+" und",restCarnes<0?"warn":"ok"],
+    ["Panes burger restantes",fmt(restPanes)+" und",restPanes<0?"warn":"ok"], ["Presas broaster restantes",fmt(restPresas)+" presas",restPresas<0?"warn":"ok"],
+    ["Alitas usadas",fmt(used.wingsPieces||0)+" piezas", ""], ["Kg alitas usados",fmt(used.wingsKg||0)+" kg", ""]
+  ];
+  document.getElementById("mainMetrics").innerHTML=cards.map(c=>`<div class="metric ${c[2]}"><small>${c[0]}</small><b>${c[1]}</b></div>`).join("");
+}
+function renderStock(entries, used){
+  const keys=["potatoBags","burgerMeat","burgerBuns","wingsKg","broasterPieces","chaufaPortions","sodaOneL","sodaGlass","sodaHalfPlastic","water","chichaOneL","maracuyaOneL","tapers","bagsDelivery"];
+  const rows=keys.map(k=>{const inq=n(entries[k]), out=n(used[k]), rest=round2(inq-out); return `<tr><td>${NAMES[k]||k}</td><td class="num">${fmt(inq)}</td><td class="num">${fmt(out)}</td><td class="num ${rest<0?'negative':'positive'}">${fmt(rest)}</td></tr>`}).join("");
+  document.getElementById("stockTable").innerHTML=`<thead><tr><th>Insumo</th><th>Ingresó</th><th>Usado / vendido</th><th>Restante estimado</th></tr></thead><tbody>${rows}</tbody>`;
+}
+function renderProduction(product){
+  const rows=Object.entries(product).sort((a,b)=>b[1]-a[1]).map(([name,q])=>`<tr><td>${name}</td><td class="num">${fmt(q)}</td></tr>`).join("") || `<tr><td colspan="2" class="muted">Sin productos vendidos.</td></tr>`;
+  document.getElementById("productionTable").innerHTML=`<thead><tr><th>Producto vendido</th><th>Cantidad</th></tr></thead><tbody>${rows}</tbody>`;
+}
+function renderDrinks(drinks){
+  const rows=Object.entries(drinks).sort((a,b)=>b[1]-a[1]).map(([name,q])=>`<tr><td>${name}</td><td class="num">${fmt(q)}</td></tr>`).join("") || `<tr><td colspan="2" class="muted">Sin bebidas vendidas.</td></tr>`;
+  document.getElementById("drinksTable").innerHTML=`<thead><tr><th>Bebida</th><th>Vendida</th></tr></thead><tbody>${rows}</tbody>`;
+}
+function renderOrders(orders){
+  document.getElementById("ordersStatus").textContent=`✅ Se leyeron ${orders.length} pedidos del día.`;
+  const rows=orders.map(o=>`<tr><td>${o.dailyOrderNumber||o.boletaNumber||o.id||""}</td><td>${o.dateTime||""}</td><td>${o.customerName||""}</td><td>${(o.items||[]).length}</td><td class="num">S/ ${n(o.total).toFixed(2)}</td></tr>`).join("") || `<tr><td colspan="5" class="muted">No hay pedidos registrados para esta fecha.</td></tr>`;
+  document.getElementById("ordersTable").innerHTML=`<thead><tr><th>Pedido</th><th>Hora</th><th>Cliente</th><th>Items</th><th>Total</th></tr></thead><tbody>${rows}</tbody>`;
+}
+async function reloadAll(){
+  const dateKey=document.getElementById("dateKey").value || todayKey();
+  const st=document.getElementById("ordersStatus"); st.textContent="Cargando pedidos e inventario...";
+  const inv=await loadInventoryEntry(dateKey); renderInputs(inv.entries || emptyEntries()); document.getElementById("entryNote").value=inv.note||"";
+  let orders=[];
+  try{orders=await loadOrders(dateKey)}catch(err){st.textContent="⚠️ No pude leer pedidos: "+(err.message||String(err)); orders=[]}
+  const calc=calculateConsumption(orders);
+  renderMetrics(inv.entries||emptyEntries(), calc.used, calc);
+  renderStock(inv.entries||emptyEntries(), calc.used);
+  renderProduction(calc.product); renderDrinks(calc.drinks); renderOrders(orders);
+}
+
+document.getElementById("btnLoad").addEventListener("click", reloadAll);
+document.getElementById("btnRefresh").addEventListener("click", reloadAll);
+document.getElementById("btnSave").addEventListener("click", saveInventory);
+document.getElementById("btnClearLocal").addEventListener("click", async()=>{const dk=document.getElementById("dateKey").value; if(confirm("¿Limpiar entradas locales de este día? No borra nube.")){localStorage.removeItem(localKey(dk)); await reloadAll();}});
+(async()=>{renderInputs(emptyEntries()); await loadActiveDay(); await reloadAll();})();
+</script>
+</body>
+</html>
