@@ -1859,15 +1859,55 @@ function buildKitchenTicket(ctx){
   }).join("");
   return `<div style="text-align:center;font-weight:900;font-size:15px;">COMANDA COCINA<br><small>EL PATRÓN DEL MAL</small><br><small>Pedido N° ${dailyOrderNumber()}</small><br><small>Boleta virtual N° ${CURRENT_BOLETA || "------"}</small><br><small>${formatDateTime()}</small></div><hr>${rows}<hr><small><b>Tipo:</b> ${ctx.deliveryTextPrint}<br><b>Cliente:</b> ${ctx.name || "No indicado"}${ctx.dni ? `<br><b>DNI:</b> ${ctx.dni}` : ""}${ctx.comment ? `<br><b>Comentario:</b> ${ctx.comment}` : ""}<br><b>Pago:</b> ${paymentText(ctx)}</small>`;
 }
-function printHTML(html, title="Imprimir"){
-  const win = window.open("", "_blank", "width=420,height=650");
-  if (!win) {
-    alert("No se pudo abrir la ventana de impresión. Permite ventanas emergentes en el navegador.");
-    return;
-  }
-  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${title}</title><style>@page{size:80mm auto;margin:4mm;}body{font-family:Arial,sans-serif;font-size:12px;color:#000;background:#fff;margin:0;padding:0;width:72mm;}hr{border:none;border-top:1px dashed #000;margin:6px 0;}small{font-size:10px;}b{font-weight:900;}</style></head><body>${html}<script>setTimeout(function(){window.focus();window.print();},350);<\/script></body></html>`);
-  win.document.close();
+function rawBtCleanText(text){
+  return String(text || "")
+    .replace(/[🔥👨‍🍳🧾✅🟢🔒🗓️📍🥡🛵🛍️🍽️💳💵📲👤]/g, "")
+    .replace(/[\u{1F300}-\u{1FAFF}]/gu, "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\r/g, "")
+    .replace(/[ \t]+\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 }
+function htmlToRawBtText(html){
+  let x = String(html || "");
+  x = x.replace(/<\s*hr\s*\/?>/gi, "\n--------------------------------\n");
+  x = x.replace(/<\s*br\s*\/?>/gi, "\n");
+  x = x.replace(/<\/\s*(div|p|section|article|h1|h2|h3|tr)\s*>/gi, "\n");
+  x = x.replace(/<\/\s*(small|b|strong|span)\s*>/gi, " ");
+  const tmp = document.createElement("div");
+  tmp.innerHTML = x;
+  let text = tmp.textContent || tmp.innerText || "";
+  text = text.replace(/\u00a0/g, " ");
+  text = text.replace(/[ \t]{2,}/g, " ");
+  text = text.split("\n").map(line => line.trim()).filter(Boolean).join("\n");
+  return rawBtCleanText(text + "\n\n\n");
+}
+function sendTextToRawBT(text, title="Imprimir"){
+  const clean = rawBtCleanText(text + "\n\n\n");
+  if (!clean) return alert("No hay contenido para imprimir.");
+
+  try {
+    const encoded = encodeURIComponent(clean);
+    const isAndroid = /Android/i.test(navigator.userAgent || "");
+
+    // RawBT recibe texto directo usando el esquema rawbt:. En Android Chrome se fuerza el paquete de RawBT.
+    if (isAndroid) {
+      window.location.href = `intent:${encoded}#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;`;
+    } else {
+      window.location.href = `rawbt:${encoded}`;
+    }
+  } catch(err) {
+    alert("No pude abrir RawBT: " + (err.message || String(err)));
+  }
+}
+function printHTML(html, title="Imprimir"){
+  // Antes abría una ventana del navegador y mandaba a PDF. Ahora manda el texto directo a RawBT.
+  const rawText = htmlToRawBtText(html);
+  sendTextToRawBT(rawText, title);
+}
+
 function dateKeyLocal(d = new Date()){
   return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
 }
