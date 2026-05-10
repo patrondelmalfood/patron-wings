@@ -72,6 +72,27 @@
     .tag.pending{border-color:#facc15;color:#fde68a}.tag.done{border-color:#22c55e;color:#86efac}.tag.cancel{border-color:#ef4444;color:#fecaca}
     .actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.actions button{padding:7px 9px;border-radius:10px;font-size:12px}
     .note{font-size:12px;color:#94a3b8;line-height:1.45;margin-top:8px}.hide{display:none!important}
+
+    .edit-payment-btn{background:#f97316;color:#111827}
+    .modal-backdrop{
+      position:fixed;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;
+      padding:14px;z-index:99;backdrop-filter:blur(6px)
+    }
+    .modal-card{
+      width:min(460px,96vw);background:linear-gradient(180deg,#111827,#020617);border:1px solid rgba(250,204,21,.38);
+      border-radius:22px;padding:16px;box-shadow:0 22px 70px rgba(0,0,0,.65)
+    }
+    .modal-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px}
+    .modal-head h3{margin:0;color:var(--gold);font-size:19px}.modal-head p{margin:4px 0 0;color:var(--muted);font-size:12px;line-height:1.35}
+    .modal-close{background:#1f2937;color:#fff;border:1px solid #334155;padding:8px 10px;border-radius:12px}
+    .pay-options{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+    .pay-option{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:64px;border-radius:14px;border:1px solid #334155;background:#020617;color:#fff;cursor:pointer;font-size:12px;font-weight:900;text-align:center}
+    .pay-option input{position:absolute;opacity:0;pointer-events:none}
+    .pay-option span{font-size:22px}.pay-option:has(input:checked){border-color:var(--gold2);background:rgba(250,204,21,.14);box-shadow:inset 0 0 14px rgba(250,204,21,.10)}
+    .modal-actions{display:flex;gap:8px;margin-top:12px}.modal-actions button{flex:1}
+    .modal-msg{min-height:18px;margin-top:8px;font-size:12px;font-weight:800;white-space:pre-line}
+    @media(max-width:420px){.pay-options{grid-template-columns:1fr}.modal-actions{flex-direction:column}}
+
     .summarybox{max-height:340px;overflow:auto}.rowline{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed #1e293b}.rowline b{color:var(--gold)}
     @media(max-width:850px){.grid-4,.grid-3,.grid-2{grid-template-columns:1fr}.controls{grid-template-columns:1fr}.topbar{position:relative;flex-direction:column;align-items:stretch}.brand{justify-content:center;text-align:center}.topbar .actions{justify-content:center}.metric .value{font-size:22px}}
     @media print{
@@ -189,6 +210,45 @@
     </div>
   </div>
 
+
+
+  <div id="paymentModal" class="modal-backdrop hide">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div>
+          <h3>✏️ Editar pago del pedido</h3>
+          <p id="editPaymentInfo">Selecciona la nueva forma de pago. Esto solo corrige el pago, no cambia productos ni total.</p>
+        </div>
+        <button id="btnClosePaymentModal" class="modal-close" type="button">✕</button>
+      </div>
+
+      <label>Forma de pago</label>
+      <div class="pay-options">
+        <label class="pay-option"><input type="radio" name="editPaymentMethod" value="efectivo"><span>💵</span>Efectivo</label>
+        <label class="pay-option"><input type="radio" name="editPaymentMethod" value="yape"><span>📲</span>Yape</label>
+        <label class="pay-option"><input type="radio" name="editPaymentMethod" value="mixto"><span>💳</span>Mixto</label>
+      </div>
+
+      <div id="editMixedBox" class="grid grid-2 hide">
+        <div>
+          <label for="editMixedYape">Monto Yape</label>
+          <input id="editMixedYape" type="number" min="0" step="0.01" placeholder="0.00">
+        </div>
+        <div>
+          <label for="editMixedCash">Monto efectivo</label>
+          <input id="editMixedCash" type="number" min="0" step="0.01" placeholder="0.00">
+        </div>
+      </div>
+
+      <div class="note">En pago mixto, Yape + efectivo debe cuadrar con el total del pedido.</div>
+      <div id="editPaymentMsg" class="modal-msg"></div>
+      <div class="modal-actions">
+        <button id="btnCancelPaymentEdit" class="btn-dark" type="button">Cancelar</button>
+        <button id="btnSavePaymentEdit" class="btn-green" type="button">Guardar pago</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const ADMIN_PASSWORD = "181221";
@@ -202,7 +262,7 @@
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth:{ persistSession:false } });
 
     const els = {};
-    const ids = ["loginBox","app","adminPass","btnLogin","btnLogout","loginError","adminDate","btnRefresh","btnPrint","btnSaveSetup","lastUpdate","liveStatus","liveDot","openCashInput","mozaInput","shiftInput","mOrders","mSales","mCash","mYape","mOpenCash","mFinalCash","mFinalAll","mCanceled","mPending","mDelivered","mDelivery","mTapers","productSummary","drinkSummary","ordersList","orderCountTag","activeCashStatus"];
+    const ids = ["loginBox","app","adminPass","btnLogin","btnLogout","loginError","adminDate","btnRefresh","btnPrint","btnSaveSetup","lastUpdate","liveStatus","liveDot","openCashInput","mozaInput","shiftInput","mOrders","mSales","mCash","mYape","mOpenCash","mFinalCash","mFinalAll","mCanceled","mPending","mDelivered","mDelivery","mTapers","productSummary","drinkSummary","ordersList","orderCountTag","activeCashStatus","paymentModal","btnClosePaymentModal","btnCancelPaymentEdit","btnSavePaymentEdit","editPaymentInfo","editMixedBox","editMixedYape","editMixedCash","editPaymentMsg"];
     ids.forEach(id => els[id] = document.getElementById(id));
 
     let currentOrders = [];
@@ -212,6 +272,7 @@
     let activeDateKey = "";
     let cashIsOpen = false;
     let userChangedDate = false;
+    let currentEditOrderId = null;
 
     function safeNum(n){ return Number.isFinite(Number(n)) ? Number(n) : 0; }
     function safeInt(n){ return Math.round(safeNum(n)); }
@@ -482,11 +543,96 @@
           <div class="actions">
             <button class="btn-green" onclick="updateStatus('${esc(row.order_id)}','ENTREGADO')">Marcar entregado</button>
             <button class="btn-dark" onclick="updateStatus('${esc(row.order_id)}','PENDIENTE')">Volver pendiente</button>
+            <button class="edit-payment-btn" onclick="openPaymentEditor('${esc(row.order_id)}')">Editar pago</button>
             <button class="btn-red" onclick="updateStatus('${esc(row.order_id)}','ANULADO')">Anular</button>
           </div>
         </div>`;
       }).join("");
     }
+
+
+
+    function getSelectedEditPaymentMethod(){
+      const checked = document.querySelector('input[name="editPaymentMethod"]:checked');
+      return checked ? checked.value : "efectivo";
+    }
+    function toggleEditMixedBox(){
+      const method = getSelectedEditPaymentMethod();
+      els.editMixedBox.classList.toggle("hide", method !== "mixto");
+    }
+    function openPaymentEditor(orderId){
+      const row = currentOrders.find(r => String(r.order_id) === String(orderId));
+      if (!row) return alert("No encontré el pedido.");
+      if (isTechnicalRow(row)) return;
+      const order = getOrderFromRow(row);
+      currentEditOrderId = orderId;
+      const method = String(order.paymentMethod || "efectivo").toLowerCase();
+      const radio = document.querySelector(`input[name="editPaymentMethod"][value="${method}"]`) || document.querySelector('input[name="editPaymentMethod"][value="efectivo"]');
+      if (radio) radio.checked = true;
+      els.editMixedYape.value = safeNum(order.mixedYape) ? safeNum(order.mixedYape).toFixed(2) : "";
+      els.editMixedCash.value = safeNum(order.mixedCash) ? safeNum(order.mixedCash).toFixed(2) : "";
+      els.editPaymentMsg.textContent = "";
+      els.editPaymentMsg.className = "modal-msg";
+      els.editPaymentInfo.innerHTML = `Pedido <b>${esc(order.dailyOrderNumber || row.order_id)}</b> · Total: <b>${money(order.total)}</b>`;
+      toggleEditMixedBox();
+      els.paymentModal.classList.remove("hide");
+    }
+    function closePaymentEditor(){
+      currentEditOrderId = null;
+      els.paymentModal.classList.add("hide");
+      els.editPaymentMsg.textContent = "";
+    }
+    async function savePaymentEdit(){
+      if (!currentEditOrderId) return;
+      const row = currentOrders.find(r => String(r.order_id) === String(currentEditOrderId));
+      if (!row) return alert("No encontré el pedido.");
+      const method = getSelectedEditPaymentMethod();
+      const oldOrder = getOrderFromRow(row);
+      const total = round2(oldOrder.total);
+      let mixedYape = 0;
+      let mixedCash = 0;
+      if (method === "mixto") {
+        mixedYape = round2(els.editMixedYape.value);
+        mixedCash = round2(els.editMixedCash.value);
+        if (mixedYape < 0 || mixedCash < 0) {
+          els.editPaymentMsg.textContent = "Los montos no pueden ser negativos.";
+          els.editPaymentMsg.className = "modal-msg bad";
+          return;
+        }
+        if (round2(mixedYape + mixedCash) !== total) {
+          els.editPaymentMsg.textContent = `No cuadra el pago mixto.
+Yape + efectivo = ${money(mixedYape + mixedCash)}
+Total pedido = ${money(total)}`;
+          els.editPaymentMsg.className = "modal-msg bad";
+          return;
+        }
+      }
+      const now = new Date().toISOString();
+      const order = {
+        ...oldOrder,
+        paymentMethod: method,
+        mixedYape: method === "mixto" ? mixedYape : 0,
+        mixedCash: method === "mixto" ? mixedCash : 0,
+        paymentEditedAt: now,
+        updatedAt: now
+      };
+      els.btnSavePaymentEdit.disabled = true;
+      els.btnSavePaymentEdit.textContent = "Guardando...";
+      els.editPaymentMsg.textContent = "Guardando corrección...";
+      els.editPaymentMsg.className = "modal-msg warn";
+      const { error } = await supabaseClient.from(ORDERS_TABLE).update({ updated_at:now, data:order }).eq("order_id", currentEditOrderId);
+      els.btnSavePaymentEdit.disabled = false;
+      els.btnSavePaymentEdit.textContent = "Guardar pago";
+      if (error) {
+        els.editPaymentMsg.textContent = "No se pudo guardar: " + error.message;
+        els.editPaymentMsg.className = "modal-msg bad";
+        return;
+      }
+      closePaymentEditor();
+      await refreshData(false);
+      alert("✅ Pago corregido correctamente.");
+    }
+    window.openPaymentEditor = openPaymentEditor;
 
     async function refreshData(forceForm=false){
       if (!logged) return;
@@ -614,6 +760,13 @@
     els.adminDate.addEventListener("change", () => { userChangedDate = true; refreshData(true); });
     els.btnSaveSetup.addEventListener("click", handleSaveSetup);
     els.btnPrint.addEventListener("click", printSummary);
+
+
+    document.querySelectorAll('input[name="editPaymentMethod"]').forEach(r => r.addEventListener("change", toggleEditMixedBox));
+    els.btnClosePaymentModal.addEventListener("click", closePaymentEditor);
+    els.btnCancelPaymentEdit.addEventListener("click", closePaymentEditor);
+    els.btnSavePaymentEdit.addEventListener("click", savePaymentEdit);
+    els.paymentModal.addEventListener("click", (e) => { if (e.target === els.paymentModal) closePaymentEditor(); });
 
     initRealtime();
     setInterval(() => refreshData(false), 5000);
