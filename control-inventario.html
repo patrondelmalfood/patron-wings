@@ -342,8 +342,8 @@
 
       <div>
         <label>Kg de arroz que equivale a 1 porción de chaufa</label>
-        <input type="number" id="riceKgPerPortion" min="0" step="0.01" value="0.10">
-        <div class="small">Puedes cambiarlo. Se usa para descontar Arroz Kg en El Capo y porción de chaufa. Recomendado: 0.10 kg por porción.</div>
+        <input type="number" id="riceKgPerPortion" min="0" step="0.01" value="0.125">
+        <div class="small">Puedes cambiarlo. Se usa para descontar Arroz Kg en El Capo y porción de chaufa. Recomendado: 0.125 kg por porción.</div>
       </div>
     </div>
 
@@ -655,7 +655,7 @@ function loadLocal(key){
 
 function getRiceKgPerPortion(){
   const val = n(document.getElementById("riceKgPerPortion")?.value);
-  return val > 0 ? val : 0.10;
+  return val > 0 ? val : 0.125;
 }
 
 function getMap(item){
@@ -809,7 +809,7 @@ async function loadInitialStock(){
     entries: normalizeEntries(src.entries),
     note: src.note || "",
     oilStartDate: src.oilStartDate || todayKey(),
-    riceKgPerPortion: n(src.riceKgPerPortion) || 0.10,
+    riceKgPerPortion: n(src.riceKgPerPortion) || 0.125,
     updatedAt: src.updatedAt || null
   };
 }
@@ -1194,7 +1194,7 @@ async function reloadAll(){
   renderInputs("initialGrid", "initial", initial.entries);
   document.getElementById("initialNote").value = initial.note || "";
   document.getElementById("oilStartDate").value = initial.oilStartDate || todayKey();
-  document.getElementById("riceKgPerPortion").value = initial.riceKgPerPortion || 0.10;
+  document.getElementById("riceKgPerPortion").value = initial.riceKgPerPortion || 0.125;
 
   const daily = await loadDailyEntry(dateKey);
   renderInputs("entriesGrid", "daily", daily.entries);
