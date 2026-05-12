@@ -9,376 +9,68 @@
     *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#000;color:#fff;padding:14px;}
     body:before{content:"";position:fixed;inset:0;background:radial-gradient(circle at top,#3a2600 0,#050505 35%,#000 100%);z-index:-2}
     .wrap{max-width:1180px;margin:0 auto}.header{display:flex;gap:12px;align-items:center;background:rgba(2,6,23,.92);border:1px solid rgba(250,204,21,.45);border-radius:22px;padding:14px;box-shadow:0 0 20px rgba(250,204,21,.12);margin-bottom:14px}.logo{width:70px;height:70px;border-radius:50%;object-fit:contain;background:#fff;border:2px solid var(--gold)}
-    h1{margin:0;color:var(--gold);font-size:24px;line-height:1.05} .sub{color:#cbd5e1;font-size:13px;margin-top:4px}.badge{display:inline-block;margin-top:6px;background:#052e16;color:#86efac;border:1px solid #16a34a;padding:5px 9px;border-radius:999px;font-weight:900;font-size:12px}
+    h1{margin:0;color:var(--gold);font-size:24px;line-height:1.05}.sub{color:#cbd5e1;font-size:13px;margin-top:4px}.badge{display:inline-block;margin-top:6px;background:#052e16;color:#86efac;border:1px solid #16a34a;padding:5px 9px;border-radius:999px;font-weight:900;font-size:12px}
     .topbar{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:end;margin-bottom:14px}.panel{background:rgba(7,16,31,.96);border:1px solid rgba(250,204,21,.35);border-radius:18px;padding:14px;box-shadow:0 0 14px rgba(250,204,21,.07)}
-    label{display:block;color:#fde68a;font-size:12px;font-weight:900;margin-bottom:5px} input,textarea{width:100%;padding:11px;border-radius:12px;border:1px solid #334155;background:#020617;color:#fff;font-size:14px} textarea{min-height:60px;resize:vertical} button{border:0;border-radius:12px;padding:12px 13px;font-weight:900;cursor:pointer;background:var(--gold);color:#111827} button.blue{background:#0ea5e9;color:#fff}button.red{background:#ef4444;color:#fff}button.green{background:#22c55e;color:#052e16}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.metric{padding:14px;border-radius:16px;background:#020617;border:1px solid rgba(148,163,184,.25)}.metric small{color:#94a3b8;font-weight:700}.metric b{display:block;font-size:24px;color:#fef3c7;margin-top:6px}.metric.warn b{color:#fca5a5}.metric.ok b{color:#86efac}.section-title{margin:22px 0 10px;color:#ffb703;font-size:18px;border-bottom:1px solid rgba(250,204,21,.35);padding-bottom:8px}.input-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.input-card{background:#030712;border:1px solid rgba(148,163,184,.24);border-radius:14px;padding:10px}.input-card span{display:block;font-size:11px;color:#94a3b8;margin-top:4px}.table-wrap{overflow:auto;border-radius:14px;border:1px solid rgba(148,163,184,.25)}table{width:100%;border-collapse:collapse;background:#020617;min-width:760px}th,td{padding:10px;border-bottom:1px solid rgba(148,163,184,.16);text-align:left;font-size:13px}th{color:#fde68a;background:#111827;position:sticky;top:0}td.num{text-align:right;font-weight:900}.positive{color:#86efac}.negative{color:#fca5a5}.muted{color:#94a3b8}.small{font-size:12px;color:#cbd5e1;line-height:1.45}.status{white-space:pre-line;margin-top:10px;padding:10px;border-radius:12px;background:#020617;border:1px solid #334155;color:#e5e7eb}.actions{display:flex;gap:8px;flex-wrap:wrap}.note{background:#1e293b;border:1px solid rgba(148,163,184,.3);border-radius:14px;padding:12px;color:#cbd5e1;font-size:13px}.hide{display:none!important}
+    label{display:block;color:#fde68a;font-size:12px;font-weight:900;margin-bottom:5px} input,textarea{width:100%;padding:11px;border-radius:12px;border:1px solid #334155;background:#020617;color:#fff;font-size:14px} textarea{min-height:60px;resize:vertical}
+    button{border:0;border-radius:12px;padding:12px 13px;font-weight:900;cursor:pointer;background:var(--gold);color:#111827}button:hover{opacity:.92;transform:translateY(-1px)}button:disabled{opacity:.60;cursor:not-allowed;transform:none}button.blue{background:#0ea5e9;color:#fff}button.red{background:#ef4444;color:#fff}button.green{background:#22c55e;color:#052e16}button.dark{background:#1f2937;color:#fef3c7;border:1px solid #334155}
+    .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.metric{padding:14px;border-radius:16px;background:#020617;border:1px solid rgba(148,163,184,.25)}.metric small{color:#94a3b8;font-weight:700}.metric b{display:block;font-size:24px;color:#fef3c7;margin-top:6px}.metric.warn b{color:#fca5a5}.metric.ok b{color:#86efac}
+    .section-title{margin:22px 0 10px;color:#ffb703;font-size:18px;border-bottom:1px solid rgba(250,204,21,.35);padding-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.input-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.input-card{background:#030712;border:1px solid rgba(148,163,184,.24);border-radius:14px;padding:10px}.input-card span{display:block;font-size:11px;color:#94a3b8;margin-top:4px}
+    .table-wrap{overflow:auto;border-radius:14px;border:1px solid rgba(148,163,184,.25)}table{width:100%;border-collapse:collapse;background:#020617;min-width:760px}th,td{padding:10px;border-bottom:1px solid rgba(148,163,184,.16);text-align:left;font-size:13px;vertical-align:top}th{color:#fde68a;background:#111827;position:sticky;top:0}td.num{text-align:right;font-weight:900}.positive{color:#86efac}.negative{color:#fca5a5}.muted{color:#94a3b8}.small{font-size:12px;color:#cbd5e1;line-height:1.45}.status{white-space:pre-line;margin-top:10px;padding:10px;border-radius:12px;background:#020617;border:1px solid #334155;color:#e5e7eb}.actions{display:flex;gap:8px;flex-wrap:wrap}.note{background:#1e293b;border:1px solid rgba(148,163,184,.3);border-radius:14px;padding:12px;color:#cbd5e1;font-size:13px;line-height:1.45}.mini-pill{display:inline-flex;padding:6px 10px;border-radius:999px;background:#020617;border:1px solid rgba(250,204,21,.25);color:#fde68a;font-size:12px;font-weight:900}
     @media(max-width:850px){.topbar{grid-template-columns:1fr}.grid,.grid2,.input-grid{grid-template-columns:1fr 1fr}.header{align-items:flex-start}.logo{width:58px;height:58px}h1{font-size:20px}.actions button{width:100%}}
     @media(max-width:520px){.grid,.grid2,.input-grid{grid-template-columns:1fr}body{padding:10px}.panel{padding:11px}}
   </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="header">
-    <img class="logo" src="LOGO.jpg" alt="El Patrón del Mal">
-    <div>
-      <h1>📦 Control de Inventario y Producción</h1>
-      <div class="sub">Inventario acumulado: compras nuevas + saldo anterior - consumo automático por pedidos.</div>
-      <span class="badge">Conectado a Supabase / orders_cloud</span>
-    </div>
-  </div>
-
-  <div class="topbar">
-    <div class="panel">
-      <label>Fecha de inventario</label>
-      <input type="date" id="dateKey">
-      <div class="small" id="activeDayText">Cargando caja activa...</div>
-    </div>
-    <button class="blue" id="btnLoad">🔄 Cargar día</button>
-    <button class="green" id="btnSave">💾 Guardar entradas</button>
-  </div>
-
+  <div class="header"><img class="logo" src="LOGO.jpg" alt="El Patrón del Mal"><div><h1>📦 Control de Inventario y Producción</h1><div class="sub">Stock inicial + compras acumuladas - consumo automático según pedidos registrados.</div><span class="badge">Inventario acumulado conectado a Supabase / orders_cloud</span></div></div>
+  <div class="topbar"><div class="panel"><label>Fecha de inventario</label><input type="date" id="dateKey"><div class="small" id="activeDayText">Cargando caja activa...</div></div><button class="blue" id="btnLoad">🔄 Cargar inventario</button><button class="green" id="btnSaveDaily">💾 Guardar compras del día</button></div>
   <div class="grid" id="mainMetrics"></div>
-
-  <div class="section-title">📥 Compras nuevas del día</div>
-  <div class="panel">
-    <div class="note" style="margin-bottom:12px">Aquí coloca SOLO lo que compraste o ingresaste este día. El sistema lo suma al stock anterior y descuenta automáticamente lo vendido según los pedidos registrados.</div>
-    <div class="input-grid" id="entriesGrid"></div>
-    <label style="margin-top:12px">Nota de compra / observación</label>
-    <textarea id="entryNote" placeholder="Ej: Compré 100 bolsas papa, 50 carnes, 40 panes..."></textarea>
-    <div class="status" id="saveStatus">Ingresa tus compras y presiona guardar.</div>
-  </div>
-
-  <div class="section-title">📊 Stock acumulado estimado</div>
-  <div class="table-wrap"><table id="stockTable"></table></div>
-
-  <div class="section-title">🔥 Consumo del día por producción</div>
-  <div class="grid2">
-    <div class="panel">
-      <h3 style="margin-top:0;color:#facc15">🍟 Papa / 🍔 Burger / 🍗 Cocina</h3>
-      <div class="table-wrap"><table id="productionTable"></table></div>
-    </div>
-    <div class="panel">
-      <h3 style="margin-top:0;color:#facc15">🥤 Bebidas vendidas</h3>
-      <div class="table-wrap"><table id="drinksTable"></table></div>
-    </div>
-  </div>
-
-  <div class="section-title">🧾 Pedidos leídos del día</div>
-  <div class="panel">
-    <div class="actions">
-      <button class="blue" id="btnRefresh">Actualizar pedidos</button>
-      <button class="red" id="btnClearLocal">Limpiar entradas locales de este día</button>
-    </div>
-    <div class="status" id="ordersStatus">Sin cargar.</div>
-    <div class="table-wrap"><table id="ordersTable"></table></div>
-  </div>
-
-  <div class="section-title">⚙️ Equivalencias usadas</div>
-  <div class="note">
-    <b>Este archivo ya trae tus equivalencias:</b><br>
-    4, 5 y 6 alitas = 1 bolsa de papa · 8 alitas = 2 · 10 alitas = 3 · 15 alitas = 4 · 30 alitas = 7.<br>
-    Todas las burgers descuentan 1 bolsa de papa + 1 pan. Pablo Escobar descuenta 2 carnes; las demás burgers 1 carne.<br>
-    Platos del Cartel descuentan papa y presas broaster: Sicario 2 presas, Plata o Plomo 3, El Capo 2, Presa extra 1. El Informante descuenta papa, pero no presa broaster porque es pechuga plancha.
-  </div>
+  <div class="section-title"><span>📦 Stock inicial / Saldo inicial del negocio</span><span class="mini-pill">Se configura una vez o cuando quieras ajustar</span></div>
+  <div class="panel"><div class="note" style="margin-bottom:12px">Aquí coloca lo que tienes actualmente en el local antes de empezar a usar el inventario acumulado. Esto evita que aparezcan negativos como <b>-315 bolsas</b>, porque el sistema ya tendrá una base inicial.</div><div class="input-grid" id="initialGrid"></div><label style="margin-top:12px">Nota de stock inicial / ajuste</label><textarea id="initialNote" placeholder="Ej: Conteo inicial realizado el lunes al abrir."></textarea><div class="actions" style="margin-top:12px"><button class="green" id="btnSaveInitial">💾 Guardar stock inicial</button><button class="dark" id="btnCopyFinalToInitial">Usar stock actual como nuevo inicial</button></div><div class="status" id="initialStatus">Carga tu stock inicial y presiona guardar.</div></div>
+  <div class="section-title"><span>📥 Compras nuevas del día</span><span class="mini-pill">Se suma al acumulado</span></div>
+  <div class="panel"><div class="note" style="margin-bottom:12px">Aquí solo van productos que compras o ingresas como stock. No se toma en cuenta Limonada Frozen 1L, vasos de chicha, vasos de maracuyá ni vasos de hielo porque no son compras directas de inventario.</div><div class="input-grid" id="entriesGrid"></div><label style="margin-top:12px">Nota de compra / observación</label><textarea id="entryNote" placeholder="Ej: Compré 100 bolsas papa, 50 carnes, 40 panes..."></textarea><div class="status" id="saveStatus">Ingresa tus compras del día y presiona guardar.</div></div>
+  <div class="section-title">📊 Stock actual acumulado</div><div class="table-wrap"><table id="stockTable"></table></div>
+  <div class="section-title">🔥 Consumo por producción</div><div class="grid2"><div class="panel"><h3 style="margin-top:0;color:#facc15">🍟 Papa / 🍔 Burger / 🍗 Cocina</h3><div class="table-wrap"><table id="productionTable"></table></div></div><div class="panel"><h3 style="margin-top:0;color:#facc15">🥤 Bebidas vendidas</h3><div class="table-wrap"><table id="drinksTable"></table></div></div></div>
+  <div class="section-title">🧾 Pedidos leídos del día seleccionado</div><div class="panel"><div class="actions"><button class="blue" id="btnRefresh">Actualizar pedidos</button><button class="red" id="btnClearLocal">Limpiar compras locales de este día</button></div><div class="status" id="ordersStatus">Sin cargar.</div><div class="table-wrap"><table id="ordersTable"></table></div></div>
+  <div class="section-title">📚 Historial acumulado</div><div class="grid2"><div class="panel"><h3 style="margin-top:0;color:#facc15">📥 Compras acumuladas hasta la fecha</h3><div class="table-wrap"><table id="purchasesTable"></table></div></div><div class="panel"><h3 style="margin-top:0;color:#facc15">📉 Consumo acumulado hasta la fecha</h3><div class="table-wrap"><table id="usedTable"></table></div></div></div>
+  <div class="section-title">⚙️ Equivalencias usadas</div><div class="note"><b>Este archivo ya trae tus equivalencias:</b><br>4, 5 y 6 alitas = 1 bolsa de papa · 8 alitas = 2 · 10 alitas = 3 · 15 alitas = 4 · 30 alitas = 7.<br>Todas las burgers descuentan 1 bolsa de papa + 1 pan. Pablo Escobar descuenta 2 carnes; las demás burgers 1 carne.<br>Platos del Cartel descuentan papa y presas broaster: Sicario 2 presas, Plata o Plomo 3, El Capo 2, Presa extra 1. El Informante descuenta papa, pero no presa broaster porque es pechuga plancha.</div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SUPABASE_URL = "https://defdwzzewzfjuseozwkn.supabase.co";
-const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
-
-const ORDERS_TABLE = "orders_cloud";
-const CASH_STATE_TABLE = "cash_register_state";
-const INVENTORY_PREFIX = "INVENTORY_";
-const LOCAL_PREFIX = "pdm_inventory_entries_";
-const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SB_KEY, { auth:{ persistSession:false } }) : null;
-
-const ENTRY_FIELDS = [
-  ["potatoBags","🍟 Bolsas de papa 180g","unidades"],
-  ["burgerMeat","🥩 Carnes de burger","unidades"],
-  ["burgerBuns","🍞 Pan de hamburguesa","unidades"],
-  ["wingsKg","🍗 Kilos de alitas","kg"],
-  ["broasterPieces","🍗 Presas broaster","presas"],
-  ["chaufaPortions","🍚 Porciones de chaufa","porciones"],
-  ["sodaOneL","🥤 Gaseosa 1L","unidades"],
-  ["sodaGlass","🥤 Gaseosa vidrio mediana","unidades"],
-  ["sodaHalfPlastic","🥤 Gaseosa 600ml plástico","unidades"],
-  ["water","💧 Agua mineral","unidades"],
-  ["chichaOneL","🟣 Chicha 1L","unidades"],
-  ["maracuyaOneL","🟡 Maracuyá 1L","unidades"],
-  ["tapers","🥡 Tapers","unidades"],
-  ["bagsDelivery","🛍️ Bolsas delivery","unidades"]
-];
-
-const NAMES = Object.fromEntries(ENTRY_FIELDS.map(x => [x[0], x[1]]));
-
-function pad2(n){return String(n).padStart(2,"0")}
-function todayKey(){const d=new Date();return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`}
-function n(v){const x=Number(v);return Number.isFinite(x)?x:0}
-function round2(x){return Number(n(x).toFixed(2))}
-function fmt(x){return Number.isInteger(n(x)) ? String(n(x)) : n(x).toFixed(2)}
-function humanDate(key){if(!key)return ""; const [y,m,d]=String(key).split("-"); return `${d}/${m}/${y}`}
-function norm(s){return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[🔫💣👑🕶🔥🍔🧂🥤➕]/g,"").trim()}
-
-const CONSUMPTION_BY_ID = {
-  20:{potatoBags:1,wingsPieces:4}, 1:{potatoBags:1,wingsPieces:5}, 2:{potatoBags:1,wingsPieces:6}, 21:{potatoBags:2,wingsPieces:8},
-  3:{potatoBags:3,wingsPieces:10}, 4:{potatoBags:4,wingsPieces:15}, 5:{potatoBags:7,wingsPieces:30},
-  6:{potatoBags:1,wingsPieces:4,chaufaPortions:1}, 7:{potatoBags:1,wingsPieces:5,chorizo:1,hotdog:1}, 8:{potatoBags:2,chorizo:1,hotdog:1,eggs:1}, 9:{potatoBags:1,chaufaPortions:1},
-  64:{wingsPieces:1},
-  12:{potatoBags:1,burgerMeat:1,burgerBuns:1}, 13:{potatoBags:1,burgerMeat:1,burgerBuns:1,eggs:1}, 14:{potatoBags:1,burgerMeat:1,burgerBuns:1,chorizo:1,tocino:1}, 15:{potatoBags:1,burgerMeat:2,burgerBuns:1,eggs:1,tocino:1}, 16:{potatoBags:1,burgerMeat:1,burgerBuns:1},
-  60:{potatoBags:2,broasterPieces:2}, 61:{potatoBags:2,broasterPieces:3}, 62:{potatoBags:1,broasterPieces:2,chaufaPortions:1}, 63:{potatoBags:2}, 65:{broasterPieces:1},
-  23:{chaufaPortions:1}, 24:{potatoBags:1},
-  30:{maracuyaOneL:1}, 31:{chichaOneL:1}, 32:{water:1}, 42:{sodaGlass:1}, 35:{sodaHalfPlastic:1}, 37:{sodaOneL:1}
-};
-
-const NAME_FALLBACK = [
-  ["4 alitas",{potatoBags:1,wingsPieces:4}], ["5 alitas",{potatoBags:1,wingsPieces:5}], ["6 alitas",{potatoBags:1,wingsPieces:6}], ["8 alitas",{potatoBags:2,wingsPieces:8}], ["10 alitas",{potatoBags:3,wingsPieces:10}], ["15 alitas",{potatoBags:4,wingsPieces:15}], ["30 alitas",{potatoBags:7,wingsPieces:30}],
-  ["chaufi alitas",{potatoBags:1,wingsPieces:4,chaufaPortions:1}], ["salchi alitas",{potatoBags:1,wingsPieces:5}], ["salchi mix",{potatoBags:2}], ["golpe de la dea",{potatoBags:1}], ["alita extra",{wingsPieces:1}],
-  ["burger clasica",{potatoBags:1,burgerMeat:1,burgerBuns:1}], ["burger royal",{potatoBags:1,burgerMeat:1,burgerBuns:1}], ["burger premium",{potatoBags:1,burgerMeat:1,burgerBuns:1}], ["burger pablo",{potatoBags:1,burgerMeat:2,burgerBuns:1}], ["burger crispy",{potatoBags:1,burgerMeat:1,burgerBuns:1}],
-  ["sicario",{potatoBags:2,broasterPieces:2}], ["plata o plomo",{potatoBags:2,broasterPieces:3}], ["el capo",{potatoBags:1,broasterPieces:2,chaufaPortions:1}], ["informante",{potatoBags:2}], ["presa broaster extra",{broasterPieces:1}]
-];
-
-function getMap(item){return CONSUMPTION_BY_ID[Number(item.id)] || (NAME_FALLBACK.find(([k]) => norm(item.name).includes(k))||[])[1] || {}}
-function addTo(obj,key,val){obj[key]=round2(n(obj[key])+n(val))}
-function emptyEntries(){const o={}; ENTRY_FIELDS.forEach(([k])=>o[k]=0); return o}
-function localKey(dateKey){return LOCAL_PREFIX + dateKey}
-function saveLocal(dateKey,obj){localStorage.setItem(localKey(dateKey), JSON.stringify(obj))}
-function loadLocal(dateKey){try{return JSON.parse(localStorage.getItem(localKey(dateKey))||"null")}catch{return null}}
-
-function renderInputs(entries){
-  const grid=document.getElementById("entriesGrid"); grid.innerHTML="";
-  ENTRY_FIELDS.forEach(([key,label,unit])=>{
-    const div=document.createElement("div"); div.className="input-card";
-    div.innerHTML=`<label>${label}</label><input type="number" min="0" step="0.01" id="in_${key}" value="${entries[key]||0}"><span>${unit}</span>`;
-    grid.appendChild(div);
-  });
-}
-
-function readInputs(){const e=emptyEntries(); ENTRY_FIELDS.forEach(([k])=> e[k]=n(document.getElementById("in_"+k)?.value)); return e}
-
-function sumEntries(list){
-  const total = emptyEntries();
-  (list || []).forEach(inv => {
-    const e = inv.entries || {};
-    ENTRY_FIELDS.forEach(([k]) => addTo(total, k, e[k] || 0));
-  });
-  return total;
-}
-
-function calculateTapers(order){
-  const mode = norm(order.deliveryMode || "");
-  if (!(mode.includes("delivery") || mode.includes("recojo") || mode.includes("llevar"))) return 0;
-  let count = 0, extraWings = 0;
-  (order.items||[]).forEach(e=>{
-    const id=Number(e.id), q=n(e.qty);
-    if ([29,30,31,32,35,37,38,42,44,45,39,40,41].includes(id)) return;
-    if (id===64){extraWings += q; return;}
-    if (id===21 || id===3) count += 2*q; else if (id===4) count += 3*q; else if (id===5) count += 4*q; else count += q;
-  });
-  if (extraWings > 5) count += 1;
-  return count;
-}
-
-function isRealOrderRow(row){
-  const data = row?.data || {};
-  const st = String(row?.status || data.status || "").toUpperCase();
-  if (st === "DAY_SETUP" || st === "INVENTORY" || st === "ANULADO") return false;
-  if (data.__type) return false;
-  if (!Array.isArray(data.items)) return false;
-  return true;
-}
-
-async function loadActiveDay(){
-  const dateInput=document.getElementById("dateKey");
-  if(!supabaseClient){dateInput.value=todayKey(); return}
-  try{
-    const {data,error}=await supabaseClient.from(CASH_STATE_TABLE).select("*").eq("id",1).maybeSingle();
-    if(error) throw error;
-    const dk = data?.is_open && data?.active_date_key ? data.active_date_key : todayKey();
-    dateInput.value = dk;
-    document.getElementById("activeDayText").textContent = data?.is_open ? `🟢 Caja activa: ${humanDate(dk)}` : `🔴 Sin caja abierta. Usando fecha de hoy: ${humanDate(dk)}`;
-  }catch(err){dateInput.value=todayKey(); document.getElementById("activeDayText").textContent="No pude leer caja activa. Usando fecha de hoy."}
-}
-
-async function loadInventoryEntry(dateKey){
-  const local = loadLocal(dateKey);
-  let cloud = null;
-  if(supabaseClient){
-    try{
-      const {data,error}=await supabaseClient.from(ORDERS_TABLE).select("*").eq("order_id",INVENTORY_PREFIX+dateKey).maybeSingle();
-      if(error) throw error;
-      cloud = data?.data || null;
-    }catch(err){console.warn(err)}
-  }
-  return cloud || local || {dateKey, entries:emptyEntries(), note:""};
-}
-
-function loadLocalInventoryUntil(dateKey){
-  const list=[];
-  for(let i=0;i<localStorage.length;i++){
-    const key=localStorage.key(i);
-    if(!key || !key.startsWith(LOCAL_PREFIX)) continue;
-    const dk=key.replace(LOCAL_PREFIX,"");
-    if(dk <= dateKey){
-      try{
-        const item=JSON.parse(localStorage.getItem(key)||"null");
-        if(item && item.dateKey) list.push(item);
-      }catch(e){}
-    }
-  }
-  return list;
-}
-
-async function loadInventoryEntriesUntil(dateKey){
-  const byDate = new Map();
-  loadLocalInventoryUntil(dateKey).forEach(x => byDate.set(x.dateKey, x));
-
-  if(supabaseClient){
-    try{
-      const {data,error}=await supabaseClient
-        .from(ORDERS_TABLE)
-        .select("order_id,date_key,status,updated_at,data")
-        .like("order_id", INVENTORY_PREFIX + "%")
-        .lte("date_key", dateKey)
-        .order("date_key", {ascending:true})
-        .limit(5000);
-      if(error) throw error;
-      (data || []).forEach(row => {
-        const inv = row.data || null;
-        if(inv && inv.__type === "inventory_entry" && inv.dateKey) byDate.set(inv.dateKey, inv);
-      });
-    }catch(err){console.warn("No pude cargar inventario acumulado de nube", err)}
-  }
-
-  return Array.from(byDate.values()).sort((a,b)=>String(a.dateKey).localeCompare(String(b.dateKey)));
-}
-
-async function saveInventory(){
-  const dateKey=document.getElementById("dateKey").value || todayKey();
-  const payload={__type:"inventory_entry",dateKey,entries:readInputs(),note:document.getElementById("entryNote").value.trim(),updatedAt:new Date().toISOString()};
-  saveLocal(dateKey,payload);
-  const st=document.getElementById("saveStatus"); st.textContent="Guardando compras del día...";
-  if(!supabaseClient){st.textContent="⚠️ Guardado local. Supabase no cargó."; await reloadAll(); return}
-  try{
-    /* Se guarda en orders_cloud, pero con status DAY_SETUP para que el admin actual lo ignore y NO lo cuente como pedido. */
-    const {error}=await supabaseClient.from(ORDERS_TABLE).upsert({
-      order_id:INVENTORY_PREFIX+dateKey,
-      date_key:dateKey,
-      boleta_number:"",
-      status:"DAY_SETUP",
-      updated_at:new Date().toISOString(),
-      data:payload
-    },{onConflict:"order_id"});
-    if(error) throw error;
-    st.textContent="✅ Compras guardadas. El stock quedó acumulado con días anteriores.";
-  }catch(err){st.textContent="⚠️ Guardado local, pero no confirmó nube: "+(err.message||String(err));}
-  await reloadAll();
-}
-
-async function loadOrderRows(dateKey, cumulative=false){
-  if(!supabaseClient) return [];
-  let query = supabaseClient.from(ORDERS_TABLE).select("*");
-  if(cumulative) query = query.lte("date_key", dateKey);
-  else query = query.eq("date_key", dateKey);
-  const {data,error}=await query.order("updated_at",{ascending:false}).limit(5000);
-  if(error) throw error;
-  return (data||[]).filter(isRealOrderRow);
-}
-
-function calculateConsumption(orders){
-  const used={}; const product={}; const drinks={}; let ventas=0,total=0;
-  orders.forEach(order=>{
-    ventas++; total += n(order.total); addTo(used,"tapers",calculateTapers(order));
-    (order.items||[]).forEach(item=>{
-      const q=n(item.qty), name=item.name||"Producto";
-      product[name]=(product[name]||0)+q;
-      const map=getMap(item);
-      Object.entries(map).forEach(([k,v])=>addTo(used,k,n(v)*q));
-      if([29,30,31,32,35,37,38,42,44,45].includes(Number(item.id))) drinks[name]=(drinks[name]||0)+q;
-    });
-  });
-  if(used.wingsPieces) used.wingsKg = round2(used.wingsPieces / 16);
-  return {used,product,drinks,ventas,total};
-}
-
-function renderMetrics(entriesAcum, usedAcum, metaDay){
-  const restPapa=n(entriesAcum.potatoBags)-n(usedAcum.potatoBags), restCarnes=n(entriesAcum.burgerMeat)-n(usedAcum.burgerMeat), restPanes=n(entriesAcum.burgerBuns)-n(usedAcum.burgerBuns), restPresas=n(entriesAcum.broasterPieces)-n(usedAcum.broasterPieces);
-  const cards=[
-    ["Pedidos del día",metaDay.ventas||0,""], ["Venta día leída","S/ "+n(metaDay.total).toFixed(2),""],
-    ["Papa restante",fmt(restPapa)+" bolsas",restPapa<0?"warn":"ok"], ["Carnes burger restantes",fmt(restCarnes)+" und",restCarnes<0?"warn":"ok"],
-    ["Panes burger restantes",fmt(restPanes)+" und",restPanes<0?"warn":"ok"], ["Presas broaster restantes",fmt(restPresas)+" presas",restPresas<0?"warn":"ok"],
-    ["Alitas usadas acumuladas",fmt(usedAcum.wingsPieces||0)+" piezas", ""], ["Kg alitas usados acumulados",fmt(usedAcum.wingsKg||0)+" kg", ""]
-  ];
-  document.getElementById("mainMetrics").innerHTML=cards.map(c=>`<div class="metric ${c[2]}"><small>${c[0]}</small><b>${c[1]}</b></div>`).join("");
-}
-
-function renderStock(entriesAcum, usedAcum){
-  const keys=["potatoBags","burgerMeat","burgerBuns","wingsKg","broasterPieces","chaufaPortions","sodaOneL","sodaGlass","sodaHalfPlastic","water","chichaOneL","maracuyaOneL","tapers","bagsDelivery"];
-  const rows=keys.map(k=>{const inq=n(entriesAcum[k]), out=n(usedAcum[k]), rest=round2(inq-out); return `<tr><td>${NAMES[k]||k}</td><td class="num">${fmt(inq)}</td><td class="num">${fmt(out)}</td><td class="num ${rest<0?'negative':'positive'}">${fmt(rest)}</td></tr>`}).join("");
-  document.getElementById("stockTable").innerHTML=`<thead><tr><th>Insumo</th><th>Compras acumuladas</th><th>Usado acumulado</th><th>Stock actual estimado</th></tr></thead><tbody>${rows}</tbody>`;
-}
-
-function renderProduction(product){
-  const rows=Object.entries(product).sort((a,b)=>b[1]-a[1]).map(([name,q])=>`<tr><td>${name}</td><td class="num">${fmt(q)}</td></tr>`).join("") || `<tr><td colspan="2" class="muted">Sin productos vendidos este día.</td></tr>`;
-  document.getElementById("productionTable").innerHTML=`<thead><tr><th>Producto vendido del día</th><th>Cantidad</th></tr></thead><tbody>${rows}</tbody>`;
-}
-
-function renderDrinks(drinks){
-  const rows=Object.entries(drinks).sort((a,b)=>b[1]-a[1]).map(([name,q])=>`<tr><td>${name}</td><td class="num">${fmt(q)}</td></tr>`).join("") || `<tr><td colspan="2" class="muted">Sin bebidas vendidas este día.</td></tr>`;
-  document.getElementById("drinksTable").innerHTML=`<thead><tr><th>Bebida del día</th><th>Vendida</th></tr></thead><tbody>${rows}</tbody>`;
-}
-
-function renderOrders(orders){
-  document.getElementById("ordersStatus").textContent=`✅ Se leyeron ${orders.length} pedidos del día. El stock de arriba usa consumo acumulado hasta esta fecha.`;
-  const rows=orders.map(o=>`<tr><td>${o.dailyOrderNumber||o.boletaNumber||o.id||""}</td><td>${o.dateTime||""}</td><td>${o.customerName||""}</td><td>${(o.items||[]).length}</td><td class="num">S/ ${n(o.total).toFixed(2)}</td></tr>`).join("") || `<tr><td colspan="5" class="muted">No hay pedidos registrados para esta fecha.</td></tr>`;
-  document.getElementById("ordersTable").innerHTML=`<thead><tr><th>Pedido</th><th>Hora</th><th>Cliente</th><th>Items</th><th>Total</th></tr></thead><tbody>${rows}</tbody>`;
-}
-
-async function reloadAll(){
-  const dateKey=document.getElementById("dateKey").value || todayKey();
-  const st=document.getElementById("ordersStatus"); st.textContent="Cargando compras, pedidos y stock acumulado...";
-
-  const invDay=await loadInventoryEntry(dateKey);
-  renderInputs(invDay.entries || emptyEntries());
-  document.getElementById("entryNote").value=invDay.note||"";
-
-  const inventoryList = await loadInventoryEntriesUntil(dateKey);
-  const entriesAcum = sumEntries(inventoryList);
-
-  let dayRows=[], allRows=[];
-  try{
-    [dayRows, allRows] = await Promise.all([loadOrderRows(dateKey,false), loadOrderRows(dateKey,true)]);
-  }catch(err){
-    st.textContent="⚠️ No pude leer pedidos: "+(err.message||String(err));
-    dayRows=[]; allRows=[];
-  }
-
-  const dayOrders = dayRows.map(r=>r.data);
-  const allOrders = allRows.map(r=>r.data);
-  const calcDay=calculateConsumption(dayOrders);
-  const calcAcum=calculateConsumption(allOrders);
-
-  renderMetrics(entriesAcum, calcAcum.used, calcDay);
-  renderStock(entriesAcum, calcAcum.used);
-  renderProduction(calcDay.product);
-  renderDrinks(calcDay.drinks);
-  renderOrders(dayOrders);
-
-  document.getElementById("saveStatus").textContent = `Stock acumulado hasta ${humanDate(dateKey)}: se sumaron ${inventoryList.length} día(s) de compras y se descontaron ${allOrders.length} pedido(s) válidos acumulados.`;
-}
-
-document.getElementById("btnLoad").addEventListener("click", reloadAll);
-document.getElementById("btnRefresh").addEventListener("click", reloadAll);
-document.getElementById("btnSave").addEventListener("click", saveInventory);
-document.getElementById("btnClearLocal").addEventListener("click", async()=>{
-  const dk=document.getElementById("dateKey").value;
-  if(confirm("¿Limpiar entradas locales de este día? No borra nube.")){
-    localStorage.removeItem(localKey(dk));
-    await reloadAll();
-  }
-});
-
-(async()=>{renderInputs(emptyEntries()); await loadActiveDay(); await reloadAll();})();
+const SUPABASE_URL="https://defdwzzewzfjuseozwkn.supabase.co";
+const SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
+const ORDERS_TABLE="orders_cloud", CASH_STATE_TABLE="cash_register_state", INVENTORY_INITIAL_ID="INVENTORY_INITIAL_STOCK", INVENTORY_DAILY_PREFIX="INVENTORY_ENTRY_", LOCAL_INITIAL_KEY="pdm_inventory_initial_stock_v2", LOCAL_DAILY_PREFIX="pdm_inventory_daily_entry_v2_";
+const supabaseClient=window.supabase?window.supabase.createClient(SUPABASE_URL,SB_KEY,{auth:{persistSession:false}}):null;
+const ENTRY_FIELDS=[["potatoBags","🍟 Bolsas de papa 180g","unidades"],["burgerMeat","🥩 Carnes de burger","unidades"],["burgerBuns","🍞 Pan de hamburguesa","unidades"],["wingsKg","🍗 Kilos de alitas","kg"],["broasterPieces","🍗 Presas broaster","presas"],["chaufaPortions","🍚 Porciones de chaufa","porciones"],["sodaOneL","🥤 Gaseosa 1L","unidades"],["sodaGlass","🥤 Gaseosa vidrio mediana","unidades"],["sodaHalfPlastic","🥤 Gaseosa 600ml plástico","unidades"],["water","💧 Agua mineral","unidades"],["chichaOneL","🟣 Chicha 1L","unidades"],["maracuyaOneL","🟡 Maracuyá 1L","unidades"],["tapers","🥡 Tapers","unidades"],["bagsDelivery","🛍️ Bolsas delivery","unidades"]];
+const NAMES=Object.fromEntries(ENTRY_FIELDS.map(x=>[x[0],x[1]]));
+const CONSUMPTION_BY_ID={20:{potatoBags:1,wingsPieces:4},1:{potatoBags:1,wingsPieces:5},2:{potatoBags:1,wingsPieces:6},21:{potatoBags:2,wingsPieces:8},3:{potatoBags:3,wingsPieces:10},4:{potatoBags:4,wingsPieces:15},5:{potatoBags:7,wingsPieces:30},6:{potatoBags:1,wingsPieces:4,chaufaPortions:1},7:{potatoBags:1,wingsPieces:5,chorizo:1,hotdog:1},8:{potatoBags:2,chorizo:1,hotdog:1,eggs:1},9:{potatoBags:1,chaufaPortions:1},64:{wingsPieces:1},12:{potatoBags:1,burgerMeat:1,burgerBuns:1},13:{potatoBags:1,burgerMeat:1,burgerBuns:1,eggs:1},14:{potatoBags:1,burgerMeat:1,burgerBuns:1,chorizo:1,tocino:1},15:{potatoBags:1,burgerMeat:2,burgerBuns:1,eggs:1,tocino:1},16:{potatoBags:1,burgerMeat:1,burgerBuns:1},60:{potatoBags:2,broasterPieces:2},61:{potatoBags:2,broasterPieces:3},62:{potatoBags:1,broasterPieces:2,chaufaPortions:1},63:{potatoBags:2},65:{broasterPieces:1},23:{chaufaPortions:1},24:{potatoBags:1},30:{maracuyaOneL:1},31:{chichaOneL:1},32:{water:1},42:{sodaGlass:1},35:{sodaHalfPlastic:1},37:{sodaOneL:1}};
+const NAME_FALLBACK=[["4 alitas",{potatoBags:1,wingsPieces:4}],["5 alitas",{potatoBags:1,wingsPieces:5}],["6 alitas",{potatoBags:1,wingsPieces:6}],["8 alitas",{potatoBags:2,wingsPieces:8}],["10 alitas",{potatoBags:3,wingsPieces:10}],["15 alitas",{potatoBags:4,wingsPieces:15}],["30 alitas",{potatoBags:7,wingsPieces:30}],["chaufi alitas",{potatoBags:1,wingsPieces:4,chaufaPortions:1}],["salchi alitas",{potatoBags:1,wingsPieces:5}],["salchi mix",{potatoBags:2}],["golpe de la dea",{potatoBags:1}],["burger clasica",{potatoBags:1,burgerMeat:1,burgerBuns:1}],["burger royal",{potatoBags:1,burgerMeat:1,burgerBuns:1}],["burger premium",{potatoBags:1,burgerMeat:1,burgerBuns:1}],["burger pablo",{potatoBags:1,burgerMeat:2,burgerBuns:1}],["burger crispy",{potatoBags:1,burgerMeat:1,burgerBuns:1}],["sicario",{potatoBags:2,broasterPieces:2}],["plata o plomo",{potatoBags:2,broasterPieces:3}],["el capo",{potatoBags:1,broasterPieces:2,chaufaPortions:1}],["informante",{potatoBags:2}],["presa broaster extra",{broasterPieces:1}]];
+let lastFinalStock=null;
+function pad2(n){return String(n).padStart(2,"0")}function todayKey(){const d=new Date();return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`}function n(v){const x=Number(v);return Number.isFinite(x)?x:0}function round2(x){return Number(n(x).toFixed(2))}function fmt(x){const y=n(x);return Number.isInteger(y)?String(y):y.toFixed(2)}function humanDate(key){if(!key)return"";const[y,m,d]=String(key).split("-");return `${d}/${m}/${y}`}function norm(s){return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[🔫💣👑🕶🔥🍔🧂🥤➕]/g,"").trim()}
+function emptyEntries(){const o={};ENTRY_FIELDS.forEach(([k])=>o[k]=0);return o}function addTo(obj,key,val){obj[key]=round2(n(obj[key])+n(val))}function addEntries(a,b){const out={...emptyEntries(),...(a||{})};ENTRY_FIELDS.forEach(([k])=>out[k]=round2(n(out[k])+n((b||{})[k])));return out}function subtractEntries(a,b){const out={};ENTRY_FIELDS.forEach(([k])=>out[k]=round2(n((a||{})[k])-n((b||{})[k])));return out}function normalizeEntries(obj){const out=emptyEntries();ENTRY_FIELDS.forEach(([k])=>out[k]=n((obj||{})[k]));return out}
+function renderInputs(containerId,prefix,entries){const grid=document.getElementById(containerId);grid.innerHTML="";ENTRY_FIELDS.forEach(([key,label,unit])=>{const div=document.createElement("div");div.className="input-card";div.innerHTML=`<label>${label}</label><input type="number" min="0" step="0.01" id="${prefix}_${key}" value="${entries[key]||0}"><span>${unit}</span>`;grid.appendChild(div)})}
+function readInputs(prefix){const e=emptyEntries();ENTRY_FIELDS.forEach(([k])=>e[k]=n(document.getElementById(prefix+"_"+k)?.value));return e}function localDailyKey(dateKey){return LOCAL_DAILY_PREFIX+dateKey}function saveLocal(key,obj){localStorage.setItem(key,JSON.stringify(obj))}function loadLocal(key){try{return JSON.parse(localStorage.getItem(key)||"null")}catch{return null}}
+function getMap(item){return CONSUMPTION_BY_ID[Number(item.id)]||(NAME_FALLBACK.find(([k])=>norm(item.name).includes(k))||[])[1]||{}}
+function calculateTapers(order){const mode=norm(order.deliveryMode||"");if(!(mode.includes("delivery")||mode.includes("recojo")||mode.includes("llevar")))return 0;let count=0,extraWings=0;(order.items||[]).forEach(e=>{const id=Number(e.id),q=n(e.qty);if([29,30,31,32,35,37,38,42,44,45,39,40,41].includes(id))return;if(id===64){extraWings+=q;return}if(id===21||id===3)count+=2*q;else if(id===4)count+=3*q;else if(id===5)count+=4*q;else count+=q});if(extraWings>5)count+=1;return count}
+function isRealOrder(o){const st=String(o?.status||"").toUpperCase();if(!o||o.__type)return false;if(st==="DAY_SETUP"||st==="INVENTORY"||st==="ANULADO")return false;if(!Array.isArray(o.items))return false;return true}
+function calculateConsumption(orders){const used={},product={},drinks={};let ventas=0,total=0;orders.filter(isRealOrder).forEach(order=>{ventas++;total+=n(order.total);addTo(used,"tapers",calculateTapers(order));(order.items||[]).forEach(item=>{const q=n(item.qty),name=item.name||"Producto";product[name]=round2(n(product[name])+q);const map=getMap(item);Object.entries(map).forEach(([k,v])=>addTo(used,k,n(v)*q));if([29,30,31,32,35,37,38,42,44,45].includes(Number(item.id)))drinks[name]=round2(n(drinks[name])+q)})});if(used.wingsPieces)used.wingsKg=round2(used.wingsPieces/16);return{used,product,drinks,ventas,total}}
+async function loadActiveDay(){const dateInput=document.getElementById("dateKey");if(!supabaseClient){dateInput.value=todayKey();return}try{const{data,error}=await supabaseClient.from(CASH_STATE_TABLE).select("*").eq("id",1).maybeSingle();if(error)throw error;const dk=data?.is_open&&data?.active_date_key?data.active_date_key:todayKey();dateInput.value=dk;document.getElementById("activeDayText").textContent=data?.is_open?`🟢 Caja activa: ${humanDate(dk)}`:`🔴 Sin caja abierta. Usando fecha de hoy: ${humanDate(dk)}`}catch(err){dateInput.value=todayKey();document.getElementById("activeDayText").textContent="No pude leer caja activa. Usando fecha de hoy."}}
+async function loadInitialStock(){const local=loadLocal(LOCAL_INITIAL_KEY);let cloud=null;if(supabaseClient){try{const{data,error}=await supabaseClient.from(ORDERS_TABLE).select("*").eq("order_id",INVENTORY_INITIAL_ID).maybeSingle();if(error)throw error;cloud=data?.data||null}catch(err){console.warn(err)}}const src=cloud||local||{entries:emptyEntries(),note:""};return{entries:normalizeEntries(src.entries),note:src.note||"",updatedAt:src.updatedAt||null}}
+async function saveInitialStock(){const payload={__type:"inventory_initial_stock",entries:readInputs("initial"),note:document.getElementById("initialNote").value.trim(),updatedAt:new Date().toISOString()};saveLocal(LOCAL_INITIAL_KEY,payload);const st=document.getElementById("initialStatus");st.textContent="Guardando stock inicial...";if(!supabaseClient){st.textContent="⚠️ Guardado local. Supabase no cargó.";await reloadAll();return}try{const{error}=await supabaseClient.from(ORDERS_TABLE).upsert({order_id:INVENTORY_INITIAL_ID,date_key:"0000-00-00",boleta_number:"",status:"DAY_SETUP",updated_at:new Date().toISOString(),data:payload},{onConflict:"order_id"});if(error)throw error;st.textContent="✅ Stock inicial guardado en Supabase y local."}catch(err){st.textContent="⚠️ Guardado local, pero no confirmó nube: "+(err.message||String(err))}await reloadAll()}
+async function loadDailyEntry(dateKey){const local=loadLocal(localDailyKey(dateKey));let cloud=null;if(supabaseClient){try{const ids=[INVENTORY_DAILY_PREFIX+dateKey,"INVENTORY_"+dateKey];const{data,error}=await supabaseClient.from(ORDERS_TABLE).select("*").in("order_id",ids).order("updated_at",{ascending:false}).limit(1);if(error)throw error;cloud=data&&data[0]?data[0].data:null}catch(err){console.warn(err)}}const src=cloud||local||{dateKey,entries:emptyEntries(),note:""};return{dateKey,entries:normalizeEntries(src.entries),note:src.note||"",updatedAt:src.updatedAt||null}}
+async function saveDailyEntry(){const dateKey=document.getElementById("dateKey").value||todayKey();const payload={__type:"inventory_daily_entry",dateKey,entries:readInputs("daily"),note:document.getElementById("entryNote").value.trim(),updatedAt:new Date().toISOString()};saveLocal(localDailyKey(dateKey),payload);const st=document.getElementById("saveStatus");st.textContent="Guardando compras del día...";if(!supabaseClient){st.textContent="⚠️ Guardado local. Supabase no cargó.";await reloadAll();return}try{const{error}=await supabaseClient.from(ORDERS_TABLE).upsert({order_id:INVENTORY_DAILY_PREFIX+dateKey,date_key:dateKey,boleta_number:"",status:"DAY_SETUP",updated_at:new Date().toISOString(),data:payload},{onConflict:"order_id"});if(error)throw error;st.textContent="✅ Compras del día guardadas en Supabase y local."}catch(err){st.textContent="⚠️ Guardado local, pero no confirmó nube: "+(err.message||String(err))}await reloadAll()}
+async function loadDailyEntriesUpTo(dateKey){const entries=[],seen=new Set();const localToday=loadLocal(localDailyKey(dateKey));if(supabaseClient){try{const{data,error}=await supabaseClient.from(ORDERS_TABLE).select("*").lte("date_key",dateKey).or(`order_id.like.${INVENTORY_DAILY_PREFIX}%,order_id.like.INVENTORY_%`).order("date_key",{ascending:true}).limit(5000);if(error)throw error;(data||[]).forEach(row=>{const payload=row.data||{};if(payload.__type!=="inventory_daily_entry"&&payload.__type!=="inventory_entry")return;const dk=payload.dateKey||row.date_key;if(!dk||dk>dateKey)return;seen.add(dk);entries.push({dateKey:dk,entries:normalizeEntries(payload.entries),note:payload.note||"",updatedAt:payload.updatedAt||row.updated_at||null})})}catch(err){console.warn(err)}}if(localToday&&!seen.has(dateKey))entries.push({dateKey,entries:normalizeEntries(localToday.entries),note:localToday.note||"",updatedAt:localToday.updatedAt||null});return entries}
+async function loadOrdersUpTo(dateKey){if(!supabaseClient)return[];const{data,error}=await supabaseClient.from(ORDERS_TABLE).select("*").lte("date_key",dateKey).order("date_key",{ascending:true}).limit(5000);if(error)throw error;return(data||[]).map(r=>r.data).filter(isRealOrder)}
+async function loadOrdersOfDay(dateKey){if(!supabaseClient)return[];const{data,error}=await supabaseClient.from(ORDERS_TABLE).select("*").eq("date_key",dateKey).order("updated_at",{ascending:false}).limit(1000);if(error)throw error;return(data||[]).map(r=>r.data).filter(isRealOrder)}
+function renderMetrics(initial,purchases,used,meta){const available=addEntries(initial,purchases),final=subtractEntries(available,used);lastFinalStock=final;const cards=[["Pedidos acumulados",meta.ventas||0,""],["Venta acumulada leída","S/ "+n(meta.total).toFixed(2),""],["Papa restante",fmt(final.potatoBags)+" bolsas",n(final.potatoBags)<0?"warn":"ok"],["Carnes burger restantes",fmt(final.burgerMeat)+" und",n(final.burgerMeat)<0?"warn":"ok"],["Panes burger restantes",fmt(final.burgerBuns)+" und",n(final.burgerBuns)<0?"warn":"ok"],["Presas broaster restantes",fmt(final.broasterPieces)+" presas",n(final.broasterPieces)<0?"warn":"ok"],["Alitas usadas",fmt(used.wingsPieces||0)+" piezas",""],["Kg alitas usados",fmt(used.wingsKg||0)+" kg",""]];document.getElementById("mainMetrics").innerHTML=cards.map(c=>`<div class="metric ${c[2]}"><small>${c[0]}</small><b>${c[1]}</b></div>`).join("")}
+function renderStock(initial,purchases,used){const keys=["potatoBags","burgerMeat","burgerBuns","wingsKg","broasterPieces","chaufaPortions","sodaOneL","sodaGlass","sodaHalfPlastic","water","chichaOneL","maracuyaOneL","tapers","bagsDelivery"];const rows=keys.map(k=>{const ini=n(initial[k]),buy=n(purchases[k]),usedQty=n(used[k]),rest=round2(ini+buy-usedQty);return`<tr><td>${NAMES[k]||k}</td><td class="num">${fmt(ini)}</td><td class="num">${fmt(buy)}</td><td class="num">${fmt(ini+buy)}</td><td class="num">${fmt(usedQty)}</td><td class="num ${rest<0?'negative':'positive'}">${fmt(rest)}</td></tr>`}).join("");document.getElementById("stockTable").innerHTML=`<thead><tr><th>Insumo</th><th>Stock inicial</th><th>Compras acumuladas</th><th>Disponible total</th><th>Usado / vendido</th><th>Stock actual estimado</th></tr></thead><tbody>${rows}</tbody>`}
+function renderSimpleEntriesTable(tableId,entriesObj,title1,title2){const rows=ENTRY_FIELDS.map(([k,label])=>`<tr><td>${label}</td><td class="num">${fmt(n(entriesObj[k]))}</td></tr>`).join("");document.getElementById(tableId).innerHTML=`<thead><tr><th>${title1}</th><th>${title2}</th></tr></thead><tbody>${rows}</tbody>`}
+function renderProduction(product){const rows=Object.entries(product).sort((a,b)=>b[1]-a[1]).map(([name,q])=>`<tr><td>${name}</td><td class="num">${fmt(q)}</td></tr>`).join("")||`<tr><td colspan="2" class="muted">Sin productos vendidos.</td></tr>`;document.getElementById("productionTable").innerHTML=`<thead><tr><th>Producto vendido</th><th>Cantidad</th></tr></thead><tbody>${rows}</tbody>`}
+function renderDrinks(drinks){const rows=Object.entries(drinks).sort((a,b)=>b[1]-a[1]).map(([name,q])=>`<tr><td>${name}</td><td class="num">${fmt(q)}</td></tr>`).join("")||`<tr><td colspan="2" class="muted">Sin bebidas vendidas.</td></tr>`;document.getElementById("drinksTable").innerHTML=`<thead><tr><th>Bebida</th><th>Vendida</th></tr></thead><tbody>${rows}</tbody>`}
+function renderOrders(orders){document.getElementById("ordersStatus").textContent=`✅ Se leyeron ${orders.length} pedidos del día seleccionado.`;const rows=orders.map(o=>`<tr><td>${o.dailyOrderNumber||o.boletaNumber||o.id||""}</td><td>${o.dateTime||""}</td><td>${o.customerName||""}</td><td>${(o.items||[]).length}</td><td class="num">S/ ${n(o.total).toFixed(2)}</td></tr>`).join("")||`<tr><td colspan="5" class="muted">No hay pedidos registrados para esta fecha.</td></tr>`;document.getElementById("ordersTable").innerHTML=`<thead><tr><th>Pedido</th><th>Hora</th><th>Cliente</th><th>Items</th><th>Total</th></tr></thead><tbody>${rows}</tbody>`}
+async function reloadAll(){const dateKey=document.getElementById("dateKey").value||todayKey(),st=document.getElementById("ordersStatus");st.textContent="Cargando inventario acumulado...";const initial=await loadInitialStock();renderInputs("initialGrid","initial",initial.entries);document.getElementById("initialNote").value=initial.note||"";const daily=await loadDailyEntry(dateKey);renderInputs("entriesGrid","daily",daily.entries);document.getElementById("entryNote").value=daily.note||"";let dailyEntries=[],ordersUpTo=[],ordersDay=[];try{dailyEntries=await loadDailyEntriesUpTo(dateKey);ordersUpTo=await loadOrdersUpTo(dateKey);ordersDay=await loadOrdersOfDay(dateKey)}catch(err){st.textContent="⚠️ No pude leer pedidos/inventario: "+(err.message||String(err))}const purchasesAccum=emptyEntries();dailyEntries.forEach(item=>{const e=normalizeEntries(item.entries);ENTRY_FIELDS.forEach(([k])=>addTo(purchasesAccum,k,e[k]))});const calcAccum=calculateConsumption(ordersUpTo),calcDay=calculateConsumption(ordersDay);renderMetrics(initial.entries,purchasesAccum,calcAccum.used,calcAccum);renderStock(initial.entries,purchasesAccum,calcAccum.used);renderProduction(calcDay.product);renderDrinks(calcDay.drinks);renderOrders(ordersDay);renderSimpleEntriesTable("purchasesTable",purchasesAccum,"Insumo","Comprado acumulado");renderSimpleEntriesTable("usedTable",calcAccum.used,"Insumo","Usado acumulado");if(!ordersDay.length)st.textContent=`Sin pedidos registrados para ${humanDate(dateKey)}. El stock actual igual se calcula acumulado hasta esa fecha.`}
+document.getElementById("btnLoad").addEventListener("click",reloadAll);document.getElementById("btnRefresh").addEventListener("click",reloadAll);document.getElementById("btnSaveDaily").addEventListener("click",saveDailyEntry);document.getElementById("btnSaveInitial").addEventListener("click",saveInitialStock);document.getElementById("btnCopyFinalToInitial").addEventListener("click",async()=>{if(!lastFinalStock){alert("Primero carga el inventario para calcular el stock actual.");return}if(!confirm("¿Usar el stock actual estimado como nuevo stock inicial? Esto sirve cuando haces conteo físico y quieres reiniciar la base."))return;renderInputs("initialGrid","initial",lastFinalStock);document.getElementById("initialNote").value="Nuevo stock inicial tomado desde stock actual estimado el "+new Date().toLocaleString();await saveInitialStock()});document.getElementById("btnClearLocal").addEventListener("click",async()=>{const dk=document.getElementById("dateKey").value;if(confirm("¿Limpiar compras locales de este día? No borra Supabase.")){localStorage.removeItem(localDailyKey(dk));await reloadAll()}});
+(async()=>{renderInputs("initialGrid","initial",emptyEntries());renderInputs("entriesGrid","daily",emptyEntries());await loadActiveDay();await reloadAll()})();
 </script>
 </body>
 </html>
