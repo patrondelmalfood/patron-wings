@@ -214,6 +214,21 @@
       box-shadow:0 4px 10px rgba(0,0,0,.7);
       border-color:#ff9f1c;
     }
+    .item-img{
+      width:100%;
+      height:120px;
+      border-radius:8px;
+      overflow:hidden;
+      margin-bottom:8px;
+      background:#000;
+      border:1px solid #333;
+    }
+    .item-img img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
     .item-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
     .item-name{ font-weight:bold; font-size:15px; }
     .item-price{ font-weight:bold; color:#ffe066; animation: goldPulse 1.4s infinite alternate; }
@@ -714,7 +729,7 @@
       <a href="#alitas">Alitas 🔥</a>
       <a href="#hamburguesas">Hamburguesas 🍔</a>
       <a href="#cartel">Platos del cartel 🔥</a>
-      <a href="#cremas">Cremas extras 🧂</a>
+      <a href="#extras">Adicionales o extras ➕</a>
       <a href="#bebidas">Bebidas 🥤</a>
     </nav>
 
@@ -1408,9 +1423,9 @@ function deepCopy(obj){
         ]
       },
       {
-        anchorId: null,
-        name: "Adicionales o extras",
-        image: null,
+        anchorId: "extras",
+        name: "Adicionales o extras ➕",
+        image: "cat-extras.png",
         sauceMode: "none",
         items: [
           { id: 23, name: "Porción de chaufa",                 price: 6,  desc: "" },
@@ -1418,15 +1433,7 @@ function deepCopy(obj){
           { id: 25, name: "Porción de ensalada",               price: 4,  desc: "" },
           { id: 26, name: "Porción de chorizo",                price: 5,  desc: "" },
           { id: 27, name: "Porción de hotdog",                 price: 4,  desc: "" },
-          { id: 28, name: "Huevo extra",                       price: 3,  desc: "" }
-        ]
-      },
-      {
-        anchorId: "cremas",
-        name: "🧂 Cremas extras",
-        image: null,
-        sauceMode: "none",
-        items: [
+          { id: 28, name: "Huevo extra",                       price: 3,  desc: "" },
           { id: 39, name: "Ají adicional",                     price: 1,  desc: "" },
           { id: 40, name: "Mayonesa adicional",                price: 1,  desc: "" },
           { id: 41, name: "Ketchup adicional",                 price: 1,  desc: "" }
@@ -1438,16 +1445,16 @@ function deepCopy(obj){
         image: null,
         sauceMode: "none",
         items: [
-          { id: 29, name: "Limonada Frozen 1 L",               price: 10, desc: "" },
-          { id: 30, name: "Maracuyá 1 L",                      price: 10, desc: "" },
-          { id: 31, name: "Chicha Morada 1 L",                 price: 10, desc: "" },
-          { id: 32, name: "Agua mineral",                      price: 2.5, desc: "" },
-          { id: 45, name: "Vaso de chicha",                    price: 3.0, desc: "" },
-          { id: 44, name: "Vaso de maracuyá",                  price: 3.0, desc: "" },
-          { id: 42, name: "Gaseosa vidrio mediana (Coca o Inka)", price: 2.5, desc: "" },
-          { id: 35, name: "Gaseosa 1/2 L (Pepsi o Guaraná)",    price: 4.0, desc: "" },
-          { id: 37, name: "Gaseosa 1 L (Inka o Coca)",          price: 9.0, desc: "" },
-          { id: 38, name: "Vaso de hielo",                     price: 3.0, desc: "" }
+          { id: 37, name: "Gaseosa 1L Coca Cola / Inca Kola",          price: 9.0, desc: "", image: "Gaseosa 1L Coca Cola Inca Kola.png" },
+          { id: 35, name: "Gaseosa 600ml Coca Cola / Inca Kola",       price: 4.0, desc: "", image: "Gaseosa 600ml Coca Cola Inca Kola.png" },
+          { id: 42, name: "Gaseosa vidrio 296ml Coca Cola / Inca Kola", price: 2.5, desc: "", image: "Gaseosa vidrio 296ml Coca Cola Inca Kola.png" },
+          { id: 31, name: "Jarra de chicha 1L",                       price: 10,  desc: "", image: "Jarra de chicha 1L.png" },
+          { id: 30, name: "Jarra de maracuyá 1L",                     price: 10,  desc: "", image: "Jarra de maracuyá 1L.png" },
+          { id: 45, name: "Vaso de chicha",                           price: 3.0, desc: "", image: "Vaso de chicha.png" },
+          { id: 38, name: "Vaso de hielo",                            price: 3.0, desc: "", image: "Vaso de hielo.png" },
+          { id: 44, name: "Vaso de maracuyá",                         price: 3.0, desc: "", image: "Vaso de maracuyá.png" },
+          { id: 29, name: "Limonada frozen 1L",                       price: 10,  desc: "", image: "Limonada frozen 1L.jpg" },
+          { id: 32, name: "Agua mineral",                             price: 2.5, desc: "" }
         ]
       }
     ];
@@ -1481,6 +1488,17 @@ function deepCopy(obj){
       section.items.forEach(item => {
         const card = document.createElement("div");
         card.className = "item-card";
+
+        if (item.image) {
+          const itemImgWrap = document.createElement("div");
+          itemImgWrap.className = "item-img";
+          const itemImg = document.createElement("img");
+          itemImg.src = item.image;
+          itemImg.alt = item.name;
+          itemImg.loading = "lazy";
+          itemImgWrap.appendChild(itemImg);
+          card.appendChild(itemImgWrap);
+        }
 
         const header = document.createElement("div");
         header.className = "item-header";
@@ -1595,15 +1613,15 @@ function deepCopy(obj){
           const sel = document.createElement("select");
           sel.name = `brand-${item.id}`;
           const o0 = document.createElement("option");
-          o0.value = ""; o0.textContent = "Pepsi o Guaraná";
+          o0.value = ""; o0.textContent = "Coca o Inka";
           sel.appendChild(o0);
-          ["Pepsi","Guaraná"].forEach(v=>{
+          ["Coca-Cola","Inka Kola"].forEach(v=>{
             const o=document.createElement("option");
             o.value=v; o.textContent=v;
             sel.appendChild(o);
           });
           const label=document.createElement("label");
-          label.textContent="Marca: ";
+          label.textContent="600ml: ";
           label.appendChild(sel);
           actions.appendChild(label);
         }
