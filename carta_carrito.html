@@ -1445,16 +1445,16 @@ function deepCopy(obj){
         image: null,
         sauceMode: "none",
         items: [
-          { id: 37, name: "Gaseosa 1L Coca Cola / Inca Kola",          price: 9.0, desc: "", image: "Gaseosa 1L Coca Cola Inca Kola.png" },
-          { id: 35, name: "Gaseosa 600ml Coca Cola / Inca Kola",       price: 4.0, desc: "", image: "Gaseosa 600ml Coca Cola Inca Kola.png" },
+          { id: 37, name: "Gaseosa 1L Coca Cola / Inca Kola",           price: 9.0, desc: "", image: "Gaseosa 1L Coca Cola Inca Kola.png" },
+          { id: 35, name: "Gaseosa 600ml Coca Cola / Inca Kola",        price: 4.0, desc: "", image: "Gaseosa 600ml Coca Cola Inca Kola.png", imageFallbacks: ["Gaseosa 600 ml Coca Cola Inca Kola.png"] },
           { id: 42, name: "Gaseosa vidrio 296ml Coca Cola / Inca Kola", price: 2.5, desc: "", image: "Gaseosa vidrio 296ml Coca Cola Inca Kola.png" },
-          { id: 31, name: "Jarra de chicha 1L",                       price: 10,  desc: "", image: "Jarra de chicha 1L.png" },
-          { id: 30, name: "Jarra de maracuyá 1L",                     price: 10,  desc: "", image: "Jarra de maracuyá 1L.png" },
-          { id: 45, name: "Vaso de chicha",                           price: 3.0, desc: "", image: "Vaso de chicha.png" },
-          { id: 38, name: "Vaso de hielo",                            price: 3.0, desc: "", image: "Vaso de hielo.png" },
-          { id: 44, name: "Vaso de maracuyá",                         price: 3.0, desc: "", image: "Vaso de maracuyá.png" },
-          { id: 29, name: "Limonada frozen 1L",                       price: 10,  desc: "", image: "Limonada frozen 1L.jpg" },
-          { id: 32, name: "Agua mineral",                             price: 2.5, desc: "" }
+          { id: 31, name: "Jarra de chicha 1L",                        price: 10,  desc: "", image: "Jarra de chicha 1L.png" },
+          { id: 30, name: "Jarra de maracuyá 1L",                      price: 10,  desc: "", image: "Jarra de maracuyá 1L.png", imageFallbacks: ["Jarra de maracuya 1L.png"] },
+          { id: 45, name: "Vaso de chicha",                            price: 3.0, desc: "", image: "Vaso de chicha.png" },
+          { id: 38, name: "Vaso de hielo",                             price: 3.0, desc: "", image: "Vaso de hielo.png" },
+          { id: 44, name: "Vaso de maracuyá",                          price: 3.0, desc: "", image: "Vaso de maracuyá.png", imageFallbacks: ["Vaso de maracuya.png"] },
+          { id: 29, name: "Limonada frozen 1L",                        price: 10,  desc: "", image: "Limonada frozen 1L.jpg", imageFallbacks: ["Limonada frozen 1L.png"] },
+          { id: 32, name: "Agua mineral",                              price: 2.5, desc: "" }
         ]
       }
     ];
@@ -1493,9 +1493,19 @@ function deepCopy(obj){
           const itemImgWrap = document.createElement("div");
           itemImgWrap.className = "item-img";
           const itemImg = document.createElement("img");
-          itemImg.src = item.image;
+          const imageList = [item.image].concat(item.imageFallbacks || []);
+          let imageIndex = 0;
+          itemImg.src = imageList[imageIndex];
           itemImg.alt = item.name;
           itemImg.loading = "lazy";
+          itemImg.onerror = function(){
+            imageIndex++;
+            if (imageIndex < imageList.length) {
+              itemImg.src = imageList[imageIndex];
+            } else {
+              itemImgWrap.style.display = "none";
+            }
+          };
           itemImgWrap.appendChild(itemImg);
           card.appendChild(itemImgWrap);
         }
