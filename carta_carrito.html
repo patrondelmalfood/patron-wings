@@ -689,6 +689,300 @@
       font-weight:900;
       margin-top:4px;
     }
+  
+/* =========================================================
+   UX FINAL CLIENTE: carta más clara + carrito tipo app
+   ========================================================= */
+.item-card{
+  border-radius:18px !important;
+  border:1px solid rgba(255,159,28,.72) !important;
+  background:rgba(12,12,12,.96) !important;
+  overflow:hidden;
+}
+.item-card.has-food-img{ padding:0 !important; }
+.item-card .card-photo{
+  width:100%;
+  height:190px;
+  object-fit:cover;
+  object-position:center;
+  display:block;
+  background:#080808;
+}
+.item-card .item-header,
+.item-card .item-desc,
+.item-card .sauce-ux,
+.item-card .salsa-select-wrap,
+.item-card .brand-wrap,
+.item-card .item-actions{
+  padding-left:14px;
+  padding-right:14px;
+}
+.item-card .item-header{ padding-top:12px; }
+.item-card .item-name{ font-size:17px; color:#fff; font-weight:900; }
+.item-card .item-price{ font-size:16px; color:#ffe066; font-weight:900; }
+.item-card .item-desc{ color:#e5e5e5; font-size:13px; line-height:1.25; margin-bottom:8px; }
+.sauce-ux{ margin-top:8px; }
+.sauce-help-label{
+  color:#ffd60a;
+  font-size:13px;
+  font-weight:900;
+  margin-bottom:5px;
+}
+.sauce-counter{
+  color:#aaa;
+  font-size:12px;
+  margin-top:4px;
+}
+.sauce-accordion{
+  border:1px solid rgba(255,214,10,.35);
+  border-radius:10px;
+  overflow:hidden;
+  background:#090909;
+}
+.sauce-accordion summary{
+  list-style:none;
+  cursor:pointer;
+  padding:10px 12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  color:#fff;
+  font-size:13px;
+}
+.sauce-accordion summary::-webkit-details-marker{ display:none; }
+.sauce-accordion summary::after{
+  content:"▼";
+  color:#ffd60a;
+  font-size:12px;
+}
+.sauce-accordion[open] summary::after{ content:"▲"; }
+.sauce-options-panel{
+  border-top:1px solid rgba(255,214,10,.22);
+  padding:10px 12px 12px;
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0,1fr));
+  gap:9px 12px;
+  background:rgba(0,0,0,.42);
+}
+.sauce-options-panel label{
+  display:flex !important;
+  align-items:center;
+  gap:7px;
+  margin:0 !important;
+  color:#eee;
+  font-size:13px;
+}
+.sauce-options-panel input{ accent-color:#ffd60a; }
+.salsa-select{
+  min-height:42px;
+  font-size:14px;
+  border-color:rgba(255,214,10,.35) !important;
+  border-radius:10px !important;
+}
+.qty-stepper{
+  display:inline-flex;
+  align-items:center;
+  border:1px solid #444;
+  border-radius:10px;
+  overflow:hidden;
+  background:#050505;
+  height:42px;
+}
+.qty-stepper button{
+  width:44px;
+  height:42px;
+  padding:0 !important;
+  border-radius:0 !important;
+  background:#111 !important;
+  color:#fff !important;
+  border-right:1px solid #333 !important;
+  box-shadow:none !important;
+  font-size:20px !important;
+}
+.qty-stepper button:last-child{ border-right:0 !important; border-left:1px solid #333 !important; }
+.qty-stepper span{
+  min-width:46px;
+  text-align:center;
+  font-weight:900;
+  color:#fff;
+}
+.qty-real-input{ display:none !important; }
+.item-actions{
+  padding-bottom:14px;
+  margin-top:12px !important;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+.item-actions .add-to-order-btn{
+  flex:1;
+  min-height:42px;
+  border-radius:12px !important;
+  background:#ffd60a !important;
+  color:#000 !important;
+  font-weight:900 !important;
+  font-size:14px !important;
+}
+.brand-wrap{
+  margin-top:8px;
+  font-size:12px;
+  color:#ddd;
+}
+.brand-wrap label{ display:flex; gap:8px; align-items:center; }
+.brand-wrap select{ flex:1; min-height:38px; border-radius:10px; }
+
+.checkout-card{
+  border:1px solid rgba(255,214,10,.35) !important;
+  border-radius:16px !important;
+  background:rgba(14,14,14,.94) !important;
+  box-shadow:0 0 12px rgba(255,159,28,.08);
+}
+.checkout-card h3{
+  color:#ffd60a !important;
+  margin:0 0 8px !important;
+}
+.checkout-subtitle{
+  color:#bbb;
+  font-size:12px;
+  margin-bottom:10px;
+}
+.optional-details{
+  margin-top:10px;
+  border-top:1px dashed rgba(255,214,10,.25);
+  padding-top:8px;
+}
+.optional-details summary{
+  color:#ffd60a;
+  font-size:12px;
+  font-weight:900;
+  cursor:pointer;
+}
+.payment-options{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+.payment-option{
+  min-height:48px;
+  border:1px solid #444;
+  border-radius:12px;
+  display:flex !important;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  cursor:pointer;
+  background:#070707;
+}
+.payment-option input{ accent-color:#ffd60a; }
+.payment-option:has(input:checked){
+  border-color:#ffd60a;
+  background:rgba(255,214,10,.13);
+}
+.delivery-options-box{ display:block; }
+.delivery-option-card{
+  display:flex !important;
+  align-items:center;
+  gap:10px;
+  border:1px solid #333;
+  border-radius:12px;
+  padding:10px;
+  margin:8px 0;
+  cursor:pointer;
+  background:#070707;
+}
+.delivery-option-card input{ accent-color:#ffd60a; }
+.delivery-option-card:has(input:checked){
+  border-color:#ffd60a;
+  background:rgba(255,214,10,.13);
+}
+.delivery-option-icon{
+  font-size:22px;
+  width:30px;
+  text-align:center;
+}
+.delivery-option-text{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.delivery-option-text b{ color:#fff; }
+.delivery-option-text small{ color:#bbb; font-size:11px; line-height:1.2; }
+.payment-summary-box{
+  margin-top:15px;
+  padding:14px;
+  border-radius:16px;
+  border:1px solid rgba(255,214,10,.45);
+  background:linear-gradient(180deg, rgba(255,214,10,.09), rgba(0,0,0,.6));
+  color:#fff;
+  font-size:13px;
+}
+.summary-line{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:5px 0;
+}
+.summary-line.total{
+  border-top:1px dashed rgba(255,214,10,.45);
+  margin-top:6px;
+  padding-top:10px;
+  color:#ffd60a;
+  font-size:17px;
+  font-weight:900;
+}
+.cart-item-info strong{
+  display:block;
+  color:#fff;
+  margin-bottom:3px;
+}
+.cart-item-info small{
+  display:block;
+  color:#ccc;
+  font-size:12px;
+  line-height:1.25;
+}
+#btn-whatsapp{
+  border-radius:14px !important;
+  min-height:46px;
+  font-size:14px !important;
+}
+@media (min-width:700px){
+  .menu-grid{
+    grid-template-columns:repeat(2, minmax(0,1fr));
+  }
+}
+@media (max-width:600px){
+  .menu-grid{
+    grid-template-columns:1fr !important;
+    gap:14px !important;
+  }
+  .item-card .card-photo{
+    height:220px;
+  }
+  .item-card .item-name{
+    font-size:20px;
+  }
+  .item-card .item-price{
+    font-size:18px;
+  }
+  .item-actions{
+    align-items:center;
+  }
+  .payment-options{
+    grid-template-columns:1fr 1fr 1fr;
+  }
+  .sauce-options-panel{
+    grid-template-columns:repeat(2, minmax(0,1fr));
+  }
+}
+@media (max-width:380px){
+  .item-card .card-photo{ height:195px; }
+  .item-actions{ flex-direction:column; align-items:stretch; }
+  .qty-stepper{ width:100%; justify-content:space-between; }
+}
+
   </style>
 </head>
 
@@ -728,8 +1022,8 @@
 
       <a href="#alitas">Alitas 🔥</a>
       <a href="#hamburguesas">Hamburguesas 🍔</a>
-      <a href="#cartel">Platos del cartel 🔥</a>
-      <a href="#extras">Adicionales o extras ➕</a>
+      <a href="#cartel">Mostritos y Broaster 🍗</a>
+      <a href="#extras">Papas, cremas y extras ➕</a>
       <a href="#bebidas">Bebidas 🥤</a>
     </nav>
 
@@ -744,59 +1038,75 @@
       <div id="cart-items"></div>
       <p id="cart-empty">Aún no has añadido platos.</p>
 
-      <div class="cliente-datos">
-        <h3>Datos del cliente</h3>
-        <label for="customer-name">Nombre del cliente (opcional):</label>
+      <div class="cliente-datos checkout-card">
+        <h3>👤 Nombre para el pedido</h3>
+        <div class="checkout-subtitle">Solo necesitamos un nombre para identificar tu pedido.</div>
+
+        <label for="customer-name">Nombre del cliente:</label>
         <input type="text" id="customer-name" placeholder="Ej: Juan Pérez">
 
-        <label for="customer-dni">DNI del cliente (opcional):</label>
-        <input type="text" id="customer-dni" inputmode="numeric" maxlength="8" placeholder="Ej: 12345678">
-        <div class="help-text">No es obligatorio. Si lo llenan, saldrá en boleta/comanda y WhatsApp.</div>
+        <details class="optional-details">
+          <summary>Datos opcionales / comentario</summary>
 
-        <label for="order-comment">Comentario del pedido / nota de moza (opcional):</label>
-        <textarea id="order-comment" placeholder="Ej: 8 alitas → 6 acevichada y 2 BBQ / sin cebolla / cliente apurado"></textarea>
-        <div class="help-text">Este campo te sirve para pedidos especiales o repartos exactos de salsa.</div>
+          <label for="customer-dni">DNI del cliente (opcional):</label>
+          <input type="text" id="customer-dni" inputmode="numeric" maxlength="8" placeholder="Ej: 12345678">
+          <div class="help-text">No es obligatorio. Si lo llenan, saldrá en boleta/comanda y WhatsApp.</div>
+
+          <label for="order-comment">Comentario del pedido (opcional):</label>
+          <textarea id="order-comment" placeholder="Ej: 8 alitas → 6 acevichada y 2 BBQ / sin cebolla / cliente apurado"></textarea>
+          <div class="help-text">Para pedidos especiales o repartos exactos de salsa.</div>
+        </details>
       </div>
 
-      <div class="pago-datos">
-        <h3>Forma de pago</h3>
-        <div class="extras-row">
-          <label><input type="radio" name="payment-method" value="efectivo" checked> Efectivo</label>
-          <label><input type="radio" name="payment-method" value="yape"> Yape</label>
-          <label><input type="radio" name="payment-method" value="mixto"> Mixto</label>
+      <div class="pago-datos checkout-card">
+        <h3>💳 ¿Cómo vas a pagar?</h3>
+        <div class="payment-options">
+          <label class="payment-option"><input type="radio" name="payment-method" value="efectivo" checked><span>💵</span><b>Efectivo</b></label>
+          <label class="payment-option"><input type="radio" name="payment-method" value="yape"><span>📲</span><b>Yape</b></label>
+          <label class="payment-option"><input type="radio" name="payment-method" value="mixto"><span>💳</span><b>Mixto</b></label>
         </div>
         <p class="nota-pago-yape">Si pagas con Yape, envía la captura del pago para empezar la preparación.</p>
 
         <div id="mixed-payment-box" class="mixed-payment-box">
           <div class="mixed-payment-grid">
             <div>
-              <label for="mixed-yape">Monto Yape:</label>
+              <label for="mixed-yape">¿Cuánto pagarás por Yape?</label>
               <input type="number" id="mixed-yape" min="0" step="0.01" placeholder="0.00">
             </div>
             <div>
-              <label for="mixed-cash">Monto efectivo:</label>
+              <label for="mixed-cash">¿Cuánto pagarás en efectivo?</label>
               <input type="number" id="mixed-cash" min="0" step="0.01" placeholder="0.00">
             </div>
           </div>
-          <div class="help-text">Cuando sea pago mixto, la suma de ambos debe ser igual al total del pedido.</div>
+          <div class="help-text">La suma de Yape + efectivo debe coincidir con el total.</div>
         </div>
       </div>
 
-      <div class="extras">
-        <div class="extras-row">
-          <label><input type="checkbox" id="chk-delivery" checked> Quiero delivery (S/ 3 antes de 10pm / S/ 4 desde 10pm / GRATIS &gt; S/ 100)</label>
-          <img src="delivery.png" alt="Delivery" class="delivery-icon">
-        </div>
-        <div class="extras-row">
-          <label><input type="checkbox" id="chk-pickup"> Recojo yo mismo en el local (para llevar)</label>
-        </div>
-        <div class="extras-row">
-          <label><input type="checkbox" id="chk-eatin"> Comeré en el local (no se cobra taper)</label>
-        </div>
-        <p class="nota-taper">🥡 Los tapers se calculan automáticamente por plato para delivery o para llevar (no bebidas ni cremas extra).</p>
+      <div class="extras checkout-card delivery-options-box">
+        <h3>🚚 ¿Cómo quieres recibir tu pedido?</h3>
+
+        <label class="delivery-option-card">
+          <input type="checkbox" id="chk-delivery" checked>
+          <span class="delivery-option-icon">🛵</span>
+          <span class="delivery-option-text"><b>Delivery</b><small>S/ 3 antes de 10pm · S/ 4 desde 10pm · gratis mayor a S/ 100</small></span>
+        </label>
+
+        <label class="delivery-option-card">
+          <input type="checkbox" id="chk-pickup">
+          <span class="delivery-option-icon">🛍️</span>
+          <span class="delivery-option-text"><b>Recojo en local</b><small>Pedido para llevar</small></span>
+        </label>
+
+        <label class="delivery-option-card">
+          <input type="checkbox" id="chk-eatin">
+          <span class="delivery-option-icon">🍽️</span>
+          <span class="delivery-option-text"><b>Comer en el local</b><small>No se cobra empaque / taper</small></span>
+        </label>
+
+        <p class="nota-taper">🥡 El empaque / taper se cobra solo para delivery o recojo. No aplica si comes en el local.</p>
       </div>
 
-      <p id="cart-total">Total: S/ 0.00</p>
+      <div id="cart-total" class="payment-summary-box">Total: S/ 0.00</div>
       <p class="nota-delivery">* Delivery S/ 3 antes de 10pm y S/ 4 desde 10pm (gratis &gt; S/ 100).</p>
 
       <div id="boleta-virtual"></div>
@@ -807,7 +1117,7 @@
         <button id="btn-print-kitchen" type="button">👨‍🍳 Comanda cocina</button>
         <button id="btn-print-client" type="button">🧾 Boleta cliente</button>
         <button id="btn-register-sale" type="button">✅ Registrar venta</button>
-        <a id="btn-whatsapp" href="#" target="_blank" class="btn disabled">Enviar pedido por WhatsApp</a>
+        <a id="btn-whatsapp" href="#" target="_blank" class="btn disabled">📲 Confirmar y enviar por WhatsApp</a>
       </div>
 
       <p id="error-msg" class="error-msg"></p>
@@ -931,7 +1241,7 @@
             <div class="admin-card"><div class="label">Presas broaster</div><div class="value" id="mBroasterPieces">0</div></div>
             <div class="admin-card"><div class="label">Burgers (unidades)</div><div class="value" id="mBurgerUnits">0</div></div>
             <div class="admin-card"><div class="label">Delivery (S/)</div><div class="value" id="mDelivery">0.00</div></div>
-            <div class="admin-card"><div class="label">Tapers (S/)</div><div class="value" id="mTapers">0.00</div></div>
+            <div class="admin-card"><div class="label">Empaque / taper (S/)</div><div class="value" id="mTapers">0.00</div></div>
           </div>
 
           <div class="admin-three">
@@ -1401,10 +1711,10 @@ function deepCopy(obj){
       },
       {
         anchorId: "cartel",
-        name: "🔥 PLATOS DEL CARTEL 🔥",
+        name: "🍗 Mostritos y Broaster",
         image: "MOSTRITO BROSTER.jpg",
         sauceMode: "single",
-        footerText: "Salsas: BBQ, Acevichada, Buffalo, Maracuyá, o SIN SALSA.",
+        footerText: "Elige 1 salsa: BBQ, Acevichada, Buffalo, Maracuyá o Sin salsa.",
         items: [
           { id: 60, name: "🔫 El Sicario",      price: 18.90, desc: "2 piezas broaster + papas + ensalada + cremas → 1 salsa" },
           { id: 61, name: "💣 Plata o Plomo",  price: 22.90, desc: "3 piezas broaster + papas + ensalada + cremas → 1 salsa" },
@@ -1424,7 +1734,7 @@ function deepCopy(obj){
       },
       {
         anchorId: "extras",
-        name: "Adicionales o extras ➕",
+        name: "Papas, cremas y extras ➕",
         image: "cat-extras.png",
         sauceMode: "none",
         items: [
@@ -1460,7 +1770,313 @@ function deepCopy(obj){
 }
     ];
 
-    const menuContainer = document.getElementById("menu");
+    
+const menuContainer = document.getElementById("menu");
+
+    function sauceShortName(v){
+      if (isNoSauceValue(v)) return "Sin salsa";
+      return String(v || "").replace("Salsa ", "");
+    }
+
+    function slugSauce(v){
+      return sauceShortName(v)
+        .toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+        .replace(/\s+/g,"-");
+    }
+
+    function getAlitasImageBySelection(selectedSauces, noSauce){
+      if (noSauce) return "alitas-sinsalsa.png";
+
+      const vals = (selectedSauces || []).map(slugSauce).filter(Boolean);
+      if (!vals.length) return "alitas-acevichada.png";
+
+      if (vals.length === 1) return `alitas-${vals[0]}.png`;
+
+      const set = new Set(vals);
+      if (set.has("bbq") && set.has("acevichada")) return "alitas-bbq-acevichada.png";
+      if (set.has("bbq") && set.has("maracuya")) return "alitas-bbq-maracuya.png";
+      if (set.has("buffalo") && set.has("acevichada")) return "alitas-buffalo-acevichada.png";
+      if (set.has("buffalo") && set.has("maracuya")) return "alitas-buffalo-maracuya.png";
+      if (set.has("maracuya") && set.has("acevichada")) return "alitas-maracuya-acevichada.png";
+
+      return `alitas-${vals[0]}.png`;
+    }
+
+    function getDefaultItemImage(section, item){
+      if (item.image) return item.image;
+      if (section.anchorId === "alitas" || section.name.includes("Agregado de alitas")) return "alitas-acevichada.png";
+      if (section.anchorId === "hamburguesas") return "BURGER 2.jpg";
+      if (section.anchorId === "cartel" || section.name.includes("broaster") || section.name.includes("Broaster")) return "MOSTRITO BROSTER.jpg";
+      if (section.anchorId === "extras") return "cat-extras.png";
+      return section.image || "";
+    }
+
+    function updateFoodPhoto(card, section, item){
+      const img = card.querySelector(".card-photo");
+      if (!img) return;
+
+      let next = getDefaultItemImage(section, item);
+      if (section.anchorId === "alitas" || section.name.includes("Agregado de alitas")) {
+        let noSauce = false;
+        let selectedSauces = [];
+
+        if (section.sauceMode === "multi") {
+          const noSauceCb = card.querySelector(`input[name="salsa-none-${item.id}"]`);
+          noSauce = !!(noSauceCb && noSauceCb.checked);
+          selectedSauces = Array.from(card.querySelectorAll(`input[name="salsa-${item.id}"]:checked`)).map(el => el.value);
+        }
+
+        if (section.sauceMode === "single") {
+          const sel = card.querySelector(`select[name="salsa-select-${item.id}"]`);
+          if (sel && sel.value) {
+            noSauce = isNoSauceValue(sel.value);
+            selectedSauces = noSauce ? [] : [sel.value];
+          }
+        }
+
+        next = getAlitasImageBySelection(selectedSauces, noSauce);
+      }
+
+      if (next && img.getAttribute("src") !== next) img.src = next;
+    }
+
+    function refreshSauceSummary(card, item, maxSalsas){
+      const summaryLabel = card.querySelector(".sauce-accordion-label");
+      const counter = card.querySelector(".sauce-counter");
+      const noSauceCb = card.querySelector(`input[name="salsa-none-${item.id}"]`);
+      const selectedSauces = Array.from(card.querySelectorAll(`input[name="salsa-${item.id}"]:checked`)).map(el => el.value);
+      const noSauce = !!(noSauceCb && noSauceCb.checked);
+
+      if (summaryLabel) {
+        if (noSauce) summaryLabel.textContent = "Sin salsa";
+        else if (selectedSauces.length) summaryLabel.textContent = selectedSauces.map(sauceShortName).join(" + ");
+        else summaryLabel.textContent = maxSalsas > 1 ? `Elegir hasta ${maxSalsas} salsas` : "Elegir 1 salsa";
+      }
+
+      if (counter) {
+        counter.textContent = maxSalsas > 1
+          ? `Seleccionadas: ${selectedSauces.length}/${maxSalsas}`
+          : "";
+      }
+    }
+
+    function makeFoodImage(section, item){
+      const src = getDefaultItemImage(section, item);
+      if (!src) return null;
+
+      const img = document.createElement("img");
+      img.className = "card-photo";
+      img.src = src;
+      img.alt = item.name;
+      img.loading = "lazy";
+      img.onerror = function(){
+        this.style.display = "none";
+      };
+      return img;
+    }
+
+    function makeQtyControl(qtyInput){
+      qtyInput.type = "number";
+      qtyInput.min = "1";
+      qtyInput.value = "1";
+      qtyInput.className = "qty-real-input";
+
+      const wrap = document.createElement("div");
+      wrap.className = "qty-stepper";
+
+      const minus = document.createElement("button");
+      minus.type = "button";
+      minus.textContent = "−";
+
+      const num = document.createElement("span");
+      num.textContent = qtyInput.value;
+
+      const plus = document.createElement("button");
+      plus.type = "button";
+      plus.textContent = "+";
+
+      function setQty(next){
+        const v = Math.max(1, parseInt(next || 1, 10) || 1);
+        qtyInput.value = String(v);
+        num.textContent = String(v);
+      }
+
+      minus.addEventListener("click", () => setQty(Number(qtyInput.value) - 1));
+      plus.addEventListener("click", () => setQty(Number(qtyInput.value) + 1));
+
+      wrap.appendChild(minus);
+      wrap.appendChild(num);
+      wrap.appendChild(plus);
+      wrap.appendChild(qtyInput);
+
+      return wrap;
+    }
+
+    function addBrandSelectorIfNeeded(actions, item){
+      const brandOptionsById = {
+        35: { label: "600ml:", placeholder: "Coca o Inka", values: ["Coca-Cola","Inka Kola"] },
+        42: { label: "Vidrio:", placeholder: "Coca o Inka", values: ["Coca-Cola","Inka Kola"] },
+        37: { label: "1L:", placeholder: "Inka o Coca", values: ["Inka Kola","Coca-Cola"] }
+      };
+
+      const config = brandOptionsById[item.id];
+      if (!config) return;
+
+      const wrap = document.createElement("div");
+      wrap.className = "brand-wrap";
+
+      const sel = document.createElement("select");
+      sel.name = `brand-${item.id}`;
+      const o0 = document.createElement("option");
+      o0.value = "";
+      o0.textContent = config.placeholder;
+      sel.appendChild(o0);
+
+      config.values.forEach(v => {
+        const o = document.createElement("option");
+        o.value = v;
+        o.textContent = v;
+        sel.appendChild(o);
+      });
+
+      const label = document.createElement("label");
+      label.textContent = config.label + " ";
+      label.appendChild(sel);
+
+      wrap.appendChild(label);
+      actions.parentElement.insertBefore(wrap, actions);
+    }
+
+    function createMultiSauceUI(card, section, item){
+      const maxSalsas = getSauceMaxForItemName(item.name);
+      const wrap = document.createElement("div");
+      wrap.className = "sauce-ux";
+
+      const label = document.createElement("div");
+      label.className = "sauce-help-label";
+      label.textContent = maxSalsas > 1 ? `Elige hasta ${maxSalsas} salsas` : "Elige 1 salsa";
+      wrap.appendChild(label);
+
+      const details = document.createElement("details");
+      details.className = "sauce-accordion";
+
+      const summary = document.createElement("summary");
+      const summaryLabel = document.createElement("span");
+      summaryLabel.className = "sauce-accordion-label";
+      summaryLabel.textContent = maxSalsas > 1 ? `Elegir hasta ${maxSalsas} salsas` : "Elegir 1 salsa";
+      summary.appendChild(summaryLabel);
+      details.appendChild(summary);
+
+      const panel = document.createElement("div");
+      panel.className = "sauce-options-panel";
+
+      function addCheck(name, value, inputName){
+        const label = document.createElement("label");
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.value = value;
+        cb.name = inputName;
+        label.appendChild(cb);
+        label.appendChild(document.createTextNode(name));
+        panel.appendChild(label);
+
+        cb.addEventListener("change", () => {
+          const noSauceCb = card.querySelector(`input[name="salsa-none-${item.id}"]`);
+          const sauceCbs = Array.from(card.querySelectorAll(`input[name="salsa-${item.id}"]`));
+
+          if (cb === noSauceCb && cb.checked) {
+            sauceCbs.forEach(x => x.checked = false);
+          } else if (inputName === `salsa-${item.id}` && cb.checked) {
+            if (noSauceCb) noSauceCb.checked = false;
+            const selected = sauceCbs.filter(x => x.checked);
+            if (selected.length > maxSalsas) {
+              cb.checked = false;
+              alert(`Máximo ${maxSalsas} salsa${maxSalsas > 1 ? "s" : ""} para "${item.name}".`);
+            }
+          }
+
+          refreshSauceSummary(card, item, maxSalsas);
+          updateFoodPhoto(card, section, item);
+        });
+
+        return cb;
+      }
+
+      addCheck(" Sin salsa", "SIN_SALSA", `salsa-none-${item.id}`);
+      SAUCES.forEach(sauce => addCheck(" " + sauce.replace("Salsa ", ""), sauce, `salsa-${item.id}`));
+      addCheck(" Salsas aparte", "APARTE", `salsa-aparte-${item.id}`);
+
+      details.appendChild(panel);
+      wrap.appendChild(details);
+
+      const counter = document.createElement("div");
+      counter.className = "sauce-counter";
+      counter.textContent = maxSalsas > 1 ? `Seleccionadas: 0/${maxSalsas}` : "";
+      wrap.appendChild(counter);
+
+      card.appendChild(wrap);
+    }
+
+    function createSingleSauceUI(card, section, item){
+      const wrap = document.createElement("div");
+      wrap.className = "salsa-select-wrap sauce-ux";
+
+      const t = document.createElement("div");
+      t.className = "sauce-help-label";
+      t.textContent = "Elige 1 salsa";
+      wrap.appendChild(t);
+
+      const sel = document.createElement("select");
+      sel.className = "salsa-select";
+      sel.name = `salsa-select-${item.id}`;
+
+      const o0 = document.createElement("option");
+      o0.value = "";
+      o0.textContent = "Elegir 1 salsa";
+      sel.appendChild(o0);
+
+      const oSin = document.createElement("option");
+      oSin.value = "SIN_SALSA";
+      oSin.textContent = "Sin salsa";
+      sel.appendChild(oSin);
+
+      SAUCES.forEach(s => {
+        const o = document.createElement("option");
+        o.value = s;
+        o.textContent = s.replace("Salsa ", "");
+        sel.appendChild(o);
+      });
+
+      sel.addEventListener("change", () => updateFoodPhoto(card, section, item));
+
+      wrap.appendChild(sel);
+      card.appendChild(wrap);
+    }
+
+    function resetCardAfterAdd(card, section, item, qtyInput, brandSel){
+      qtyInput.value = "1";
+
+      const qtyText = card.querySelector(".qty-stepper span");
+      if (qtyText) qtyText.textContent = "1";
+
+      if (section.sauceMode === "multi") {
+        card.querySelectorAll(`input[name="salsa-${item.id}"]`).forEach(el => el.checked = false);
+        const aparteCb = card.querySelector(`input[name="salsa-aparte-${item.id}"]`);
+        if (aparteCb) aparteCb.checked = false;
+        const noSauceCb = card.querySelector(`input[name="salsa-none-${item.id}"]`);
+        if (noSauceCb) noSauceCb.checked = false;
+        refreshSauceSummary(card, item, getSauceMaxForItemName(item.name));
+      }
+
+      if (section.sauceMode === "single") {
+        const sel = card.querySelector(`select[name="salsa-select-${item.id}"]`);
+        if (sel) sel.value = "";
+      }
+
+      if (brandSel) brandSel.value = "";
+      updateFoodPhoto(card, section, item);
+    }
 
     SECTIONS.forEach(section => {
       const titleRow = document.createElement("div");
@@ -1488,28 +2104,10 @@ function deepCopy(obj){
 
       section.items.forEach(item => {
         const card = document.createElement("div");
-        card.className = "item-card";
+        card.className = "item-card has-food-img";
 
-        if (item.image) {
-          const itemImgWrap = document.createElement("div");
-          itemImgWrap.className = "item-img";
-          const itemImg = document.createElement("img");
-          const imageList = [item.image].concat(item.imageFallbacks || []);
-          let imageIndex = 0;
-          itemImg.src = imageList[imageIndex];
-          itemImg.alt = item.name;
-          itemImg.loading = "lazy";
-          itemImg.onerror = function(){
-            imageIndex++;
-            if (imageIndex < imageList.length) {
-              itemImg.src = imageList[imageIndex];
-            } else {
-              itemImgWrap.style.display = "none";
-            }
-          };
-          itemImgWrap.appendChild(itemImg);
-          card.appendChild(itemImgWrap);
-        }
+        const foodImg = makeFoodImage(section, item);
+        if (foodImg) card.appendChild(foodImg);
 
         const header = document.createElement("div");
         header.className = "item-header";
@@ -1534,145 +2132,29 @@ function deepCopy(obj){
         }
 
         if (section.sauceMode === "multi") {
-          const maxSalsas = getSauceMaxForItemName(item.name);
-
-          const saucesDiv = document.createElement("div");
-          saucesDiv.className = "salsas-item";
-
-          const saucesTitle = document.createElement("p");
-          saucesTitle.textContent = `Salsas (máx. ${maxSalsas}):`;
-          saucesDiv.appendChild(saucesTitle);
-
-          const noneWrap = document.createElement("div");
-          const noneLabel = document.createElement("label");
-          const noneCb = document.createElement("input");
-          noneCb.type = "checkbox";
-          noneCb.value = "SIN_SALSA";
-          noneCb.name = `salsa-none-${item.id}`;
-          noneLabel.appendChild(noneCb);
-          noneLabel.appendChild(document.createTextNode(" Sin salsa"));
-          noneWrap.appendChild(noneLabel);
-          saucesDiv.appendChild(noneWrap);
-
-          SAUCES.forEach(sauce => {
-            const label = document.createElement("label");
-            const cb = document.createElement("input");
-            cb.type = "checkbox";
-            cb.value = sauce;
-            cb.name = `salsa-${item.id}`;
-            label.appendChild(cb);
-            label.appendChild(document.createTextNode(" " + sauce.replace("Salsa ", "")));
-            saucesDiv.appendChild(label);
-          });
-
-          const aparteWrapper = document.createElement("div");
-          const aparteLabel = document.createElement("label");
-          const aparteCb = document.createElement("input");
-          aparteCb.type = "checkbox";
-          aparteCb.name = `salsa-aparte-${item.id}`;
-          aparteLabel.appendChild(aparteCb);
-          aparteLabel.appendChild(document.createTextNode(" Salsas aparte"));
-          aparteWrapper.appendChild(aparteLabel);
-          saucesDiv.appendChild(aparteWrapper);
-
-          card.appendChild(saucesDiv);
+          createMultiSauceUI(card, section, item);
         }
 
         if (section.sauceMode === "single") {
-          const wrap = document.createElement("div");
-          wrap.className = "salsa-select-wrap";
-
-          const t = document.createElement("div");
-          t.className = "salsa-select-title";
-          t.textContent = "Elige salsa";
-          wrap.appendChild(t);
-
-          const sel = document.createElement("select");
-          sel.className = "salsa-select";
-          sel.name = `salsa-select-${item.id}`;
-
-          const o0 = document.createElement("option");
-          o0.value = "";
-          o0.textContent = "Selecciona una opción";
-          sel.appendChild(o0);
-
-          const oSin = document.createElement("option");
-          oSin.value = "SIN_SALSA";
-          oSin.textContent = "Sin salsa";
-          sel.appendChild(oSin);
-
-          SAUCES.forEach(s => {
-            const o = document.createElement("option");
-            o.value = s;
-            o.textContent = s.replace("Salsa ", "");
-            sel.appendChild(o);
-          });
-
-          wrap.appendChild(sel);
-          card.appendChild(wrap);
+          createSingleSauceUI(card, section, item);
         }
 
         const actions = document.createElement("div");
         actions.className = "item-actions";
 
         const qtyInput = document.createElement("input");
-        qtyInput.type = "number";
-        qtyInput.min = "1";
-        qtyInput.value = "1";
-
-        if (item.id === 35) {
-          const sel = document.createElement("select");
-          sel.name = `brand-${item.id}`;
-          const o0 = document.createElement("option");
-          o0.value = ""; o0.textContent = "Coca o Inka";
-          sel.appendChild(o0);
-          ["Coca-Cola","Inka Kola"].forEach(v=>{
-            const o=document.createElement("option");
-            o.value=v; o.textContent=v;
-            sel.appendChild(o);
-          });
-          const label=document.createElement("label");
-          label.textContent="600ml: ";
-          label.appendChild(sel);
-          actions.appendChild(label);
-        }
-
-        if (item.id === 42) {
-          const sel = document.createElement("select");
-          sel.name = `brand-${item.id}`;
-          const o0 = document.createElement("option");
-          o0.value = ""; o0.textContent = "Coca o Inka";
-          sel.appendChild(o0);
-          ["Coca-Cola","Inka Kola"].forEach(v=>{
-            const o=document.createElement("option");
-            o.value=v; o.textContent=v;
-            sel.appendChild(o);
-          });
-          const label=document.createElement("label");
-          label.textContent="Vidrio: ";
-          label.appendChild(sel);
-          actions.appendChild(label);
-        }
-
-        if (item.id === 37) {
-          const sel = document.createElement("select");
-          sel.name = `brand-${item.id}`;
-          const o0 = document.createElement("option");
-          o0.value = ""; o0.textContent = "Inka o Coca";
-          sel.appendChild(o0);
-          ["Inka Kola","Coca-Cola"].forEach(v=>{
-            const o=document.createElement("option");
-            o.value=v; o.textContent=v;
-            sel.appendChild(o);
-          });
-          const label=document.createElement("label");
-          label.textContent="1L: ";
-          label.appendChild(sel);
-          actions.appendChild(label);
-        }
+        const qtyControl = makeQtyControl(qtyInput);
+        actions.appendChild(qtyControl);
 
         const btn = document.createElement("button");
-        btn.textContent = "Agregar";
+        btn.className = "add-to-order-btn";
+        btn.type = "button";
+        btn.textContent = "🛒 Agregar al pedido";
+
+        card.appendChild(actions);
+        addBrandSelectorIfNeeded(actions, item);
+        actions.appendChild(btn);
+
         btn.addEventListener("click", () => {
           if (CURRENT_ORDER_LOCKED) {
             alert("Este pedido ya fue registrado. Vacía el pedido para iniciar uno nuevo.");
@@ -1738,31 +2220,12 @@ function deepCopy(obj){
           addToCart(item, qty, selectedSauces, sauceApart, selectedBrand, noSauce);
 
           const originalText = btn.textContent;
-          btn.textContent = "✔ Añadido";
+          btn.textContent = "✅ Añadido";
           btn.disabled = true;
           setTimeout(() => { btn.textContent = originalText; btn.disabled = false; }, 900);
 
-          qtyInput.value = "1";
-
-          if (section.sauceMode === "multi") {
-            card.querySelectorAll(`input[name="salsa-${item.id}"]`).forEach(el => el.checked = false);
-            const aparteCb = card.querySelector(`input[name="salsa-aparte-${item.id}"]`);
-            if (aparteCb) aparteCb.checked = false;
-            const noSauceCb = card.querySelector(`input[name="salsa-none-${item.id}"]`);
-            if (noSauceCb) noSauceCb.checked = false;
-          }
-
-          if (section.sauceMode === "single") {
-            const sel = card.querySelector(`select[name="salsa-select-${item.id}"]`);
-            if (sel) sel.value = "";
-          }
-
-          if (brandSel) brandSel.value = "";
+          resetCardAfterAdd(card, section, item, qtyInput, brandSel);
         });
-
-        actions.appendChild(qtyInput);
-        actions.appendChild(btn);
-        card.appendChild(actions);
 
         grid.appendChild(card);
       });
@@ -2373,8 +2836,8 @@ ensureBoletaCreated();;
 
       html += `
         <hr>
-        <div style="display:flex;justify-content:space-between;"><div>Subtotal</div><div><b>S/ ${ctx.subtotal.toFixed(2)}</b></div></div>
-        <div style="display:flex;justify-content:space-between;"><div>Tapers</div><div><b>S/ ${ctx.taperFee.toFixed(2)}</b></div></div>
+        <div style="display:flex;justify-content:space-between;"><div>Pedido</div><div><b>S/ ${ctx.subtotal.toFixed(2)}</b></div></div>
+        <div style="display:flex;justify-content:space-between;"><div>Empaque / taper</div><div><b>S/ ${ctx.taperFee.toFixed(2)}</b></div></div>
         <div style="display:flex;justify-content:space-between;"><div>Delivery</div><div><b>S/ ${ctx.deliveryFee.toFixed(2)}</b></div></div>
         ${ctx.reward.discountAmount > 0 ? `<div style="display:flex;justify-content:space-between;color:#166534;"><div>Premio 10%</div><div><b>- S/ ${ctx.reward.discountAmount.toFixed(2)}</b></div></div>` : ""}
         <hr>
@@ -2441,7 +2904,7 @@ ensureBoletaCreated();;
       html += `
         <hr>
         <div style="font-size:11px;">
-          <div><b>Tapers:</b> ${ctx.taperCount}</div>
+          <div><b>Empaque / taper:</b> ${ctx.taperCount}</div>
           <div><b>Total items:</b> ${cart.reduce((a,e)=>a+e.qty,0)}</div>
         </div>
       `;
@@ -2481,7 +2944,7 @@ ensureBoletaCreated();;
       }
 
       txt += "Subtotal: S/ " + ctx.subtotal.toFixed(2) + "\n";
-      txt += "Tapers: S/ " + ctx.taperFee.toFixed(2) + "\n";
+      txt += "Empaque / taper: S/ " + ctx.taperFee.toFixed(2) + "\n";
       txt += "Delivery: S/ " + ctx.deliveryFee.toFixed(2) + "\n";
       if (ctx.reward.discountAmount > 0) txt += "Premio 10%: - S/ " + ctx.reward.discountAmount.toFixed(2) + "\n";
       txt += line58() + "\n";
@@ -2533,7 +2996,7 @@ ensureBoletaCreated();;
         txt += line58() + "\n";
       }
 
-      txt += "Tapers: " + ctx.taperCount + "\n";
+      txt += "Empaque / taper: " + ctx.taperCount + "\n";
       txt += "Items: " + cart.reduce((a,e)=>a+e.qty,0) + "\n\n\n";
       return txt;
     }
@@ -2595,15 +3058,16 @@ ensureBoletaCreated();;
         const info = document.createElement("div");
         info.className = "cart-item-info";
 
-        let lineText = `${item.name}`;
-        if (noSauce) lineText += ` | Sin salsa`;
+        let detailLines = [];
+        if (noSauce) detailLines.push("Salsa: Sin salsa");
         if (sauces && sauces.length > 0) {
           const shortNames = sauces.map(s => s.replace("Salsa ", ""));
-          lineText += ` | Salsa: ${shortNames.join(", ")}`;
+          detailLines.push(`${shortNames.length > 1 ? "Salsas" : "Salsa"}: ${shortNames.join(" + ")}`);
         }
-        if (sauceApart) lineText += ` | Salsas aparte`;
-        if (brand) lineText += ` | Marca: ${brand}`;
-        info.textContent = lineText;
+        if (sauceApart) detailLines.push("Salsas aparte");
+        if (brand) detailLines.push(`Marca: ${brand}`);
+
+        info.innerHTML = `<strong>${item.name}</strong>` + (detailLines.length ? `<small>${detailLines.join(" · ")}</small>` : "");
 
         const right = document.createElement("div");
         right.className = "cart-item-right";
@@ -2657,10 +3121,11 @@ ensureBoletaCreated();;
       const ctx = getOrderContext();
 
       cartTotalEl.innerHTML =
-        `Subtotal: S/ ${ctx.subtotal.toFixed(2)}<br>` +
-        `Tapers: 🥡 ${ctx.taperTextPrint}<br>` +
-        `Delivery: S/ ${ctx.deliveryFee.toFixed(2)}<br>` +
-        `<span style="font-size:17px;">Total: S/ ${ctx.total.toFixed(2)}</span>`;
+        `<div style="font-weight:900;color:#ffd60a;margin-bottom:6px;">Resumen de pago</div>` +
+        `<div class="summary-line"><span>Pedido</span><b>S/ ${ctx.subtotal.toFixed(2)}</b></div>` +
+        `<div class="summary-line"><span>Empaque / taper</span><b>S/ ${ctx.taperFee.toFixed(2)}</b></div>` +
+        `<div class="summary-line"><span>Delivery</span><b>S/ ${ctx.deliveryFee.toFixed(2)}</b></div>` +
+        `<div class="summary-line total"><span>Total a pagar</span><b>S/ ${ctx.total.toFixed(2)}</b></div>`;
 
       if (bottomBar) {
         bottomBar.classList.remove("hidden");
@@ -2695,7 +3160,7 @@ ensureBoletaCreated();;
       });
 
       lines.push("━━━━━━━━━━━━━━━━━━━━");
-      lines.push(`🥡 *Tapers:* ${ctx.taperTextPrint}`);
+      lines.push(`🥡 *Empaque / taper:* ${ctx.taperTextPrint}`);
       lines.push(`🚚 *Delivery / Consumo:* ${ctx.deliveryTextWA}`);
       lines.push(`💰 *TOTAL A PAGAR:* *S/ ${ctx.total.toFixed(2)}*`);
       lines.push(`💳 *Pago:* ${getPaymentDisplayTextWA(ctx)}`);
