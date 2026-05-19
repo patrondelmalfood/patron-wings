@@ -1186,6 +1186,38 @@ body{
   #alitas + .menu-grid .item-card{ border-radius:14px; }
 }
 
+
+/* ===== BOLETA TERMICA MEJORADA (solo vista/impresion de boleta) ===== */
+.thermal-ticket{
+  margin:0;
+  padding:0;
+  background:#fff;
+  color:#000;
+  font-family:"Courier New", monospace;
+  font-size:12px;
+  line-height:1.35;
+  white-space:pre-wrap;
+}
+.thermal-ticket .thermal-title{
+  display:block;
+  text-align:center;
+  font-size:20px;
+  font-weight:900;
+  letter-spacing:1px;
+  line-height:1.05;
+}
+.thermal-ticket .thermal-subtitle{
+  display:block;
+  text-align:center;
+  font-size:14px;
+  font-weight:900;
+  margin-top:2px;
+}
+.thermal-ticket .thermal-total{
+  font-size:16px;
+  font-weight:900;
+}
+
 </style>
 </head>
 
@@ -1259,13 +1291,13 @@ body{
 
   <a href="#cartel" class="app-category-card">
     <img src="cat-cartel.png">
-    <span>Platos del cartel 🔥</span>
+    <span>Mostritos y Broaster 🍗</span>
     <b>›</b>
   </a>
 
   <a href="#extras" class="app-category-card">
     <img src="cat-extras.png">
-    <span>Adicionales o extras ➕</span>
+    <span>Papas, cremas y extras ➕</span>
     <b>›</b>
   </a>
 
@@ -1332,7 +1364,7 @@ body{
         <div class="staff-card-head">
           <div class="staff-icon">💳</div>
           <div>
-            <h3>Forma de pago</h3>
+            <h3>¿Cómo pagó el cliente?</h3>
             <p>Elige cómo pagó el cliente antes de registrar la venta.</p>
           </div>
         </div>
@@ -1362,14 +1394,14 @@ body{
         <div class="staff-card-head">
           <div class="staff-icon">🛵</div>
           <div>
-            <h3>Tipo de entrega</h3>
-            <p>Define si cobra delivery y si corresponde taper.</p>
+            <h3>¿Cómo se entrega el pedido?</h3>
+            <p>Define si cobra delivery y si corresponde empaque.</p>
           </div>
         </div>
         <label class="delivery-option"><input type="checkbox" id="chk-delivery" checked><span>🛵</span><b>Delivery</b><small>S/ 3 antes de 10pm · S/ 4 desde 10pm · gratis &gt; S/ 100</small></label>
         <label class="delivery-option"><input type="checkbox" id="chk-pickup"><span>🛍️</span><b>Recojo en local</b><small>Pedido para llevar</small></label>
         <label class="delivery-option"><input type="checkbox" id="chk-eatin"><span>🍽️</span><b>Comer en el local</b><small>No se cobra taper</small></label>
-        <p class="nota-taper">🥡 Tapers automáticos para delivery o para llevar. No aplica a bebidas ni cremas extra.</p>
+        <p class="nota-taper">🥡 Empaque / taper automático para delivery o para llevar. No aplica a bebidas ni cremas extra.</p>
       </div>
 
       <p id="cart-total">Total: S/ 0.00</p>
@@ -1588,7 +1620,7 @@ const SECTIONS = [
       },
       {
         anchorId: "cartel",
-        name: "🔥 PLATOS DEL CARTEL 🔥",
+        name: "🍗 Mostritos y Broaster",
         image: "MOSTRITO BROSTER.jpg",
         sauceMode: "single",
         footerText: "Salsas: BBQ, Acevichada, Buffalo, Maracuyá, o SIN SALSA.",
@@ -1611,7 +1643,7 @@ const SECTIONS = [
       },
       {
         anchorId: "extras",
-        name: "Adicionales o extras ➕",
+        name: "Papas, cremas y extras ➕",
         image: null,
         sauceMode: "none",
         items: [
@@ -1857,11 +1889,61 @@ function getErrors(ctx){
   return errors;
 }
 function buildTicket(ctx){
-  const rows = cart.map(e => {
-    const details = [e.noSauce ? "Sin salsa" : "", e.sauces?.length ? "Salsa: " + shortSauces(e.sauces) : "", e.sauceApart ? "Salsas aparte" : "", e.brand ? "Marca: " + e.brand : ""].filter(Boolean).join(" | ");
-    return `<div style="display:flex;justify-content:space-between;gap:8px"><div>${e.qty} x ${cleanName(e.item.name)}${details ? `<br><small>${details}</small>` : ""}</div><b>${money(e.item.price*e.qty)}</b></div>`;
-  }).join("");
-  return `<div style="text-align:center;font-weight:900">EL PATRÓN DEL MAL<br><small>Pedido N° ${dailyOrderNumber()}</small><br><small>Boleta virtual N° ${CURRENT_BOLETA || "------"}</small><br><small>${formatDateTime()}</small></div><hr>${rows}<hr><div style="display:flex;justify-content:space-between"><span>Subtotal</span><b>${money(ctx.subtotal)}</b></div><div style="display:flex;justify-content:space-between"><span>Tapers</span><b>${money(ctx.taperFee)}</b></div><div style="display:flex;justify-content:space-between"><span>Delivery</span><b>${money(ctx.deliveryFee)}</b></div><hr><div style="display:flex;justify-content:space-between;font-size:13px"><b>TOTAL</b><b>${money(ctx.total)}</b></div><hr><small><b>Pago:</b> ${paymentText(ctx)}<br><b>Cliente:</b> ${ctx.name || "No indicado"}${ctx.dni ? `<br><b>DNI:</b> ${ctx.dni}` : ""}<br><b>Tipo:</b> ${ctx.deliveryTextPrint}${ctx.comment ? `<br><b>Comentario:</b> ${ctx.comment}` : ""}</small>`;
+  const WIDTH = 32;
+  const sep = "--------------------------------";
+  const eq = "================================";
+  const cleanLine = (txt) => String(txt || "").replace(/\s+/g," ").trim();
+  const center = (txt) => {
+    txt = cleanLine(txt);
+    if (txt.length >= WIDTH) return txt;
+    const left = Math.floor((WIDTH - txt.length) / 2);
+    return " ".repeat(left) + txt;
+  };
+  const lr = (left, right) => {
+    left = cleanLine(left);
+    right = cleanLine(right);
+    const space = Math.max(1, WIDTH - left.length - right.length);
+    return left + " ".repeat(space) + right;
+  };
+
+  const lines = [];
+  lines.push(center("EL PATRON DEL MAL"));
+  lines.push(center("FAST FOOD"));
+  lines.push(sep);
+  lines.push(`Pedido N° ${dailyOrderNumber()}`);
+  lines.push(`Boleta virtual N° ${CURRENT_BOLETA || "------"}`);
+  lines.push(formatDateTime());
+  lines.push(sep);
+
+  cart.forEach(e => {
+    lines.push(`${e.qty} x ${cleanName(e.item.name)}`);
+    if (e.noSauce) lines.push("Salsa: Sin salsa");
+    if (e.sauces?.length) lines.push(`Salsas: ${shortSauces(e.sauces)}`);
+    if (e.sauceApart) lines.push("Salsas aparte");
+    if (e.brand) lines.push(`Marca: ${e.brand}`);
+    lines.push(lr("", money(e.item.price * e.qty)));
+  });
+
+  lines.push(sep);
+  lines.push(lr("Subtotal", money(ctx.subtotal)));
+  lines.push(lr("Empaque", money(ctx.taperFee)));
+  lines.push(lr("Delivery", money(ctx.deliveryFee)));
+  lines.push(eq);
+  lines.push(lr("TOTAL", money(ctx.total)));
+  lines.push(eq);
+  lines.push(`Pago: ${paymentText(ctx)}`);
+  lines.push(`Cliente: ${ctx.name || "No indicado"}`);
+  if (ctx.dni) lines.push(`DNI: ${ctx.dni}`);
+  lines.push(`Tipo: ${ctx.deliveryTextPrint}`);
+  if (ctx.comment) lines.push(`Comentario: ${ctx.comment}`);
+  lines.push(sep);
+  lines.push(center("Gracias por su preferencia"));
+  lines.push(center("Vuelva pronto"));
+  lines.push(center("WhatsApp: 944 275 861"));
+
+  return `<pre class="thermal-ticket"><span class="thermal-title">EL PATRON DEL MAL</span>
+<span class="thermal-subtitle">FAST FOOD</span>
+${lines.slice(2).join("\n")}</pre>`;
 }
 
 function buildKitchenTicket(ctx){
@@ -2279,7 +2361,7 @@ function buildWhatsapp(ctx){
     lines.push("");
   });
   lines.push("━━━━━━━━━━━━━━━━━━━━");
-  lines.push(`🥡 *Tapers:* ${ctx.taperTextPrint}`);
+  lines.push(`🥡 *Empaque / taper:* ${ctx.taperTextPrint}`);
   lines.push(`🚚 *Delivery / Consumo:* ${ctx.deliveryTextWA}`);
   lines.push(`💰 *TOTAL A PAGAR:* *${money(ctx.total)}*`);
   lines.push(`💳 *Pago:* ${paymentTextWA(ctx)}`);
@@ -2318,7 +2400,7 @@ function renderCart(){
     cartItemsEl.appendChild(row);
   });
   const ctx = getCtx();
-  cartTotalEl.innerHTML = `Subtotal: ${money(ctx.subtotal)}<br>Tapers: 🥡 ${ctx.taperTextPrint}<br>Delivery: ${money(ctx.deliveryFee)}<br><span style="font-size:17px;">Total: ${money(ctx.total)}</span>`;
+  cartTotalEl.innerHTML = `Subtotal: ${money(ctx.subtotal)}<br>Empaque / taper: 🥡 ${ctx.taperTextPrint}<br>Delivery: ${money(ctx.deliveryFee)}<br><span style="font-size:17px;">Total: ${money(ctx.total)}</span>`;
   if (bottomBar) bottomBar.classList.remove("hidden");
   if (bottomTotal) bottomTotal.textContent = `Total: ${money(ctx.total)}`;
   if (boletaEl) boletaEl.innerHTML = buildTicket(ctx);
