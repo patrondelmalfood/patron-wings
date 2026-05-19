@@ -642,7 +642,7 @@ height:44px;
     }
     .bottom-bar-mobile.hidden{ display:none !important; }
     /* Cuando el cliente está viendo el carrito, ocultamos el carrito flotante
-       para que se vea completo el botón Enviar pedido por WhatsApp. */
+       para que se vea completo el botón 📲 Confirmar y enviar por WhatsApp. */
     body.cart-view .bottom-bar-mobile{
       display:none !important;
     }
@@ -2393,6 +2393,263 @@ body.cart-view .social-links.floating-social{
   .summary-row.total{ font-size:16px; }
 }
 
+
+
+/* =========================================================
+   CAMBIOS UX 2026 - CARTA MÁS CLARA PARA CLIENTES
+   - Categorías con subtítulo
+   - Celular: 1 tarjeta por fila
+   - Foto grande
+   - Salsas en desplegable
+   - Botón Agregar al pedido
+   ========================================================= */
+.app-category-card span{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:3px !important;
+  min-width:0 !important;
+}
+.app-category-card span strong{
+  display:block !important;
+  color:#fff !important;
+  font-size:inherit !important;
+  line-height:1.02 !important;
+}
+.app-category-card span small{
+  display:block !important;
+  color:#cfcfcf !important;
+  font-size:10.5px !important;
+  line-height:1.05 !important;
+  font-weight:700 !important;
+  opacity:.95 !important;
+}
+body.home-screen .app-category-card span small{
+  font-size:clamp(9px, 2.6vw, 11px) !important;
+}
+
+/* Tarjetas de productos más limpias */
+.menu-grid{
+  grid-template-columns:repeat(auto-fit, minmax(270px, 1fr)) !important;
+  gap:14px !important;
+}
+.item-card.has-card-img{
+  border-radius:18px !important;
+  border:1px solid rgba(255,159,28,.75) !important;
+  background:rgba(10,10,10,.96) !important;
+  box-shadow:0 5px 18px rgba(0,0,0,.55) !important;
+}
+.item-card.has-card-img .card-photo{
+  height:180px !important;
+  object-fit:cover !important;
+  object-position:center !important;
+  background:#070707 !important;
+  padding:0 !important;
+}
+.item-header{
+  gap:8px !important;
+}
+.item-name{
+  font-size:17px !important;
+  line-height:1.1 !important;
+}
+.item-price{
+  font-size:17px !important;
+  white-space:nowrap !important;
+}
+.item-desc{
+  color:#e8e8e8 !important;
+  font-size:13px !important;
+  line-height:1.25 !important;
+}
+
+/* Alitas: PC dos columnas, celular una sola columna */
+#alitas + .menu-grid{
+  grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+  gap:16px !important;
+}
+#alitas + .menu-grid .card-photo{
+  height:190px !important;
+}
+#alitas + .menu-grid .item-card::before{ display:none !important; }
+
+/* Salsas en desplegable */
+.salsa-accordion,
+.salsa-select-wrap{
+  margin:8px 10px 0 !important;
+  color:#eee !important;
+}
+.salsa-label-title,
+.salsa-select-title{
+  color:#ffd60a !important;
+  font-size:13px !important;
+  font-weight:900 !important;
+  margin-bottom:5px !important;
+}
+.salsa-accordion details{
+  border:1px solid rgba(255,214,10,.35) !important;
+  border-radius:10px !important;
+  background:rgba(0,0,0,.42) !important;
+  overflow:hidden !important;
+}
+.salsa-accordion summary{
+  list-style:none !important;
+  cursor:pointer !important;
+  padding:10px 12px !important;
+  font-size:13px !important;
+  font-weight:800 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  color:#fff !important;
+}
+.salsa-accordion summary::-webkit-details-marker{ display:none !important; }
+.salsa-accordion summary::after{
+  content:"▼";
+  color:#ffd60a;
+  font-size:11px;
+  margin-left:8px;
+}
+.salsa-accordion details[open] summary::after{ content:"▲"; }
+.salsa-options-panel{
+  display:grid !important;
+  grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+  gap:8px 12px !important;
+  padding:10px 12px 12px !important;
+  border-top:1px solid rgba(255,214,10,.22) !important;
+}
+.salsa-options-panel label{
+  display:flex !important;
+  align-items:center !important;
+  gap:7px !important;
+  font-size:13px !important;
+  margin:0 !important;
+  color:#f4f4f4 !important;
+}
+.salsa-options-panel input[type="checkbox"]{
+  width:16px !important;
+  height:16px !important;
+  accent-color:#ffd60a !important;
+}
+.salsa-counter{
+  margin-top:5px !important;
+  font-size:12px !important;
+  color:#cfcfcf !important;
+}
+
+/* Cantidad con botones */
+.qty-stepper{
+  display:inline-flex !important;
+  align-items:center !important;
+  border:1px solid rgba(255,255,255,.25) !important;
+  border-radius:10px !important;
+  overflow:hidden !important;
+  background:#070707 !important;
+  min-width:118px !important;
+}
+.qty-stepper button{
+  width:38px !important;
+  min-height:38px !important;
+  border-radius:0 !important;
+  background:#111 !important;
+  color:#fff !important;
+  border:0 !important;
+  font-size:19px !important;
+  box-shadow:none !important;
+}
+.qty-stepper input[type="number"]{
+  width:42px !important;
+  border:0 !important;
+  border-left:1px solid rgba(255,255,255,.16) !important;
+  border-right:1px solid rgba(255,255,255,.16) !important;
+  text-align:center !important;
+  font-weight:900 !important;
+  background:#070707 !important;
+  color:#fff !important;
+  -moz-appearance:textfield !important;
+}
+.qty-stepper input::-webkit-outer-spin-button,
+.qty-stepper input::-webkit-inner-spin-button{ -webkit-appearance:none !important; margin:0 !important; }
+.item-actions{
+  justify-content:space-between !important;
+  align-items:center !important;
+  padding-top:10px !important;
+}
+.item-actions .btn-add-sound{
+  flex:1 !important;
+  min-height:40px !important;
+  border-radius:12px !important;
+  background:#ffd60a !important;
+  color:#000 !important;
+  font-weight:1000 !important;
+  font-size:14px !important;
+}
+
+/* Carrito más claro */
+.pago-app-card h3,
+.entrega-app-card h3,
+.order-summary-card h3{
+  color:#ffd60a !important;
+  font-weight:900 !important;
+}
+.delivery-choice small{
+  line-height:1.2 !important;
+}
+.order-summary-card .summary-row span{
+  color:#f1f1f1 !important;
+}
+.order-summary-card .summary-row.total span,
+.order-summary-card .summary-row.total b{
+  color:#ffd60a !important;
+}
+#btn-whatsapp{
+  text-transform:none !important;
+  font-size:14px !important;
+  border-radius:14px !important;
+}
+
+@media (max-width:600px){
+  .menu-grid,
+  #alitas + .menu-grid{
+    grid-template-columns:1fr !important;
+    gap:16px !important;
+  }
+  .item-card.has-card-img .card-photo,
+  #alitas + .menu-grid .card-photo,
+  #hamburguesas + .menu-grid .item-card.has-card-img .card-photo,
+  #cartel + .menu-grid .item-card.has-card-img .card-photo,
+  #extras + .menu-grid .item-card.has-card-img .card-photo,
+  #bebidas + .menu-grid .item-card.has-card-img .card-photo{
+    height:190px !important;
+    object-fit:cover !important;
+    object-position:center !important;
+    padding:0 !important;
+  }
+  .item-name{ font-size:18px !important; }
+  .item-price{ font-size:18px !important; }
+  .item-desc{ font-size:13px !important; }
+  .salsa-options-panel{
+    grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+  }
+  .item-actions{
+    gap:10px !important;
+    flex-wrap:nowrap !important;
+  }
+  .qty-stepper{ min-width:120px !important; }
+  .item-actions .btn-add-sound{ min-width:0 !important; }
+}
+@media (max-width:380px){
+  .item-card.has-card-img .card-photo,
+  #alitas + .menu-grid .card-photo,
+  #hamburguesas + .menu-grid .item-card.has-card-img .card-photo,
+  #cartel + .menu-grid .item-card.has-card-img .card-photo,
+  #extras + .menu-grid .item-card.has-card-img .card-photo,
+  #bebidas + .menu-grid .item-card.has-card-img .card-photo{
+    height:172px !important;
+  }
+  .item-actions{ flex-direction:column !important; align-items:stretch !important; }
+  .qty-stepper{ width:100% !important; justify-content:center !important; }
+}
+
 </style>
 </head>
 
@@ -2461,31 +2718,31 @@ body.cart-view .social-links.floating-social{
 
   <a href="#" class="app-category-card" data-cat="alitas">
   <img src="cat-alitas.png">
-  <span>Alitas 🔥</span>
+  <span><strong>Alitas 🔥</strong><small>Elige tus salsas favoritas</small></span>
   <b>›</b>
 </a>
 
   <a href="#" class="app-category-card" data-cat="hamburguesas">
     <img src="cat-hamburguesa.png">
-    <span>Hamburguesas 🍔</span>
+    <span><strong>Hamburguesas 🍔</strong><small>Con papas y cremas</small></span>
     <b>›</b>
   </a>
 
   <a href="#" class="app-category-card" data-cat="cartel">
     <img src="cat-cartel.png">
-    <span>Platos del cartel 🔥</span>
+    <span><strong>Mostritos y Broaster 🍗</strong><small>Chaufa, papas, presas y combos</small></span>
     <b>›</b>
   </a>
 
   <a href="#" class="app-category-card" data-cat="extras">
     <img src="cat-extras.png">
-    <span>Adicionales o extras ➕</span>
+    <span><strong>Papas, cremas y extras ➕</strong><small>Porciones, cremas y adicionales</small></span>
     <b>›</b>
   </a>
 
   <a href="#" class="app-category-card" data-cat="bebidas">
     <img src="cat-bebidas.png">
-    <span>Bebidas 🥤</span>
+    <span><strong>Bebidas 🥤</strong><small>Gaseosas, chicha y más</small></span>
     <b>›</b>
   </a>
 
@@ -2521,8 +2778,8 @@ body.cart-view .social-links.floating-social{
         <div class="cliente-app-head">
           <div class="cliente-app-icon">👤</div>
           <div>
-            <h3>¿A nombre de quién va?</h3>
-            <p>Solo necesitamos tu nombre para identificar el pedido.</p>
+            <h3>Nombre para el pedido</h3>
+            <p>Para identificar tu pedido.</p>
           </div>
         </div>
 
@@ -2533,7 +2790,7 @@ body.cart-view .social-links.floating-social{
       </div>
 
       <div class="pago-datos pago-app-card">
-        <h3>Forma de pago</h3>
+        <h3>¿Cómo vas a pagar?</h3>
         <div class="payment-choice-grid">
           <label class="payment-choice"><input type="radio" name="payment-method" value="efectivo" checked><span>💵</span><b>Efectivo</b></label>
           <label class="payment-choice"><input type="radio" name="payment-method" value="yape"><span>📲</span><b>Yape</b></label>
@@ -2557,13 +2814,13 @@ body.cart-view .social-links.floating-social{
       </div>
 
       <div class="extras entrega-app-card">
-        <h3>Tipo de entrega</h3>
+        <h3>¿Cómo quieres recibir tu pedido?</h3>
         <div class="delivery-choice-list">
-          <label class="delivery-choice"><input type="checkbox" id="chk-delivery" checked><span class="choice-icon">🛵</span><span><b>Delivery</b><small>S/ 3 antes de 10pm · S/ 4 desde 10pm · gratis &gt; S/ 100</small></span></label>
-          <label class="delivery-choice"><input type="checkbox" id="chk-pickup"><span class="choice-icon">🛍️</span><span><b>Recojo en local</b><small>Pedido para llevar</small></span></label>
-          <label class="delivery-choice"><input type="checkbox" id="chk-eatin"><span class="choice-icon">🍽️</span><span><b>Comer en el local</b><small>No se cobra taper</small></span></label>
+          <label class="delivery-choice"><input type="checkbox" id="chk-delivery" checked><span class="choice-icon">🛵</span><span><b>Delivery</b><small>Te lo llevamos a tu dirección</small></span></label>
+          <label class="delivery-choice"><input type="checkbox" id="chk-pickup"><span class="choice-icon">🛍️</span><span><b>Recojo en local</b><small>Pasas por tu pedido</small></span></label>
+          <label class="delivery-choice"><input type="checkbox" id="chk-eatin"><span class="choice-icon">🍽️</span><span><b>Comer en el local</b><small>Para consumir aquí</small></span></label>
         </div>
-        <p class="nota-taper">🥡 Tapers automáticos para delivery o para llevar. No aplica a bebidas ni cremas extra.</p>
+        <p class="nota-taper">🥡 El empaque / taper se cobra solo para delivery o recojo. No aplica si comes en el local.</p>
       </div>
 
       <p id="cart-total">Total: S/ 0.00</p>
@@ -2573,7 +2830,7 @@ body.cart-view .social-links.floating-social{
 
       <div class="carrito-actions">
         <button id="btn-clear">Vaciar pedido</button>
-        <a id="btn-whatsapp" href="#" target="_blank" class="btn disabled">Enviar pedido por WhatsApp</a>
+        <a id="btn-whatsapp" href="#" target="_blank" class="btn disabled">📲 Confirmar y enviar por WhatsApp</a>
       </div>
 
       <p id="error-msg" class="error-msg"></p>
@@ -2769,7 +3026,7 @@ const SECTIONS = [
       },
       {
         anchorId: "cartel",
-        name: "🔥 PLATOS DEL CARTEL 🔥",
+        name: "🍗 Mostritos y Broaster",
         image: "MOSTRITO BROSTER.jpg",
         sauceMode: "single",
         footerText: "Salsas: BBQ, Acevichada, Buffalo, Maracuyá, o SIN SALSA.",
@@ -2792,7 +3049,7 @@ const SECTIONS = [
       },
       {
         anchorId: "extras",
-        name: "Adicionales o extras ➕",
+        name: "Papas, cremas y extras ➕",
         image: "cat-extras.png",
         sauceMode: "none",
         items: [
@@ -2861,8 +3118,8 @@ let currentCategoryKey = null;
 const CATEGORY_GROUPS = {
   alitas: { title: "🔥 Alitas", keys: ["alitas", "agregado_alitas", "snack"] },
   hamburguesas: { title: "🍔 Hamburguesas", keys: ["hamburguesas"] },
-  cartel: { title: "🔥 Platos del cartel", keys: ["cartel", "agregado_broaster"] },
-  extras: { title: "Adicionales o extras ➕", keys: ["extras"] },
+  cartel: { title: "🍗 Mostritos y Broaster", keys: ["cartel", "agregado_broaster"] },
+  extras: { title: "Papas, cremas y extras ➕", keys: ["extras"] },
   bebidas: { title: "🥤 Bebidas", keys: ["bebidas"] }
 };
 
@@ -3043,6 +3300,241 @@ function handleAdd(section, item, card, qtyInput, btn){
   setTimeout(() => { btn.textContent = t; btn.disabled = false; }, 850);
 }
 
+
+/* =========================================================
+   FUNCIONES UX MEJORADAS - PRODUCTOS, SALSAS Y CANTIDAD
+   ========================================================= */
+function crearQtyStepper(input){
+  const wrap = document.createElement("div");
+  wrap.className = "qty-stepper";
+  const minus = document.createElement("button");
+  minus.type = "button";
+  minus.textContent = "−";
+  const plus = document.createElement("button");
+  plus.type = "button";
+  plus.textContent = "+";
+  input.type = "number";
+  input.min = "1";
+  input.value = input.value || "1";
+  minus.addEventListener("click", () => { input.value = String(Math.max(1, (Number(input.value) || 1) - 1)); });
+  plus.addEventListener("click", () => { input.value = String((Number(input.value) || 1) + 1); });
+  wrap.appendChild(minus);
+  wrap.appendChild(input);
+  wrap.appendChild(plus);
+  return wrap;
+}
+
+function actualizarTextoSalsaCard(card, item){
+  if (!card) return;
+  const max = getSauceMaxForItemName(item.name);
+  const data = getSeleccionSalsasDeTarjeta(card);
+  const selected = data.noSauce ? 1 : data.sauces.length;
+  const summary = card.querySelector(".salsa-summary-text");
+  const counter = card.querySelector(".salsa-counter");
+  if (summary) {
+    if (data.noSauce) summary.textContent = "Sin salsa";
+    else if (data.sauces.length) summary.textContent = shortSauces(data.sauces);
+    else summary.textContent = max > 1 ? `Elegir hasta ${max} salsas` : "Elegir 1 salsa";
+  }
+  if (counter && max > 1) counter.textContent = `Seleccionadas: ${selected}/${max}`;
+}
+
+function renderMenu(selectedCategoryKey = currentCategoryKey){
+  if (!menuContainer) return;
+  menuContainer.innerHTML = "";
+  if (!selectedCategoryKey) {
+    menuContainer.classList.add("hidden-section");
+    return;
+  }
+  menuContainer.classList.remove("hidden-section");
+
+  SECTIONS.filter(section => isSectionInCategory(section, selectedCategoryKey)).forEach(section => {
+    const titleRow = document.createElement("div");
+    titleRow.className = "menu-section-title";
+    if (section.anchorId) titleRow.id = section.anchorId;
+    titleRow.innerHTML = `<span>${section.name}</span>`;
+    menuContainer.appendChild(titleRow);
+
+    const grid = document.createElement("div");
+    grid.className = "menu-grid";
+
+    section.items.forEach(item => {
+      const card = document.createElement("div");
+      card.className = "item-card";
+
+      if (item.fixedAlitasImg) {
+        card.dataset.fixedAlitasImg = item.fixedAlitasImg;
+        card.style.setProperty("--alitas-img", `url("${item.fixedAlitasImg}")`);
+      }
+      if (item.cardImg) card.dataset.cardImg = item.cardImg;
+
+      if (section.anchorId === "alitas" || item.cardImg) {
+        card.classList.add("has-real-img", "has-card-img");
+        const pic = document.createElement("img");
+        pic.className = "card-photo";
+        pic.alt = item.name;
+        pic.src = item.cardImg || item.fixedAlitasImg || ALITAS_IMG_DEFAULT;
+        card.appendChild(pic);
+      }
+
+      const header = document.createElement("div");
+      header.className = "item-header";
+      header.innerHTML = `<div class="item-name">${item.name}</div><div class="item-price">${money(item.price)}</div>`;
+      card.appendChild(header);
+
+      if (item.desc) {
+        const desc = document.createElement("div");
+        desc.className = "item-desc";
+        desc.textContent = item.desc;
+        card.appendChild(desc);
+      }
+
+      if (section.sauceMode === "multi") {
+        const max = getSauceMaxForItemName(item.name);
+        const wrap = document.createElement("div");
+        wrap.className = "salsa-accordion";
+        const labelText = max > 1 ? `Elige hasta ${max} salsas` : "Elige 1 salsa";
+        const summaryText = max > 1 ? `Elegir hasta ${max} salsas` : "Elegir 1 salsa";
+        wrap.innerHTML = `
+          <div class="salsa-label-title">${labelText}</div>
+          <details>
+            <summary><span class="salsa-summary-text">${summaryText}</span></summary>
+            <div class="salsa-options-panel">
+              <label><input type="checkbox" value="SIN_SALSA" name="salsa-none-${item.id}"> Sin salsa</label>
+              <label><input type="checkbox" value="Salsa BBQ" name="salsa-${item.id}"> BBQ</label>
+              <label><input type="checkbox" value="Salsa Acevichada" name="salsa-${item.id}"> Acevichada</label>
+              <label><input type="checkbox" value="Salsa Buffalo" name="salsa-${item.id}"> Buffalo</label>
+              <label><input type="checkbox" value="Salsa Maracuyá" name="salsa-${item.id}"> Maracuyá</label>
+              <label><input type="checkbox" name="salsa-aparte-${item.id}"> Salsas aparte</label>
+            </div>
+          </details>
+          ${max > 1 ? `<div class="salsa-counter">Seleccionadas: 0/${max}</div>` : ""}
+        `;
+        wrap.addEventListener("change", (ev) => {
+          const target = ev.target;
+          const none = card.querySelector(`input[name="salsa-none-${item.id}"]`);
+          const sauceChecks = Array.from(card.querySelectorAll(`input[name="salsa-${item.id}"]`));
+          const aparte = card.querySelector(`input[name="salsa-aparte-${item.id}"]`);
+
+          if (target === none && none.checked) {
+            sauceChecks.forEach(ch => ch.checked = false);
+            if (aparte) aparte.checked = false;
+          }
+          if (sauceChecks.includes(target) && target.checked && none) none.checked = false;
+          if (aparte && target === aparte && aparte.checked && none && none.checked) aparte.checked = false;
+
+          const selected = sauceChecks.filter(ch => ch.checked);
+          if (selected.length > max) {
+            target.checked = false;
+            alert(`Máximo ${max} ${max === 1 ? "salsa" : "salsas"} para "${item.name}".`);
+          }
+
+          actualizarTextoSalsaCard(card, item);
+          actualizarImagenAlitasCard(card);
+        });
+        card.appendChild(wrap);
+      }
+
+      if (section.sauceMode === "single") {
+        const wrap = document.createElement("div");
+        wrap.className = "salsa-select-wrap";
+        const sel = document.createElement("select");
+        sel.className = "salsa-select";
+        sel.name = `salsa-select-${item.id}`;
+        sel.innerHTML = `<option value="">Elegir salsa</option><option value="SIN_SALSA">Sin salsa</option>`;
+        SAUCES.forEach(s => {
+          const o = document.createElement("option");
+          o.value = s;
+          o.textContent = s.replace("Salsa ", "");
+          sel.appendChild(o);
+        });
+        wrap.innerHTML = `<div class="salsa-select-title">Elige 1 salsa</div>`;
+        wrap.appendChild(sel);
+        card.appendChild(wrap);
+      }
+
+      const actions = document.createElement("div");
+      actions.className = "item-actions";
+
+      if ([35,42,37].includes(Number(item.id))) {
+        const sel = document.createElement("select");
+        sel.name = `brand-${item.id}`;
+        sel.innerHTML = `<option value="">${item.id === 37 ? "Inka o Coca" : "Coca o Inka"}</option>`;
+        (item.id === 37 ? ["Inka Kola", "Coca-Cola"] : ["Coca-Cola", "Inka Kola"]).forEach(v => {
+          const o = document.createElement("option");
+          o.value = v;
+          o.textContent = v;
+          sel.appendChild(o);
+        });
+        const label = document.createElement("label");
+        label.textContent = item.id === 42 ? "Vidrio: " : (item.id === 37 ? "1L: " : "Marca: ");
+        label.appendChild(sel);
+        actions.appendChild(label);
+      }
+
+      const qty = document.createElement("input");
+      const qtyWrap = crearQtyStepper(qty);
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = "🛒 Agregar al pedido";
+      btn.className = "btn-add-sound";
+      btn.addEventListener("click", () => handleAdd(section, item, card, qty, btn));
+      actions.appendChild(qtyWrap);
+      actions.appendChild(btn);
+      card.appendChild(actions);
+      grid.appendChild(card);
+      actualizarImagenAlitasCard(card);
+    });
+
+    menuContainer.appendChild(grid);
+    if (section.footerText) {
+      const note = document.createElement("div");
+      note.style.cssText = "margin-top:8px;font-size:12px;color:#ccc";
+      note.textContent = section.footerText;
+      menuContainer.appendChild(note);
+    }
+  });
+}
+
+function handleAdd(section, item, card, qtyInput, btn){
+  const qty = Math.max(1, Number(qtyInput.value) || 1);
+  let sauces = [], sauceApart = false, brand = null, noSauce = false;
+
+  if (section.sauceMode === "multi") {
+    noSauce = !!card.querySelector(`input[name="salsa-none-${item.id}"]`)?.checked;
+    sauces = Array.from(card.querySelectorAll(`input[name="salsa-${item.id}"]:checked`)).map(x => x.value);
+    const max = getSauceMaxForItemName(item.name);
+
+    if (noSauce && sauces.length) return alert(`No puedes marcar "Sin salsa" y otras salsas a la vez en "${item.name}".`);
+    if (!noSauce && !sauces.length) return alert(`Elige al menos 1 salsa o marca "Sin salsa" para "${item.name}".`);
+    if (sauces.length > max) return alert(`Máximo ${max} ${max === 1 ? "salsa" : "salsas"} para "${item.name}".`);
+    sauceApart = !!card.querySelector(`input[name="salsa-aparte-${item.id}"]`)?.checked;
+    if (noSauce) sauceApart = false;
+  }
+
+  if (section.sauceMode === "single") {
+    const sel = card.querySelector(`select[name="salsa-select-${item.id}"]`);
+    if (!sel || !sel.value) return alert(`Elige una opción de salsa para "${item.name}".`);
+    if (isNoSauceValue(sel.value)) noSauce = true;
+    else sauces = [sel.value];
+  }
+
+  const brandSel = card.querySelector(`select[name="brand-${item.id}"]`);
+  if (brandSel) {
+    if (!brandSel.value) return alert("Elige la opción/marca.");
+    brand = brandSel.value;
+  }
+
+  addToCart(item, qty, sauces, sauceApart, brand, noSauce);
+  playAddSound();
+  btn.classList.add("add-sound-flash");
+  setTimeout(() => btn.classList.remove("add-sound-flash"), 220);
+  const t = btn.textContent;
+  btn.textContent = "✅ Añadido al pedido";
+  btn.disabled = true;
+  setTimeout(() => { btn.textContent = t; btn.disabled = false; }, 950);
+}
+
 function limpiarSeleccionMenu(){
   const menu = document.getElementById("menu"); if (!menu) return;
   menu.querySelectorAll('input[type="checkbox"]').forEach(cb => { cb.checked = false; cb.removeAttribute("checked"); });
@@ -3105,7 +3597,7 @@ function buildTicket(ctx){
     const details = [e.noSauce ? "Sin salsa" : "", e.sauces?.length ? "Salsa: " + shortSauces(e.sauces) : "", e.sauceApart ? "Salsas aparte" : "", e.brand ? "Marca: " + e.brand : ""].filter(Boolean).join(" | ");
     return `<div style="display:flex;justify-content:space-between;gap:8px"><div>${e.qty} x ${cleanName(e.item.name)}${details ? `<br><small>${details}</small>` : ""}</div><b>${money(e.item.price*e.qty)}</b></div>`;
   }).join("");
-  return `<div style="text-align:center;font-weight:900">EL PATRÓN DEL MAL<br><small>Pedido N° ${dailyOrderNumber()}</small><br><small>Boleta virtual N° ${CURRENT_BOLETA || "------"}</small><br><small>${formatDateTime()}</small></div><hr>${rows}<hr><div style="display:flex;justify-content:space-between"><span>Subtotal</span><b>${money(ctx.subtotal)}</b></div><div style="display:flex;justify-content:space-between"><span>Tapers</span><b>${money(ctx.taperFee)}</b></div><div style="display:flex;justify-content:space-between"><span>Delivery</span><b>${money(ctx.deliveryFee)}</b></div><hr><div style="display:flex;justify-content:space-between;font-size:13px"><b>TOTAL</b><b>${money(ctx.total)}</b></div><hr><small><b>Pago:</b> ${paymentText(ctx)}<br><b>Cliente:</b> ${ctx.name || "No indicado"}<br><b>Tipo:</b> ${ctx.deliveryTextPrint}${ctx.comment ? `<br><b>Comentario:</b> ${ctx.comment}` : ""}</small>`;
+  return `<div style="text-align:center;font-weight:900">EL PATRÓN DEL MAL<br><small>Pedido N° ${dailyOrderNumber()}</small><br><small>Boleta virtual N° ${CURRENT_BOLETA || "------"}</small><br><small>${formatDateTime()}</small></div><hr>${rows}<hr><div style="display:flex;justify-content:space-between"><span>Subtotal</span><b>${money(ctx.subtotal)}</b></div><div style="display:flex;justify-content:space-between"><span>Empaque / taper</span><b>${money(ctx.taperFee)}</b></div><div style="display:flex;justify-content:space-between"><span>Delivery</span><b>${money(ctx.deliveryFee)}</b></div><hr><div style="display:flex;justify-content:space-between;font-size:13px"><b>TOTAL</b><b>${money(ctx.total)}</b></div><hr><small><b>Pago:</b> ${paymentText(ctx)}<br><b>Cliente:</b> ${ctx.name || "No indicado"}<br><b>Tipo:</b> ${ctx.deliveryTextPrint}${ctx.comment ? `<br><b>Comentario:</b> ${ctx.comment}` : ""}</small>`;
 }
 function buildWhatsapp(ctx){
   const lines=[];
@@ -3123,7 +3615,7 @@ function buildWhatsapp(ctx){
     lines.push("");
   });
   lines.push("━━━━━━━━━━━━━━━━━━━━");
-  lines.push(`🥡 *Tapers:* ${ctx.taperTextPrint}`);
+  lines.push(`🥡 *Empaque / taper:* ${ctx.taperTextPrint}`);
   lines.push(`🚚 *Delivery / Consumo:* ${ctx.deliveryTextWA}`);
   lines.push(`💰 *TOTAL A PAGAR:* *${money(ctx.total)}*`);
   lines.push(`💳 *Pago:* ${paymentTextWA(ctx)}`);
@@ -3161,7 +3653,7 @@ function renderCart(){
     cartItemsEl.appendChild(row);
   });
   const ctx = getCtx();
-  cartTotalEl.innerHTML = `<div class="order-summary-card"><h3>Resumen</h3><div class="summary-row"><span>Productos</span><b>${money(ctx.subtotal)}</b></div><div class="summary-row"><span>Tapers</span><b>${money(ctx.taperFee)}</b></div><div class="summary-row"><span>Delivery</span><b>${money(ctx.deliveryFee)}</b></div><div class="summary-row total"><span>Total a pagar</span><b>${money(ctx.total)}</b></div></div>`;
+  cartTotalEl.innerHTML = `<div class="order-summary-card"><h3>Resumen de pago</h3><div class="summary-row"><span>Pedido</span><b>${money(ctx.subtotal)}</b></div><div class="summary-row"><span>Empaque / taper</span><b>${money(ctx.taperFee)}</b></div><div class="summary-row"><span>Delivery</span><b>${money(ctx.deliveryFee)}</b></div><div class="summary-row total"><span>Total a pagar</span><b>${money(ctx.total)}</b></div></div>`;
   const totalQtyBottom = cart.reduce((a,e)=>a + safeNum(e.qty), 0);
   if (bottomBar) bottomBar.classList.remove("hidden");
   if (bottomCount) bottomCount.textContent = String(totalQtyBottom);
