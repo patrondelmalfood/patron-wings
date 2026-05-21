@@ -1020,7 +1020,6 @@
       <a id="nav-whatsapp" class="primary disabled" href="#" target="_blank">📲 WhatsApp</a>
       <button id="nav-admin" class="primary" type="button">🔐 Admin</button>
 
-      <a href="#promos">Promos del Patrón 🔥</a>
       <a href="#alitas">Alitas 🔥</a>
       <a href="#hamburguesas">Hamburguesas 🍔</a>
       <a href="#cartel">Mostritos y Broaster 🍗</a>
@@ -1580,8 +1579,6 @@ function deepCopy(obj){
       if (name.includes("El Capo")) return 1;
       if (name.includes("El Informante")) return 1;
       if (name.includes("Presa broaster extra")) return 1;
-      if (name.includes("Combo Jueves de Patas")) return 1;
-      if (name.includes("Combo Familiar")) return 3;
       return 0;
     }
 
@@ -1600,11 +1597,6 @@ function deepCopy(obj){
       if ([12,13,14,15,16].includes(itemId)) return 1;
       if ([60,61,62,63].includes(itemId)) return 2;
       if (itemId === 24) return 2;
-      if (itemId === 101) return 2;   // Combo Pareja Burger: 2 burgers = 2 bolsas de papa
-      if (itemId === 102) return 2;   // Combo Miércoles Burger: 2 burgers = 2 bolsas de papa
-      if (itemId === 103) return 2;   // Combo Jueves de Patas: 5 alitas + 1 burger
-      if (itemId === 104) return 2;   // Combo de Martes y Jueves: canastilla de papa
-      if (itemId === 105) return 13;  // Combo Familiar: 30 alitas + papa familiar + 2 burgers
       return 0;
     }
 
@@ -1619,8 +1611,6 @@ function deepCopy(obj){
       if (itemId === 6)  return 4;
       if (itemId === 7)  return 5;
       if (itemId === 64) return 1;
-      if (itemId === 103) return 5;   // Combo Jueves de Patas
-      if (itemId === 105) return 30;  // Combo Familiar
       return 0;
     }
 
@@ -1630,12 +1620,11 @@ function deepCopy(obj){
       if (itemId === 62) return 2;
       if (itemId === 63) return 0;
       if (itemId === 65) return 1;
-      if (itemId === 104) return 6;   // Combo de Martes
       return 0;
     }
 
     function isBurgerId(itemId){
-      return [12,13,14,15,16,101,102,103,105].includes(itemId);
+      return [12,13,14,15,16].includes(itemId);
     }
 
     function isNoSauceValue(v){
@@ -1648,9 +1637,6 @@ function deepCopy(obj){
       if (id === 35) return "halfPlastic";
       if (id === 42) return "glass";
       if (id === 32) return "water";
-      if (id === 101) return "oneL";        // Combo Pareja Burger incluye gaseosa 1L
-      if (id === 103) return "halfPlastic"; // Combo Jueves de Patas incluye gaseosa 600ml
-      if (id === 105) return "oneL";        // Combo Familiar incluye gaseosa 1L
       return null;
     }
 
@@ -1671,58 +1657,6 @@ function deepCopy(obj){
     }
 
     const SECTIONS = [
-      {
-        anchorId: "promos",
-        name: "🔥 Promos del Patrón",
-        image: "Combo-familiar.png",
-        sauceMode: "none",
-        footerText: "Combos especiales por día y familiares. Los combos Pareja y Familiar son todos los días; los demás son por día señalado.",
-        items: [
-          {
-            id: 101,
-            name: "Combo Pareja Burger",
-            price: 27.00,
-            desc: "Todos los días. 2 Burger Clásicas + 1 gaseosa 1L. Ideal para compartir.",
-            image: "Combo-pareja.png",
-            imageFallbacks: ["Combo-pareja.jpg", "Combo-pareja.JPG", "Combo-pareja.PNG"]
-          },
-          {
-            id: 102,
-            name: "Combo Miércoles Burger",
-            price: 18.00,
-            desc: "2 Burger Clásicas. Promo especial solo miércoles.",
-            image: "Combo-miercoles.png",
-            imageFallbacks: ["Combo-miercoles.jpg", "Combo-miercoles.JPG", "Combo-miercoles.PNG", "Combo-miercoles.jpeg"]
-          },
-          {
-            id: 103,
-            name: "Combo Jueves de Patas",
-            price: 33.00,
-            desc: "5 Alitas + 1 Burger Clásica + 1 gaseosa 600ml. Elige 1 salsa para las alitas.",
-            image: "Combo-jueves.png",
-            imageFallbacks: ["Combo-jueves.jpg", "Combo-jueves.JPG", "Combo-jueves.PNG"],
-            sauceMode: "multi"
-          },
-          {
-            id: 104,
-            name: "Combo de Martes y Jueves",
-            price: 29.90,
-            desc: "Martes y jueves. 6 piezas de broaster + 1 canastilla de papa + ensalada + 3 cremas. Elige 1 salsa.",
-            image: "Combo-Martes-Jueves.png",
-            imageFallbacks: ["Combo-Martes-Jueves.jpg", "Combo-Martes-Jueves.JPG", "Combo-Martes-Jueves.PNG", "Combo-Martes.png", "Combo-Martes.jpg", "Combo-Martes.JPG", "Combo-Martes.PNG"],
-            sauceMode: "single"
-          },
-          {
-            id: 105,
-            name: "Combo Familiar",
-            price: 129.90,
-            desc: "Todos los días. 30 Alitas + papa familiar + 2 Burger Clásicas + gaseosa 1L + jarra de maracuyá 1L. Elige hasta 3 salsas.",
-            image: "Combo-familiar.png",
-            imageFallbacks: ["Combo-familiar.jpg", "Combo-familiar.JPG", "Combo-familiar.PNG"],
-            sauceMode: "multi"
-          }
-        ]
-      },
       {
         anchorId: "alitas",
         name: "🔥 Alitas – El Patrón del Mal",
@@ -1937,13 +1871,6 @@ const menuContainer = document.getElementById("menu");
       img.alt = item.name;
       img.loading = "lazy";
       img.onerror = function(){
-        const fallbacks = item.imageFallbacks || [];
-        const idx = Number(this.dataset.fallbackIndex || 0);
-        if (idx < fallbacks.length) {
-          this.dataset.fallbackIndex = String(idx + 1);
-          this.src = fallbacks[idx];
-          return;
-        }
         this.style.display = "none";
       };
       return img;
@@ -2204,15 +2131,12 @@ const menuContainer = document.getElementById("menu");
           card.appendChild(desc);
         }
 
-        const itemSauceMode = item.sauceMode || section.sauceMode;
-        const sauceSection = Object.assign({}, section, { sauceMode: itemSauceMode });
-
-        if (itemSauceMode === "multi") {
-          createMultiSauceUI(card, sauceSection, item);
+        if (section.sauceMode === "multi") {
+          createMultiSauceUI(card, section, item);
         }
 
-        if (itemSauceMode === "single") {
-          createSingleSauceUI(card, sauceSection, item);
+        if (section.sauceMode === "single") {
+          createSingleSauceUI(card, section, item);
         }
 
         const actions = document.createElement("div");
@@ -2244,7 +2168,7 @@ const menuContainer = document.getElementById("menu");
           let selectedBrand = null;
           let noSauce = false;
 
-          if (itemSauceMode === "multi") {
+          if (section.sauceMode === "multi") {
             const noSauceCb = card.querySelector(`input[name="salsa-none-${item.id}"]`);
             noSauce = !!(noSauceCb && noSauceCb.checked);
 
@@ -2271,7 +2195,7 @@ const menuContainer = document.getElementById("menu");
             if (noSauce) sauceApart = false;
           }
 
-          if (itemSauceMode === "single") {
+          if (section.sauceMode === "single") {
             const sel = card.querySelector(`select[name="salsa-select-${item.id}"]`);
             if (!sel || !sel.value) {
               alert(`Elige una opción de salsa para "${item.name}".`);
@@ -2300,7 +2224,7 @@ const menuContainer = document.getElementById("menu");
           btn.disabled = true;
           setTimeout(() => { btn.textContent = originalText; btn.disabled = false; }, 900);
 
-          resetCardAfterAdd(card, sauceSection, item, qtyInput, brandSel);
+          resetCardAfterAdd(card, section, item, qtyInput, brandSel);
         });
 
         grid.appendChild(card);
