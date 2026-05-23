@@ -2724,7 +2724,7 @@ body.home-screen .app-category-card span small{
 
   <a href="#" class="app-category-card" data-cat="hamburguesas">
     <img src="cat-hamburguesa.png">
-    <span><strong>Hamburguesas 🍔</strong><small>Con papas y cremas</small></span>
+    <span><strong>Burger - Wrap 🍔🌯</strong><small>Burgers, wraps, papas y cremas</small></span>
     <b>›</b>
   </a>
 
@@ -2863,7 +2863,7 @@ function pad2(n){ return String(n).padStart(2,"0"); }
 function safeNum(n){ return Number.isFinite(Number(n)) ? Number(n) : 0; }
 function round2(n){ return Number((safeNum(n)).toFixed(2)); }
 function money(n){ return `S/ ${safeNum(n).toFixed(2)}`; }
-function cleanName(n){ return String(n || "").replace(/🔫|💣|👑|🕶|🔥|🍔|🧂|🥤|➕/g, "").trim(); }
+function cleanName(n){ return String(n || "").replace(/🔫|💣|👑|🕶|🔥|🍔|🌯|🧂|🥤|➕/g, "").trim(); }
 function shortSauces(arr){ return (arr || []).map(s => s.replace("Salsa ", "")).join(", "); }
 function isNoSauceValue(v){ return String(v || "").toUpperCase() === "SIN_SALSA"; }
 
@@ -3013,7 +3013,7 @@ const SECTIONS = [
       },
       {
         anchorId: "hamburguesas",
-        name: "🍔 Hamburguesas artesanales",
+        name: "🍔🌯 Burger - Wrap",
         image: "BURGER 2.jpg",
         sauceMode: "none",
         items: [
@@ -3021,7 +3021,10 @@ const SECTIONS = [
           { id: 13, name: "Burger Royal Gaviria",              price: 13, desc: "Carne 200 g + queso + huevo + papas + ensalada + cremas", cardImg: "Burger Royal Gaviria.png" },
           { id: 14, name: "Burger Premium Ulloa",              price: 15, desc: "Carne 200 g + queso + chorizo + tocino + papas + ensalada + cremas", cardImg: "Burger Premium Ulloa.png" },
           { id: 15, name: "Burger Pablo Escobar",              price: 21, desc: "2 carnes + queso + jamón + huevo + tocino + papas + ensalada + cremas", cardImg: "Burger Pablo Escobar.png" },
-          { id: 16, name: "Burger Crispy Motoa",               price: 14, desc: "Pollo crispy + queso + jamón + papas + ensalada + cremas", cardImg: "Burger Crispy Motoa.png" }
+          { id: 16, name: "Burger Crispy Motoa",               price: 14, desc: "Pollo crispy + queso + jamón + papas + ensalada + cremas", cardImg: "Burger Crispy Motoa.png" },
+          { id: 17, name: "Wrap Crispy de Pollo",              price: 13.90, desc: "Pollo crispy + verduras frescas + salsa de queso + papas + 3 cremas", cardImg: "wrap-crispy-pollo.png" },
+          { id: 18, name: "Wrap BBQ Chicken",                  price: 14.90, desc: "Pollo crispy + salsa BBQ + verduras frescas + queso + papas + 3 cremas", cardImg: "wrap-bbq-chicken.png" },
+          { id: 19, name: "Wrap Carne Búfalo",                 price: 15.90, desc: "Carne sazonada + salsa búfalo picante + verduras frescas + queso + papas + 3 cremas", cardImg: "wrap-carne-bufalo.png" }
         ]
       },
       {
@@ -3034,7 +3037,9 @@ const SECTIONS = [
           { id: 60, name: "🔫 El Sicario",      price: 18.90, desc: "2 piezas broaster + papas + ensalada + cremas → 1 salsa", cardImg: "El Sicario.png" },
           { id: 61, name: "💣 Plata o Plomo",  price: 22.90, desc: "3 piezas broaster + papas + ensalada + cremas → 1 salsa", cardImg: "Plata o Plomo.png" },
           { id: 62, name: "👑 El Capo",        price: 23.90, desc: "2 piezas broaster + papas + ensalada + chaufa → 1 salsa", cardImg: "El Capo.png" },
-          { id: 63, name: "🕶 El Informante",  price: 17.90, desc: "Pechuga plancha + papas + ensalada + cremas → 1 salsa", cardImg: "El Informante.png" }
+          { id: 63, name: "🕶 El Informante",  price: 17.90, desc: "Pechuga plancha + papas + ensalada + cremas → 1 salsa", cardImg: "El Informante.png" },
+          { id: 66, name: "Chaufa Medellín",  price: 16.00, desc: "Chaufa especial + papas + ensalada + cremas → 1 salsa", cardImg: "Chaufa-Medellin.png" },
+          { id: 67, name: "Chaufi Lomo Saltado Ochoa", price: 20.00, desc: "Chaufa + lomo saltado + papas + ensalada + cremas → 1 salsa", cardImg: "Chaufi-Lomo-Saltado-Ochoa.png" }
         ]
       },
       {
@@ -3117,7 +3122,7 @@ let currentCategoryKey = null;
 
 const CATEGORY_GROUPS = {
   alitas: { title: "🔥 Alitas", keys: ["alitas", "agregado_alitas", "snack"] },
-  hamburguesas: { title: "🍔 Hamburguesas", keys: ["hamburguesas"] },
+  hamburguesas: { title: "🍔🌯 Burger - Wrap", keys: ["hamburguesas"] },
   cartel: { title: "🍗 Mostritos y Broaster", keys: ["cartel", "agregado_broaster"] },
   extras: { title: "Papas, cremas y extras ➕", keys: ["extras"] },
   bebidas: { title: "🥤 Bebidas", keys: ["bebidas"] }
