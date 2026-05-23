@@ -1021,7 +1021,7 @@
       <button id="nav-admin" class="primary" type="button">🔐 Admin</button>
 
       <a href="#alitas">Alitas 🔥</a>
-      <a href="#hamburguesas">Hamburguesas 🍔</a>
+      <a href="#hamburguesas">Burger - Wrap 🍔🌯</a>
       <a href="#cartel">Mostritos y Broaster 🍗</a>
       <a href="#extras">Papas, cremas y extras ➕</a>
       <a href="#bebidas">Bebidas 🥤</a>
@@ -1594,7 +1594,7 @@ function deepCopy(obj){
       if (itemId === 7)  return 1;
       if (itemId === 8)  return 1;
       if (itemId === 9)  return 1;
-      if ([12,13,14,15,16].includes(itemId)) return 1;
+      if ([12,13,14,15,16,17,18,19,66,67].includes(itemId)) return 1;
       if ([60,61,62,63].includes(itemId)) return 2;
       if (itemId === 24) return 2;
       return 0;
@@ -1698,7 +1698,7 @@ function deepCopy(obj){
       },
       {
         anchorId: "hamburguesas",
-        name: "🍔 Hamburguesas artesanales",
+        name: "🍔 Burger - Wrap",
         image: "BURGER 2.jpg",
         sauceMode: "none",
         items: [
@@ -1706,7 +1706,10 @@ function deepCopy(obj){
           { id: 13, name: "Burger Royal Gaviria",              price: 13, desc: "Carne 200 g + queso + huevo + papas + ensalada + cremas" },
           { id: 14, name: "Burger Premium Ulloa",              price: 15, desc: "Carne 200 g + queso + chorizo + tocino + papas + ensalada + cremas" },
           { id: 15, name: "Burger Pablo Escobar",              price: 21, desc: "2 carnes + queso + jamón + huevo + tocino + papas + ensalada + cremas" },
-          { id: 16, name: "Burger Crispy Motoa",               price: 14, desc: "Pollo crispy + queso + jamón + papas + ensalada + cremas" }
+          { id: 16, name: "Burger Crispy Motoa",               price: 14, desc: "Pollo crispy + queso + jamón + papas + ensalada + cremas" },
+          { id: 17, name: "Wrap Crispy de Pollo",              price: 13.90, desc: "Pollo crispy + verduras frescas + salsa de queso + papas + 3 cremas", image: "wrap-crispy-pollo.png" },
+          { id: 18, name: "Wrap BBQ Chicken",                  price: 14.90, desc: "Pollo crispy + salsa BBQ + verduras frescas + queso + papas + 3 cremas", image: "wrap-bbq-chicken.png" },
+          { id: 19, name: "Wrap Carne Búfalo",                 price: 15.90, desc: "Carne sazonada + salsa búfalo picante + verduras frescas + queso + papas + 3 cremas", image: "wrap-carne-bufalo.png" }
         ]
       },
       {
@@ -1719,7 +1722,9 @@ function deepCopy(obj){
           { id: 60, name: "🔫 El Sicario",      price: 18.90, desc: "2 piezas broaster + papas + ensalada + cremas → 1 salsa" },
           { id: 61, name: "💣 Plata o Plomo",  price: 22.90, desc: "3 piezas broaster + papas + ensalada + cremas → 1 salsa" },
           { id: 62, name: "👑 El Capo",        price: 23.90, desc: "2 piezas broaster + papas + ensalada + chaufa → 1 salsa" },
-          { id: 63, name: "🕶 El Informante",  price: 17.90, desc: "Pechuga plancha + papas + ensalada + cremas → 1 salsa" }
+          { id: 63, name: "🕶 El Informante",  price: 17.90, desc: "Pechuga plancha + papas + ensalada + cremas → 1 salsa" },
+          { id: 66, name: "Chaufa Medellín",  price: 16.00, desc: "Chaufa especial + papas + ensalada + cremas → 1 salsa", image: "Chaufa-Medellin.png" },
+          { id: 67, name: "Chaufi Lomo Saltado Ochoa", price: 20.00, desc: "Chaufa + lomo saltado + papas + ensalada + cremas → 1 salsa", image: "Chaufi-Lomo-Saltado-Ochoa.png" }
         ]
       },
       {
