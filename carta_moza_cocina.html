@@ -1243,6 +1243,17 @@ body{
   }
 }
 
+
+/* ===== FILTRO POR SECCIONES PARA MOZA ===== */
+.menu-section-block.section-hidden{
+  display:none !important;
+}
+.app-category-card.active-category{
+  border-color:#ffd60a !important;
+  background:linear-gradient(180deg, rgba(255,214,10,.20), rgba(0,0,0,.92)) !important;
+  box-shadow:0 0 16px rgba(255,214,10,.30) !important;
+}
+
 </style>
 </head>
 
@@ -1821,7 +1832,13 @@ const btnRefreshCashDay = document.getElementById("btn-refresh-cash-day");
 function renderMenu(){
   if (!menuContainer) return;
   menuContainer.innerHTML = "";
+  let currentFilterGroup = "";
   SECTIONS.forEach(section => {
+    if (section.anchorId) currentFilterGroup = section.anchorId;
+    const sectionBlock = document.createElement("div");
+    sectionBlock.className = "menu-section-block";
+    sectionBlock.dataset.group = currentFilterGroup || (section.anchorId || "");
+
     const titleRow = document.createElement("div");
     titleRow.className = "menu-section-title";
     if (section.anchorId) titleRow.id = section.anchorId;
@@ -1831,7 +1848,7 @@ function renderMenu(){
       const img = document.createElement("img"); img.src = section.image; img.alt = section.name;
       w.appendChild(img); titleRow.appendChild(w);
     }
-    menuContainer.appendChild(titleRow);
+    sectionBlock.appendChild(titleRow);
     const grid = document.createElement("div"); grid.className = "menu-grid";
     section.items.forEach(item => {
       const card = document.createElement("div"); card.className = "item-card";
@@ -1886,8 +1903,39 @@ function renderMenu(){
       btn.addEventListener("click", () => handleAdd(section, item, card, qty, btn));
       actions.appendChild(qty); actions.appendChild(btn); card.appendChild(actions); grid.appendChild(card);
     });
-    menuContainer.appendChild(grid);
-    if (section.footerText) { const note=document.createElement("div"); note.style.cssText="margin-top:8px;font-size:12px;color:#ccc"; note.textContent=section.footerText; menuContainer.appendChild(note); }
+    sectionBlock.appendChild(grid);
+    if (section.footerText) { const note=document.createElement("div"); note.style.cssText="margin-top:8px;font-size:12px;color:#ccc"; note.textContent=section.footerText; sectionBlock.appendChild(note); }
+    menuContainer.appendChild(sectionBlock);
+  });
+}
+
+function showOnlyCategory(anchorId, shouldScroll = true){
+  const group = String(anchorId || "").replace("#", "");
+  const blocks = Array.from(document.querySelectorAll(".menu-section-block"));
+  if (!blocks.length || !group) return;
+
+  blocks.forEach(block => {
+    block.classList.toggle("section-hidden", block.dataset.group !== group);
+  });
+
+  document.querySelectorAll(".app-category-card").forEach(card => {
+    const hrefGroup = (card.getAttribute("href") || "").replace("#", "");
+    card.classList.toggle("active-category", hrefGroup === group);
+  });
+
+  if (shouldScroll) {
+    const firstVisible = blocks.find(block => block.dataset.group === group);
+    scrollToWithOffset(firstVisible || menuContainer, 85);
+  }
+}
+
+function setupCategoryFiltering(){
+  document.querySelectorAll('.app-category-card[href^="#"]').forEach(card => {
+    card.addEventListener("click", (e) => {
+      e.preventDefault();
+      const group = (card.getAttribute("href") || "").replace("#", "");
+      showOnlyCategory(group, true);
+    });
   });
 }
 
@@ -2527,6 +2575,8 @@ function clearCart(){
 function scrollToWithOffset(el, offset=STICKY_OFFSET){ if(!el) return; const y = el.getBoundingClientRect().top + window.pageYOffset - offset; window.scrollTo({top:y, behavior:"smooth"}); }
 
 renderMenu();
+setupCategoryFiltering();
+showOnlyCategory("combos", false);
 renderCart();
 if (btnClear) btnClear.addEventListener("click", clearCart);
 if (bottomVerPedido) bottomVerPedido.addEventListener("click", () => scrollToWithOffset(document.getElementById("carrito")));
