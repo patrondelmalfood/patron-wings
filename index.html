@@ -2650,6 +2650,52 @@ body.home-screen .app-category-card span small{
   .qty-stepper{ width:100% !important; justify-content:center !important; }
 }
 
+
+/* =========================================================
+   NUEVAS CATEGORÍAS 2026 - Combos, Torres, Tragos y Frappés
+   Mantiene el modelo tipo app y evita romper el diseño.
+   ========================================================= */
+body.home-screen .app-category-list{
+  gap:6px !important;
+}
+body.home-screen .app-category-card{
+  min-height:clamp(48px, 6.3dvh, 58px) !important;
+  padding:5px 8px !important;
+}
+body.home-screen .app-category-card img{
+  width:clamp(76px, 22vw, 92px) !important;
+  height:clamp(36px, 5dvh, 45px) !important;
+}
+body.home-screen .app-category-card span strong{
+  font-size:clamp(15px, 4.4vw, 19px) !important;
+}
+body.home-screen .app-category-card span small{
+  font-size:clamp(8.5px, 2.35vw, 10.5px) !important;
+}
+#combos + .menu-grid .item-card.has-card-img .card-photo,
+#torres + .menu-grid .item-card.has-card-img .card-photo,
+#bebidas + .menu-grid .item-card.has-card-img .card-photo{
+  height:190px !important;
+  object-fit:cover !important;
+  object-position:center !important;
+  background:#070707 !important;
+  padding:0 !important;
+}
+@media (max-width:600px){
+  #combos + .menu-grid .item-card.has-card-img .card-photo,
+  #torres + .menu-grid .item-card.has-card-img .card-photo,
+  #bebidas + .menu-grid .item-card.has-card-img .card-photo{
+    height:190px !important;
+  }
+}
+@media (max-width:380px){
+  #combos + .menu-grid .item-card.has-card-img .card-photo,
+  #torres + .menu-grid .item-card.has-card-img .card-photo,
+  #bebidas + .menu-grid .item-card.has-card-img .card-photo{
+    height:172px !important;
+  }
+}
+
 </style>
 </head>
 
@@ -2716,33 +2762,45 @@ body.home-screen .app-category-card span small{
 </div>
     <section class="app-category-list">
 
+  <a href="#" class="app-category-card" data-cat="combos">
+    <img src="cat-combos.png" onerror="this.onerror=null;this.src='cat-alitas.png';" alt="Combos y Promociones">
+    <span><strong>Combos y Promociones 🔥</strong><small>Ofertas para compartir y pedir hoy</small></span>
+    <b>›</b>
+  </a>
+
   <a href="#" class="app-category-card" data-cat="alitas">
-  <img src="cat-alitas.png">
-  <span><strong>Alitas 🔥</strong><small>Elige tus salsas favoritas</small></span>
-  <b>›</b>
-</a>
+    <img src="cat-alitas.png" alt="Alitas">
+    <span><strong>Alitas 🍗</strong><small>Elige tus salsas favoritas</small></span>
+    <b>›</b>
+  </a>
 
   <a href="#" class="app-category-card" data-cat="hamburguesas">
-    <img src="cat-hamburguesa.png">
+    <img src="cat-hamburguesa.png" alt="Burger y Wrap">
     <span><strong>Burger - Wrap 🍔🌯</strong><small>Burgers, wraps, papas y cremas</small></span>
     <b>›</b>
   </a>
 
   <a href="#" class="app-category-card" data-cat="cartel">
-    <img src="cat-cartel.png">
+    <img src="cat-cartel.png" alt="Mostritos y Broaster">
     <span><strong>Mostritos y Broaster 🍗</strong><small>Chaufa, papas, presas y combos</small></span>
     <b>›</b>
   </a>
 
+  <a href="#" class="app-category-card" data-cat="torres">
+    <img src="cat-torres.png" onerror="this.onerror=null;this.src='cat-cartel.png';" alt="Torres del Cartel">
+    <span><strong>Torres del Cartel 🗼</strong><small>Torres brutales para compartir</small></span>
+    <b>›</b>
+  </a>
+
   <a href="#" class="app-category-card" data-cat="extras">
-    <img src="cat-extras.png">
-    <span><strong>Papas, cremas y extras ➕</strong><small>Porciones, cremas y adicionales</small></span>
+    <img src="cat-extras.png" alt="Papas, cremas y extras">
+    <span><strong>Papas, cremas y extras ➕</strong><small>Porciones, piqueos, cremas y adicionales</small></span>
     <b>›</b>
   </a>
 
   <a href="#" class="app-category-card" data-cat="bebidas">
-    <img src="cat-bebidas.png">
-    <span><strong>Bebidas 🥤</strong><small>Gaseosas, chicha y más</small></span>
+    <img src="cat-bebidas.png" alt="Bebidas, Tragos y Frappés">
+    <span><strong>Bebidas, Tragos y Frappés 🥤</strong><small>Gaseosas, frozen, tragos y frappés</small></span>
     <b>›</b>
   </a>
 
@@ -2854,7 +2912,7 @@ const LOCATION_TEXT_FOR_OWNER = "📍 Ubicación: (cliente enviará su ubicació
 const OPEN_HOUR = 17, OPEN_MIN = 30, CLOSE_HOUR = 24, CLOSE_MIN = 0;
 const STICKY_OFFSET = 105;
 const SAUCES = ["BBQ", "Acevichada", "Buffalo", "Maracuyá"].map(x => `Salsa ${x}`);
-const DRINK_IDS = [29,30,31,32,35,37,38,42,44,45];
+const DRINK_IDS = [29,30,31,32,35,37,38,42,44,45,80,81,82,83,84,85,86,87,88,89,90];
 const SAUCE_EXTRA_IDS = [39,40,41];
 const EXTRA_WING_ID = 64;
 const ALITAS_IMG_DEFAULT = "alitas-bbq.JPG";
@@ -2863,7 +2921,7 @@ function pad2(n){ return String(n).padStart(2,"0"); }
 function safeNum(n){ return Number.isFinite(Number(n)) ? Number(n) : 0; }
 function round2(n){ return Number((safeNum(n)).toFixed(2)); }
 function money(n){ return `S/ ${safeNum(n).toFixed(2)}`; }
-function cleanName(n){ return String(n || "").replace(/🔫|💣|👑|🕶|🔥|🍔|🌯|🧂|🥤|➕/g, "").trim(); }
+function cleanName(n){ return String(n || "").replace(/🔫|💣|👑|🕶|🔥|🍔|🌯|🧂|🥤|➕|🍗|🗼|🎉/g, "").trim(); }
 function shortSauces(arr){ return (arr || []).map(s => s.replace("Salsa ", "")).join(", "); }
 function isNoSauceValue(v){ return String(v || "").toUpperCase() === "SIN_SALSA"; }
 
@@ -2894,6 +2952,12 @@ function renderOpenStatus(){
 renderOpenStatus(); setInterval(renderOpenStatus, 30000);
 
 function getSauceMaxForItemName(name){
+  if (name.includes("Jueves de Patas")) return 1;
+  if (name.includes("Combo Familiar")) return 3;
+  if (name.includes("Combo Broaster")) return 1;
+  if (name.includes("Torre Medellín")) return 2;
+  if (name.includes("Torre Nápoles")) return 2;
+  if (name.includes("Torre Cali")) return 1;
   if (name.startsWith("4 Alitas")) return 1;
   if (name.startsWith("5 Alitas")) return 1;
   if (name.startsWith("6 Alitas")) return 2;
@@ -2973,8 +3037,22 @@ function actualizarImagenAlitasCard(card){
 
 const SECTIONS = [
       {
+        anchorId: "combos",
+        name: "🔥 Combos y Promociones",
+        image: "cat-combos.png",
+        sauceMode: "none",
+        footerText: "Promos sujetas a disponibilidad del día. Si una promo incluye alitas o broaster, elige la salsa antes de agregar.",
+        items: [
+          { id: 68, name: "Miércoles de Burger", price: 18.00, desc: "2 burgers + papas + cremas", cardImg: "cat-hamburguesa.png" },
+          { id: 69, name: "Jueves de Patas", price: 25.00, desc: "1 Burger Clásica + canastilla de papa + 5 alitas + ensalada + cremas", cardImg: "cat-alitas.png", sauceMode: "multi" },
+          { id: 70, name: "Combo Pareja Burger", price: 27.00, desc: "2 burgers + gaseosa 1L", cardImg: "cat-hamburguesa.png" },
+          { id: 71, name: "Combo Familiar", price: 119.00, desc: "30 alitas + papa familiar + 2 burgers clásicas + gaseosa 1L + jarra de maracuyá 1L", cardImg: "cat-alitas.png", sauceMode: "multi" },
+          { id: 72, name: "Combo Broaster Martes y Jueves", price: 29.90, desc: "6 piezas de broaster + canastilla de papa + ensalada + cremas", cardImg: "cat-cartel.png", sauceMode: "single" }
+        ]
+      },
+      {
         anchorId: "alitas",
-        name: "🔥 Alitas – El Patrón del Mal",
+        name: "🍗 Alitas",
         image: "FESTIVAL DE ALITAS.jpg",
         sauceMode: "multi",
         items: [
@@ -3013,7 +3091,7 @@ const SECTIONS = [
       },
       {
         anchorId: "hamburguesas",
-        name: "🍔🌯 Burger - Wrap",
+        name: "🍔 Burger - Wrap",
         image: "BURGER 2.jpg",
         sauceMode: "none",
         items: [
@@ -3053,11 +3131,25 @@ const SECTIONS = [
         ]
       },
       {
+        anchorId: "torres",
+        name: "🗼 Torres del Cartel",
+        image: "cat-torres.png",
+        sauceMode: "multi",
+        footerText: "Torres para compartir. Elige tus salsas antes de agregar al pedido.",
+        items: [
+          { id: 73, name: "Torre Medellín", price: 42.90, desc: "7 alitas + porción de tequeños + porción de papa familiar + salsas + cremas + ensalada", cardImg: "torre-medellin.png" },
+          { id: 74, name: "Torre Nápoles",  price: 59.90, desc: "10 piezas de alitas + trocitos de pollo broaster + porción de tequeños + porción de papas + salsas + cremas + ensalada", cardImg: "torre-napoles.png" },
+          { id: 75, name: "Torre Cali",     price: 44.90, desc: "5 piezas broaster + porción de tequeños + porción de papa + salsas + cremas + ensalada", cardImg: "torre-cali.png" }
+        ]
+      },
+      {
         anchorId: "extras",
-        name: "Papas, cremas y extras ➕",
+        name: "🍟 Papas, cremas y extras",
         image: "cat-extras.png",
         sauceMode: "none",
         items: [
+          { id: 10, name: "Tequeños (6 und, jamón y queso)",   price: 13, desc: "", cardImg: "Tequeños.png" },
+          { id: 11, name: "Porción de Nuggets",                price: 11, desc: "", cardImg: "Porción de Nuggets.png" },
           { id: 23, name: "Porción de chaufa",                 price: 6,  desc: "", cardImg: "Porción de chaufa.png" },
           { id: 24, name: "Porción de papas",                  price: 6,  desc: "Equivale a 2 porciones de 170g", cardImg: "Porción de papas.png" },
           { id: 25, name: "Porción de ensalada",               price: 4,  desc: "", cardImg: "Porción de ensalada.png" },
@@ -3071,7 +3163,7 @@ const SECTIONS = [
       },
       {
         anchorId: "bebidas",
-        name: "🥤 Bebidas",
+        name: "🥤 Bebidas, Tragos y Frappés",
         image: null,
         sauceMode: "none",
         items: [
@@ -3084,7 +3176,18 @@ const SECTIONS = [
           { id: 38, name: "Vaso de hielo",                             price: 3.0, desc: "", cardImg: "Vaso de hielo.png" },
           { id: 44, name: "Vaso de maracuyá",                          price: 3.0, desc: "", cardImg: "Vaso de maracuyá.png" },
           { id: 29, name: "Limonada frozen 1L",                        price: 10,  desc: "", cardImg: "Limonada frozen 1L.jpg" },
-          { id: 32, name: "Agua mineral",                              price: 3.0, desc: "", cardImg: "bebida-agua-mineral.png" }
+          { id: 32, name: "Agua mineral",                              price: 3.0, desc: "", cardImg: "bebida-agua-mineral.png" },
+          { id: 80, name: "Caramel Coffee Frappé",                     price: 11.0, desc: "Frappé de café con caramelo y chantilly", cardImg: "frappe-caramelo.png" },
+          { id: 81, name: "Strawberry Dream Frappé",                   price: 12.0, desc: "Frappé de fresa con chantilly", cardImg: "frappe-fresa.png" },
+          { id: 82, name: "Oreo Cookies & Cream Frappé",               price: 13.0, desc: "Frappé de Oreo con chantilly", cardImg: "frappe-oreo.png" },
+          { id: 83, name: "Mojito",                                    price: 13.0, desc: "Trago refrescante con limón y hierbabuena", cardImg: "mojito.png" },
+          { id: 84, name: "Caipiroska de Fresa",                       price: 14.0, desc: "Trago frozen de fresa", cardImg: "caipiroska-fresa.png" },
+          { id: 85, name: "Lemon Whisky",                              price: 12.0, desc: "Trago refrescante de whisky con limón", cardImg: "lemon-whisky.png" },
+          { id: 86, name: "Laguna Azul",                               price: 13.0, desc: "Trago azul refrescante", cardImg: "laguna-azul.png" },
+          { id: 87, name: "Tinto de Verano",                           price: 12.0, desc: "Trago refrescante estilo verano", cardImg: "tinto-verano.png" },
+          { id: 88, name: "Promo 2 Frappés Caramelo",                  price: 22.0, desc: "2 frappés de caramelo con chantilly", cardImg: "promo-2-frappes.png" },
+          { id: 89, name: "Promo 2 Mojitos",                           price: 25.0, desc: "2 mojitos para compartir", cardImg: "promo-2-mojitos.png" },
+          { id: 90, name: "Promo 2 Lemon Whisky o Tinto de Verano",     price: 24.0, desc: "2 tragos: Lemon Whisky o Tinto de Verano", cardImg: "promo-2-lemon-tinto.png" }
         ]
       }
 ];
@@ -3121,11 +3224,13 @@ const homeTrustBar = document.getElementById("home-trust-bar");
 let currentCategoryKey = null;
 
 const CATEGORY_GROUPS = {
-  alitas: { title: "🔥 Alitas", keys: ["alitas", "agregado_alitas", "snack"] },
-  hamburguesas: { title: "🍔🌯 Burger - Wrap", keys: ["hamburguesas"] },
+  combos: { title: "🔥 Combos y Promociones", keys: ["combos"] },
+  alitas: { title: "🍗 Alitas", keys: ["alitas", "agregado_alitas"] },
+  hamburguesas: { title: "🍔 Burger - Wrap", keys: ["hamburguesas"] },
   cartel: { title: "🍗 Mostritos y Broaster", keys: ["cartel", "agregado_broaster"] },
-  extras: { title: "Papas, cremas y extras ➕", keys: ["extras"] },
-  bebidas: { title: "🥤 Bebidas", keys: ["bebidas"] }
+  torres: { title: "🗼 Torres del Cartel", keys: ["torres"] },
+  extras: { title: "🍟 Papas, cremas y extras", keys: ["snack", "extras"] },
+  bebidas: { title: "🥤 Bebidas, Tragos y Frappés", keys: ["bebidas"] }
 };
 
 function sectionInternalKey(section){
@@ -3192,6 +3297,7 @@ function renderMenu(selectedCategoryKey = currentCategoryKey){
       if (section.anchorId === "alitas" || item.cardImg) {
         card.classList.add("has-real-img","has-card-img");
         const pic = document.createElement("img"); pic.className = "card-photo"; pic.alt = item.name; pic.src = item.cardImg || item.fixedAlitasImg || ALITAS_IMG_DEFAULT;
+        pic.onerror = () => { pic.onerror = null; pic.src = section.image || "cat-alitas.png"; };
         card.appendChild(pic);
       }
       const header = document.createElement("div"); header.className = "item-header";
@@ -3199,7 +3305,9 @@ function renderMenu(selectedCategoryKey = currentCategoryKey){
       card.appendChild(header);
       if (item.desc) { const desc = document.createElement("div"); desc.className = "item-desc"; desc.textContent = item.desc; card.appendChild(desc); }
 
-      if (section.sauceMode === "multi") {
+      const effectiveSauceMode = item.sauceMode || section.sauceMode;
+
+      if (effectiveSauceMode === "multi") {
         const max = getSauceMaxForItemName(item.name);
         const saucesDiv = document.createElement("div"); saucesDiv.className = "salsas-item";
         saucesDiv.innerHTML = `<p>Salsas (máx. ${max}):</p>`;
@@ -3215,7 +3323,7 @@ function renderMenu(selectedCategoryKey = currentCategoryKey){
         saucesDiv.addEventListener("change", () => actualizarImagenAlitasCard(card));
       }
 
-      if (section.sauceMode === "single") {
+      if (effectiveSauceMode === "single") {
         const wrap = document.createElement("div"); wrap.className = "salsa-select-wrap";
         const sel = document.createElement("select"); sel.className = "salsa-select"; sel.name = `salsa-select-${item.id}`;
         sel.innerHTML = `<option value="">Selecciona una opción</option><option value="SIN_SALSA">Sin salsa</option>`;
@@ -3280,7 +3388,9 @@ function playAddSound(){
 function handleAdd(section, item, card, qtyInput, btn){
   const qty = Math.max(1, Number(qtyInput.value) || 1);
   let sauces = [], sauceApart = false, brand = null, noSauce = false;
-  if (section.sauceMode === "multi") {
+  const effectiveSauceMode = item.sauceMode || section.sauceMode;
+
+      if (effectiveSauceMode === "multi") {
     noSauce = !!card.querySelector(`input[name="salsa-none-${item.id}"]`)?.checked;
     sauces = Array.from(card.querySelectorAll(`input[name="salsa-${item.id}"]:checked`)).map(x=>x.value);
     const max = getSauceMaxForItemName(item.name);
@@ -3290,7 +3400,7 @@ function handleAdd(section, item, card, qtyInput, btn){
     sauceApart = !!card.querySelector(`input[name="salsa-aparte-${item.id}"]`)?.checked;
     if (noSauce) sauceApart = false;
   }
-  if (section.sauceMode === "single") {
+  if (effectiveSauceMode === "single") {
     const sel = card.querySelector(`select[name="salsa-select-${item.id}"]`);
     if (!sel || !sel.value) return alert(`Elige una opción de salsa para "${item.name}".`);
     if (isNoSauceValue(sel.value)) noSauce = true; else sauces = [sel.value];
@@ -3379,6 +3489,7 @@ function renderMenu(selectedCategoryKey = currentCategoryKey){
         pic.className = "card-photo";
         pic.alt = item.name;
         pic.src = item.cardImg || item.fixedAlitasImg || ALITAS_IMG_DEFAULT;
+        pic.onerror = () => { pic.onerror = null; pic.src = section.image || "cat-alitas.png"; };
         card.appendChild(pic);
       }
 
@@ -3394,7 +3505,9 @@ function renderMenu(selectedCategoryKey = currentCategoryKey){
         card.appendChild(desc);
       }
 
-      if (section.sauceMode === "multi") {
+      const effectiveSauceMode = item.sauceMode || section.sauceMode;
+
+  if (effectiveSauceMode === "multi") {
         const max = getSauceMaxForItemName(item.name);
         const wrap = document.createElement("div");
         wrap.className = "salsa-accordion";
@@ -3440,7 +3553,7 @@ function renderMenu(selectedCategoryKey = currentCategoryKey){
         card.appendChild(wrap);
       }
 
-      if (section.sauceMode === "single") {
+      if (effectiveSauceMode === "single") {
         const wrap = document.createElement("div");
         wrap.className = "salsa-select-wrap";
         const sel = document.createElement("select");
@@ -3505,7 +3618,9 @@ function handleAdd(section, item, card, qtyInput, btn){
   const qty = Math.max(1, Number(qtyInput.value) || 1);
   let sauces = [], sauceApart = false, brand = null, noSauce = false;
 
-  if (section.sauceMode === "multi") {
+  const effectiveSauceMode = item.sauceMode || section.sauceMode;
+
+  if (effectiveSauceMode === "multi") {
     noSauce = !!card.querySelector(`input[name="salsa-none-${item.id}"]`)?.checked;
     sauces = Array.from(card.querySelectorAll(`input[name="salsa-${item.id}"]:checked`)).map(x => x.value);
     const max = getSauceMaxForItemName(item.name);
@@ -3517,7 +3632,7 @@ function handleAdd(section, item, card, qtyInput, btn){
     if (noSauce) sauceApart = false;
   }
 
-  if (section.sauceMode === "single") {
+  if (effectiveSauceMode === "single") {
     const sel = card.querySelector(`select[name="salsa-select-${item.id}"]`);
     if (!sel || !sel.value) return alert(`Elige una opción de salsa para "${item.name}".`);
     if (isNoSauceValue(sel.value)) noSauce = true;
