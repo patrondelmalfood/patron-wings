@@ -229,6 +229,33 @@
       object-fit:cover;
       display:block;
     }
+
+
+    /* AJUSTE COMBOS Y TORRES: fotos completas y visibles */
+    #combos + .menu-grid .item-card.has-card-img .card-photo,
+    #torres + .menu-grid .item-card.has-card-img .card-photo{
+      width:100%;
+      height:185px;
+      object-fit:contain;
+      object-position:center center;
+      background:#111;
+      padding:6px;
+      box-sizing:border-box;
+      display:block;
+    }
+
+    @media (max-width:600px){
+      #combos + .menu-grid .item-card.has-card-img .card-photo,
+      #torres + .menu-grid .item-card.has-card-img .card-photo{
+        height:155px;
+        object-fit:contain;
+        object-position:center center;
+        background:#111;
+        padding:5px;
+        box-sizing:border-box;
+      }
+    }
+
     .item-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
     .item-name{ font-weight:bold; font-size:15px; }
     .item-price{ font-weight:bold; color:#ffe066; animation: goldPulse 1.4s infinite alternate; }
@@ -1020,11 +1047,13 @@
       <a id="nav-whatsapp" class="primary disabled" href="#" target="_blank">📲 WhatsApp</a>
       <button id="nav-admin" class="primary" type="button">🔐 Admin</button>
 
-      <a href="#alitas">Alitas 🔥</a>
+      <a href="#combos">Combos y Promociones 🔥</a>
+      <a href="#alitas">Alitas 🍗</a>
       <a href="#hamburguesas">Burger - Wrap 🍔🌯</a>
       <a href="#cartel">Mostritos y Broaster 🍗</a>
+      <a href="#torres">Torres del Cartel 🗼</a>
       <a href="#extras">Papas, cremas y extras ➕</a>
-      <a href="#bebidas">Bebidas 🥤</a>
+      <a href="#bebidas">Bebidas, Tragos y Frappés 🥤</a>
     </nav>
 
     <div id="menu"></div>
@@ -1434,7 +1463,7 @@ function deepCopy(obj){
 
     function cleanItemNameForPrint(name){
       return String(name || "")
-        .replace(/🔫|💣|👑|🕶|🔥|🍔|🧂|🥤|➕/g, "")
+        .replace(/🔫|💣|👑|🕶|🔥|🍔|🌯|🧂|🥤|➕|🍗|🗼|🎉/g, "")
         .trim();
     }
 
@@ -1467,7 +1496,7 @@ function deepCopy(obj){
     }
 
     const SAUCES = ["BBQ","Acevichada","Buffalo","Maracuyá"].map(x => `Salsa ${x}`);
-    const DRINK_IDS = [29,30,31,32,35,37,38,42,44,45];
+    const DRINK_IDS = [29,30,31,32,35,37,38,42,44,45,80,81,82,83,84,85,86,87,88,89,90];
     const SAUCE_EXTRA_IDS = [39,40,41];
     const EXTRA_WING_ID = 64;
 
@@ -1476,13 +1505,26 @@ function deepCopy(obj){
     }
 
     function getTaperPerUnit(itemId) {
+      itemId = Number(itemId);
       if (itemId === EXTRA_WING_ID) return 0;
+
+      // Combos y torres: se estiman empaques para delivery / recojo.
+      if (itemId === 68) return 2; // Miércoles de Burger
+      if (itemId === 69) return 2; // Jueves de Patas
+      if (itemId === 70) return 2; // Combo Pareja Burger
+      if (itemId === 71) return 5; // Combo Familiar
+      if (itemId === 72) return 4; // Combo Broaster
+      if (itemId === 73) return 3; // Torre Medellín
+      if (itemId === 74) return 4; // Torre Nápoles
+      if (itemId === 75) return 3; // Torre Cali
+
       if (itemId === 21) return 2;
       if (itemId === 3) return 2;
       if (itemId === 4) return 3;
       if (itemId === 5) return 4;
       return 1;
     }
+
 
     function getExtraWingsTaperCount(cartEntries){
       let extraWingQty = 0;
@@ -1495,10 +1537,12 @@ function deepCopy(obj){
     }
 
     function isMainWingComboId(id){
-      return [20,1,2,21,3,4,5,6,7].includes(Number(id));
+      return [20,1,2,21,3,4,5,6,7,69,71,73,74].includes(Number(id));
     }
 
+
     function getBaseWingPiecesByItemId(itemId){
+      itemId = Number(itemId);
       if (itemId === 20) return 4;
       if (itemId === 1) return 5;
       if (itemId === 2) return 6;
@@ -1508,8 +1552,13 @@ function deepCopy(obj){
       if (itemId === 5) return 30;
       if (itemId === 6) return 4;
       if (itemId === 7) return 5;
+      if (itemId === 69) return 5;
+      if (itemId === 71) return 30;
+      if (itemId === 73) return 7;
+      if (itemId === 74) return 10;
       return 0;
     }
+
 
     function buildKitchenGroupedEntries(cartEntries){
       const normalEntries = cartEntries
@@ -1562,6 +1611,13 @@ function deepCopy(obj){
     }
 
     function getSauceMaxForItemName(name) {
+      if (name.includes("Jueves de Patas")) return 1;
+      if (name.includes("Combo Familiar")) return 3;
+      if (name.includes("Combo Broaster")) return 1;
+      if (name.includes("Torre Medellín")) return 2;
+      if (name.includes("Torre Nápoles")) return 2;
+      if (name.includes("Torre Cali")) return 1;
+
       if (name.startsWith("4 Alitas")) return 1;
       if (name.startsWith("5 Alitas")) return 1;
       if (name.startsWith("6 Alitas")) return 2;
@@ -1582,7 +1638,9 @@ function deepCopy(obj){
       return 0;
     }
 
+
     function getPotatoBags170PerUnit(itemId){
+      itemId = Number(itemId);
       if (itemId === 20) return 1;
       if (itemId === 1)  return 1;
       if (itemId === 2)  return 2;
@@ -1594,13 +1652,28 @@ function deepCopy(obj){
       if (itemId === 7)  return 1;
       if (itemId === 8)  return 1;
       if (itemId === 9)  return 1;
+
+      // Combos y promociones
+      if (itemId === 68) return 2;
+      if (itemId === 69) return 3;
+      if (itemId === 70) return 2;
+      if (itemId === 71) return 11;
+      if (itemId === 72) return 4;
+
+      // Torres del Cartel
+      if (itemId === 73) return 4;
+      if (itemId === 74) return 5;
+      if (itemId === 75) return 2;
+
       if ([12,13,14,15,16,17,18,19,66,67].includes(itemId)) return 1;
       if ([60,61,62,63].includes(itemId)) return 2;
       if (itemId === 24) return 2;
       return 0;
     }
 
+
     function getWingsPiecesPerUnit(itemId){
+      itemId = Number(itemId);
       if (itemId === 20) return 4;
       if (itemId === 1)  return 5;
       if (itemId === 2)  return 6;
@@ -1611,21 +1684,41 @@ function deepCopy(obj){
       if (itemId === 6)  return 4;
       if (itemId === 7)  return 5;
       if (itemId === 64) return 1;
+      if (itemId === 69) return 5;
+      if (itemId === 71) return 30;
+      if (itemId === 73) return 7;
+      if (itemId === 74) return 10;
       return 0;
     }
 
+
     function getBroasterPiecesPerUnit(itemId){
+      itemId = Number(itemId);
       if (itemId === 60) return 2;
       if (itemId === 61) return 3;
       if (itemId === 62) return 2;
       if (itemId === 63) return 0;
       if (itemId === 65) return 1;
+      if (itemId === 72) return 6;
+      if (itemId === 75) return 5;
       return 0;
     }
 
+
     function isBurgerId(itemId){
-      return [12,13,14,15,16].includes(itemId);
+      return [12,13,14,15,16].includes(Number(itemId));
     }
+
+    function getBurgerUnitsPerUnit(itemId){
+      itemId = Number(itemId);
+      if ([12,13,14,15,16].includes(itemId)) return 1;
+      if (itemId === 68) return 2;
+      if (itemId === 69) return 1;
+      if (itemId === 70) return 2;
+      if (itemId === 71) return 2;
+      return 0;
+    }
+
 
     function isNoSauceValue(v){
       return String(v || "").toUpperCase() === "SIN_SALSA";
@@ -1658,8 +1751,22 @@ function deepCopy(obj){
 
     const SECTIONS = [
       {
+        anchorId: "combos",
+        name: "🔥 Combos y Promociones",
+        image: "cat-combos.png",
+        sauceMode: "none",
+        footerText: "Promos sujetas a disponibilidad del día. Si una promo incluye alitas o broaster, elige la salsa antes de agregar.",
+        items: [
+          { id: 68, name: "Miércoles de Burger", price: 18.00, desc: "2 burgers + papas + cremas", image: "cat-hamburguesa.png" },
+          { id: 69, name: "Jueves de Patas", price: 25.00, desc: "1 Burger Clásica + canastilla de papa + 5 alitas + ensalada + cremas", image: "cat-alitas.png", sauceMode: "multi" },
+          { id: 70, name: "Combo Pareja Burger", price: 27.00, desc: "2 burgers + gaseosa 1L", image: "cat-hamburguesa.png" },
+          { id: 71, name: "Combo Familiar", price: 119.00, desc: "30 alitas + papa familiar + 2 burgers clásicas + gaseosa 1L + jarra de maracuyá 1L", image: "cat-combos.png", sauceMode: "multi" },
+          { id: 72, name: "Combo Broaster Martes y Jueves", price: 29.90, desc: "6 piezas de broaster + canastilla de papa + ensalada + cremas", image: "cat-cartel.png", sauceMode: "single" }
+        ]
+      },
+      {
         anchorId: "alitas",
-        name: "🔥 Alitas – El Patrón del Mal",
+        name: "🍗 Alitas",
         image: "FESTIVAL DE ALITAS.jpg",
         sauceMode: "multi",
         items: [
@@ -1667,7 +1774,7 @@ function deepCopy(obj){
           { id: 1,  name: "5 Alitas (1 salsa)",                price: 18, desc: "+ papas + ensalada + 3 cremas caseras" },
           { id: 2,  name: "6 Alitas (2 salsas mixtas)",        price: 21, desc: "+ papas + ensalada + 3 cremas caseras" },
           { id: 21, name: "8 Alitas (2 salsas mixtas)",        price: 29, desc: "+ papas + ensalada + 3 cremas caseras" },
-          { id: 3,  name: "10 Alitas (2 salsas mixtas)",       price: 33, desc: "+ papas + ensalada + 3 cremas caseras" },
+          { id: 3,  name: "10 Alitas (2 salsas mixtas)",       price: 33, desc: "+ papas grandes + ensalada grande + 3 cremas grandes" },
           { id: 4,  name: "15 Alitas (3 salsas mixtas)",       price: 46, desc: "+ papas grandes + ensalada grande + 3 cremas grandes" },
           { id: 5,  name: "30 Alitas (3 salsas mixtas)",       price: 96, desc: "+ 2 porciones grandes de papas + 2 ensaladas grandes + 3 cremas dobles" },
           { id: 6,  name: "Chaufi Alitas - Montoya",           price: 20, desc: "+ chaufa + 4 alitas + papas + ensalada + cremas" },
@@ -1692,8 +1799,8 @@ function deepCopy(obj){
         image: null,
         sauceMode: "none",
         items: [
-          { id: 10, name: "Tequeños (6 und, jamón y queso)",   price: 13, desc: "" },
-          { id: 11, name: "Porción de Nuggets",                price: 11, desc: "" }
+          { id: 10, name: "Tequeños (6 und, jamón y queso)",   price: 13, desc: "", image: "tequenos.png" },
+          { id: 11, name: "Porción de Nuggets",                price: 11, desc: "", image: "nuggets.png" }
         ]
       },
       {
@@ -1702,11 +1809,11 @@ function deepCopy(obj){
         image: "BURGER 2.jpg",
         sauceMode: "none",
         items: [
-          { id: 12, name: "Burger Clásica Ochoa",              price: 11, desc: "Carne 200 g + queso + papas + ensalada + cremas" },
-          { id: 13, name: "Burger Royal Gaviria",              price: 13, desc: "Carne 200 g + queso + huevo + papas + ensalada + cremas" },
-          { id: 14, name: "Burger Premium Ulloa",              price: 15, desc: "Carne 200 g + queso + chorizo + tocino + papas + ensalada + cremas" },
-          { id: 15, name: "Burger Pablo Escobar",              price: 21, desc: "2 carnes + queso + jamón + huevo + tocino + papas + ensalada + cremas" },
-          { id: 16, name: "Burger Crispy Motoa",               price: 14, desc: "Pollo crispy + queso + jamón + papas + ensalada + cremas" },
+          { id: 12, name: "Burger Clásica Ochoa",              price: 11, desc: "Carne 200 g + queso + papas + ensalada + cremas", image: "burger-clasica-ochoa.png" },
+          { id: 13, name: "Burger Royal Gaviria",              price: 13, desc: "Carne 200 g + queso + huevo + papas + ensalada + cremas", image: "burger-royal-gaviria.png" },
+          { id: 14, name: "Burger Premium Ulloa",              price: 15, desc: "Carne 200 g + queso + chorizo + tocino + papas + ensalada + cremas", image: "burger-premium-ulloa.png" },
+          { id: 15, name: "Burger Pablo Escobar",              price: 21, desc: "2 carnes + queso + jamón + huevo + tocino + papas + ensalada + cremas", image: "burger-pablo-escobar.png" },
+          { id: 16, name: "Burger Crispy Motoa",               price: 14, desc: "Pollo crispy + queso + jamón + papas + ensalada + cremas", image: "burger-crispy-motoa.png" },
           { id: 17, name: "Wrap Crispy de Pollo",              price: 13.90, desc: "Pollo crispy + verduras frescas + salsa de queso + papas + 3 cremas", image: "wrap-crispy-pollo.png" },
           { id: 18, name: "Wrap BBQ Chicken",                  price: 14.90, desc: "Pollo crispy + salsa BBQ + verduras frescas + queso + papas + 3 cremas", image: "wrap-bbq-chicken.png" },
           { id: 19, name: "Wrap Carne Búfalo",                 price: 15.90, desc: "Carne sazonada + salsa búfalo picante + verduras frescas + queso + papas + 3 cremas", image: "wrap-carne-bufalo.png" }
@@ -1719,10 +1826,10 @@ function deepCopy(obj){
         sauceMode: "single",
         footerText: "Elige 1 salsa: BBQ, Acevichada, Buffalo, Maracuyá o Sin salsa.",
         items: [
-          { id: 60, name: "🔫 El Sicario",      price: 18.90, desc: "2 piezas broaster + papas + ensalada + cremas → 1 salsa" },
-          { id: 61, name: "💣 Plata o Plomo",  price: 22.90, desc: "3 piezas broaster + papas + ensalada + cremas → 1 salsa" },
-          { id: 62, name: "👑 El Capo",        price: 23.90, desc: "2 piezas broaster + papas + ensalada + chaufa → 1 salsa" },
-          { id: 63, name: "🕶 El Informante",  price: 17.90, desc: "Pechuga plancha + papas + ensalada + cremas → 1 salsa" },
+          { id: 60, name: "🔫 El Sicario",      price: 18.90, desc: "2 piezas broaster + papas + ensalada + cremas → 1 salsa", image: "el-sicario.png" },
+          { id: 61, name: "💣 Plata o Plomo",  price: 22.90, desc: "3 piezas broaster + papas + ensalada + cremas → 1 salsa", image: "plata-o-plomo.png" },
+          { id: 62, name: "👑 El Capo",        price: 23.90, desc: "2 piezas broaster + papas + ensalada + chaufa → 1 salsa", image: "el-capo.png" },
+          { id: 63, name: "🕶 El Informante",  price: 17.90, desc: "Pechuga plancha + papas + ensalada + cremas → 1 salsa", image: "el-informante.png" },
           { id: 66, name: "Chaufa Medellín",  price: 16.00, desc: "Chaufa especial + papas + ensalada + cremas → 1 salsa", image: "Chaufa-Medellin.png" },
           { id: 67, name: "Chaufi Lomo Saltado Ochoa", price: 20.00, desc: "Chaufa + lomo saltado + papas + ensalada + cremas → 1 salsa", image: "Chaufi-Lomo-Saltado-Ochoa.png" }
         ]
@@ -1734,45 +1841,67 @@ function deepCopy(obj){
         sauceMode: "single",
         footerText: "Usa este agregado cuando quieras sumar 1 presa broaster extra.",
         items: [
-          { id: 65, name: "Presa broaster extra (1 und)", price: 6.00, desc: "Agrega una presa extra al pedido" }
+          { id: 65, name: "Presa broaster extra (1 und)", price: 6.00, desc: "Agrega una presa extra al pedido", image: "cat-cartel.png" }
+        ]
+      },
+      {
+        anchorId: "torres",
+        name: "🗼 Torres del Cartel",
+        image: "cat-torres.png",
+        sauceMode: "multi",
+        footerText: "Torres brutales para compartir. Elige las salsas antes de agregar al pedido.",
+        items: [
+          { id: 73, name: "Torre Medellín", price: 42.90, desc: "7 alitas + porción de tequeños + porción de papa familiar + salsas + cremas + ensalada", image: "torre-medellin.png" },
+          { id: 74, name: "Torre Nápoles", price: 59.90, desc: "10 piezas de alitas + trocitos de pollo broaster + porción de tequeños + porción de papas + salsas + cremas + ensalada", image: "torre-napoles.png" },
+          { id: 75, name: "Torre Cali", price: 44.90, desc: "5 piezas broaster + porción de tequeños + porción de papa + salsas + cremas + ensalada", image: "torre-cali.png" }
         ]
       },
       {
         anchorId: "extras",
-        name: "Papas, cremas y extras ➕",
+        name: "🍟 Papas, cremas y extras",
         image: "cat-extras.png",
         sauceMode: "none",
         items: [
-          { id: 23, name: "Porción de chaufa",                 price: 6,  desc: "" },
-          { id: 24, name: "Porción de papas",                  price: 6,  desc: "Equivale a 2 porciones de 170g" },
-          { id: 25, name: "Porción de ensalada",               price: 4,  desc: "" },
-          { id: 26, name: "Porción de chorizo",                price: 5,  desc: "" },
-          { id: 27, name: "Porción de hotdog",                 price: 4,  desc: "" },
-          { id: 28, name: "Huevo extra",                       price: 3,  desc: "" },
-          { id: 39, name: "Ají adicional",                     price: 1,  desc: "" },
-          { id: 40, name: "Mayonesa adicional",                price: 1,  desc: "" },
-          { id: 41, name: "Ketchup adicional",                 price: 1,  desc: "" }
+          { id: 23, name: "Porción de chaufa",                 price: 6,  desc: "", image: "porcion-chaufa.png" },
+          { id: 24, name: "Porción de papas",                  price: 6,  desc: "Equivale a 2 porciones de 170g", image: "porcion-papas.png" },
+          { id: 25, name: "Porción de ensalada",               price: 4,  desc: "", image: "porcion-ensalada.png" },
+          { id: 26, name: "Porción de chorizo",                price: 5,  desc: "", image: "porcion-chorizo.png" },
+          { id: 27, name: "Porción de hotdog",                 price: 4,  desc: "", image: "porcion-hotdog.png" },
+          { id: 28, name: "Huevo extra",                       price: 3,  desc: "", image: "huevo-extra.png" },
+          { id: 39, name: "Ají adicional",                     price: 1,  desc: "", image: "aji-adicional.png" },
+          { id: 40, name: "Mayonesa adicional",                price: 1,  desc: "", image: "mayonesa-adicional.png" },
+          { id: 41, name: "Ketchup adicional",                 price: 1,  desc: "", image: "ketchup-adicional.png" }
         ]
       },
-     {
-  anchorId: "bebidas",
-  name: "🥤 Bebidas",
-  image: null,
-  sauceMode: "none",
-  items: [
-    { id: 37, name: "Gaseosa 1L Coca Cola / Inca Kola",           price: 10.0, desc: "", image: "bebida-gaseosa-1l.png" },
-    { id: 35, name: "Gaseosa 600ml Coca Cola / Inca Kola",        price: 4.5, desc: "", image: "bebida-gaseosa-600ml.png" },
-    { id: 42, name: "Gaseosa vidrio 296ml Coca Cola / Inca Kola", price: 2.5, desc: "", image: "bebida-gaseosa-vidrio-296ml.png" },
-
-    { id: 31, name: "Jarra de chicha 1L",                        price: 10,  desc: "", image: "Jarra de chicha 1L.png" },
-    { id: 30, name: "Jarra de maracuyá 1L",                      price: 10,  desc: "", image: "Jarra de maracuyá 1L.png", imageFallbacks: ["Jarra de maracuya 1L.png"] },
-    { id: 45, name: "Vaso de chicha",                            price: 3.0, desc: "", image: "Vaso de chicha.png" },
-    { id: 38, name: "Vaso de hielo",                             price: 3.0, desc: "", image: "Vaso de hielo.png" },
-    { id: 44, name: "Vaso de maracuyá",                          price: 3.0, desc: "", image: "Vaso de maracuyá.png", imageFallbacks: ["Vaso de maracuya.png"] },
-    { id: 29, name: "Limonada frozen 1L",                        price: 10,  desc: "", image: "Limonada frozen 1L.jpg", imageFallbacks: ["Limonada frozen 1L.png"] },
-    { id: 32, name: "Agua mineral",                              price: 3.0, desc: "", image: "bebida-agua-mineral.png" }
-  ]
-}
+      {
+        anchorId: "bebidas",
+        name: "🥤 Bebidas, Tragos y Frappés",
+        image: "cat-bebidas.png",
+        sauceMode: "none",
+        items: [
+          { id: 37, name: "Gaseosa 1L Coca Cola / Inca Kola",           price: 10.0, desc: "", image: "bebida-gaseosa-1l.png" },
+          { id: 35, name: "Gaseosa 600ml Coca Cola / Inca Kola",        price: 4.5, desc: "", image: "bebida-gaseosa-600ml.png" },
+          { id: 42, name: "Gaseosa vidrio 296ml Coca Cola / Inca Kola", price: 2.5, desc: "", image: "bebida-gaseosa-vidrio-296ml.png" },
+          { id: 31, name: "Jarra de chicha 1L",                        price: 10,  desc: "", image: "Jarra de chicha 1L.png" },
+          { id: 30, name: "Jarra de maracuyá 1L",                      price: 10,  desc: "", image: "Jarra de maracuyá 1L.png", imageFallbacks: ["Jarra de maracuya 1L.png"] },
+          { id: 45, name: "Vaso de chicha",                            price: 3.0, desc: "", image: "Vaso de chicha.png" },
+          { id: 38, name: "Vaso de hielo",                             price: 3.0, desc: "", image: "Vaso de hielo.png" },
+          { id: 44, name: "Vaso de maracuyá",                          price: 3.0, desc: "", image: "Vaso de maracuyá.png", imageFallbacks: ["Vaso de maracuya.png"] },
+          { id: 29, name: "Limonada frozen 1L",                        price: 10,  desc: "", image: "Limonada frozen 1L.jpg", imageFallbacks: ["Limonada frozen 1L.png"] },
+          { id: 32, name: "Agua mineral",                              price: 3.0, desc: "", image: "bebida-agua-mineral.png" },
+          { id: 80, name: "Caramel Coffee Frappé",                     price: 11.0, desc: "Frappé de café con caramelo y chantilly", image: "frappe-caramelo.png" },
+          { id: 81, name: "Strawberry Dream Frappé",                   price: 12.0, desc: "Frappé de fresa con chantilly", image: "frappe-fresa.png" },
+          { id: 82, name: "Oreo Cookies & Cream Frappé",               price: 13.0, desc: "Frappé de Oreo con chantilly", image: "frappe-oreo.png" },
+          { id: 83, name: "Mojito",                                    price: 13.0, desc: "Refrescante con hierbabuena y limón", image: "mojito.png" },
+          { id: 84, name: "Caipiroska de Fresa",                       price: 14.0, desc: "Trago frozen de fresa", image: "caipiroska-fresa.png" },
+          { id: 85, name: "Lemon Whisky",                              price: 12.0, desc: "Whisky con toque cítrico", image: "lemon-whisky.png" },
+          { id: 86, name: "Laguna Azul",                               price: 13.0, desc: "Trago azul refrescante", image: "laguna-azul.png" },
+          { id: 87, name: "Tinto de Verano",                           price: 12.0, desc: "Tinto frío con sabor refrescante", image: "tinto-verano.png" },
+          { id: 88, name: "Promo 2 Frappés Caramelo",                  price: 22.0, desc: "2 frappés de caramelo con chantilly", image: "promo-2-frappes.png" },
+          { id: 89, name: "Promo 2 Mojitos",                           price: 25.0, desc: "2 mojitos refrescantes", image: "promo-2-mojitos.png" },
+          { id: 90, name: "Promo 2 Lemon Whisky o Tinto de Verano",     price: 24.0, desc: "Elige Lemon Whisky o Tinto de Verano", image: "promo-2-lemon-tinto.png" }
+        ]
+      }
     ];
 
     
@@ -1809,11 +1938,14 @@ const menuContainer = document.getElementById("menu");
     }
 
     function getDefaultItemImage(section, item){
-      if (item.image) return item.image;
+      if (item.cardImg || item.image) return item.cardImg || item.image;
+      if (section.anchorId === "combos") return "cat-combos.png";
+      if (section.anchorId === "torres") return "cat-torres.png";
       if (section.anchorId === "alitas" || section.name.includes("Agregado de alitas")) return "alitas-acevichada.png";
       if (section.anchorId === "hamburguesas") return "BURGER 2.jpg";
       if (section.anchorId === "cartel" || section.name.includes("broaster") || section.name.includes("Broaster")) return "MOSTRITO BROSTER.jpg";
       if (section.anchorId === "extras") return "cat-extras.png";
+      if (section.anchorId === "bebidas") return "cat-bebidas.png";
       return section.image || "";
     }
 
@@ -2061,11 +2193,12 @@ const menuContainer = document.getElementById("menu");
 
     function resetCardAfterAdd(card, section, item, qtyInput, brandSel){
       qtyInput.value = "1";
+      const effectiveSauceMode = item.sauceMode || section.sauceMode;
 
       const qtyText = card.querySelector(".qty-stepper span");
       if (qtyText) qtyText.textContent = "1";
 
-      if (section.sauceMode === "multi") {
+      if (effectiveSauceMode === "multi") {
         card.querySelectorAll(`input[name="salsa-${item.id}"]`).forEach(el => el.checked = false);
         const aparteCb = card.querySelector(`input[name="salsa-aparte-${item.id}"]`);
         if (aparteCb) aparteCb.checked = false;
@@ -2074,7 +2207,7 @@ const menuContainer = document.getElementById("menu");
         refreshSauceSummary(card, item, getSauceMaxForItemName(item.name));
       }
 
-      if (section.sauceMode === "single") {
+      if (effectiveSauceMode === "single") {
         const sel = card.querySelector(`select[name="salsa-select-${item.id}"]`);
         if (sel) sel.value = "";
       }
@@ -2136,11 +2269,13 @@ const menuContainer = document.getElementById("menu");
           card.appendChild(desc);
         }
 
-        if (section.sauceMode === "multi") {
+        const effectiveSauceMode = item.sauceMode || section.sauceMode;
+
+        if (effectiveSauceMode === "multi") {
           createMultiSauceUI(card, section, item);
         }
 
-        if (section.sauceMode === "single") {
+        if (effectiveSauceMode === "single") {
           createSingleSauceUI(card, section, item);
         }
 
@@ -2173,7 +2308,7 @@ const menuContainer = document.getElementById("menu");
           let selectedBrand = null;
           let noSauce = false;
 
-          if (section.sauceMode === "multi") {
+          if (effectiveSauceMode === "multi") {
             const noSauceCb = card.querySelector(`input[name="salsa-none-${item.id}"]`);
             noSauce = !!(noSauceCb && noSauceCb.checked);
 
@@ -2200,7 +2335,7 @@ const menuContainer = document.getElementById("menu");
             if (noSauce) sauceApart = false;
           }
 
-          if (section.sauceMode === "single") {
+          if (effectiveSauceMode === "single") {
             const sel = card.querySelector(`select[name="salsa-select-${item.id}"]`);
             if (!sel || !sel.value) {
               alert(`Elige una opción de salsa para "${item.name}".`);
@@ -3575,7 +3710,7 @@ ensureBoletaCreated();;
           wingsPieces += getWingsPiecesPerUnit(id) * qty;
           broasterPieces += getBroasterPiecesPerUnit(id) * qty;
 
-          if (isBurgerId(id)) burgerUnits += qty;
+          burgerUnits += getBurgerUnitsPerUnit(id) * qty;
         });
 
         wingsPieces += safeInt(r.rewardFreeWings);
