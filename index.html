@@ -2981,6 +2981,14 @@ function isItemCountsForTaper(id){ return !DRINK_IDS.includes(Number(id)) && !SA
 function getTaperPerUnit(id){
   id = Number(id);
   if (id === EXTRA_WING_ID) return 0;
+
+  // Combos y promociones: empaques para delivery / recojo en local.
+  if (id === 68) return 2; // Miércoles de Burger
+  if (id === 69) return 2; // Jueves de Patas
+  if (id === 70) return 2; // Combo Pareja Burger
+  if (id === 71) return 5; // Combo Familiar
+  if (id === 72) return 3; // Combo Broaster Martes y Jueves
+
   if (id === 21 || id === 3) return 2;
   if (id === 4) return 3;
   if (id === 5) return 4;
