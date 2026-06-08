@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ingresar - El Patrón del Mal</title>
+  <title>Ingresar - Ruleta VIP El Patrón del Mal</title>
 
   <style>
     :root{
@@ -490,7 +490,7 @@
   <main class="page">
     <section class="top-brand">
       <h1>El Patrón del Mal</h1>
-      <p>Tarjeta virtual de sellos y premios</p>
+      <p>Ruleta VIP de puntos y premios</p>
     </section>
 
     <section class="credit-card">
@@ -512,18 +512,18 @@
         <div class="chip-row">
           <div class="chip"></div>
           <div class="card-label">
-            Acceso<br><b>Cliente VIP</b>
+            Acceso<br><b>Ruleta VIP</b>
           </div>
         </div>
 
         <div class="card-bottom">
           <div class="card-data">
-            <div class="label">Tarjeta virtual</div>
+            <div class="label">Club VIP</div>
             <div class="value number">**** **** **** 2026</div>
           </div>
           <div class="card-data">
-            <div class="label">Club</div>
-            <div class="value">Premios</div>
+            <div class="label">Beneficio</div>
+            <div class="value">Puntos</div>
           </div>
         </div>
       </div>
@@ -531,7 +531,7 @@
 
     <section class="form-card">
       <h2 class="form-title">Ingresar</h2>
-      <p class="form-subtitle">Accede a tu tarjeta virtual para ver tus sellos y premios.</p>
+      <p class="form-subtitle">Accede a tu Ruleta VIP para ver tus puntos, giros y premios.</p>
 
       <label for="celular">Celular</label>
       <input
@@ -559,13 +559,13 @@
         <button type="button" class="toggle-pass" id="togglePassword" aria-label="Mostrar contraseña">👁</button>
       </div>
 
-      <button id="btnLogin" class="login-btn">Entrar a mi tarjeta</button>
+      <button id="btnLogin" class="login-btn">Entrar a mi Ruleta VIP</button>
 
       <div id="msgOk" class="msg ok"></div>
       <div id="msgErr" class="msg err"></div>
 
       <div class="mini">
-        Ingresa para ver tus sellos acumulados y premios disponibles.
+        Ingresa para ver tus puntos, girar la ruleta y reclamar premios.
       </div>
 
       <div class="link-register">
@@ -637,9 +637,9 @@
 
         localStorage.setItem(TOKEN_KEY, data.token);
 
-        showOk("Ingreso correcto. Abriendo tu tarjeta...");
+        showOk("Ingreso correcto. Abriendo tu Ruleta VIP...");
         setTimeout(() => {
-          window.location.href = "/tarjeta.html";
+          window.location.href = "/ruleta.html";
         }, 1000);
 
       } catch (err) {
