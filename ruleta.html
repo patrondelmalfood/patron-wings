@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tragamonedas VIP - El Patrón del Mal</title>
+  <title>VIP Slot - El Patrón del Mal</title>
 
   <style>
     :root{
@@ -17,7 +17,6 @@
       --ok:#16a34a;
       --bad:#dc2626;
       --red:#ef4444;
-      --blue:#38bdf8;
     }
 
     *{ box-sizing:border-box; }
@@ -62,7 +61,7 @@
 
     .top{
       text-align:center;
-      margin:4px 0 16px;
+      margin:4px 0 14px;
     }
 
     .logo{
@@ -79,11 +78,11 @@
     .top h1{
       margin:0;
       color:var(--gold);
-      font-size:clamp(28px, 6vw, 52px);
+      font-size:clamp(30px, 6vw, 54px);
       line-height:.95;
       text-transform:uppercase;
       text-shadow:0 0 9px rgba(250,204,21,.50), 0 0 26px rgba(255,159,28,.28);
-      letter-spacing:.7px;
+      letter-spacing:4px;
     }
 
     .top p{
@@ -95,13 +94,14 @@
 
     .msg{
       display:none;
-      margin:10px auto 14px;
-      max-width:780px;
-      padding:12px 14px;
-      border-radius:15px;
-      font-size:14px;
-      line-height:1.4;
-      font-weight:800;
+      margin:8px auto 12px;
+      max-width:680px;
+      padding:10px 13px;
+      border-radius:14px;
+      font-size:13px;
+      line-height:1.35;
+      font-weight:900;
+      text-align:center;
     }
 
     .msg.ok{
@@ -113,9 +113,10 @@
 
     .msg.err{
       display:block;
-      background:#450a0a;
-      border:1px solid var(--bad);
+      background:rgba(69,10,10,.92);
+      border:1px solid rgba(239,68,68,.75);
       color:#fecaca;
+      box-shadow:0 0 18px rgba(239,68,68,.12);
     }
 
     .layout{
@@ -224,19 +225,73 @@
 
     .slot-machine{
       position:relative;
-      width:min(450px, 90vw);
+      width:min(460px, 90vw);
       margin:8px auto 18px;
-      padding:18px 18px 22px;
-      border-radius:34px;
-      border:3px solid rgba(250,204,21,.88);
+      padding:20px 18px 22px;
+      border-radius:36px;
+      border:3px solid rgba(250,204,21,.95);
       background:
-        radial-gradient(circle at top, rgba(250,204,21,.20), transparent 36%),
+        radial-gradient(circle at top, rgba(250,204,21,.22), transparent 36%),
         linear-gradient(180deg, #3b0a0a 0%, #991b1b 45%, #450a0a 100%);
       box-shadow:
         0 28px 60px rgba(0,0,0,.62),
-        0 0 38px rgba(250,204,21,.20),
+        0 0 40px rgba(250,204,21,.22),
+        0 0 80px rgba(255,159,28,.10),
         inset 0 0 0 2px rgba(255,255,255,.06);
       overflow:visible;
+    }
+
+    .slot-machine.win-flash{
+      animation:machineWin .7s ease-in-out 2;
+    }
+
+    .slot-machine.lose-flash{
+      animation:machineLose .55s ease-in-out 1;
+    }
+
+    @keyframes machineWin{
+      0%,100%{ box-shadow:0 28px 60px rgba(0,0,0,.62), 0 0 40px rgba(250,204,21,.22); }
+      50%{ box-shadow:0 28px 60px rgba(0,0,0,.62), 0 0 70px rgba(250,204,21,.65), 0 0 110px rgba(255,255,255,.16); }
+    }
+
+    @keyframes machineLose{
+      0%,100%{ transform:translateX(0); }
+      25%{ transform:translateX(-4px); }
+      75%{ transform:translateX(4px); }
+    }
+
+    .casino-lights{
+      position:absolute;
+      left:20px;
+      right:20px;
+      top:-13px;
+      display:flex;
+      justify-content:space-between;
+      pointer-events:none;
+    }
+
+    .casino-lights.bottom{
+      top:auto;
+      bottom:-13px;
+    }
+
+    .casino-lights span{
+      width:13px;
+      height:13px;
+      border-radius:50%;
+      background:#fde047;
+      box-shadow:0 0 13px rgba(250,204,21,.85);
+      animation:bulbBlink .9s infinite alternate;
+    }
+
+    .casino-lights span:nth-child(even){
+      animation-delay:.35s;
+      background:#fff7ad;
+    }
+
+    @keyframes bulbBlink{
+      from{ opacity:.35; transform:scale(.85); }
+      to{ opacity:1; transform:scale(1.1); }
     }
 
     .slot-machine::before{
@@ -304,9 +359,9 @@
       top:50%;
       height:74px;
       transform:translateY(-50%);
-      background:rgba(250,204,21,.09);
-      border-top:1px solid rgba(250,204,21,.26);
-      border-bottom:1px solid rgba(250,204,21,.26);
+      background:rgba(250,204,21,.10);
+      border-top:1px solid rgba(250,204,21,.32);
+      border-bottom:1px solid rgba(250,204,21,.32);
       pointer-events:none;
       z-index:3;
     }
@@ -425,10 +480,10 @@
       height:76px;
       transform:translateY(-50%);
       border-radius:18px;
-      border:2px solid rgba(250,204,21,.55);
+      border:2px solid rgba(250,204,21,.62);
       box-shadow:
-        0 0 18px rgba(250,204,21,.22),
-        inset 0 0 18px rgba(250,204,21,.10);
+        0 0 18px rgba(250,204,21,.26),
+        inset 0 0 18px rgba(250,204,21,.12);
       z-index:4;
       pointer-events:none;
     }
@@ -490,14 +545,15 @@
       border:0;
       border-radius:20px;
       background:
-        radial-gradient(circle at 30% 10%, rgba(255,255,255,.40), transparent 22%),
+        radial-gradient(circle at 30% 10%, rgba(255,255,255,.42), transparent 22%),
         linear-gradient(180deg, #fde047, #facc15);
       color:#111827;
       font-weight:900;
       font-size:19px;
       cursor:pointer;
       box-shadow:
-        0 14px 28px rgba(250,204,21,.20),
+        0 14px 28px rgba(250,204,21,.25),
+        0 0 24px rgba(250,204,21,.15),
         inset 0 0 0 1px rgba(255,255,255,.35);
       transition:transform .15s ease, box-shadow .15s ease, opacity .15s ease;
       text-transform:uppercase;
@@ -507,47 +563,63 @@
     .spin-btn:hover:not(:disabled){
       transform:translateY(-2px);
       box-shadow:
-        0 18px 34px rgba(250,204,21,.28),
-        0 0 24px rgba(250,204,21,.18),
+        0 18px 34px rgba(250,204,21,.32),
+        0 0 28px rgba(250,204,21,.22),
         inset 0 0 0 1px rgba(255,255,255,.45);
     }
 
     .spin-btn:disabled{
-      opacity:.55;
+      opacity:.62;
       cursor:not-allowed;
       box-shadow:none;
+      background:linear-gradient(180deg, #a16207, #854d0e);
+      color:#fff7cc;
     }
 
     .slot-mini{
       color:#fef3c7;
       font-size:12px;
       line-height:1.35;
-      font-weight:800;
+      font-weight:900;
     }
 
     .result-box{
       display:none;
       margin-top:14px;
-      padding:14px;
-      border-radius:18px;
-      background:rgba(0,0,0,.30);
-      border:1px solid rgba(250,204,21,.24);
-      text-align:left;
+      padding:16px;
+      border-radius:20px;
+      background:
+        radial-gradient(circle at top, rgba(250,204,21,.08), transparent 40%),
+        rgba(0,0,0,.36);
+      border:1px solid rgba(250,204,21,.28);
+      text-align:center;
     }
 
     .result-box.show{ display:block; }
 
+    .result-box.win{
+      border-color:rgba(250,204,21,.55);
+      background:rgba(250,204,21,.08);
+      box-shadow:0 0 20px rgba(250,204,21,.12);
+    }
+
+    .result-box.lose{
+      border-color:rgba(239,68,68,.35);
+      background:rgba(127,29,29,.12);
+    }
+
     .result-title{
       color:var(--gold);
-      font-size:20px;
+      font-size:22px;
       font-weight:900;
-      margin-bottom:7px;
+      margin-bottom:8px;
+      text-transform:uppercase;
     }
 
     .result-detail{
       color:#dbeafe;
       font-size:14px;
-      line-height:1.45;
+      line-height:1.5;
       font-weight:800;
     }
 
@@ -649,20 +721,15 @@
     }
 
     .mini-link{
-      color:#111827;
-      background:var(--gold);
+      color:#e2e8f0;
+      background:#0f172a;
+      border:1px solid #334155;
       text-decoration:none;
       font-weight:900;
       padding:10px 12px;
       border-radius:999px;
       font-size:13px;
       display:inline-flex;
-    }
-
-    .mini-link.dark{
-      color:#e2e8f0;
-      background:#0f172a;
-      border:1px solid #334155;
     }
 
     .prize-overlay{
@@ -853,39 +920,77 @@
     }
 
     @media (max-width:980px){
-      .layout{ grid-template-columns:1fr; }
-      .card{ border-radius:22px; }
-      .lever{ display:none; }
+      .layout{
+        grid-template-columns:1fr;
+      }
+
+      .account-card{ order:1; }
+      .game-card{ order:2; }
+      .ranking-card{ order:3; }
+
+      .card{
+        border-radius:22px;
+      }
+
+      .lever{
+        display:none;
+      }
     }
 
     @media (max-width:430px){
       body{ padding:11px; }
       .logo{ width:76px; height:76px; }
-      .top h1{ font-size:29px; }
+      .top h1{ font-size:29px; letter-spacing:3px; }
+
+      .msg{
+        font-size:12px;
+        padding:9px 11px;
+      }
+
       .slot-machine{
         width:100%;
-        padding:14px 12px 18px;
+        padding:15px 12px 18px;
         border-radius:28px;
       }
+
+      .casino-lights{
+        left:16px;
+        right:16px;
+      }
+
+      .casino-lights span{
+        width:10px;
+        height:10px;
+      }
+
       .slot-title{
         font-size:17px;
       }
+
       .slot-screen{
         padding:10px;
         border-radius:22px;
       }
+
       .reels{
         gap:7px;
       }
+
       .reel{
         height:188px;
         border-radius:17px;
       }
+
       .symbol .emoji{
         font-size:29px;
       }
+
       .symbol .label{
         font-size:8.5px;
+      }
+
+      .spin-btn{
+        font-size:17px;
       }
     }
   </style>
@@ -913,7 +1018,7 @@
     <div id="msgBox" class="msg"></div>
 
     <section class="layout">
-      <aside class="card">
+      <aside class="card account-card">
         <h2>💳 Mi cuenta VIP</h2>
         <div class="client-name" id="clientName">Cargando...</div>
         <div class="client-phone" id="clientPhone">---</div>
@@ -940,15 +1045,23 @@
         </div>
 
         <div class="link-row">
-          <a class="mini-link dark" href="/registro.html">Registro VIP</a>
-          <a class="mini-link dark" href="/login.html">Cambiar cuenta</a>
+          <a class="mini-link" href="/registro.html">Registro VIP</a>
+          <a class="mini-link" href="/login.html">Cambiar cuenta</a>
         </div>
       </aside>
 
-      <main class="card slot-panel">
+      <main class="card slot-panel game-card">
         <h2>🎰 Tragamonedas del Patrón</h2>
 
         <div class="slot-machine" id="slotMachine">
+          <div class="casino-lights">
+            <span></span><span></span><span></span><span></span><span></span><span></span>
+          </div>
+
+          <div class="casino-lights bottom">
+            <span></span><span></span><span></span><span></span><span></span><span></span>
+          </div>
+
           <div class="lever">
             <div class="lever-stick"></div>
             <div class="lever-ball"></div>
@@ -979,9 +1092,9 @@
           </div>
 
           <div class="slot-bottom">
-            <button id="btnSpin" class="spin-btn" disabled>SPIN · 20 puntos</button>
+            <button id="btnSpin" class="spin-btn" disabled>SPIN · 20 PUNTOS</button>
             <div class="slot-mini">
-              Las 3 columnas giran juntas. Luego se detiene la 1, después la 2 y al final la 3.
+              Alinea 3 iguales para ganar.
             </div>
           </div>
         </div>
@@ -992,7 +1105,7 @@
         </div>
       </main>
 
-      <aside class="card">
+      <aside class="card ranking-card">
         <h2>🏆 Ranking VIP</h2>
         <div class="ranking-list" id="rankingList">
           Cargando ranking...
@@ -1075,6 +1188,7 @@
 
     let lastStatus = null;
     let overlayTimer = null;
+    let msgTimer = null;
     let spinIntervals = [];
     let stopTimers = [];
 
@@ -1124,7 +1238,9 @@
       stopSlotAnimation();
       clearStopTimers();
 
+      slotMachine.classList.remove("win-flash", "lose-flash");
       slotMachine.classList.add("pulling");
+
       reelBoxes.forEach(box => {
         box.classList.remove("stopped");
         box.classList.add("spinning");
@@ -1188,13 +1304,28 @@
       }, 500);
     }
 
-    function showMsg(type, text){
+    function normalizeMessage(text){
+      return String(text || "")
+        .replaceAll("girar la ruleta", "jugar el VIP Slot")
+        .replaceAll("girar", "jugar")
+        .replaceAll("Girar", "Jugar");
+    }
+
+    function showMsg(type, text, autoHide = true){
+      clearTimeout(msgTimer);
       msgBox.className = "msg " + type;
-      msgBox.textContent = text;
+      msgBox.textContent = normalizeMessage(text);
       msgBox.style.display = "block";
+
+      if (autoHide) {
+        msgTimer = setTimeout(() => {
+          hideMsg();
+        }, 3500);
+      }
     }
 
     function hideMsg(){
+      clearTimeout(msgTimer);
       msgBox.style.display = "none";
       msgBox.className = "msg";
       msgBox.textContent = "";
@@ -1226,18 +1357,29 @@
     function renderStatus(status){
       lastStatus = status;
 
+      const puntos = Number(status.puntos_disponibles || 0);
+      const giros = Number(status.giros_restantes || 0);
+      const puede = !!status.puede_girar;
+
       clientName.textContent = status.nombre || "Cliente VIP";
       clientPhone.textContent = status.celular || "";
-      availablePoints.textContent = Number(status.puntos_disponibles || 0);
+      availablePoints.textContent = puntos;
       rankingPoints.textContent = Number(status.puntos_ranking || 0);
-      spinsLeft.textContent = Number(status.giros_restantes || 0);
+      spinsLeft.textContent = giros;
 
-      statusMessage.textContent = status.mensaje || "Estado cargado.";
+      statusMessage.textContent = normalizeMessage(status.mensaje || "Estado cargado.");
 
-      btnSpin.disabled = !status.puede_girar;
-      btnSpin.textContent = status.puede_girar
-        ? "SPIN · 20 puntos"
-        : "No puedes jugar ahora";
+      btnSpin.disabled = !puede;
+
+      if (puede) {
+        btnSpin.textContent = "SPIN · 20 PUNTOS";
+      } else if (puntos < 20) {
+        btnSpin.textContent = "NECESITAS 20 PUNTOS";
+      } else if (giros <= 0) {
+        btnSpin.textContent = "SIN JUGADAS HOY";
+      } else {
+        btnSpin.textContent = "NO PUEDES JUGAR AHORA";
+      }
     }
 
     function renderRanking(ranking){
@@ -1303,10 +1445,11 @@
       const token = getToken();
 
       if (!token) {
-        showMsg("err", "No has iniciado sesión. Primero entra con tu cuenta VIP.");
+        showMsg("err", "No has iniciado sesión. Primero entra con tu cuenta VIP.", false);
         btnSpin.disabled = true;
         clientName.textContent = "Sin sesión";
-        statusMessage.textContent = "Inicia sesión para usar el tragamonedas VIP.";
+        statusMessage.textContent = "Inicia sesión para usar el VIP Slot.";
+        btnSpin.textContent = "INICIA SESIÓN";
         return;
       }
 
@@ -1327,7 +1470,7 @@
         renderStatus(data.status || {});
         renderHistory(data.history || []);
       } catch (err) {
-        showMsg("err", "No se pudo cargar tu tragamonedas VIP: " + (err.message || String(err)));
+        showMsg("err", "No se pudo cargar tu VIP Slot: " + (err.message || String(err)));
       }
     }
 
@@ -1406,14 +1549,27 @@
 
       const win = isWinningSpin(spin);
 
-      resultTitle.textContent = win ? "🎉 ¡Ganaste!" : "😢 Sigue intentando";
-      resultDetail.innerHTML = `
-        <b>Resultado:</b> ${spin.prize_name || "-"}<br>
-        ${win ? `<b>Código:</b> ${spin.prize_unique_code || "-"}<br>` : ""}
-        <b>Puntos:</b> ${spin.points_before || 0} → ${spin.points_after || 0}<br>
-        ${win ? "<b>Vence:</b> " + formatDate(spin.expires_at) + "<br>" : ""}
-        ${win ? "Muestra este código al local para reclamar tu premio." : "No salió premio esta vez, pero tu jugada quedó registrada."}
-      `;
+      resultBox.classList.remove("win", "lose");
+      resultBox.classList.add(win ? "win" : "lose");
+
+      slotMachine.classList.remove("win-flash", "lose-flash");
+      slotMachine.classList.add(win ? "win-flash" : "lose-flash");
+
+      resultTitle.textContent = win ? "🎉 ¡GANASTE!" : "😢 SIGUE INTENTANDO";
+
+      resultDetail.innerHTML = win
+        ? `
+          <b>Premio:</b> ${spin.prize_name || "-"}<br>
+          <b>Código:</b> ${spin.prize_unique_code || "-"}<br>
+          <b>Puntos:</b> ${spin.points_before || 0} → ${spin.points_after || 0}<br>
+          <b>Vence:</b> ${formatDate(spin.expires_at)}<br>
+          Muestra este código al local para reclamar tu premio.
+        `
+        : `
+          <b>Esta vez no salió premio.</b><br>
+          <b>Puntos:</b> ${spin.points_before || 0} → ${spin.points_after || 0}<br>
+          Tu jugada quedó registrada. Puedes intentar nuevamente si tienes puntos.
+        `;
 
       showPrizeOverlay(spin);
 
@@ -1454,7 +1610,7 @@
 
     btnSpin.addEventListener("click", async () => {
       hideMsg();
-      resultBox.classList.remove("show");
+      resultBox.classList.remove("show", "win", "lose");
 
       const token = getToken();
       if (!token) {
@@ -1465,7 +1621,7 @@
       const spinStartedAt = Date.now();
 
       btnSpin.disabled = true;
-      btnSpin.textContent = "Girando...";
+      btnSpin.textContent = "GIRANDO...";
       startSlotAnimation();
 
       try {
@@ -1494,10 +1650,7 @@
         showMsg("err", "Error al jugar: " + (err.message || String(err)));
       } finally {
         setTimeout(() => {
-          if (lastStatus && lastStatus.puede_girar) {
-            btnSpin.disabled = false;
-            btnSpin.textContent = "SPIN · 20 puntos";
-          }
+          loadStatus();
         }, STOP_REEL_3 + RESTORE_EXTRA_DELAY);
       }
     });
