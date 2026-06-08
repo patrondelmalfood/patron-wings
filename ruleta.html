@@ -18,7 +18,6 @@
       --bad:#dc2626;
       --red:#ef4444;
       --blue:#38bdf8;
-      --spin-duration:5.8s;
     }
 
     *{ box-sizing:border-box; }
@@ -45,7 +44,7 @@
         linear-gradient(45deg, rgba(255,255,255,.025) 25%, transparent 25%),
         linear-gradient(-45deg, rgba(255,255,255,.025) 25%, transparent 25%),
         linear-gradient(45deg, transparent 75%, rgba(255,255,255,.025) 75%),
-        linear-gradient(-45deg, rgba(255,255,255,.025) 75%, transparent 75%);
+        linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.025) 75%);
       background-size:30px 30px;
       background-position:0 0,0 15px,15px -15px,-15px 0;
       opacity:.55;
@@ -289,8 +288,7 @@
       position:relative;
       padding:15px;
       border-radius:26px;
-      background:
-        linear-gradient(180deg, #111827, #020617);
+      background:linear-gradient(180deg, #111827, #020617);
       border:4px solid rgba(0,0,0,.60);
       box-shadow:
         inset 0 0 20px rgba(0,0,0,.85),
@@ -335,6 +333,20 @@
       position:relative;
     }
 
+    .reel.stopped{
+      animation:reelStopPop .25s ease-out;
+      border-color:rgba(250,204,21,.75);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,.30),
+        0 0 22px rgba(250,204,21,.20);
+    }
+
+    @keyframes reelStopPop{
+      0%{ transform:scale(.98); }
+      60%{ transform:scale(1.025); }
+      100%{ transform:scale(1); }
+    }
+
     .reel::before,
     .reel::after{
       content:"";
@@ -373,6 +385,10 @@
       border-bottom:1px solid rgba(15,23,42,.12);
       background:rgba(255,255,255,.35);
       transition:transform .12s ease, filter .12s ease;
+    }
+
+    .symbol.middle{
+      background:linear-gradient(180deg, #fff7cc, #fde68a);
     }
 
     .symbol .emoji{
@@ -965,7 +981,7 @@
           <div class="slot-bottom">
             <button id="btnSpin" class="spin-btn" disabled>SPIN · 20 puntos</button>
             <div class="slot-mini">
-              El resultado real lo decide el sistema seguro. La máquina solo muestra la animación.
+              Se detiene columna 1, luego columna 2 y al final columna 3. El premio real lo decide el sistema seguro.
             </div>
           </div>
         </div>
@@ -994,9 +1010,12 @@
 
   <script>
     const TOKEN_KEY = "pdm_customer_token";
-    const SPIN_DURATION = 5800;
-    const RESULT_DELAY = SPIN_DURATION + 350;
-    const RESTORE_DELAY = SPIN_DURATION + 850;
+
+    const STOP_REEL_1 = 4000;
+    const STOP_REEL_2 = 5000;
+    const STOP_REEL_3 = 5000;
+    const RESULT_EXTRA_DELAY = 600;
+    const RESTORE_EXTRA_DELAY = 1200;
 
     const SYMBOLS = [
       { code:"NO_1", name:"Sigue intentando", short:"Sigue", emoji:"😢", noPrize:true },
@@ -1031,11 +1050,14 @@
     const reel1 = document.querySelector("#reel1 .reel-inner");
     const reel2 = document.querySelector("#reel2 .reel-inner");
     const reel3 = document.querySelector("#reel3 .reel-inner");
+
     const reelBoxes = [
       document.getElementById("reel1"),
       document.getElementById("reel2"),
       document.getElementById("reel3")
     ];
+
+    const reelInners = [reel1, reel2, reel3];
 
     const resultBox = document.getElementById("resultBox");
     const resultTitle = document.getElementById("resultTitle");
@@ -1054,6 +1076,7 @@
     let lastStatus = null;
     let overlayTimer = null;
     let spinIntervals = [];
+    let stopTimers = [];
 
     function getSymbolByCode(code){
       return SYMBOLS.find(item => item.code === code) || SYMBOLS[0];
@@ -1063,9 +1086,19 @@
       return SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
     }
 
-    function symbolHtml(symbol){
+    function randomPrizeSymbol(){
+      const prizes = SYMBOLS.filter(item => !item.noPrize);
+      return prizes[Math.floor(Math.random() * prizes.length)];
+    }
+
+    function randomDifferentSymbol(baseCode){
+      const options = SYMBOLS.filter(item => item.code !== baseCode);
+      return options[Math.floor(Math.random() * options.length)];
+    }
+
+    function symbolHtml(symbol, isMiddle = false){
       return `
-        <div class="symbol">
+        <div class="symbol ${isMiddle ? "middle" : ""}">
           <div class="emoji">${symbol.emoji}</div>
           <div class="label">${symbol.short}</div>
         </div>
@@ -1073,7 +1106,7 @@
     }
 
     function renderReel(reel, symbols){
-      reel.innerHTML = symbols.map(symbolHtml).join("");
+      reel.innerHTML = symbols.map((symbol, index) => symbolHtml(symbol, index === 1)).join("");
     }
 
     function renderInitialReels(){
@@ -1082,45 +1115,77 @@
       renderReel(reel3, [getSymbolByCode("NUGGETS"), getSymbolByCode("DELIVERY_GRATIS"), getSymbolByCode("PLATO_ALITAS")]);
     }
 
+    function clearStopTimers(){
+      stopTimers.forEach(clearTimeout);
+      stopTimers = [];
+    }
+
     function startSlotAnimation(){
       stopSlotAnimation();
+      clearStopTimers();
 
       slotMachine.classList.add("pulling");
-      reelBoxes.forEach(box => box.classList.add("spinning"));
+      reelBoxes.forEach(box => {
+        box.classList.remove("stopped");
+        box.classList.add("spinning");
+      });
 
-      const reels = [reel1, reel2, reel3];
-
-      reels.forEach((reel, index) => {
+      reelInners.forEach((reel, index) => {
         const interval = setInterval(() => {
           renderReel(reel, [randomSymbol(), randomSymbol(), randomSymbol()]);
-        }, 70 + index * 25);
+        }, 60 + index * 18);
 
-        spinIntervals.push(interval);
+        spinIntervals[index] = interval;
       });
     }
 
     function stopSlotAnimation(){
       spinIntervals.forEach(clearInterval);
       spinIntervals = [];
+      clearStopTimers();
+
       slotMachine.classList.remove("pulling");
-      reelBoxes.forEach(box => box.classList.remove("spinning"));
+      reelBoxes.forEach(box => {
+        box.classList.remove("spinning");
+      });
     }
 
-    function setFinalReels(spin){
+    function buildFinalMiddleSymbols(spin){
       const target = getSymbolByCode(spin.prize_code);
       const win = isWinningSpin(spin);
 
       if (win) {
-        renderReel(reel1, [randomSymbol(), target, randomSymbol()]);
-        renderReel(reel2, [randomSymbol(), target, randomSymbol()]);
-        renderReel(reel3, [randomSymbol(), target, randomSymbol()]);
-        return;
+        return [target, target, target];
       }
 
       const sad = getSymbolByCode("NO_1");
-      renderReel(reel1, [randomSymbol(), sad, randomSymbol()]);
-      renderReel(reel2, [randomSymbol(), randomSymbol(), randomSymbol()]);
-      renderReel(reel3, [randomSymbol(), sad, randomSymbol()]);
+      const different = randomPrizeSymbol();
+
+      return [sad, different, sad];
+    }
+
+    function stopSingleReel(index, middleSymbol){
+      const interval = spinIntervals[index];
+
+      if (interval) {
+        clearInterval(interval);
+        spinIntervals[index] = null;
+      }
+
+      const reel = reelInners[index];
+      const box = reelBoxes[index];
+
+      const top = randomDifferentSymbol(middleSymbol.code);
+      const bottom = randomDifferentSymbol(middleSymbol.code);
+
+      renderReel(reel, [top, middleSymbol, bottom]);
+
+      box.classList.remove("spinning");
+      box.classList.add("stopped");
+
+      setTimeout(() => {
+        box.classList.remove("stopped");
+      }, 500);
     }
 
     function showMsg(type, text){
@@ -1359,6 +1424,34 @@
       }
     }
 
+    function scheduleReelStops(spin, spinStartedAt){
+      const finalSymbols = buildFinalMiddleSymbols(spin);
+
+      function delayFromStart(ms){
+        return Math.max(0, ms - (Date.now() - spinStartedAt));
+      }
+
+      stopTimers.push(setTimeout(() => {
+        stopSingleReel(0, finalSymbols[0]);
+      }, delayFromStart(STOP_REEL_1)));
+
+      stopTimers.push(setTimeout(() => {
+        stopSingleReel(1, finalSymbols[1]);
+      }, delayFromStart(STOP_REEL_2)));
+
+      stopTimers.push(setTimeout(() => {
+        stopSingleReel(2, finalSymbols[2]);
+        slotMachine.classList.remove("pulling");
+
+        stopTimers.push(setTimeout(async () => {
+          showSpinResult(spin);
+          await loadStatus();
+          await loadRanking();
+        }, RESULT_EXTRA_DELAY));
+
+      }, delayFromStart(STOP_REEL_3)));
+    }
+
     btnSpin.addEventListener("click", async () => {
       hideMsg();
       resultBox.classList.remove("show");
@@ -1368,6 +1461,8 @@
         showMsg("err", "Debes iniciar sesión para jugar.");
         return;
       }
+
+      const spinStartedAt = Date.now();
 
       btnSpin.disabled = true;
       btnSpin.textContent = "Girando...";
@@ -1392,14 +1487,7 @@
         }
 
         const spin = data.spin || {};
-
-        setTimeout(async () => {
-          stopSlotAnimation();
-          setFinalReels(spin);
-          showSpinResult(spin);
-          await loadStatus();
-          await loadRanking();
-        }, RESULT_DELAY);
+        scheduleReelStops(spin, spinStartedAt);
 
       } catch (err) {
         stopSlotAnimation();
@@ -1410,7 +1498,7 @@
             btnSpin.disabled = false;
             btnSpin.textContent = "SPIN · 20 puntos";
           }
-        }, RESTORE_DELAY);
+        }, STOP_REEL_3 + RESTORE_EXTRA_DELAY);
       }
     });
 
