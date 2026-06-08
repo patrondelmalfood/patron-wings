@@ -1,16 +1,25 @@
 import crypto from "crypto";
 
-const TOKEN_SECRET =
-  process.env.TOKEN_SECRET ||
-  "patron_wings_token_seguro_2026_Bela1997_local_845219_x9";
-
-const SUPABASE_URL = "https://defdwzzewzfjuseozwkn.supabase.co";
-
-const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
+const TOKEN_SECRET = process.env.TOKEN_SECRET;
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
 
 function cleanPhone(value) {
   return String(value || "").replace(/\D/g, "").trim();
+}
+
+function checkEnv() {
+  if (!TOKEN_SECRET) {
+    throw new Error("Falta TOKEN_SECRET en variables de entorno.");
+  }
+
+  if (!SUPABASE_URL) {
+    throw new Error("Falta SUPABASE_URL en variables de entorno.");
+  }
+
+  if (!SUPABASE_ANON_KEY) {
+    throw new Error("Falta SUPABASE_ANON_KEY en variables de entorno.");
+  }
 }
 
 function verifyToken(token) {
@@ -62,6 +71,7 @@ async function supabaseRequest(path, options = {}) {
   const text = await response.text();
 
   let data = null;
+
   try {
     data = text ? JSON.parse(text) : null;
   } catch {
@@ -91,7 +101,9 @@ async function findCustomerIdByPhone(phone) {
 
   const rows = await supabaseRequest(
     "/rest/v1/customers?select=id,celular&limit=1000",
-    { method: "GET" }
+    {
+      method: "GET"
+    }
   );
 
   const customer = Array.isArray(rows)
@@ -107,17 +119,21 @@ export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   if (req.method === "OPTIONS") {
-    return res.status(200).json({ ok: true });
+    return res.status(200).json({
+      ok: true
+    });
   }
 
   if (req.method !== "POST") {
     return res.status(405).json({
       ok: false,
-      error: "Método no permitido"
+      error: "Método no permitido."
     });
   }
 
   try {
+    checkEnv();
+
     const auth = req.headers.authorization || "";
     const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
 
@@ -134,13 +150,17 @@ export default async function handler(req, res) {
 
     if (!customerId) {
       customerId = await findCustomerIdByPhone(
-        session.celular || session.phone || session.telefono || ""
+        session.celular ||
+          session.phone ||
+          session.telefono ||
+          session.telefono_cliente ||
+          ""
       );
     }
 
     customerId = Number(customerId);
 
-    if (!customerId) {
+    if (!Number.isFinite(customerId) || customerId <= 0) {
       return res.status(400).json({
         ok: false,
         error: "No se pudo identificar al cliente."
@@ -168,6 +188,8 @@ export default async function handler(req, res) {
       spin
     });
   } catch (err) {
+    console.error("ERROR /api/spin-roulette:", err);
+
     return res.status(500).json({
       ok: false,
       error: "No se pudo jugar el VIP Slot.",
