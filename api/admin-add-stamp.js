@@ -4,15 +4,30 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { celular } = req.body || {};
+    const {
+      celular,
+      puntos,
+      descripcion,
+      referencia
+    } = req.body || {};
+
     const cleanCell = String(celular || "").replace(/\D/g, "").trim();
+    const puntosAgregar = Math.floor(Number(puntos || 0));
 
     if (!cleanCell) {
       return res.status(400).json({ error: "Falta celular" });
     }
 
+    if (!puntosAgregar || puntosAgregar <= 0) {
+      return res.status(400).json({
+        error: "Faltan puntos",
+        detail: "Debes enviar una cantidad de puntos mayor a 0."
+      });
+    }
+
     const SUPABASE_URL = "https://defdwzzewzfjuseozwkn.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
+    const SUPABASE_ANON_KEY =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
 
     const headers = {
       apikey: SUPABASE_ANON_KEY,
@@ -43,9 +58,42 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: "Cliente no encontrado" });
     }
 
+    const descripcionFinal =
+      String(descripcion || "").trim() ||
+      "Puntos por compra: +" + puntosAgregar;
+
+    const referenciaFinal =
+      String(referencia || "").trim() ||
+      "admin_puntos_" + Date.now();
+
+    const rpcRes = await fetch(
+      SUPABASE_URL + "/rest/v1/rpc/vip_admin_add_points",
+      {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          p_customer_id: Number(customer.id),
+          p_puntos: puntosAgregar,
+          p_descripcion: descripcionFinal,
+          p_referencia: referenciaFinal
+        })
+      }
+    );
+
+    if (!rpcRes.ok) {
+      const txt = await rpcRes.text();
+      return res.status(500).json({
+        error: "Error sumando puntos",
+        detail: txt
+      });
+    }
+
+    const rpcRows = await rpcRes.json();
+    const rpcResult = Array.isArray(rpcRows) ? rpcRows[0] : rpcRows;
+
     const cardRes = await fetch(
       SUPABASE_URL +
-        "/rest/v1/loyalty_cards?select=id,customer_id,sellos_actuales,meta_sellos,premio_pendiente&customer_id=eq." +
+        "/rest/v1/loyalty_cards?select=id,customer_id,sellos_actuales,meta_sellos,premio_pendiente,puntos_disponibles,puntos_ranking,sellos_migrados,puntos_migrados_desde_sellos,puntos_actualizados_at&customer_id=eq." +
         encodeURIComponent(customer.id) +
         "&limit=1",
       { headers }
@@ -54,7 +102,7 @@ export default async function handler(req, res) {
     if (!cardRes.ok) {
       const txt = await cardRes.text();
       return res.status(500).json({
-        error: "Error buscando tarjeta",
+        error: "Se sumaron puntos, pero falló cargar tarjeta",
         detail: txt
       });
     }
@@ -63,85 +111,91 @@ export default async function handler(req, res) {
     const card = cardRows && cardRows[0];
 
     if (!card || !card.id) {
-      return res.status(404).json({ error: "Cliente encontrado, pero sin tarjeta" });
-    }
-
-    const currentStamps = Number(card.sellos_actuales || 0);
-    const meta = Math.max(20, Number(card.meta_sellos || 20));
-    const newStamps = Math.min(meta, currentStamps + 1);
-
-    const rewardMilestones = [5, 10, 15, 20];
-    const premioPendiente = Boolean(card.premio_pendiente) || rewardMilestones.includes(newStamps);
-
-    const updateRes = await fetch(
-      SUPABASE_URL +
-        "/rest/v1/loyalty_cards?id=eq." +
-        encodeURIComponent(card.id),
-      {
-        method: "PATCH",
-        headers: {
-          ...headers,
-          Prefer: "return=representation"
-        },
-        body: JSON.stringify({
-          sellos_actuales: newStamps,
-          meta_sellos: meta,
-          premio_pendiente: premioPendiente,
-          ultimo_movimiento_at: new Date().toISOString()
-        })
-      }
-    );
-
-    if (!updateRes.ok) {
-      const txt = await updateRes.text();
-      return res.status(500).json({
-        error: "Error actualizando sellos",
-        detail: txt
+      return res.status(404).json({
+        error: "Se sumaron puntos, pero no se encontró la tarjeta VIP"
       });
     }
 
-    const updatedRows = await updateRes.json();
-    const updated = updatedRows && updatedRows[0];
+    let status = null;
 
-    const movementRes = await fetch(
-      SUPABASE_URL + "/rest/v1/loyalty_movements",
-      {
-        method: "POST",
-        headers: {
-          ...headers,
-          Prefer: "return=representation"
-        },
-        body: JSON.stringify([{
-          customer_id: customer.id,
-          tipo: "sello_sumado",
-          cantidad: 1,
-          nota: "sello agregado desde admin"
-        }])
+    try {
+      const statusRes = await fetch(
+        SUPABASE_URL + "/rest/v1/rpc/vip_get_roulette_status",
+        {
+          method: "POST",
+          headers,
+          body: JSON.stringify({
+            p_customer_id: Number(customer.id)
+          })
+        }
+      );
+
+      if (statusRes.ok) {
+        const statusRows = await statusRes.json();
+        status = Array.isArray(statusRows) ? statusRows[0] : statusRows;
       }
-    );
+    } catch {}
 
-    if (!movementRes.ok) {
-      const txt = await movementRes.text();
-      return res.status(500).json({
-        error: "Se actualizó la tarjeta, pero falló el movimiento",
-        detail: txt
-      });
-    }
+    let rouletteHistory = [];
+
+    try {
+      const historyRes = await fetch(
+        SUPABASE_URL + "/rest/v1/rpc/vip_get_roulette_history",
+        {
+          method: "POST",
+          headers,
+          body: JSON.stringify({
+            p_customer_id: Number(customer.id),
+            p_limit: 20
+          })
+        }
+      );
+
+      if (historyRes.ok) {
+        rouletteHistory = await historyRes.json();
+      }
+    } catch {}
+
+    let pointMovements = [];
+
+    try {
+      const movementsRes = await fetch(
+        SUPABASE_URL +
+          "/rest/v1/vip_point_movements?select=id,customer_id,loyalty_card_id,tipo,puntos,puntos_antes,puntos_despues,puntos_ranking_antes,puntos_ranking_despues,descripcion,referencia,created_at&customer_id=eq." +
+          encodeURIComponent(customer.id) +
+          "&order=created_at.desc&limit=20",
+        { headers }
+      );
+
+      if (movementsRes.ok) {
+        pointMovements = await movementsRes.json();
+      }
+    } catch {}
 
     return res.status(200).json({
       ok: true,
-      message: "Se agregó 1 sello correctamente",
+      message: "Se sumaron " + puntosAgregar + " puntos correctamente.",
       customer: {
         id: customer.id,
         nombre: customer.nombre || "",
         celular: customer.celular || ""
       },
       card: {
-        id: updated.id,
-        sellos_actuales: Number(updated.sellos_actuales || newStamps),
-        meta_sellos: Number(updated.meta_sellos || meta),
-        premio_pendiente: !!updated.premio_pendiente
-      }
+        id: card.id,
+        customer_id: card.customer_id,
+        sellos_actuales: Number(card.sellos_actuales || 0),
+        meta_sellos: Number(card.meta_sellos || 20),
+        premio_pendiente: !!card.premio_pendiente,
+        puntos_disponibles: Number(card.puntos_disponibles || 0),
+        puntos_ranking: Number(card.puntos_ranking || 0),
+        sellos_migrados: !!card.sellos_migrados,
+        puntos_migrados_desde_sellos: Number(card.puntos_migrados_desde_sellos || 0),
+        puntos_actualizados_at: card.puntos_actualizados_at || null
+      },
+      status,
+      rouletteHistory,
+      pointMovements,
+      result: rpcResult || null
     });
   } catch (err) {
     return res.status(500).json({
