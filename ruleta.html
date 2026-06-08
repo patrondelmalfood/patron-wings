@@ -218,6 +218,23 @@
       font-weight:800;
     }
 
+    .order-box{
+      display:none;
+      margin-top:12px;
+      padding:12px;
+      border-radius:18px;
+      background:rgba(250,204,21,.08);
+      border:1px solid rgba(250,204,21,.24);
+      color:#fef3c7;
+      font-size:13px;
+      font-weight:900;
+      line-height:1.35;
+    }
+
+    .order-box.show{
+      display:block;
+    }
+
     .slot-panel{
       text-align:center;
       position:relative;
@@ -583,6 +600,26 @@
       font-weight:900;
     }
 
+    .order-cta{
+      display:none;
+      text-decoration:none;
+      width:100%;
+      padding:14px;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 30% 10%, rgba(255,255,255,.28), transparent 22%),
+        linear-gradient(180deg, #22c55e, #16a34a);
+      color:#052e16;
+      font-weight:900;
+      font-size:15px;
+      text-transform:uppercase;
+      box-shadow:0 12px 25px rgba(34,197,94,.18);
+    }
+
+    .order-cta.show{
+      display:block;
+    }
+
     .result-box{
       display:none;
       margin-top:14px;
@@ -730,6 +767,12 @@
       border-radius:999px;
       font-size:13px;
       display:inline-flex;
+    }
+
+    .mini-link.gold{
+      background:linear-gradient(180deg, #fde047, #facc15);
+      color:#111827;
+      border-color:rgba(255,255,255,.25);
     }
 
     .prize-overlay{
@@ -1044,7 +1087,12 @@
           Consultando tus puntos...
         </div>
 
+        <div id="orderBox" class="order-box">
+          🍔 Haz tu pedido y acumula puntos para jugar.
+        </div>
+
         <div class="link-row">
+          <a class="mini-link gold" href="https://patron-wings.vercel.app/">🍔 Carta principal</a>
           <a class="mini-link" href="/registro.html">Registro VIP</a>
           <a class="mini-link" href="/login.html">Cambiar cuenta</a>
         </div>
@@ -1093,6 +1141,9 @@
 
           <div class="slot-bottom">
             <button id="btnSpin" class="spin-btn" disabled>SPIN · 20 PUNTOS</button>
+            <a id="orderCta" class="order-cta" href="https://patron-wings.vercel.app/">
+              🍔 Hacer pedido y ganar puntos
+            </a>
             <div class="slot-mini">
               Alinea 3 iguales para ganar.
             </div>
@@ -1157,6 +1208,8 @@
     const rankingPoints = document.getElementById("rankingPoints");
     const spinsLeft = document.getElementById("spinsLeft");
     const statusMessage = document.getElementById("statusMessage");
+    const orderBox = document.getElementById("orderBox");
+    const orderCta = document.getElementById("orderCta");
     const btnSpin = document.getElementById("btnSpin");
 
     const slotMachine = document.getElementById("slotMachine");
@@ -1191,6 +1244,78 @@
     let msgTimer = null;
     let spinIntervals = [];
     let stopTimers = [];
+
+    let audioCtx = null;
+    let spinSoundTimer = null;
+
+    function getAudioCtx(){
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        return audioCtx;
+      } catch {
+        return null;
+      }
+    }
+
+    function beep(freq = 600, duration = 0.06, volume = 0.035, type = "square"){
+      const ctx = getAudioCtx();
+      if (!ctx) return;
+
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = type;
+      osc.frequency.value = freq;
+
+      gain.gain.setValueAtTime(volume, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start();
+      osc.stop(ctx.currentTime + duration);
+    }
+
+    function startSpinSound(){
+      stopSpinSound();
+      beep(380, 0.08, 0.03, "square");
+
+      let step = 0;
+
+      spinSoundTimer = setInterval(() => {
+        const notes = [360, 430, 510, 470, 390];
+        beep(notes[step % notes.length], 0.045, 0.018, "square");
+        step++;
+      }, 360);
+    }
+
+    function stopSpinSound(){
+      if (spinSoundTimer) {
+        clearInterval(spinSoundTimer);
+        spinSoundTimer = null;
+      }
+    }
+
+    function playReelStopSound(){
+      beep(260, 0.07, 0.035, "triangle");
+      setTimeout(() => beep(190, 0.05, 0.025, "triangle"), 70);
+    }
+
+    function playWinSound(){
+      const notes = [520, 660, 780, 1040];
+
+      notes.forEach((note, index) => {
+        setTimeout(() => beep(note, 0.12, 0.045, "triangle"), index * 120);
+      });
+    }
+
+    function playLoseSound(){
+      beep(230, 0.12, 0.03, "sawtooth");
+      setTimeout(() => beep(160, 0.16, 0.025, "sawtooth"), 140);
+    }
 
     function getSymbolByCode(code){
       return SYMBOLS.find(item => item.code === code) || SYMBOLS[0];
@@ -1246,19 +1371,24 @@
         box.classList.add("spinning");
       });
 
+      const speeds = [95, 115, 135];
+
       reelInners.forEach((reel, index) => {
         const interval = setInterval(() => {
           renderReel(reel, [randomSymbol(), randomSymbol(), randomSymbol()]);
-        }, 55 + index * 20);
+        }, speeds[index]);
 
         spinIntervals[index] = interval;
       });
+
+      startSpinSound();
     }
 
     function stopSlotAnimation(){
       spinIntervals.forEach(clearInterval);
       spinIntervals = [];
       clearStopTimers();
+      stopSpinSound();
 
       slotMachine.classList.remove("pulling");
       reelBoxes.forEach(box => {
@@ -1298,6 +1428,8 @@
 
       box.classList.remove("spinning");
       box.classList.add("stopped");
+
+      playReelStopSound();
 
       setTimeout(() => {
         box.classList.remove("stopped");
@@ -1367,7 +1499,15 @@
       rankingPoints.textContent = Number(status.puntos_ranking || 0);
       spinsLeft.textContent = giros;
 
-      statusMessage.textContent = normalizeMessage(status.mensaje || "Estado cargado.");
+      if (puede) {
+        statusMessage.textContent = "Puedes jugar el VIP Slot.";
+      } else if (puntos < 20) {
+        statusMessage.textContent = "No tienes puntos suficientes. Necesitas 20 puntos para jugar.";
+      } else if (giros <= 0) {
+        statusMessage.textContent = "Ya usaste tus jugadas de hoy.";
+      } else {
+        statusMessage.textContent = normalizeMessage(status.mensaje || "Estado cargado.");
+      }
 
       btnSpin.disabled = !puede;
 
@@ -1379,6 +1519,14 @@
         btnSpin.textContent = "SIN JUGADAS HOY";
       } else {
         btnSpin.textContent = "NO PUEDES JUGAR AHORA";
+      }
+
+      if (puntos < 20) {
+        orderBox.classList.add("show");
+        orderCta.classList.add("show");
+      } else {
+        orderBox.classList.remove("show");
+        orderCta.classList.remove("show");
       }
     }
 
@@ -1496,7 +1644,7 @@
     function createCelebration(win){
       celebrationPieces.innerHTML = "";
 
-      const total = win ? 42 : 16;
+      const total = win ? 26 : 8;
       const colors = win
         ? ["#facc15", "#fde68a", "#ff9f1c", "#ffffff"]
         : ["#ef4444", "#fecaca", "#f97316"];
@@ -1555,7 +1703,13 @@
       slotMachine.classList.remove("win-flash", "lose-flash");
       slotMachine.classList.add(win ? "win-flash" : "lose-flash");
 
-      resultTitle.textContent = win ? "🎉 ¡GANASTE!" : "😢 SIGUE INTENTANDO";
+      if (win) {
+        playWinSound();
+      } else {
+        playLoseSound();
+      }
+
+      resultTitle.textContent = win ? "🎉 ¡GANASTE!" : "😢 ÚLTIMA JUGADA";
 
       resultDetail.innerHTML = win
         ? `
@@ -1566,9 +1720,9 @@
           Muestra este código al local para reclamar tu premio.
         `
         : `
-          <b>Esta vez no salió premio.</b><br>
+          <b>No salió premio esta vez.</b><br>
           <b>Puntos:</b> ${spin.points_before || 0} → ${spin.points_after || 0}<br>
-          Tu jugada quedó registrada. Puedes intentar nuevamente si tienes puntos.
+          Haz tu pedido y acumula puntos para volver a jugar.
         `;
 
       showPrizeOverlay(spin);
@@ -1597,6 +1751,7 @@
 
       stopTimers.push(setTimeout(() => {
         stopSingleReel(2, finalSymbols[2]);
+        stopSpinSound();
         slotMachine.classList.remove("pulling");
 
         stopTimers.push(setTimeout(async () => {
