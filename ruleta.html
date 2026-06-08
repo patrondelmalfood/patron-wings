@@ -212,22 +212,22 @@
 
     .wheel-wrap{
       position:relative;
-      width:min(390px, 86vw);
-      height:min(390px, 86vw);
+      width:min(430px, 88vw);
+      height:min(430px, 88vw);
       margin:8px auto 16px;
     }
 
     .pointer{
       position:absolute;
-      top:-7px;
+      top:-8px;
       left:50%;
       transform:translateX(-50%);
       width:0;
       height:0;
-      border-left:18px solid transparent;
-      border-right:18px solid transparent;
-      border-top:34px solid var(--gold);
-      z-index:4;
+      border-left:20px solid transparent;
+      border-right:20px solid transparent;
+      border-top:38px solid var(--gold);
+      z-index:7;
       filter:drop-shadow(0 4px 4px rgba(0,0,0,.45));
     }
 
@@ -235,7 +235,7 @@
       width:100%;
       height:100%;
       border-radius:50%;
-      border:10px solid rgba(250,204,21,.85);
+      border:10px solid rgba(250,204,21,.88);
       background:
         conic-gradient(
           #1f2937 0deg 22.5deg,
@@ -267,12 +267,54 @@
     .wheel::before{
       content:"";
       position:absolute;
-      inset:15%;
+      inset:20%;
       border-radius:50%;
       background:radial-gradient(circle, #020617 0%, #050505 68%, rgba(0,0,0,.4) 100%);
       border:2px solid rgba(250,204,21,.48);
       box-shadow:0 0 22px rgba(0,0,0,.45);
+      z-index:3;
+    }
+
+    .wheel-label{
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:82px;
+      min-height:24px;
+      margin-left:-41px;
+      margin-top:-12px;
       z-index:2;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:3px 5px;
+      border-radius:999px;
+      color:#fff;
+      background:rgba(0,0,0,.44);
+      border:1px solid rgba(255,255,255,.18);
+      font-size:10px;
+      line-height:1.05;
+      font-weight:900;
+      text-transform:uppercase;
+      text-shadow:0 2px 5px rgba(0,0,0,.9);
+      transform:
+        rotate(var(--angle))
+        translateY(calc(var(--distance) * -1))
+        rotate(var(--angleBack));
+      pointer-events:none;
+    }
+
+    .wheel-label.win-label{
+      background:rgba(250,204,21,.20);
+      color:#fef9c3;
+      border-color:rgba(250,204,21,.36);
+    }
+
+    .wheel-label.no-label{
+      background:rgba(0,0,0,.48);
+      color:#e5e7eb;
+      border-color:rgba(148,163,184,.22);
     }
 
     .wheel-center{
@@ -281,14 +323,14 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      z-index:3;
+      z-index:5;
       pointer-events:none;
     }
 
     .wheel-center span{
       display:flex;
-      width:125px;
-      height:125px;
+      width:128px;
+      height:128px;
       border-radius:50%;
       align-items:center;
       justify-content:center;
@@ -363,6 +405,16 @@
       border:1px solid rgba(148,163,184,.18);
     }
 
+    .history-item.prize{
+      border-color:rgba(250,204,21,.38);
+      background:rgba(250,204,21,.07);
+    }
+
+    .history-item.no-prize{
+      border-color:rgba(239,68,68,.24);
+      background:rgba(127,29,29,.10);
+    }
+
     .ranking-item.me{
       border-color:rgba(250,204,21,.55);
       background:rgba(250,204,21,.08);
@@ -410,6 +462,17 @@
       font-weight:800;
     }
 
+    .history-code{
+      display:inline-flex;
+      margin-top:4px;
+      padding:4px 8px;
+      border-radius:999px;
+      background:rgba(250,204,21,.13);
+      border:1px solid rgba(250,204,21,.24);
+      color:#fef3c7;
+      font-weight:900;
+    }
+
     .mini{
       margin-top:12px;
       color:#94a3b8;
@@ -442,6 +505,142 @@
       border:1px solid #334155;
     }
 
+    .prize-overlay{
+      position:fixed;
+      inset:0;
+      z-index:99;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      background:
+        radial-gradient(circle at center, rgba(250,204,21,.18), rgba(0,0,0,.82) 58%),
+        rgba(0,0,0,.78);
+      backdrop-filter:blur(5px);
+    }
+
+    .prize-overlay.show{
+      display:flex;
+      animation:overlayFade .18s ease-out;
+    }
+
+    @keyframes overlayFade{
+      from{ opacity:0; }
+      to{ opacity:1; }
+    }
+
+    .prize-modal{
+      width:min(520px, 94vw);
+      border-radius:32px;
+      padding:28px 22px;
+      text-align:center;
+      border:2px solid rgba(250,204,21,.86);
+      background:
+        radial-gradient(circle at top, rgba(250,204,21,.26), transparent 42%),
+        linear-gradient(180deg, rgba(17,24,39,.98), rgba(0,0,0,.98));
+      box-shadow:
+        0 0 38px rgba(250,204,21,.26),
+        0 28px 70px rgba(0,0,0,.72),
+        inset 0 0 0 1px rgba(255,255,255,.06);
+      transform:scale(.96);
+      animation:prizePop .28s ease-out forwards;
+    }
+
+    @keyframes prizePop{
+      from{ transform:scale(.84) translateY(12px); opacity:.5; }
+      to{ transform:scale(1) translateY(0); opacity:1; }
+    }
+
+    .prize-overlay.lose{
+      background:
+        radial-gradient(circle at center, rgba(239,68,68,.15), rgba(0,0,0,.82) 58%),
+        rgba(0,0,0,.78);
+    }
+
+    .prize-overlay.lose .prize-modal{
+      border-color:rgba(248,113,113,.72);
+      background:
+        radial-gradient(circle at top, rgba(239,68,68,.22), transparent 42%),
+        linear-gradient(180deg, rgba(17,24,39,.98), rgba(0,0,0,.98));
+      box-shadow:
+        0 0 34px rgba(239,68,68,.18),
+        0 28px 70px rgba(0,0,0,.72),
+        inset 0 0 0 1px rgba(255,255,255,.06);
+    }
+
+    .overlay-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      margin-bottom:12px;
+      padding:9px 14px;
+      border-radius:999px;
+      background:linear-gradient(180deg, #fde047, #facc15);
+      color:#111827;
+      font-size:13px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.7px;
+    }
+
+    .prize-overlay.lose .overlay-badge{
+      background:linear-gradient(180deg, #fca5a5, #ef4444);
+      color:#fff;
+    }
+
+    .overlay-title{
+      margin:0;
+      color:var(--gold);
+      font-size:clamp(32px, 7vw, 54px);
+      line-height:1;
+      font-weight:900;
+      text-transform:uppercase;
+      text-shadow:
+        0 0 14px rgba(250,204,21,.45),
+        0 0 30px rgba(250,204,21,.18);
+    }
+
+    .prize-overlay.lose .overlay-title{
+      color:#fecaca;
+      text-shadow:0 0 16px rgba(239,68,68,.35);
+    }
+
+    .overlay-prize{
+      margin:14px auto 8px;
+      color:#fff;
+      font-size:clamp(23px, 5vw, 38px);
+      line-height:1.05;
+      font-weight:900;
+      text-transform:uppercase;
+    }
+
+    .overlay-code{
+      margin:12px auto 0;
+      padding:12px;
+      border-radius:17px;
+      background:rgba(250,204,21,.10);
+      border:1px solid rgba(250,204,21,.26);
+      color:#fef3c7;
+      font-size:14px;
+      line-height:1.45;
+      font-weight:900;
+      word-break:break-word;
+    }
+
+    .prize-overlay.lose .overlay-code{
+      background:rgba(239,68,68,.10);
+      border-color:rgba(239,68,68,.25);
+      color:#fecaca;
+    }
+
+    .overlay-hint{
+      margin:12px 0 0;
+      color:#cbd5e1;
+      font-size:13px;
+      line-height:1.45;
+      font-weight:800;
+    }
+
     @media (max-width:980px){
       .layout{
         grid-template-columns:1fr;
@@ -456,12 +655,18 @@
       .logo{ width:76px; height:76px; }
       .top h1{ font-size:29px; }
       .wheel-wrap{
-        width:88vw;
-        height:88vw;
+        width:90vw;
+        height:90vw;
+      }
+      .wheel-label{
+        width:68px;
+        margin-left:-34px;
+        font-size:8.5px;
+        --distance: 136px !important;
       }
       .wheel-center span{
-        width:105px;
-        height:105px;
+        width:104px;
+        height:104px;
         font-size:15px;
       }
     }
@@ -469,6 +674,16 @@
 </head>
 
 <body>
+  <div id="prizeOverlay" class="prize-overlay">
+    <div class="prize-modal">
+      <div class="overlay-badge" id="overlayBadge">Ruleta VIP</div>
+      <h2 class="overlay-title" id="overlayTitle">¡Ganaste!</h2>
+      <div class="overlay-prize" id="overlayPrize">Premio</div>
+      <div class="overlay-code" id="overlayCode">Código</div>
+      <p class="overlay-hint" id="overlayHint">Muestra el código al local.</p>
+    </div>
+  </div>
+
   <div class="wrap">
     <section class="top">
       <img src="LOGO.jpg" alt="El Patrón del Mal" class="logo">
@@ -506,7 +721,7 @@
         </div>
 
         <div class="link-row">
-          <a class="mini-link dark" href="/tarjeta.html">Ver tarjeta</a>
+          <a class="mini-link dark" href="/registro.html">Registro VIP</a>
           <a class="mini-link dark" href="/login.html">Cambiar cuenta</a>
         </div>
       </aside>
@@ -554,22 +769,22 @@
     const TOKEN_KEY = "pdm_customer_token";
 
     const PRIZES = [
-      { code:"NO_1", name:"Sigue intentando" },
-      { code:"NO_2", name:"Sigue intentando" },
-      { code:"NO_3", name:"Casi ganas" },
-      { code:"NO_4", name:"Vuelve a intentarlo" },
-      { code:"SALDO_3", name:"S/ 3 saldo" },
-      { code:"SALDO_5", name:"S/ 5 saldo" },
-      { code:"SALDO_10", name:"S/ 10 saldo" },
-      { code:"CHIFLE", name:"Chifle" },
-      { code:"MARACUYA_1L", name:"Maracuyá 1L" },
-      { code:"NUGGETS", name:"Nuggets" },
-      { code:"ALITA_EXTRA", name:"Alita extra" },
-      { code:"PAPAS_PERSONALES", name:"Papas personales" },
-      { code:"DELIVERY_GRATIS", name:"Delivery gratis" },
-      { code:"BURGER_CLASICA", name:"Burger clásica" },
-      { code:"CHAUFA_MEDELLIN", name:"Chaufa Medellín" },
-      { code:"PLATO_ALITAS", name:"Plato de alitas" }
+      { code:"NO_1", name:"Sigue intentando", short:"Intenta" },
+      { code:"NO_2", name:"Sigue intentando", short:"Intenta" },
+      { code:"NO_3", name:"Casi ganas", short:"Casi" },
+      { code:"NO_4", name:"Vuelve a intentarlo", short:"Otra vez" },
+      { code:"SALDO_3", name:"S/ 3 saldo", short:"S/3" },
+      { code:"SALDO_5", name:"S/ 5 saldo", short:"S/5" },
+      { code:"SALDO_10", name:"S/ 10 saldo", short:"S/10" },
+      { code:"CHIFLE", name:"Chifle", short:"Chifle" },
+      { code:"MARACUYA_1L", name:"Maracuyá 1L", short:"Maracuyá" },
+      { code:"NUGGETS", name:"Nuggets", short:"Nuggets" },
+      { code:"ALITA_EXTRA", name:"Alita extra", short:"Alita" },
+      { code:"PAPAS_PERSONALES", name:"Papas personales", short:"Papas" },
+      { code:"DELIVERY_GRATIS", name:"Delivery gratis", short:"Delivery" },
+      { code:"BURGER_CLASICA", name:"Burger clásica", short:"Burger" },
+      { code:"CHAUFA_MEDELLIN", name:"Chaufa Medellín", short:"Chaufa" },
+      { code:"PLATO_ALITAS", name:"Plato de alitas", short:"Alitas" }
     ];
 
     const msgBox = document.getElementById("msgBox");
@@ -587,8 +802,36 @@
     const rankingList = document.getElementById("rankingList");
     const historyList = document.getElementById("historyList");
 
+    const prizeOverlay = document.getElementById("prizeOverlay");
+    const overlayBadge = document.getElementById("overlayBadge");
+    const overlayTitle = document.getElementById("overlayTitle");
+    const overlayPrize = document.getElementById("overlayPrize");
+    const overlayCode = document.getElementById("overlayCode");
+    const overlayHint = document.getElementById("overlayHint");
+
     let currentRotation = 0;
     let lastStatus = null;
+    let overlayTimer = null;
+
+    function buildWheelLabels(){
+      const segment = 360 / PRIZES.length;
+      const distance = window.innerWidth <= 430 ? 136 : 165;
+
+      wheel.innerHTML = PRIZES.map((item, index) => {
+        const angle = index * segment + segment / 2;
+        const angleBack = -angle;
+        const isNoPrize = item.code.startsWith("NO_");
+
+        return `
+          <span
+            class="wheel-label ${isNoPrize ? "no-label" : "win-label"}"
+            style="--angle:${angle}deg; --angleBack:${angleBack}deg; --distance:${distance}px"
+          >
+            ${item.short}
+          </span>
+        `;
+      }).join("");
+    }
 
     function showMsg(type, text){
       msgBox.className = "msg " + type;
@@ -619,6 +862,10 @@
       return {
         Authorization: "Bearer " + getToken()
       };
+    }
+
+    function isWinningSpin(spin){
+      return spin && spin.prize_status === "pendiente";
     }
 
     function renderStatus(status){
@@ -667,18 +914,30 @@
       }
 
       historyList.innerHTML = history.map(item => {
-        const estado = item.prize_status || "-";
+        const status = item.prize_status || "-";
+        const isPrize = status === "pendiente" || status === "entregado";
+        const estadoTexto =
+          status === "pendiente" ? "Premio pendiente" :
+          status === "entregado" ? "Premio entregado" :
+          status === "vencido" ? "Premio vencido" :
+          "Sin premio";
+
+        const title = isPrize
+          ? item.prize_name || "Premio"
+          : item.prize_name || "Sigue intentando";
+
         const codigo = item.prize_unique_code || "-";
         const vencimiento = item.expires_at ? formatDate(item.expires_at) : "-";
 
         return `
-          <div class="history-item">
-            <div class="history-title">${item.prize_name || "Resultado"}</div>
+          <div class="history-item ${isPrize ? "prize" : "no-prize"}">
+            <div class="history-title">${isPrize ? "🎁" : "😅"} ${title}</div>
             <div class="history-meta">
               Giro #${item.spin_number_day || "-"} · ${formatDate(item.created_at)}<br>
-              Estado: <b>${estado}</b><br>
-              Código: <b>${codigo}</b><br>
-              Vence: ${vencimiento}
+              Estado: <b>${estadoTexto}</b><br>
+              Puntos: <b>${item.points_before || 0} → ${item.points_after || 0}</b><br>
+              ${isPrize ? `<span class="history-code">Código: ${codigo}</span><br>` : ""}
+              ${isPrize ? `Vence: ${vencimiento}` : "Puedes intentarlo otra vez si tienes puntos y giros disponibles."}
             </div>
           </div>
         `;
@@ -750,22 +1009,53 @@
       wheel.style.transform = `rotate(${currentRotation}deg)`;
     }
 
+    function showPrizeOverlay(spin){
+      clearTimeout(overlayTimer);
+
+      const win = isWinningSpin(spin);
+
+      prizeOverlay.className = win
+        ? "prize-overlay show win"
+        : "prize-overlay show lose";
+
+      overlayBadge.textContent = win ? "Premio ganado" : "Ruleta VIP";
+      overlayTitle.textContent = win ? "🎉 ¡Ganaste!" : "😅 Sigue intentando";
+      overlayPrize.textContent = spin.prize_name || "Resultado";
+
+      if (win) {
+        overlayCode.innerHTML = `Código: <b>${spin.prize_unique_code || "-"}</b>`;
+        overlayHint.textContent = "Muestra este código en el local para reclamar tu premio.";
+      } else {
+        overlayCode.textContent = "Esta vez no salió premio.";
+        overlayHint.textContent = "Tu giro quedó registrado. Puedes intentar otra vez si tienes puntos.";
+      }
+
+      overlayTimer = setTimeout(() => {
+        prizeOverlay.classList.remove("show");
+      }, 3000);
+    }
+
+    prizeOverlay.addEventListener("click", () => {
+      prizeOverlay.classList.remove("show");
+    });
+
     function showSpinResult(spin){
       resultBox.classList.add("show");
 
-      const status = spin.prize_status || "";
-      const isWin = status === "pendiente";
+      const win = isWinningSpin(spin);
 
-      resultTitle.textContent = isWin ? "🎉 ¡Ganaste!" : "😅 Sigue intentando";
+      resultTitle.textContent = win ? "🎉 ¡Ganaste!" : "😅 Sigue intentando";
       resultDetail.innerHTML = `
         <b>Resultado:</b> ${spin.prize_name || "-"}<br>
-        <b>Código:</b> ${spin.prize_unique_code || "-"}<br>
+        ${win ? `<b>Código:</b> ${spin.prize_unique_code || "-"}<br>` : ""}
         <b>Puntos:</b> ${spin.points_before || 0} → ${spin.points_after || 0}<br>
-        ${isWin ? "<b>Vence:</b> " + formatDate(spin.expires_at) + "<br>" : ""}
-        ${isWin ? "Muestra este código al local para reclamar tu premio." : "No salió premio esta vez, pero tu giro quedó registrado."}
+        ${win ? "<b>Vence:</b> " + formatDate(spin.expires_at) + "<br>" : ""}
+        ${win ? "Muestra este código al local para reclamar tu premio." : "No salió premio esta vez, pero tu giro quedó registrado."}
       `;
 
-      if (isWin) {
+      showPrizeOverlay(spin);
+
+      if (win) {
         showMsg("ok", "Premio ganado: " + (spin.prize_name || "Premio"));
       } else {
         showMsg("err", "Esta vez no salió premio. Puedes intentar nuevamente si tienes puntos y giros disponibles.");
@@ -823,8 +1113,13 @@
       }
     });
 
+    buildWheelLabels();
     loadStatus();
     loadRanking();
+
+    window.addEventListener("resize", () => {
+      buildWheelLabels();
+    });
   </script>
 </body>
 </html>
