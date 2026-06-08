@@ -1253,10 +1253,6 @@
     let spinIntervals = [];
     let stopTimers = [];
 
-    // Evita giros duplicados y respuestas viejas que muestren mensajes rojos.
-    let isSpinning = false;
-    let currentSpinRun = 0;
-
     let audioCtx = null;
     let spinSoundTimer = null;
 
@@ -1558,21 +1554,16 @@
         statusMessage.textContent = normalizeMessage(status.mensaje || "Estado cargado.");
       }
 
-      if (isSpinning) {
-        btnSpin.disabled = true;
-        btnSpin.textContent = "GIRANDO...";
-      } else {
-        btnSpin.disabled = !puede;
+      btnSpin.disabled = !puede;
 
-        if (puede) {
-          btnSpin.textContent = "SPIN · 20 PUNTOS";
-        } else if (puntos < 20) {
-          btnSpin.textContent = "NECESITAS 20 PUNTOS";
-        } else if (giros <= 0) {
-          btnSpin.textContent = "SIN JUGADAS HOY";
-        } else {
-          btnSpin.textContent = "NO PUEDES JUGAR AHORA";
-        }
+      if (puede) {
+        btnSpin.textContent = "SPIN · 20 PUNTOS";
+      } else if (puntos < 20) {
+        btnSpin.textContent = "NECESITAS 20 PUNTOS";
+      } else if (giros <= 0) {
+        btnSpin.textContent = "SIN JUGADAS HOY";
+      } else {
+        btnSpin.textContent = "NO PUEDES JUGAR AHORA";
       }
 
       if (puntos < 20) {
@@ -1789,7 +1780,7 @@
       }
     }
 
-    function scheduleReelStops(spin, spinStartedAt, runId){
+    function scheduleReelStops(spin, spinStartedAt){
       const finalSymbols = buildFinalMiddleSymbols(spin);
 
       function delayFromStart(ms){
@@ -1797,29 +1788,20 @@
       }
 
       stopTimers.push(setTimeout(() => {
-        if (runId !== currentSpinRun) return;
         stopSingleReel(0, finalSymbols[0]);
       }, delayFromStart(STOP_REEL_1)));
 
       stopTimers.push(setTimeout(() => {
-        if (runId !== currentSpinRun) return;
         stopSingleReel(1, finalSymbols[1]);
       }, delayFromStart(STOP_REEL_2)));
 
       stopTimers.push(setTimeout(() => {
-        if (runId !== currentSpinRun) return;
-
         stopSingleReel(2, finalSymbols[2]);
         stopSpinSound();
         slotMachine.classList.remove("pulling");
 
         stopTimers.push(setTimeout(async () => {
-          if (runId !== currentSpinRun) return;
-
           showSpinResult(spin);
-
-          // El giro terminó; ahora sí se puede volver a habilitar según puntos/jugadas reales.
-          isSpinning = false;
           await loadStatus();
           await loadRanking();
         }, RESULT_EXTRA_DELAY));
@@ -1828,20 +1810,29 @@
     }
 
     btnSpin.addEventListener("click", async () => {
-      // Seguro anti doble clic / doble toque.
-      if (isSpinning) return;
-
-      isSpinning = true;
-      const runId = ++currentSpinRun;
-
       hideMsg();
       prizeOverlay.classList.remove("show");
       resultBox.classList.remove("show", "win", "lose");
 
       const token = getToken();
+
       if (!token) {
-        isSpinning = false;
         showMsg("err", "Debes iniciar sesión para jugar.");
+        return;
+      }
+
+      const puntosActuales = lastStatus ? Number(lastStatus.puntos_disponibles || 0) : 0;
+      const girosActuales = lastStatus ? Number(lastStatus.giros_restantes || 0) : 0;
+
+      if (puntosActuales < 20) {
+        showMsg("err", "No tienes puntos suficientes. Necesitas 20 puntos para jugar.");
+        await loadStatus();
+        return;
+      }
+
+      if (girosActuales <= 0) {
+        showMsg("err", "Ya usaste tus jugadas de hoy.");
+        await loadStatus();
         return;
       }
 
@@ -1861,18 +1852,28 @@
         });
 
         let data = {};
+
         try {
           data = await res.json();
         } catch {
           data = {};
         }
 
-        if (runId !== currentSpinRun) return;
+        console.log("RESPUESTA SPIN:", res.status, data);
 
         if (!res.ok) {
-          isSpinning = false;
           stopSlotAnimation();
-          showMsg("err", data.detail || data.error || "No se pudo jugar.");
+
+          const errorReal =
+            data.detail ||
+            data.error ||
+            data.message ||
+            data?.body?.message ||
+            data?.body?.details ||
+            data?.body?.hint ||
+            "No se pudo jugar.";
+
+          showMsg("err", errorReal, false);
           await loadStatus();
           return;
         }
@@ -1880,20 +1881,14 @@
         hideMsg();
 
         const spin = data.spin || {};
-        scheduleReelStops(spin, spinStartedAt, runId);
+        scheduleReelStops(spin, spinStartedAt);
 
       } catch (err) {
-        if (runId !== currentSpinRun) return;
-
-        isSpinning = false;
         stopSlotAnimation();
-        showMsg("err", "Error al jugar: " + (err.message || String(err)));
-        await loadStatus();
+        showMsg("err", "Error al jugar: " + (err.message || String(err)), false);
       } finally {
         setTimeout(() => {
-          if (runId === currentSpinRun) {
-            loadStatus();
-          }
+          loadStatus();
         }, STOP_REEL_3 + RESTORE_EXTRA_DELAY);
       }
     });
