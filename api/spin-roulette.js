@@ -7,7 +7,11 @@ const TOKEN_SECRET =
 const SUPABASE_URL = "https://defdwzzewzfjuseozwkn.supabase.co";
 
 const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
+
+function cleanPhone(value) {
+  return String(value || "").replace(/\D/g, "").trim();
+}
 
 function verifyToken(token) {
   try {
@@ -32,6 +36,71 @@ function verifyToken(token) {
   }
 }
 
+function getCustomerId(session) {
+  return (
+    session.customer_id ||
+    session.customerId ||
+    session.id ||
+    session.user_id ||
+    session.userId ||
+    null
+  );
+}
+
+async function supabaseRequest(path, options = {}) {
+  const response = await fetch(SUPABASE_URL + path, {
+    ...options,
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: "Bearer " + SUPABASE_ANON_KEY,
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      ...(options.headers || {})
+    }
+  });
+
+  const text = await response.text();
+
+  let data = null;
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch {
+    data = { raw: text };
+  }
+
+  if (!response.ok) {
+    const msg =
+      data?.message ||
+      data?.details ||
+      data?.hint ||
+      data?.raw ||
+      "Error en Supabase";
+
+    const err = new Error(msg);
+    err.status = response.status;
+    err.body = data;
+    throw err;
+  }
+
+  return data;
+}
+
+async function findCustomerIdByPhone(phone) {
+  const celular = cleanPhone(phone);
+  if (!celular) return null;
+
+  const rows = await supabaseRequest(
+    "/rest/v1/customers?select=id,celular&limit=1000",
+    { method: "GET" }
+  );
+
+  const customer = Array.isArray(rows)
+    ? rows.find((item) => cleanPhone(item.celular) === celular)
+    : null;
+
+  return customer?.id || null;
+}
+
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -54,14 +123,22 @@ export default async function handler(req, res) {
 
     const session = verifyToken(token);
 
-    if (!session || !session.customer_id || !session.celular) {
+    if (!session) {
       return res.status(401).json({
         ok: false,
         error: "Sesión inválida o vencida. Vuelve a iniciar sesión."
       });
     }
 
-    const customerId = Number(session.customer_id);
+    let customerId = getCustomerId(session);
+
+    if (!customerId) {
+      customerId = await findCustomerIdByPhone(
+        session.celular || session.phone || session.telefono || ""
+      );
+    }
+
+    customerId = Number(customerId);
 
     if (!customerId) {
       return res.status(400).json({
@@ -70,42 +147,14 @@ export default async function handler(req, res) {
       });
     }
 
-    const headers = {
-      apikey: SUPABASE_ANON_KEY,
-      Authorization: "Bearer " + SUPABASE_ANON_KEY,
-      "Content-Type": "application/json"
-    };
+    const result = await supabaseRequest("/rest/v1/rpc/vip_spin_roulette", {
+      method: "POST",
+      body: JSON.stringify({
+        p_customer_id: customerId
+      })
+    });
 
-    const spinRes = await fetch(
-      SUPABASE_URL + "/rest/v1/rpc/vip_spin_roulette",
-      {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-          p_customer_id: customerId
-        })
-      }
-    );
-
-    const spinText = await spinRes.text();
-
-    let spinData = null;
-
-    try {
-      spinData = spinText ? JSON.parse(spinText) : null;
-    } catch {
-      spinData = null;
-    }
-
-    if (!spinRes.ok) {
-      return res.status(500).json({
-        ok: false,
-        error: "No se pudo jugar el VIP Slot.",
-        detail: spinText || "Error en Supabase"
-      });
-    }
-
-    const spin = Array.isArray(spinData) ? spinData[0] : spinData;
+    const spin = Array.isArray(result) ? result[0] : result;
 
     if (!spin) {
       return res.status(500).json({
@@ -121,8 +170,10 @@ export default async function handler(req, res) {
   } catch (err) {
     return res.status(500).json({
       ok: false,
-      error: "Error inesperado al jugar.",
-      detail: err.message || String(err)
+      error: "No se pudo jugar el VIP Slot.",
+      detail: err.message || String(err),
+      status: err.status || null,
+      body: err.body || null
     });
   }
 }
