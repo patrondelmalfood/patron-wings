@@ -22,6 +22,7 @@
       --blue:#38bdf8;
       --green:#22c55e;
       --red:#ef4444;
+      --spin-duration:6.8s;
     }
 
     *{ box-sizing:border-box; }
@@ -33,8 +34,9 @@
       color:var(--text);
       padding:16px;
       background:
-        radial-gradient(circle at 50% 0%, rgba(250,204,21,.16), transparent 30%),
-        radial-gradient(circle at 0% 100%, rgba(255,159,28,.10), transparent 28%),
+        radial-gradient(circle at 50% 0%, rgba(250,204,21,.18), transparent 30%),
+        radial-gradient(circle at 0% 100%, rgba(255,159,28,.12), transparent 28%),
+        radial-gradient(circle at 100% 80%, rgba(56,189,248,.08), transparent 25%),
         linear-gradient(180deg, #000 0%, var(--bg2) 100%);
       overflow-x:hidden;
     }
@@ -53,6 +55,24 @@
       opacity:.55;
       pointer-events:none;
       z-index:0;
+    }
+
+    body::after{
+      content:"";
+      position:fixed;
+      inset:-30%;
+      background:
+        radial-gradient(circle, rgba(250,204,21,.08) 0 1px, transparent 2px),
+        radial-gradient(circle, rgba(255,255,255,.04) 0 1px, transparent 2px);
+      background-size:70px 70px, 120px 120px;
+      animation:bgFloat 18s linear infinite;
+      pointer-events:none;
+      z-index:0;
+    }
+
+    @keyframes bgFloat{
+      from{ transform:translate3d(0,0,0); }
+      to{ transform:translate3d(70px,70px,0); }
     }
 
     .wrap{
@@ -75,7 +95,7 @@
       object-fit:cover;
       background:#000;
       border:2px solid rgba(255,255,255,.95);
-      box-shadow:0 0 18px rgba(255,255,255,.12), 0 0 22px rgba(250,204,21,.18);
+      box-shadow:0 0 18px rgba(255,255,255,.12), 0 0 22px rgba(250,204,21,.22);
       margin-bottom:8px;
     }
 
@@ -85,7 +105,7 @@
       font-size:clamp(29px, 6vw, 52px);
       line-height:.95;
       text-transform:uppercase;
-      text-shadow:0 0 9px rgba(250,204,21,.45), 0 0 18px rgba(255,159,28,.22);
+      text-shadow:0 0 9px rgba(250,204,21,.50), 0 0 26px rgba(255,159,28,.28);
       letter-spacing:.7px;
     }
 
@@ -132,13 +152,28 @@
       border-radius:26px;
       border:1px solid rgba(250,204,21,.28);
       background:
-        radial-gradient(circle at top right, rgba(250,204,21,.09), transparent 34%),
+        radial-gradient(circle at top right, rgba(250,204,21,.10), transparent 34%),
         linear-gradient(180deg, rgba(17,24,39,.96), rgba(2,6,23,.96));
       box-shadow:
         0 18px 45px rgba(0,0,0,.45),
         inset 0 0 0 1px rgba(255,255,255,.035);
       padding:18px;
       overflow:hidden;
+      position:relative;
+    }
+
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(120deg, transparent 0%, rgba(255,255,255,.035) 45%, transparent 55%);
+      opacity:.45;
+      pointer-events:none;
+    }
+
+    .card > *{
+      position:relative;
+      z-index:1;
     }
 
     .card h2{
@@ -170,7 +205,7 @@
     }
 
     .point-box{
-      background:rgba(0,0,0,.28);
+      background:rgba(0,0,0,.30);
       border:1px solid rgba(148,163,184,.22);
       border-radius:18px;
       padding:14px;
@@ -190,7 +225,7 @@
       font-size:34px;
       line-height:1;
       font-weight:900;
-      text-shadow:0 0 12px rgba(250,204,21,.22);
+      text-shadow:0 0 12px rgba(250,204,21,.24);
     }
 
     .spin-note{
@@ -212,30 +247,84 @@
 
     .wheel-wrap{
       position:relative;
-      width:min(430px, 88vw);
-      height:min(430px, 88vw);
-      margin:8px auto 16px;
+      width:min(445px, 89vw);
+      height:min(445px, 89vw);
+      margin:10px auto 18px;
+      border-radius:50%;
+    }
+
+    .wheel-wrap::before{
+      content:"";
+      position:absolute;
+      inset:-18px;
+      border-radius:50%;
+      background:
+        conic-gradient(
+          from 0deg,
+          transparent,
+          rgba(250,204,21,.22),
+          transparent,
+          rgba(56,189,248,.10),
+          transparent,
+          rgba(250,204,21,.18),
+          transparent
+        );
+      filter:blur(8px);
+      opacity:.72;
+      animation:haloRotate 7s linear infinite;
+      z-index:0;
+    }
+
+    .wheel-wrap::after{
+      content:"";
+      position:absolute;
+      inset:-4px;
+      border-radius:50%;
+      border:1px solid rgba(250,204,21,.24);
+      box-shadow:0 0 28px rgba(250,204,21,.10);
+      pointer-events:none;
+      z-index:1;
+    }
+
+    @keyframes haloRotate{
+      from{ transform:rotate(0deg); }
+      to{ transform:rotate(360deg); }
+    }
+
+    .wheel-wrap.spinning::before{
+      opacity:1;
+      filter:blur(10px);
+      animation:haloRotate 1.7s linear infinite;
+    }
+
+    .wheel-wrap.spinning .pointer{
+      animation:pointerTap .25s linear infinite;
+    }
+
+    @keyframes pointerTap{
+      0%,100%{ transform:translateX(-50%) translateY(0); }
+      50%{ transform:translateX(-50%) translateY(3px); }
     }
 
     .pointer{
       position:absolute;
-      top:-8px;
+      top:-10px;
       left:50%;
       transform:translateX(-50%);
       width:0;
       height:0;
-      border-left:20px solid transparent;
-      border-right:20px solid transparent;
-      border-top:38px solid var(--gold);
-      z-index:7;
-      filter:drop-shadow(0 4px 4px rgba(0,0,0,.45));
+      border-left:21px solid transparent;
+      border-right:21px solid transparent;
+      border-top:40px solid var(--gold);
+      z-index:8;
+      filter:drop-shadow(0 4px 4px rgba(0,0,0,.50));
     }
 
     .wheel{
       width:100%;
       height:100%;
       border-radius:50%;
-      border:10px solid rgba(250,204,21,.88);
+      border:11px solid rgba(250,204,21,.90);
       background:
         conic-gradient(
           #1f2937 0deg 22.5deg,
@@ -256,12 +345,14 @@
           #991b1b 337.5deg 360deg
         );
       box-shadow:
-        0 20px 45px rgba(0,0,0,.55),
-        0 0 26px rgba(250,204,21,.12),
-        inset 0 0 0 2px rgba(255,255,255,.05);
-      transition:transform 4.2s cubic-bezier(.12,.72,.08,1);
+        0 24px 55px rgba(0,0,0,.58),
+        0 0 30px rgba(250,204,21,.16),
+        inset 0 0 0 2px rgba(255,255,255,.055);
+      transition:transform var(--spin-duration) cubic-bezier(.08,.75,.05,1);
       position:relative;
       overflow:hidden;
+      z-index:2;
+      will-change:transform;
     }
 
     .wheel::before{
@@ -270,9 +361,31 @@
       inset:20%;
       border-radius:50%;
       background:radial-gradient(circle, #020617 0%, #050505 68%, rgba(0,0,0,.4) 100%);
-      border:2px solid rgba(250,204,21,.48);
-      box-shadow:0 0 22px rgba(0,0,0,.45);
+      border:2px solid rgba(250,204,21,.50);
+      box-shadow:0 0 24px rgba(0,0,0,.50);
       z-index:3;
+    }
+
+    .wheel::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius:50%;
+      background:
+        radial-gradient(circle at 35% 20%, rgba(255,255,255,.16), transparent 20%),
+        linear-gradient(120deg, transparent 0%, rgba(255,255,255,.06) 46%, transparent 58%);
+      pointer-events:none;
+      z-index:4;
+      opacity:.50;
+    }
+
+    .wheel-wrap.spinning .wheel{
+      filter:saturate(1.2) contrast(1.08);
+      box-shadow:
+        0 28px 65px rgba(0,0,0,.64),
+        0 0 42px rgba(250,204,21,.24),
+        0 0 70px rgba(255,159,28,.14),
+        inset 0 0 0 2px rgba(255,255,255,.065);
     }
 
     .wheel-label{
@@ -291,13 +404,13 @@
       padding:3px 5px;
       border-radius:999px;
       color:#fff;
-      background:rgba(0,0,0,.44);
+      background:rgba(0,0,0,.48);
       border:1px solid rgba(255,255,255,.18);
       font-size:10px;
       line-height:1.05;
       font-weight:900;
       text-transform:uppercase;
-      text-shadow:0 2px 5px rgba(0,0,0,.9);
+      text-shadow:0 2px 5px rgba(0,0,0,.95);
       transform:
         rotate(var(--angle))
         translateY(calc(var(--distance) * -1))
@@ -306,13 +419,13 @@
     }
 
     .wheel-label.win-label{
-      background:rgba(250,204,21,.20);
+      background:rgba(250,204,21,.22);
       color:#fef9c3;
-      border-color:rgba(250,204,21,.36);
+      border-color:rgba(250,204,21,.40);
     }
 
     .wheel-label.no-label{
-      background:rgba(0,0,0,.48);
+      background:rgba(0,0,0,.52);
       color:#e5e7eb;
       border-color:rgba(148,163,184,.22);
     }
@@ -323,40 +436,57 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      z-index:5;
+      z-index:6;
       pointer-events:none;
     }
 
     .wheel-center span{
       display:flex;
-      width:128px;
-      height:128px;
+      width:132px;
+      height:132px;
       border-radius:50%;
       align-items:center;
       justify-content:center;
       text-align:center;
-      background:linear-gradient(180deg, #fde047, #facc15);
+      background:
+        radial-gradient(circle at 35% 20%, #fff7ad, transparent 24%),
+        linear-gradient(180deg, #fde047, #facc15);
       color:#111827;
       font-weight:900;
       font-size:18px;
       line-height:1.05;
-      box-shadow:0 10px 25px rgba(0,0,0,.42);
-      border:2px solid rgba(255,255,255,.85);
+      box-shadow:
+        0 10px 25px rgba(0,0,0,.42),
+        0 0 24px rgba(250,204,21,.30);
+      border:2px solid rgba(255,255,255,.88);
       text-transform:uppercase;
     }
 
     .spin-btn{
       width:100%;
-      max-width:360px;
-      padding:16px;
+      max-width:370px;
+      padding:17px;
       border:0;
-      border-radius:18px;
-      background:linear-gradient(180deg, #fde047, #facc15);
+      border-radius:20px;
+      background:
+        radial-gradient(circle at 30% 10%, rgba(255,255,255,.40), transparent 22%),
+        linear-gradient(180deg, #fde047, #facc15);
       color:#111827;
       font-weight:900;
       font-size:18px;
       cursor:pointer;
-      box-shadow:0 12px 25px rgba(250,204,21,.18);
+      box-shadow:
+        0 14px 28px rgba(250,204,21,.20),
+        inset 0 0 0 1px rgba(255,255,255,.35);
+      transition:transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+    }
+
+    .spin-btn:hover:not(:disabled){
+      transform:translateY(-2px);
+      box-shadow:
+        0 18px 34px rgba(250,204,21,.28),
+        0 0 24px rgba(250,204,21,.18),
+        inset 0 0 0 1px rgba(255,255,255,.45);
     }
 
     .spin-btn:disabled{
@@ -514,9 +644,10 @@
       justify-content:center;
       padding:18px;
       background:
-        radial-gradient(circle at center, rgba(250,204,21,.18), rgba(0,0,0,.82) 58%),
-        rgba(0,0,0,.78);
-      backdrop-filter:blur(5px);
+        radial-gradient(circle at center, rgba(250,204,21,.20), rgba(0,0,0,.84) 58%),
+        rgba(0,0,0,.80);
+      backdrop-filter:blur(6px);
+      overflow:hidden;
     }
 
     .prize-overlay.show{
@@ -529,21 +660,67 @@
       to{ opacity:1; }
     }
 
+    .celebration-pieces{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+    }
+
+    .piece{
+      position:absolute;
+      top:-20px;
+      width:8px;
+      height:14px;
+      border-radius:3px;
+      background:var(--gold);
+      opacity:.92;
+      animation:fallPiece 2.8s linear forwards;
+    }
+
+    @keyframes fallPiece{
+      0%{
+        transform:translateY(-20px) rotate(0deg);
+        opacity:1;
+      }
+      100%{
+        transform:translateY(110vh) rotate(720deg);
+        opacity:.15;
+      }
+    }
+
     .prize-modal{
-      width:min(520px, 94vw);
-      border-radius:32px;
-      padding:28px 22px;
+      width:min(540px, 94vw);
+      border-radius:34px;
+      padding:30px 22px;
       text-align:center;
-      border:2px solid rgba(250,204,21,.86);
+      border:2px solid rgba(250,204,21,.88);
       background:
-        radial-gradient(circle at top, rgba(250,204,21,.26), transparent 42%),
+        radial-gradient(circle at top, rgba(250,204,21,.28), transparent 42%),
         linear-gradient(180deg, rgba(17,24,39,.98), rgba(0,0,0,.98));
       box-shadow:
-        0 0 38px rgba(250,204,21,.26),
-        0 28px 70px rgba(0,0,0,.72),
+        0 0 44px rgba(250,204,21,.28),
+        0 30px 75px rgba(0,0,0,.74),
         inset 0 0 0 1px rgba(255,255,255,.06);
       transform:scale(.96);
       animation:prizePop .28s ease-out forwards;
+      position:relative;
+      z-index:2;
+      overflow:hidden;
+    }
+
+    .prize-modal::before{
+      content:"";
+      position:absolute;
+      inset:-50%;
+      background:linear-gradient(120deg, transparent 0%, rgba(255,255,255,.12) 48%, transparent 58%);
+      animation:shineSweep 2.2s ease-in-out infinite;
+      pointer-events:none;
+    }
+
+    @keyframes shineSweep{
+      from{ transform:translateX(-45%) rotate(12deg); }
+      to{ transform:translateX(45%) rotate(12deg); }
     }
 
     @keyframes prizePop{
@@ -553,8 +730,8 @@
 
     .prize-overlay.lose{
       background:
-        radial-gradient(circle at center, rgba(239,68,68,.15), rgba(0,0,0,.82) 58%),
-        rgba(0,0,0,.78);
+        radial-gradient(circle at center, rgba(239,68,68,.15), rgba(0,0,0,.84) 58%),
+        rgba(0,0,0,.80);
     }
 
     .prize-overlay.lose .prize-modal{
@@ -581,6 +758,8 @@
       font-weight:900;
       text-transform:uppercase;
       letter-spacing:.7px;
+      position:relative;
+      z-index:1;
     }
 
     .prize-overlay.lose .overlay-badge{
@@ -598,6 +777,8 @@
       text-shadow:
         0 0 14px rgba(250,204,21,.45),
         0 0 30px rgba(250,204,21,.18);
+      position:relative;
+      z-index:1;
     }
 
     .prize-overlay.lose .overlay-title{
@@ -612,6 +793,8 @@
       line-height:1.05;
       font-weight:900;
       text-transform:uppercase;
+      position:relative;
+      z-index:1;
     }
 
     .overlay-code{
@@ -625,6 +808,8 @@
       line-height:1.45;
       font-weight:900;
       word-break:break-word;
+      position:relative;
+      z-index:1;
     }
 
     .prize-overlay.lose .overlay-code{
@@ -639,6 +824,8 @@
       font-size:13px;
       line-height:1.45;
       font-weight:800;
+      position:relative;
+      z-index:1;
     }
 
     @media (max-width:980px){
@@ -655,18 +842,18 @@
       .logo{ width:76px; height:76px; }
       .top h1{ font-size:29px; }
       .wheel-wrap{
-        width:90vw;
-        height:90vw;
+        width:91vw;
+        height:91vw;
       }
       .wheel-label{
         width:68px;
         margin-left:-34px;
         font-size:8.5px;
-        --distance: 136px !important;
+        --distance: 138px !important;
       }
       .wheel-center span{
-        width:104px;
-        height:104px;
+        width:106px;
+        height:106px;
         font-size:15px;
       }
     }
@@ -675,6 +862,7 @@
 
 <body>
   <div id="prizeOverlay" class="prize-overlay">
+    <div class="celebration-pieces" id="celebrationPieces"></div>
     <div class="prize-modal">
       <div class="overlay-badge" id="overlayBadge">Ruleta VIP</div>
       <h2 class="overlay-title" id="overlayTitle">¡Ganaste!</h2>
@@ -729,7 +917,7 @@
       <main class="card wheel-panel">
         <h2>🎰 Gira la ruleta del Patrón</h2>
 
-        <div class="wheel-wrap">
+        <div class="wheel-wrap" id="wheelWrap">
           <div class="pointer"></div>
           <div class="wheel" id="wheel"></div>
           <div class="wheel-center">
@@ -767,6 +955,9 @@
 
   <script>
     const TOKEN_KEY = "pdm_customer_token";
+    const SPIN_DURATION = 6800;
+    const RESULT_DELAY = SPIN_DURATION + 250;
+    const RESTORE_DELAY = SPIN_DURATION + 650;
 
     const PRIZES = [
       { code:"NO_1", name:"Sigue intentando", short:"Intenta" },
@@ -796,6 +987,7 @@
     const statusMessage = document.getElementById("statusMessage");
     const btnSpin = document.getElementById("btnSpin");
     const wheel = document.getElementById("wheel");
+    const wheelWrap = document.getElementById("wheelWrap");
     const resultBox = document.getElementById("resultBox");
     const resultTitle = document.getElementById("resultTitle");
     const resultDetail = document.getElementById("resultDetail");
@@ -803,6 +995,7 @@
     const historyList = document.getElementById("historyList");
 
     const prizeOverlay = document.getElementById("prizeOverlay");
+    const celebrationPieces = document.getElementById("celebrationPieces");
     const overlayBadge = document.getElementById("overlayBadge");
     const overlayTitle = document.getElementById("overlayTitle");
     const overlayPrize = document.getElementById("overlayPrize");
@@ -815,7 +1008,7 @@
 
     function buildWheelLabels(){
       const segment = 360 / PRIZES.length;
-      const distance = window.innerWidth <= 430 ? 136 : 165;
+      const distance = window.innerWidth <= 430 ? 138 : 172;
 
       wheel.innerHTML = PRIZES.map((item, index) => {
         const angle = index * segment + segment / 2;
@@ -1002,17 +1195,38 @@
       const segment = 360 / PRIZES.length;
       const segmentCenter = safeIndex * segment + segment / 2;
 
-      const extraTurns = 360 * 6;
+      const extraTurns = 360 * 8;
       const target = extraTurns + (360 - segmentCenter);
 
       currentRotation += target;
       wheel.style.transform = `rotate(${currentRotation}deg)`;
     }
 
+    function createCelebration(win){
+      celebrationPieces.innerHTML = "";
+
+      const total = win ? 42 : 16;
+      const colors = win
+        ? ["#facc15", "#fde68a", "#ff9f1c", "#ffffff"]
+        : ["#ef4444", "#fecaca", "#f97316"];
+
+      for (let i = 0; i < total; i++) {
+        const piece = document.createElement("span");
+        piece.className = "piece";
+        piece.style.left = Math.random() * 100 + "%";
+        piece.style.animationDelay = Math.random() * 0.8 + "s";
+        piece.style.animationDuration = (2.2 + Math.random() * 1.2) + "s";
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.transform = `rotate(${Math.random() * 180}deg)`;
+        celebrationPieces.appendChild(piece);
+      }
+    }
+
     function showPrizeOverlay(spin){
       clearTimeout(overlayTimer);
 
       const win = isWinningSpin(spin);
+      createCelebration(win);
 
       prizeOverlay.className = win
         ? "prize-overlay show win"
@@ -1032,7 +1246,7 @@
 
       overlayTimer = setTimeout(() => {
         prizeOverlay.classList.remove("show");
-      }, 3000);
+      }, 3500);
     }
 
     prizeOverlay.addEventListener("click", () => {
@@ -1074,6 +1288,7 @@
 
       btnSpin.disabled = true;
       btnSpin.textContent = "Girando...";
+      wheelWrap.classList.add("spinning");
 
       try {
         const res = await fetch("/api/spin-roulette", {
@@ -1087,6 +1302,7 @@
         const data = await res.json();
 
         if (!res.ok) {
+          wheelWrap.classList.remove("spinning");
           showMsg("err", data.error || "No se pudo girar.");
           await loadStatus();
           return;
@@ -1096,12 +1312,14 @@
         animateToPrize(spin.prize_code);
 
         setTimeout(async () => {
+          wheelWrap.classList.remove("spinning");
           showSpinResult(spin);
           await loadStatus();
           await loadRanking();
-        }, 4300);
+        }, RESULT_DELAY);
 
       } catch (err) {
+        wheelWrap.classList.remove("spinning");
         showMsg("err", "Error al girar: " + (err.message || String(err)));
       } finally {
         setTimeout(() => {
@@ -1109,7 +1327,7 @@
             btnSpin.disabled = false;
             btnSpin.textContent = "Girar por 20 puntos";
           }
-        }, 4400);
+        }, RESTORE_DELAY);
       }
     });
 
