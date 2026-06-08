@@ -9,8 +9,6 @@
     :root{
       --bg:#020202;
       --bg2:#020617;
-      --panel:#0b1220;
-      --panel2:#111827;
       --gold:#facc15;
       --gold2:#ff9f1c;
       --gold-soft:#fde68a;
@@ -18,11 +16,7 @@
       --muted:#94a3b8;
       --ok:#16a34a;
       --bad:#dc2626;
-      --line:#334155;
-      --blue:#38bdf8;
-      --green:#22c55e;
-      --red:#ef4444;
-      --spin-duration:6.8s;
+      --spin-duration:7.2s;
     }
 
     *{ box-sizing:border-box; }
@@ -247,8 +241,8 @@
 
     .wheel-wrap{
       position:relative;
-      width:min(445px, 89vw);
-      height:min(445px, 89vw);
+      width:min(465px, 90vw);
+      height:min(465px, 90vw);
       margin:10px auto 18px;
       border-radius:50%;
     }
@@ -256,34 +250,23 @@
     .wheel-wrap::before{
       content:"";
       position:absolute;
-      inset:-18px;
+      inset:-22px;
       border-radius:50%;
       background:
         conic-gradient(
           from 0deg,
           transparent,
-          rgba(250,204,21,.22),
+          rgba(250,204,21,.25),
           transparent,
           rgba(56,189,248,.10),
           transparent,
-          rgba(250,204,21,.18),
+          rgba(250,204,21,.20),
           transparent
         );
-      filter:blur(8px);
-      opacity:.72;
+      filter:blur(10px);
+      opacity:.8;
       animation:haloRotate 7s linear infinite;
       z-index:0;
-    }
-
-    .wheel-wrap::after{
-      content:"";
-      position:absolute;
-      inset:-4px;
-      border-radius:50%;
-      border:1px solid rgba(250,204,21,.24);
-      box-shadow:0 0 28px rgba(250,204,21,.10);
-      pointer-events:none;
-      z-index:1;
     }
 
     @keyframes haloRotate{
@@ -293,8 +276,8 @@
 
     .wheel-wrap.spinning::before{
       opacity:1;
-      filter:blur(10px);
-      animation:haloRotate 1.7s linear infinite;
+      filter:blur(12px);
+      animation:haloRotate 1.4s linear infinite;
     }
 
     .wheel-wrap.spinning .pointer{
@@ -308,23 +291,23 @@
 
     .pointer{
       position:absolute;
-      top:-10px;
+      top:-12px;
       left:50%;
       transform:translateX(-50%);
       width:0;
       height:0;
-      border-left:21px solid transparent;
-      border-right:21px solid transparent;
-      border-top:40px solid var(--gold);
-      z-index:8;
-      filter:drop-shadow(0 4px 4px rgba(0,0,0,.50));
+      border-left:23px solid transparent;
+      border-right:23px solid transparent;
+      border-top:43px solid var(--gold);
+      z-index:9;
+      filter:drop-shadow(0 4px 5px rgba(0,0,0,.65));
     }
 
     .wheel{
       width:100%;
       height:100%;
       border-radius:50%;
-      border:11px solid rgba(250,204,21,.90);
+      border:12px solid rgba(250,204,21,.92);
       background:
         conic-gradient(
           #1f2937 0deg 22.5deg,
@@ -345,8 +328,8 @@
           #991b1b 337.5deg 360deg
         );
       box-shadow:
-        0 24px 55px rgba(0,0,0,.58),
-        0 0 30px rgba(250,204,21,.16),
+        0 28px 60px rgba(0,0,0,.64),
+        0 0 35px rgba(250,204,21,.18),
         inset 0 0 0 2px rgba(255,255,255,.055);
       transition:transform var(--spin-duration) cubic-bezier(.08,.75,.05,1);
       position:relative;
@@ -358,12 +341,16 @@
     .wheel::before{
       content:"";
       position:absolute;
-      inset:20%;
+      inset:23%;
       border-radius:50%;
-      background:radial-gradient(circle, #020617 0%, #050505 68%, rgba(0,0,0,.4) 100%);
-      border:2px solid rgba(250,204,21,.50);
-      box-shadow:0 0 24px rgba(0,0,0,.50);
-      z-index:3;
+      background:
+        radial-gradient(circle at 38% 25%, rgba(255,255,255,.08), transparent 24%),
+        radial-gradient(circle, #020617 0%, #050505 68%, rgba(0,0,0,.4) 100%);
+      border:2px solid rgba(250,204,21,.55);
+      box-shadow:
+        0 0 24px rgba(0,0,0,.50),
+        inset 0 0 20px rgba(250,204,21,.08);
+      z-index:4;
     }
 
     .wheel::after{
@@ -372,19 +359,19 @@
       inset:0;
       border-radius:50%;
       background:
-        radial-gradient(circle at 35% 20%, rgba(255,255,255,.16), transparent 20%),
+        radial-gradient(circle at 35% 20%, rgba(255,255,255,.17), transparent 20%),
         linear-gradient(120deg, transparent 0%, rgba(255,255,255,.06) 46%, transparent 58%);
       pointer-events:none;
-      z-index:4;
-      opacity:.50;
+      z-index:5;
+      opacity:.48;
     }
 
     .wheel-wrap.spinning .wheel{
-      filter:saturate(1.2) contrast(1.08);
+      filter:saturate(1.22) contrast(1.08);
       box-shadow:
-        0 28px 65px rgba(0,0,0,.64),
-        0 0 42px rgba(250,204,21,.24),
-        0 0 70px rgba(255,159,28,.14),
+        0 30px 70px rgba(0,0,0,.70),
+        0 0 48px rgba(250,204,21,.26),
+        0 0 75px rgba(255,159,28,.15),
         inset 0 0 0 2px rgba(255,255,255,.065);
     }
 
@@ -393,20 +380,21 @@
       left:50%;
       top:50%;
       width:82px;
-      min-height:24px;
+      min-height:34px;
       margin-left:-41px;
-      margin-top:-12px;
-      z-index:2;
+      margin-top:-17px;
+      z-index:3;
       display:flex;
+      flex-direction:column;
       align-items:center;
       justify-content:center;
       text-align:center;
-      padding:3px 5px;
-      border-radius:999px;
+      padding:4px 5px;
+      border-radius:14px;
       color:#fff;
-      background:rgba(0,0,0,.48);
+      background:rgba(0,0,0,.52);
       border:1px solid rgba(255,255,255,.18);
-      font-size:10px;
+      font-size:9.5px;
       line-height:1.05;
       font-weight:900;
       text-transform:uppercase;
@@ -416,18 +404,32 @@
         translateY(calc(var(--distance) * -1))
         rotate(var(--angleBack));
       pointer-events:none;
+      box-shadow:0 6px 13px rgba(0,0,0,.24);
+    }
+
+    .wheel-label .face{
+      display:block;
+      font-size:15px;
+      line-height:1;
+      margin-bottom:1px;
+    }
+
+    .wheel-label .txt{
+      display:block;
+      max-width:72px;
+      white-space:normal;
     }
 
     .wheel-label.win-label{
-      background:rgba(250,204,21,.22);
+      background:linear-gradient(180deg, rgba(250,204,21,.28), rgba(0,0,0,.45));
       color:#fef9c3;
-      border-color:rgba(250,204,21,.40);
+      border-color:rgba(250,204,21,.42);
     }
 
     .wheel-label.no-label{
-      background:rgba(0,0,0,.52);
-      color:#e5e7eb;
-      border-color:rgba(148,163,184,.22);
+      background:linear-gradient(180deg, rgba(239,68,68,.18), rgba(0,0,0,.55));
+      color:#fee2e2;
+      border-color:rgba(248,113,113,.30);
     }
 
     .wheel-center{
@@ -436,7 +438,7 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      z-index:6;
+      z-index:7;
       pointer-events:none;
     }
 
@@ -842,14 +844,19 @@
       .logo{ width:76px; height:76px; }
       .top h1{ font-size:29px; }
       .wheel-wrap{
-        width:91vw;
-        height:91vw;
+        width:92vw;
+        height:92vw;
       }
       .wheel-label{
-        width:68px;
-        margin-left:-34px;
-        font-size:8.5px;
-        --distance: 138px !important;
+        width:66px;
+        margin-left:-33px;
+        min-height:30px;
+        margin-top:-15px;
+        font-size:7.9px;
+        --distance: 141px !important;
+      }
+      .wheel-label .face{
+        font-size:12px;
       }
       .wheel-center span{
         width:106px;
@@ -955,27 +962,27 @@
 
   <script>
     const TOKEN_KEY = "pdm_customer_token";
-    const SPIN_DURATION = 6800;
+    const SPIN_DURATION = 7200;
     const RESULT_DELAY = SPIN_DURATION + 250;
     const RESTORE_DELAY = SPIN_DURATION + 650;
 
     const PRIZES = [
-      { code:"NO_1", name:"Sigue intentando", short:"Intenta" },
-      { code:"NO_2", name:"Sigue intentando", short:"Intenta" },
-      { code:"NO_3", name:"Casi ganas", short:"Casi" },
-      { code:"NO_4", name:"Vuelve a intentarlo", short:"Otra vez" },
-      { code:"SALDO_3", name:"S/ 3 saldo", short:"S/3" },
-      { code:"SALDO_5", name:"S/ 5 saldo", short:"S/5" },
-      { code:"SALDO_10", name:"S/ 10 saldo", short:"S/10" },
-      { code:"CHIFLE", name:"Chifle", short:"Chifle" },
-      { code:"MARACUYA_1L", name:"Maracuyá 1L", short:"Maracuyá" },
-      { code:"NUGGETS", name:"Nuggets", short:"Nuggets" },
-      { code:"ALITA_EXTRA", name:"Alita extra", short:"Alita" },
-      { code:"PAPAS_PERSONALES", name:"Papas personales", short:"Papas" },
-      { code:"DELIVERY_GRATIS", name:"Delivery gratis", short:"Delivery" },
-      { code:"BURGER_CLASICA", name:"Burger clásica", short:"Burger" },
-      { code:"CHAUFA_MEDELLIN", name:"Chaufa Medellín", short:"Chaufa" },
-      { code:"PLATO_ALITAS", name:"Plato de alitas", short:"Alitas" }
+      { code:"NO_1", name:"Sigue intentando", short:"Sigue", face:"😢" },
+      { code:"NO_2", name:"Sigue intentando", short:"Sigue", face:"😢" },
+      { code:"NO_3", name:"Casi ganas", short:"Casi", face:"😢" },
+      { code:"NO_4", name:"Vuelve a intentarlo", short:"Otra vez", face:"😢" },
+      { code:"SALDO_3", name:"S/ 3 saldo", short:"S/3", face:"💰" },
+      { code:"SALDO_5", name:"S/ 5 saldo", short:"S/5", face:"💰" },
+      { code:"SALDO_10", name:"S/ 10 saldo", short:"S/10", face:"💰" },
+      { code:"CHIFLE", name:"Chifle", short:"Chifle", face:"🍌" },
+      { code:"MARACUYA_1L", name:"Maracuyá 1L", short:"Maracuyá", face:"🥤" },
+      { code:"NUGGETS", name:"Nuggets", short:"Nuggets", face:"🍗" },
+      { code:"ALITA_EXTRA", name:"Alita extra", short:"Alita", face:"🍗" },
+      { code:"PAPAS_PERSONALES", name:"Papas personales", short:"Papas", face:"🍟" },
+      { code:"DELIVERY_GRATIS", name:"Delivery gratis", short:"Delivery", face:"🛵" },
+      { code:"BURGER_CLASICA", name:"Burger clásica", short:"Burger", face:"🍔" },
+      { code:"CHAUFA_MEDELLIN", name:"Chaufa Medellín", short:"Chaufa", face:"🍚" },
+      { code:"PLATO_ALITAS", name:"Plato de alitas", short:"Alitas", face:"🔥" }
     ];
 
     const msgBox = document.getElementById("msgBox");
@@ -1008,7 +1015,7 @@
 
     function buildWheelLabels(){
       const segment = 360 / PRIZES.length;
-      const distance = window.innerWidth <= 430 ? 138 : 172;
+      const distance = window.innerWidth <= 430 ? 141 : 181;
 
       wheel.innerHTML = PRIZES.map((item, index) => {
         const angle = index * segment + segment / 2;
@@ -1020,7 +1027,8 @@
             class="wheel-label ${isNoPrize ? "no-label" : "win-label"}"
             style="--angle:${angle}deg; --angleBack:${angleBack}deg; --distance:${distance}px"
           >
-            ${item.short}
+            <span class="face">${item.face}</span>
+            <span class="txt">${isNoPrize ? "Sigue" : item.short}</span>
           </span>
         `;
       }).join("");
@@ -1124,13 +1132,13 @@
 
         return `
           <div class="history-item ${isPrize ? "prize" : "no-prize"}">
-            <div class="history-title">${isPrize ? "🎁" : "😅"} ${title}</div>
+            <div class="history-title">${isPrize ? "🎁" : "😢"} ${title}</div>
             <div class="history-meta">
               Giro #${item.spin_number_day || "-"} · ${formatDate(item.created_at)}<br>
               Estado: <b>${estadoTexto}</b><br>
               Puntos: <b>${item.points_before || 0} → ${item.points_after || 0}</b><br>
               ${isPrize ? `<span class="history-code">Código: ${codigo}</span><br>` : ""}
-              ${isPrize ? `Vence: ${vencimiento}` : "Puedes intentarlo otra vez si tienes puntos y giros disponibles."}
+              ${isPrize ? `Vence: ${vencimiento}` : "Sigue intentando si tienes puntos y giros disponibles."}
             </div>
           </div>
         `;
@@ -1233,7 +1241,7 @@
         : "prize-overlay show lose";
 
       overlayBadge.textContent = win ? "Premio ganado" : "Ruleta VIP";
-      overlayTitle.textContent = win ? "🎉 ¡Ganaste!" : "😅 Sigue intentando";
+      overlayTitle.textContent = win ? "🎉 ¡Ganaste!" : "😢 Sigue intentando";
       overlayPrize.textContent = spin.prize_name || "Resultado";
 
       if (win) {
@@ -1258,7 +1266,7 @@
 
       const win = isWinningSpin(spin);
 
-      resultTitle.textContent = win ? "🎉 ¡Ganaste!" : "😅 Sigue intentando";
+      resultTitle.textContent = win ? "🎉 ¡Ganaste!" : "😢 Sigue intentando";
       resultDetail.innerHTML = `
         <b>Resultado:</b> ${spin.prize_name || "-"}<br>
         ${win ? `<b>Código:</b> ${spin.prize_unique_code || "-"}<br>` : ""}
