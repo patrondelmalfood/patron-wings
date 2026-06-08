@@ -981,7 +981,7 @@
           <div class="slot-bottom">
             <button id="btnSpin" class="spin-btn" disabled>SPIN · 20 puntos</button>
             <div class="slot-mini">
-              Se detiene columna 1, luego columna 2 y al final columna 3. El premio real lo decide el sistema seguro.
+              Las 3 columnas giran juntas. Luego se detiene la 1, después la 2 y al final la 3.
             </div>
           </div>
         </div>
@@ -1012,10 +1012,10 @@
     const TOKEN_KEY = "pdm_customer_token";
 
     const STOP_REEL_1 = 4000;
-    const STOP_REEL_2 = 5000;
-    const STOP_REEL_3 = 5000;
-    const RESULT_EXTRA_DELAY = 600;
-    const RESTORE_EXTRA_DELAY = 1200;
+    const STOP_REEL_2 = 8000;
+    const STOP_REEL_3 = 12000;
+    const RESULT_EXTRA_DELAY = 700;
+    const RESTORE_EXTRA_DELAY = 1500;
 
     const SYMBOLS = [
       { code:"NO_1", name:"Sigue intentando", short:"Sigue", emoji:"😢", noPrize:true },
@@ -1133,7 +1133,7 @@
       reelInners.forEach((reel, index) => {
         const interval = setInterval(() => {
           renderReel(reel, [randomSymbol(), randomSymbol(), randomSymbol()]);
-        }, 60 + index * 18);
+        }, 55 + index * 20);
 
         spinIntervals[index] = interval;
       });
