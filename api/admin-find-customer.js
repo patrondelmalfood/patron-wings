@@ -12,7 +12,7 @@ export default async function handler(req, res) {
 
     const SUPABASE_URL = "https://defdwzzewzfjuseozwkn.supabase.co";
     const SUPABASE_ANON_KEY =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
 
     const headers = {
       apikey: SUPABASE_ANON_KEY,
@@ -154,6 +154,7 @@ export default async function handler(req, res) {
       card: {
         id: Number(card.id),
         customer_id: Number(card.customer_id),
+
         sellos_actuales: Number(card.sellos_actuales || 0),
         meta_sellos: Number(card.meta_sellos || 20),
         premio_pendiente: !!card.premio_pendiente,
