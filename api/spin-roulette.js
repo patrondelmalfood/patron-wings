@@ -1,7 +1,13 @@
 import crypto from "crypto";
 
-const TOKEN_SECRET = process.env.TOKEN_SECRET;
-const SUPABASE_URL = process.env.SUPABASE_URL;
+const TOKEN_SECRET =
+  process.env.TOKEN_SECRET ||
+  "patron_wings_token_seguro_2026_Bela1997_local_845219_x9";
+
+const SUPABASE_URL =
+  process.env.SUPABASE_URL ||
+  "https://defdwzzewzfjuseozwkn.supabase.co";
+
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
 
 function cleanPhone(value) {
