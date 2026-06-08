@@ -1187,7 +1187,7 @@
       { code:"NO_3", name:"Casi ganas", short:"Casi", emoji:"😢", noPrize:true },
       { code:"NO_4", name:"Vuelve a intentarlo", short:"Otra vez", emoji:"😢", noPrize:true },
 
-      { code:"SALDO_1", name:"S/ 1 saldo", short:"S/1", emoji:"🪙" },
+      { code:"SALDO_1", name:"S/ 1 saldo", short:"S/1", emoji:"💵" },
       { code:"SALDO_3", name:"S/ 3 saldo", short:"S/3", emoji:"💰" },
       { code:"SALDO_5", name:"S/ 5 saldo", short:"S/5", emoji:"💵" },
       { code:"SALDO_10", name:"S/ 10 saldo", short:"S/10", emoji:"🤑" },
@@ -1401,7 +1401,7 @@
         box.classList.add("spinning");
       });
 
-      const speeds = [95, 115, 135];
+      const speeds = [220, 260, 300];
 
       reelInners.forEach((reel, index) => {
         const interval = setInterval(() => {
@@ -1528,7 +1528,7 @@
     }
 
     function isWinningSpin(spin){
-      return spin && spin.prize_status === "pendiente";
+      return spin && (spin.prize_status === "pendiente" || spin.prize_status === "test");
     }
 
     function renderStatus(status){
