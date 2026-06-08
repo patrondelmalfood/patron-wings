@@ -1,6 +1,8 @@
 import crypto from "crypto";
 
-const TOKEN_SECRET = process.env.TOKEN_SECRET || "patron_wings_token_seguro_2026_Bela1997_local_845219_x9";
+const TOKEN_SECRET =
+  process.env.TOKEN_SECRET ||
+  "patron_wings_token_seguro_2026_Bela1997_local_845219_x9";
 
 function verifyToken(token) {
   try {
@@ -36,7 +38,8 @@ export default async function handler(req, res) {
     }
 
     const SUPABASE_URL = "https://defdwzzewzfjuseozwkn.supabase.co";
-    const SUPABASE_ANON_KEY = "TU_SUPABASE_ANON_KEY_AQUI";
+    const SUPABASE_ANON_KEY =
+      "AQUI_DEJA_LA_MISMA_CLAVE_LARGA_QUE_YA_TIENES_EN_TU_ROULETTE_STATUS";
 
     const headers = {
       apikey: SUPABASE_ANON_KEY,
@@ -44,40 +47,64 @@ export default async function handler(req, res) {
       "Content-Type": "application/json"
     };
 
-    const rpcRes = await fetch(
+    const customerId = Number(session.customer_id);
+
+    const statusRes = await fetch(
       SUPABASE_URL + "/rest/v1/rpc/vip_get_roulette_status",
       {
         method: "POST",
         headers,
         body: JSON.stringify({
-          p_customer_id: Number(session.customer_id)
+          p_customer_id: customerId
         })
       }
     );
 
-    if (!rpcRes.ok) {
-      const txt = await rpcRes.text();
+    if (!statusRes.ok) {
+      const txt = await statusRes.text();
       return res.status(500).json({
+        ok: false,
         error: "Error obteniendo estado de ruleta",
         detail: txt
       });
     }
 
-    const rows = await rpcRes.json();
-    const status = Array.isArray(rows) ? rows[0] : rows;
+    const statusRows = await statusRes.json();
+    const status = Array.isArray(statusRows) ? statusRows[0] : statusRows;
 
     if (!status) {
       return res.status(404).json({
+        ok: false,
         error: "No se encontró información VIP del cliente"
       });
     }
 
+    const historyRes = await fetch(
+      SUPABASE_URL + "/rest/v1/rpc/vip_get_roulette_history",
+      {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          p_customer_id: customerId,
+          p_limit: 20
+        })
+      }
+    );
+
+    let history = [];
+
+    if (historyRes.ok) {
+      history = await historyRes.json();
+    }
+
     return res.status(200).json({
       ok: true,
-      status
+      status,
+      history
     });
   } catch (err) {
     return res.status(500).json({
+      ok: false,
       error: "Error inesperado",
       detail: err.message || String(err)
     });
