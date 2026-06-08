@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registro de cliente - El Patrón del Mal</title>
+  <title>Registro Club VIP - El Patrón del Mal</title>
 
   <style>
     :root{
@@ -544,7 +544,7 @@
   <main class="page">
     <section class="top-brand">
       <h1>El Patrón del Mal</h1>
-      <p>Registro para tarjeta virtual de sellos y premios</p>
+      <p>Registro para Club VIP de puntos y ruleta</p>
     </section>
 
     <section class="credit-card">
@@ -572,12 +572,12 @@
 
         <div class="card-bottom">
           <div class="card-data">
-            <div class="label">Tarjeta virtual</div>
+            <div class="label">Club VIP</div>
             <div class="value number">**** **** **** 2026</div>
           </div>
           <div class="card-data">
             <div class="label">Beneficio</div>
-            <div class="value">Sellos</div>
+            <div class="value">Puntos</div>
           </div>
         </div>
       </div>
@@ -585,7 +585,7 @@
 
     <section class="form-card">
       <h2 class="form-title">Crear cuenta</h2>
-      <p class="form-subtitle">Regístrate para empezar a acumular sellos y reclamar premios.</p>
+      <p class="form-subtitle">Regístrate para ganar puntos por tus compras y girar la Ruleta VIP.</p>
 
       <div class="benefits">
         <div class="benefit">
@@ -593,18 +593,18 @@
           <span>Registro rápido</span>
         </div>
         <div class="benefit">
-          <span class="icon">🏅</span>
-          <span>Acumula sellos</span>
+          <span class="icon">⭐</span>
+          <span>Acumula puntos</span>
         </div>
         <div class="benefit">
-          <span class="icon">🎁</span>
-          <span>Gana premios</span>
+          <span class="icon">🎰</span>
+          <span>Gira la ruleta</span>
         </div>
       </div>
 
       <label for="nombre">Nombre</label>
       <input id="nombre" type="text" placeholder="Ej: Juan Pérez" autocomplete="name">
-      <span class="hint">Este nombre identificará tu cartilla virtual.</span>
+      <span class="hint">Este nombre identificará tu cuenta VIP.</span>
 
       <label for="celular">Celular</label>
       <input
@@ -635,16 +635,16 @@
       <span class="hint">Usa una contraseña fácil de recordar para volver a entrar.</span>
 
       <div class="secure-note">
-        🔒 Tus datos se usan para identificar tu cuenta y guardar tus sellos acumulados.
+        🔒 Tus datos se usan para identificar tu cuenta, guardar tus puntos y registrar tus premios.
       </div>
 
-      <button id="btnGuardar" class="register-btn">Registrarme</button>
+      <button id="btnGuardar" class="register-btn">Registrarme al Club VIP</button>
 
       <div id="msgOk" class="msg ok"></div>
       <div id="msgErr" class="msg err"></div>
 
       <div class="mini">
-        Al registrarte podrás seguir tu avance y reclamar tus premios cuando completes tu cartilla.
+        Al registrarte podrás iniciar sesión, ver tus puntos, girar la Ruleta VIP y reclamar premios.
       </div>
 
       <div class="link-login">
@@ -719,7 +719,7 @@
           return;
         }
 
-        showOk("Registro exitoso. Ahora inicia sesión...");
+        showOk("Registro exitoso. Ahora inicia sesión para entrar a tu Ruleta VIP...");
         setTimeout(() => {
           window.location.href = "/login.html";
         }, 1200);
