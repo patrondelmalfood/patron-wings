@@ -1872,7 +1872,7 @@
         if (!res.ok) {
           isSpinning = false;
           stopSlotAnimation();
-          showMsg("err", data.error || data.detail || "No se pudo jugar.");
+          showMsg("err", data.detail || data.error || "No se pudo jugar.");
           await loadStatus();
           return;
         }
