@@ -4,20 +4,32 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { celular, nota } = req.body || {};
-    const cleanCell = String(celular || "").replace(/\D/g, "").trim();
-    const cleanNote = String(nota || "").trim();
+    const {
+      prize_unique_code,
+      codigo,
+      code,
+      delivered_by,
+      entregado_por
+    } = req.body || {};
 
-    if (!cleanCell) {
-      return res.status(400).json({ error: "Falta celular" });
-    }
+    const prizeCode = String(
+      prize_unique_code || codigo || code || ""
+    ).trim().toUpperCase();
 
-    if (!cleanNote) {
-      return res.status(400).json({ error: "Falta la nota del premio entregado" });
+    const deliveredBy = String(
+      delivered_by || entregado_por || "admin"
+    ).trim() || "admin";
+
+    if (!prizeCode) {
+      return res.status(400).json({
+        error: "Falta código del premio",
+        detail: "Debes enviar el código generado por la Ruleta VIP. Ej: PDM-260608-D53C65"
+      });
     }
 
     const SUPABASE_URL = "https://defdwzzewzfjuseozwkn.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
+    const SUPABASE_ANON_KEY =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
 
     const headers = {
       apikey: SUPABASE_ANON_KEY,
@@ -25,118 +37,157 @@ export default async function handler(req, res) {
       "Content-Type": "application/json"
     };
 
-    const customerRes = await fetch(
-      SUPABASE_URL +
-        "/rest/v1/customers?select=id,nombre,celular&celular=eq." +
-        encodeURIComponent(cleanCell) +
-        "&limit=1",
-      { headers }
-    );
-
-    if (!customerRes.ok) {
-      const txt = await customerRes.text();
-      return res.status(500).json({
-        error: "Error buscando cliente",
-        detail: txt
-      });
-    }
-
-    const customerRows = await customerRes.json();
-    const customer = customerRows && customerRows[0];
-
-    if (!customer || !customer.id) {
-      return res.status(404).json({ error: "Cliente no encontrado" });
-    }
-
-    const cardRes = await fetch(
-      SUPABASE_URL +
-        "/rest/v1/loyalty_cards?select=id,customer_id,sellos_actuales,meta_sellos,premio_pendiente&customer_id=eq." +
-        encodeURIComponent(customer.id) +
-        "&limit=1",
-      { headers }
-    );
-
-    if (!cardRes.ok) {
-      const txt = await cardRes.text();
-      return res.status(500).json({
-        error: "Error buscando tarjeta",
-        detail: txt
-      });
-    }
-
-    const cardRows = await cardRes.json();
-    const card = cardRows && cardRows[0];
-
-    if (!card || !card.id) {
-      return res.status(404).json({ error: "Cliente encontrado, pero sin tarjeta" });
-    }
-
-    const updateRes = await fetch(
-      SUPABASE_URL +
-        "/rest/v1/loyalty_cards?id=eq." +
-        encodeURIComponent(card.id),
+    const rpcRes = await fetch(
+      SUPABASE_URL + "/rest/v1/rpc/vip_admin_deliver_prize",
       {
-        method: "PATCH",
-        headers: {
-          ...headers,
-          Prefer: "return=representation"
-        },
+        method: "POST",
+        headers,
         body: JSON.stringify({
-          premio_pendiente: false
+          p_prize_unique_code: prizeCode,
+          p_delivered_by: deliveredBy
         })
       }
     );
 
-    if (!updateRes.ok) {
-      const txt = await updateRes.text();
-      return res.status(500).json({
-        error: "Error actualizando tarjeta",
-        detail: txt
-      });
-    }
+    if (!rpcRes.ok) {
+      const txt = await rpcRes.text();
 
-    const movementRes = await fetch(
-      SUPABASE_URL + "/rest/v1/loyalty_movements",
-      {
-        method: "POST",
-        headers: {
-          ...headers,
-          Prefer: "return=representation"
-        },
-        body: JSON.stringify([{
-          customer_id: customer.id,
-          tipo: "premio_entregado",
-          cantidad: 1,
-          nota: cleanNote
-        }])
+      let mensaje = "No se pudo entregar el premio.";
+
+      if (txt.includes("Código de premio no encontrado")) {
+        mensaje = "Código de premio no encontrado.";
       }
-    );
 
-    if (!movementRes.ok) {
-      const txt = await movementRes.text();
-      return res.status(500).json({
-        error: "Se actualizó la tarjeta, pero falló el movimiento",
+      if (txt.includes("no está pendiente")) {
+        mensaje = "Este premio ya no está pendiente o ya fue entregado.";
+      }
+
+      if (txt.includes("ya venció")) {
+        mensaje = "Este premio ya venció.";
+      }
+
+      return res.status(400).json({
+        ok: false,
+        error: mensaje,
         detail: txt
       });
     }
+
+    const rpcRows = await rpcRes.json();
+    const delivered = Array.isArray(rpcRows) ? rpcRows[0] : rpcRows;
+
+    if (!delivered || !delivered.customer_id) {
+      return res.status(500).json({
+        ok: false,
+        error: "Se procesó la entrega, pero no se recibió información del premio."
+      });
+    }
+
+    const customerId = Number(delivered.customer_id);
+
+    let card = null;
+
+    try {
+      const cardRes = await fetch(
+        SUPABASE_URL +
+          "/rest/v1/loyalty_cards?select=id,customer_id,sellos_actuales,meta_sellos,premio_pendiente,puntos_disponibles,puntos_ranking,sellos_migrados,puntos_migrados_desde_sellos,puntos_actualizados_at&customer_id=eq." +
+          encodeURIComponent(customerId) +
+          "&limit=1",
+        { headers }
+      );
+
+      if (cardRes.ok) {
+        const cardRows = await cardRes.json();
+        card = cardRows && cardRows[0] ? cardRows[0] : null;
+      }
+    } catch {}
+
+    let status = null;
+
+    try {
+      const statusRes = await fetch(
+        SUPABASE_URL + "/rest/v1/rpc/vip_get_roulette_status",
+        {
+          method: "POST",
+          headers,
+          body: JSON.stringify({
+            p_customer_id: customerId
+          })
+        }
+      );
+
+      if (statusRes.ok) {
+        const statusRows = await statusRes.json();
+        status = Array.isArray(statusRows) ? statusRows[0] : statusRows;
+      }
+    } catch {}
+
+    let rouletteHistory = [];
+
+    try {
+      const historyRes = await fetch(
+        SUPABASE_URL + "/rest/v1/rpc/vip_get_roulette_history",
+        {
+          method: "POST",
+          headers,
+          body: JSON.stringify({
+            p_customer_id: customerId,
+            p_limit: 20
+          })
+        }
+      );
+
+      if (historyRes.ok) {
+        rouletteHistory = await historyRes.json();
+      }
+    } catch {}
+
+    let pointMovements = [];
+
+    try {
+      const movementsRes = await fetch(
+        SUPABASE_URL +
+          "/rest/v1/vip_point_movements?select=id,customer_id,loyalty_card_id,tipo,puntos,puntos_antes,puntos_despues,puntos_ranking_antes,puntos_ranking_despues,descripcion,referencia,created_at&customer_id=eq." +
+          encodeURIComponent(customerId) +
+          "&order=created_at.desc&limit=30",
+        { headers }
+      );
+
+      if (movementsRes.ok) {
+        pointMovements = await movementsRes.json();
+      }
+    } catch {}
 
     return res.status(200).json({
       ok: true,
-      message: "Premio marcado como entregado",
+      message: "Premio marcado como entregado.",
+      delivered,
       customer: {
-        id: customer.id,
-        nombre: customer.nombre || "",
-        celular: customer.celular || ""
+        id: customerId,
+        nombre: delivered.nombre || "",
+        celular: delivered.celular || ""
       },
-      card: {
+      card: card ? {
         id: card.id,
+        customer_id: card.customer_id,
         sellos_actuales: Number(card.sellos_actuales || 0),
-        meta_sellos: Math.max(20, Number(card.meta_sellos || 20)),
-        premio_pendiente: false
-      }
+        meta_sellos: Number(card.meta_sellos || 20),
+        premio_pendiente: !!card.premio_pendiente,
+        puntos_disponibles: Number(card.puntos_disponibles || 0),
+        puntos_ranking: Number(card.puntos_ranking || 0),
+        sellos_migrados: !!card.sellos_migrados,
+        puntos_migrados_desde_sellos: Number(card.puntos_migrados_desde_sellos || 0),
+        puntos_actualizados_at: card.puntos_actualizados_at || null
+      } : null,
+      status,
+      rouletteHistory,
+      pointMovements,
+      history: rouletteHistory,
+      movements: pointMovements
     });
   } catch (err) {
     return res.status(500).json({
+      ok: false,
       error: "Error inesperado",
       detail: err.message || String(err)
     });
