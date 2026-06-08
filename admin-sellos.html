@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Sellos - El Patrón del Mal</title>
+  <title>Admin Puntos VIP - El Patrón del Mal</title>
 
   <style>
     :root{
@@ -24,6 +24,7 @@
       --orange:#fb923c;
       --blue:#38bdf8;
       --red:#ef4444;
+      --purple:#a855f7;
     }
 
     *{ box-sizing:border-box; }
@@ -60,7 +61,7 @@
 
     .wrap{
       width:100%;
-      max-width:1060px;
+      max-width:1120px;
       margin:0 auto;
       position:relative;
       z-index:1;
@@ -220,12 +221,16 @@
       color:#082f49;
     }
 
+    .btn-purple{
+      background:linear-gradient(180deg, #c084fc, #a855f7);
+      color:#2e1065;
+    }
 
     .vip-dashboard{
       position:relative;
       z-index:1;
       display:grid;
-      grid-template-columns:repeat(3,1fr);
+      grid-template-columns:repeat(4,1fr);
       gap:12px;
       margin:0 0 16px;
     }
@@ -265,130 +270,13 @@
     .dash-value{
       margin-top:5px;
       color:var(--gold);
-      font-size:31px;
+      font-size:29px;
       line-height:1;
       font-weight:900;
       text-shadow:0 0 12px rgba(250,204,21,.18);
     }
 
-    .ranking-panel{
-      position:relative;
-      z-index:1;
-      background:rgba(0,0,0,.24);
-      border:1px solid rgba(250,204,21,.20);
-      border-radius:24px;
-      padding:16px;
-      margin-bottom:16px;
-      display:none;
-    }
-
-    .ranking-panel.show{
-      display:block;
-    }
-
-    .ranking-head{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-bottom:12px;
-    }
-
-    .ranking-head h2{
-      margin:0;
-      color:var(--gold-soft);
-      font-size:20px;
-      line-height:1;
-    }
-
-    .ranking-list{
-      display:grid;
-      gap:9px;
-      max-height:430px;
-      overflow:auto;
-      padding-right:4px;
-    }
-
-    .ranking-item{
-      display:grid;
-      grid-template-columns:54px 1fr auto;
-      gap:10px;
-      align-items:center;
-      padding:12px;
-      border-radius:18px;
-      border:1px solid rgba(148,163,184,.18);
-      background:linear-gradient(180deg, rgba(2,6,23,.96), rgba(15,23,42,.86));
-    }
-
-    .ranking-pos{
-      width:44px;
-      height:44px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      border-radius:16px;
-      background:rgba(250,204,21,.12);
-      border:1px solid rgba(250,204,21,.24);
-      color:var(--gold);
-      font-weight:900;
-      font-size:15px;
-    }
-
-    .ranking-name{
-      color:#fff;
-      font-weight:900;
-      font-size:15px;
-      line-height:1.2;
-      word-break:break-word;
-    }
-
-    .ranking-phone{
-      margin-top:4px;
-      color:#94a3b8;
-      font-size:12px;
-      font-weight:800;
-    }
-
-    .ranking-stamps{
-      text-align:right;
-      color:var(--gold);
-      font-weight:900;
-      white-space:nowrap;
-    }
-
-    .ranking-stamps small{
-      display:block;
-      color:#cbd5e1;
-      font-size:11px;
-      margin-top:3px;
-    }
-
-
-    .ranking-delete{
-      margin-top:8px;
-      padding:7px 10px;
-      border-radius:12px;
-      font-size:12px;
-      background:linear-gradient(180deg, #f87171, #ef4444);
-      color:#fff;
-      width:auto;
-    }
-
-    .ranking-pending{
-      display:inline-flex;
-      margin-top:5px;
-      padding:4px 8px;
-      border-radius:999px;
-      background:rgba(251,146,60,.12);
-      border:1px solid rgba(251,146,60,.28);
-      color:#fed7aa;
-      font-size:11px;
-      font-weight:900;
-    }
-
-
-    .search-panel{
+    .panel-block{
       position:relative;
       z-index:1;
       background:rgba(0,0,0,.24);
@@ -398,23 +286,23 @@
       margin-bottom:16px;
     }
 
-    .search-title{
+    .panel-head{
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:12px;
-      margin-bottom:12px;
       flex-wrap:wrap;
+      margin-bottom:12px;
     }
 
-    .search-title h2{
+    .panel-head h2{
       margin:0;
       color:var(--gold-soft);
       font-size:20px;
       line-height:1;
     }
 
-    .search-title span{
+    .panel-head span{
       color:#cbd5e1;
       font-size:13px;
       font-weight:800;
@@ -426,7 +314,7 @@
       gap:10px;
     }
 
-    input{
+    input, select, textarea{
       width:100%;
       box-sizing:border-box;
       padding:14px 15px;
@@ -437,11 +325,17 @@
       font-size:16px;
       outline:none;
       transition:border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+      font-family:Arial, Helvetica, sans-serif;
     }
 
-    input::placeholder{ color:#64748b; }
+    textarea{
+      min-height:86px;
+      resize:vertical;
+    }
 
-    input:focus{
+    input::placeholder, textarea::placeholder{ color:#64748b; }
+
+    input:focus, select:focus, textarea:focus{
       border-color:var(--gold);
       box-shadow:0 0 0 3px rgba(250,204,21,.12);
       transform:translateY(-1px);
@@ -484,18 +378,13 @@
     }
 
     .client-card,
-    .reward-box,
-    .history-card{
+    .side-card{
       background:
         linear-gradient(180deg, rgba(0,0,0,.28), rgba(15,23,42,.72));
-      border:1px solid #1e293b;
+      border:1px solid rgba(250,204,21,.22);
       border-radius:24px;
       padding:16px;
       box-shadow:inset 0 0 0 1px rgba(255,255,255,.025);
-    }
-
-    .client-card{
-      border-color:rgba(250,204,21,.24);
     }
 
     .client-head{
@@ -557,41 +446,8 @@
 
     .info-value.gold{
       color:var(--gold);
-      font-size:24px;
+      font-size:25px;
       text-shadow:0 0 9px rgba(250,204,21,.16);
-    }
-
-    .progress-area{
-      margin-top:14px;
-    }
-
-    .progress-row{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      color:#cbd5e1;
-      font-size:13px;
-      font-weight:800;
-      margin-bottom:8px;
-    }
-
-    .bar{
-      width:100%;
-      height:13px;
-      background:#020617;
-      border:1px solid #1e293b;
-      border-radius:999px;
-      overflow:hidden;
-    }
-
-    .bar-fill{
-      height:100%;
-      width:0%;
-      background:linear-gradient(90deg, #facc15, #fff2a6);
-      border-radius:999px;
-      transition:width .35s ease;
-      box-shadow:0 0 12px rgba(250,204,21,.42);
     }
 
     .actions{
@@ -605,9 +461,42 @@
       width:100%;
     }
 
-    .reward-box{
-      margin-bottom:16px;
-      border-color:rgba(250,204,21,.24);
+    .points-form{
+      margin-top:16px;
+      display:grid;
+      gap:10px;
+      background:rgba(250,204,21,.06);
+      border:1px solid rgba(250,204,21,.16);
+      border-radius:18px;
+      padding:14px;
+    }
+
+    .two-cols{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .quick-buttons{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .quick-buttons button{
+      padding:10px 12px;
+      font-size:13px;
+    }
+
+    .note-box{
+      margin-top:12px;
+      color:#fef3c7;
+      font-size:14px;
+      line-height:1.45;
+      padding:12px;
+      border-radius:16px;
+      background:rgba(250,204,21,.08);
+      border:1px solid rgba(250,204,21,.16);
     }
 
     .box-title{
@@ -620,54 +509,115 @@
       font-weight:900;
     }
 
-    .reward-note{
-      margin-top:10px;
-      color:#cbd5e1;
+    .history-list,
+    .ranking-list,
+    .pending-list,
+    .movement-list{
+      display:grid;
+      gap:10px;
+      max-height:360px;
+      overflow:auto;
+      padding-right:4px;
+      color:#dbeafe;
       font-size:13px;
       line-height:1.45;
     }
 
-    .stamp-note{
-      margin-top:12px;
-      color:#fef3c7;
-      font-size:14px;
-      line-height:1.45;
-      padding:12px;
-      border-radius:16px;
-      background:rgba(250,204,21,.08);
-      border:1px solid rgba(250,204,21,.16);
-    }
-
-    .history-card{
-      border-color:rgba(148,163,184,.22);
-    }
-
-    .history-list{
-      max-height:320px;
-      overflow:auto;
-      padding-right:4px;
-    }
-
-    .history-item{
+    .list-item{
       padding:12px;
       border:1px solid rgba(148,163,184,.16);
       background:rgba(0,0,0,.20);
       border-radius:16px;
-      margin-bottom:10px;
     }
 
-    .history-item:last-child{
-      margin-bottom:0;
-    }
-
-    .history-item div{
-      font-size:13px;
-      color:#dbeafe;
-      line-height:1.45;
-    }
-
-    .history-item b{
+    .list-item b{
       color:var(--gold-soft);
+    }
+
+    .ranking-item{
+      display:grid;
+      grid-template-columns:54px 1fr auto;
+      gap:10px;
+      align-items:center;
+      padding:12px;
+      border-radius:18px;
+      border:1px solid rgba(148,163,184,.18);
+      background:linear-gradient(180deg, rgba(2,6,23,.96), rgba(15,23,42,.86));
+    }
+
+    .ranking-pos{
+      width:44px;
+      height:44px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:16px;
+      background:rgba(250,204,21,.12);
+      border:1px solid rgba(250,204,21,.24);
+      color:var(--gold);
+      font-weight:900;
+      font-size:15px;
+    }
+
+    .ranking-name{
+      color:#fff;
+      font-weight:900;
+      font-size:15px;
+      line-height:1.2;
+      word-break:break-word;
+    }
+
+    .ranking-phone{
+      margin-top:4px;
+      color:#94a3b8;
+      font-size:12px;
+      font-weight:800;
+    }
+
+    .ranking-points{
+      text-align:right;
+      color:var(--gold);
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    .ranking-points small{
+      display:block;
+      color:#cbd5e1;
+      font-size:11px;
+      margin-top:3px;
+    }
+
+    .pending-grid{
+      display:grid;
+      gap:12px;
+    }
+
+    .pending-card{
+      padding:13px;
+      border-radius:18px;
+      border:1px solid rgba(251,146,60,.26);
+      background:rgba(251,146,60,.08);
+    }
+
+    .pending-name{
+      color:#fff;
+      font-size:15px;
+      font-weight:900;
+      margin-bottom:5px;
+    }
+
+    .pending-meta{
+      color:#fed7aa;
+      font-size:12px;
+      line-height:1.45;
+      font-weight:800;
+    }
+
+    .pending-card button{
+      margin-top:10px;
+      padding:10px 12px;
+      font-size:13px;
     }
 
     .mini{
@@ -742,9 +692,13 @@
 
     .hidden{ display:none !important; }
 
-    @media (max-width:900px){
+    @media (max-width:980px){
       .client-layout{
         grid-template-columns:1fr;
+      }
+
+      .vip-dashboard{
+        grid-template-columns:repeat(2,1fr);
       }
     }
 
@@ -770,14 +724,6 @@
       .vip-dashboard{
         grid-template-columns:1fr;
       }
-      .ranking-item{
-        grid-template-columns:44px 1fr;
-      }
-      .ranking-stamps{
-        grid-column:1 / -1;
-        text-align:left;
-        padding-left:54px;
-      }
       .search-box{
         grid-template-columns:1fr;
       }
@@ -787,7 +733,8 @@
       .info{
         grid-template-columns:1fr;
       }
-      .actions{
+      .actions,
+      .two-cols{
         grid-template-columns:1fr;
       }
       .top > button{
@@ -796,6 +743,14 @@
       .client-head{
         flex-direction:column;
         align-items:flex-start;
+      }
+      .ranking-item{
+        grid-template-columns:44px 1fr;
+      }
+      .ranking-points{
+        grid-column:1 / -1;
+        text-align:left;
+        padding-left:54px;
       }
       .lock-screen{
         min-height:calc(100vh - 24px);
@@ -812,7 +767,7 @@
       </div>
 
       <h1 class="lock-title">Acceso Admin</h1>
-      <p class="lock-subtitle">Ingresa la clave para abrir el panel profesional de sellos y premios.</p>
+      <p class="lock-subtitle">Ingresa la clave para abrir el panel profesional de puntos, ruleta y premios.</p>
 
       <input
         id="adminPassword"
@@ -839,15 +794,14 @@
             <img src="LOGO.jpg" alt="Logo" class="logo">
           </div>
           <div>
-            <h1 class="title">Admin de Sellos</h1>
-            <p class="subtitle">Busca clientes por celular, suma sellos y registra premios entregados.</p>
+            <h1 class="title">Admin Puntos VIP</h1>
+            <p class="subtitle">Busca clientes por celular, suma puntos por compra, revisa ranking y valida premios de ruleta.</p>
             <div class="badge">🟢 Panel activo · El Patrón del Mal</div>
           </div>
         </div>
 
         <button class="btn-red" id="btnLogout">Salir</button>
       </div>
-
 
       <div class="vip-dashboard">
         <div class="dash-card">
@@ -857,9 +811,15 @@
         </div>
 
         <div class="dash-card">
+          <div class="dash-icon">🏆</div>
+          <div class="dash-label">Puntos ranking</div>
+          <div class="dash-value" id="dashTotalRanking">--</div>
+        </div>
+
+        <div class="dash-card">
           <div class="dash-icon">⭐</div>
-          <div class="dash-label">Sellos acumulados</div>
-          <div class="dash-value" id="dashTotalSellos">--</div>
+          <div class="dash-label">Puntos disponibles</div>
+          <div class="dash-value" id="dashTotalDisponibles">--</div>
         </div>
 
         <div class="dash-card">
@@ -869,28 +829,41 @@
         </div>
       </div>
 
-      <div class="ranking-panel" id="rankingPanel">
-        <div class="ranking-head">
+      <div style="position:relative;z-index:1;margin-bottom:16px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn-primary" id="btnShowRanking" type="button">🏆 Ver ranking VIP</button>
+        <button class="btn-orange" id="btnShowPending" type="button">🎁 Ver premios pendientes</button>
+        <button class="btn-secondary" id="btnRefreshSummary" type="button">📊 Actualizar resumen</button>
+        <a href="/ruleta.html" target="_blank" style="text-decoration:none">
+          <button class="btn-purple" type="button">🎰 Abrir Ruleta VIP</button>
+        </a>
+      </div>
+
+      <div class="panel-block hidden" id="rankingPanel">
+        <div class="panel-head">
           <h2>🏆 Ranking de clientes VIP</h2>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn-blue" id="btnReloadSummary" type="button">Actualizar ranking</button>
+            <button class="btn-blue" id="btnReloadRanking" type="button">Actualizar ranking</button>
             <button class="btn-secondary" id="btnHideRanking" type="button">Ocultar</button>
           </div>
         </div>
-        <div id="rankingList" class="ranking-list">
-          Cargando ranking...
+        <div id="rankingList" class="ranking-list">Cargando ranking...</div>
+      </div>
+
+      <div class="panel-block hidden" id="pendingPanel">
+        <div class="panel-head">
+          <h2>🎁 Premios pendientes de ruleta</h2>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn-blue" id="btnReloadPending" type="button">Actualizar premios</button>
+            <button class="btn-secondary" id="btnHidePending" type="button">Ocultar</button>
+          </div>
         </div>
+        <div id="pendingList" class="pending-list">Cargando premios...</div>
       </div>
 
-      <div style="position:relative;z-index:1;margin-bottom:16px;display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn-primary" id="btnShowRanking" type="button">🏆 Ver ranking de sellos</button>
-        <button class="btn-secondary" id="btnRefreshSummary" type="button">📊 Actualizar resumen VIP</button>
-      </div>
-
-      <div class="search-panel">
-        <div class="search-title">
+      <div class="panel-block">
+        <div class="panel-head">
           <h2>🔎 Buscar cliente</h2>
-          <span>Ingresa el celular registrado en la tarjeta virtual</span>
+          <span>Ingresa el celular registrado en el Club VIP</span>
         </div>
 
         <div class="search-box">
@@ -931,60 +904,101 @@
               </div>
 
               <div class="info-card">
-                <div class="info-label">Sellos actuales</div>
-                <div class="info-value gold" id="clienteSellos">0 / 20</div>
+                <div class="info-label">Puntos disponibles</div>
+                <div class="info-value gold" id="clientePuntosDisponibles">0</div>
               </div>
 
               <div class="info-card">
-                <div class="info-label">Premio pendiente</div>
-                <div class="info-value" id="clientePremio">No</div>
+                <div class="info-label">Puntos ranking</div>
+                <div class="info-value gold" id="clientePuntosRanking">0</div>
+              </div>
+
+              <div class="info-card">
+                <div class="info-label">Giros hoy</div>
+                <div class="info-value" id="clienteGirosHoy">0 / 3</div>
+              </div>
+
+              <div class="info-card">
+                <div class="info-label">Puede girar</div>
+                <div class="info-value" id="clientePuedeGirar">-</div>
               </div>
             </div>
 
-            <div class="progress-area">
-              <div class="progress-row">
-                <span>Progreso de tarjeta</span>
-                <span id="progressText">0%</span>
+            <div class="points-form">
+              <div class="box-title">➕ Sumar puntos por compra</div>
+
+              <div class="two-cols">
+                <div>
+                  <input id="montoCompra" type="number" min="1" step="1" placeholder="Monto compra S/ Ej: 60">
+                </div>
+                <div>
+                  <input id="puntosManual" type="number" min="1" step="1" placeholder="Puntos a sumar">
+                </div>
               </div>
-              <div class="bar">
-                <div class="bar-fill" id="barFill"></div>
+
+              <textarea id="pointDescription" placeholder="Descripción: Ej. Compra de S/60 - pedido noche"></textarea>
+
+              <div class="quick-buttons">
+                <button class="btn-secondary" type="button" data-quick-points="20">+20 pts</button>
+                <button class="btn-secondary" type="button" data-quick-points="40">+40 pts</button>
+                <button class="btn-secondary" type="button" data-quick-points="60">+60 pts</button>
+                <button class="btn-secondary" type="button" data-quick-points="100">+100 pts</button>
+              </div>
+
+              <button class="btn-green" id="btnAddPoints" type="button">Sumar puntos</button>
+
+              <div class="note-box" id="pointNote">
+                Regla recomendada: <b>S/1 consumido = 1 punto</b>. Los puntos se suman al ranking y a los puntos disponibles.
               </div>
             </div>
 
             <div class="actions">
-              <button class="btn-green" id="btnAddStamp">+1 sello</button>
-              <button class="btn-orange" id="btnClaimReward">Entregar premio</button>
-              <button class="btn-blue" id="btnRefresh">Actualizar</button>
+              <button class="btn-blue" id="btnRefresh">Actualizar cliente</button>
+              <button class="btn-orange" id="btnOpenClientRoulette">Abrir ruleta cliente</button>
               <button class="btn-red" id="btnClear">Limpiar</button>
-              <button class="btn-red" id="btnDeleteCustomer" type="button" style="grid-column:1 / -1;">🗑️ Eliminar cuenta del cliente</button>
-            </div>
-
-            <div class="stamp-note" id="stampNote">
-              Busca un cliente para comenzar.
+              <button class="btn-red" id="btnDeleteCustomer" type="button">🗑️ Eliminar cuenta</button>
             </div>
           </section>
 
           <aside>
-            <section class="reward-box">
-              <div class="box-title">🎁 Premio entregado</div>
+            <section class="side-card">
+              <div class="box-title">🎁 Entregar premio por código</div>
               <input
-                id="rewardNote"
+                id="prizeCode"
                 type="text"
-                placeholder="Ej: premio 5 sellos - 1LT DE BEBIDA"
+                placeholder="Ej: PDM-260608-D53C65"
                 autocomplete="off"
-                autocapitalize="off"
+                autocapitalize="characters"
                 autocorrect="off"
                 spellcheck="false"
               >
-              <div class="reward-note">
-                Escribe qué premio entregaste antes de presionar <b>Entregar premio</b>.
+              <input
+                id="deliveredBy"
+                type="text"
+                placeholder="Entregado por: admin / moza"
+                autocomplete="off"
+              >
+              <button class="btn-orange" id="btnDeliverPrize" style="width:100%;margin-top:10px">Marcar premio entregado</button>
+              <div class="note-box">
+                El código sale en la ruleta del cliente. Al entregarlo quedará registrado en auditoría.
               </div>
             </section>
 
-            <section class="history-card">
-              <div class="box-title">📋 Historial reciente</div>
-              <div id="historyBox" class="reward-note history-list">
-                Aquí aparecerán los últimos movimientos del cliente.
+            <div style="height:16px"></div>
+
+            <section class="side-card">
+              <div class="box-title">🎰 Historial de ruleta</div>
+              <div id="historyBox" class="history-list">
+                Aquí aparecerán los giros del cliente.
+              </div>
+            </section>
+
+            <div style="height:16px"></div>
+
+            <section class="side-card">
+              <div class="box-title">📋 Kardex de puntos</div>
+              <div id="movementBox" class="movement-list">
+                Aquí aparecerán los movimientos de puntos.
               </div>
             </section>
           </aside>
@@ -992,14 +1006,14 @@
       </div>
 
       <div class="mini">
-        Panel para administrador o moza: suma sellos, entrega premios y revisa movimientos del cliente.
+        Panel para administrador o moza: suma puntos por compra, valida premios de ruleta y revisa movimientos del cliente.
       </div>
     </div>
   </div>
 
   <script>
     const ADMIN_PASSWORD = "Bela1997";
-    const ADMIN_SESSION_KEY = "pdm_admin_sellos_ok";
+    const ADMIN_SESSION_KEY = "pdm_admin_puntos_ok";
 
     const lockScreen = document.getElementById("lockScreen");
     const adminPanel = document.getElementById("adminPanel");
@@ -1011,12 +1025,20 @@
 
     const buscarCelular = document.getElementById("buscarCelular");
     const btnBuscar = document.getElementById("btnBuscar");
-    const btnAddStamp = document.getElementById("btnAddStamp");
-    const btnClaimReward = document.getElementById("btnClaimReward");
+    const btnAddPoints = document.getElementById("btnAddPoints");
+    const montoCompra = document.getElementById("montoCompra");
+    const puntosManual = document.getElementById("puntosManual");
+    const pointDescription = document.getElementById("pointDescription");
+    const pointNote = document.getElementById("pointNote");
+
     const btnRefresh = document.getElementById("btnRefresh");
     const btnClear = document.getElementById("btnClear");
     const btnDeleteCustomer = document.getElementById("btnDeleteCustomer");
-    const rewardNote = document.getElementById("rewardNote");
+    const btnOpenClientRoulette = document.getElementById("btnOpenClientRoulette");
+
+    const prizeCode = document.getElementById("prizeCode");
+    const deliveredBy = document.getElementById("deliveredBy");
+    const btnDeliverPrize = document.getElementById("btnDeliverPrize");
 
     const msgOk = document.getElementById("msgOk");
     const msgErr = document.getElementById("msgErr");
@@ -1024,27 +1046,36 @@
     const result = document.getElementById("result");
     const clienteNombre = document.getElementById("clienteNombre");
     const clienteCelular = document.getElementById("clienteCelular");
-    const clienteSellos = document.getElementById("clienteSellos");
-    const clientePremio = document.getElementById("clientePremio");
+    const clientePuntosDisponibles = document.getElementById("clientePuntosDisponibles");
+    const clientePuntosRanking = document.getElementById("clientePuntosRanking");
+    const clienteGirosHoy = document.getElementById("clienteGirosHoy");
+    const clientePuedeGirar = document.getElementById("clientePuedeGirar");
     const clienteEstado = document.getElementById("clienteEstado");
-    const stampNote = document.getElementById("stampNote");
+
     const historyBox = document.getElementById("historyBox");
-    const barFill = document.getElementById("barFill");
-    const progressText = document.getElementById("progressText");
+    const movementBox = document.getElementById("movementBox");
 
     const dashTotalClientes = document.getElementById("dashTotalClientes");
-    const dashTotalSellos = document.getElementById("dashTotalSellos");
+    const dashTotalRanking = document.getElementById("dashTotalRanking");
+    const dashTotalDisponibles = document.getElementById("dashTotalDisponibles");
     const dashPremiosPendientes = document.getElementById("dashPremiosPendientes");
+
     const btnShowRanking = document.getElementById("btnShowRanking");
     const btnHideRanking = document.getElementById("btnHideRanking");
     const btnRefreshSummary = document.getElementById("btnRefreshSummary");
-    const btnReloadSummary = document.getElementById("btnReloadSummary");
+    const btnReloadRanking = document.getElementById("btnReloadRanking");
     const rankingPanel = document.getElementById("rankingPanel");
     const rankingList = document.getElementById("rankingList");
 
+    const btnShowPending = document.getElementById("btnShowPending");
+    const btnHidePending = document.getElementById("btnHidePending");
+    const btnReloadPending = document.getElementById("btnReloadPending");
+    const pendingPanel = document.getElementById("pendingPanel");
+    const pendingList = document.getElementById("pendingList");
+
     let currentCustomer = null;
     let currentCard = null;
-
+    let currentStatus = null;
 
     function escapeHtml(value) {
       return String(value ?? "").replace(/[&<>'"]/g, (char) => ({
@@ -1056,72 +1087,12 @@
       }[char]));
     }
 
-    function renderRanking(ranking) {
-      if (!Array.isArray(ranking) || ranking.length === 0) {
-        rankingList.innerHTML = '<div class="reward-note">Todavía no hay clientes registrados para mostrar.</div>';
-        return;
-      }
-
-      rankingList.innerHTML = ranking.map((item) => {
-        const puesto = Number(item.puesto || 0);
-        const medalla = puesto === 1 ? "🥇" : puesto === 2 ? "🥈" : puesto === 3 ? "🥉" : "#" + puesto;
-        const nombre = escapeHtml(item.nombre || "Cliente sin nombre");
-        const celular = escapeHtml(item.celular || "-");
-        const sellos = Number(item.sellos_actuales || 0);
-        const meta = Number(item.meta_sellos || 20) || 20;
-        const pendiente = item.premio_pendiente ? '<span class="ranking-pending">🎁 premio pendiente</span>' : '';
-
-        return `
-          <div class="ranking-item">
-            <div class="ranking-pos">${medalla}</div>
-            <div>
-              <div class="ranking-name">${nombre}</div>
-              <div class="ranking-phone">📱 ${celular}</div>
-              ${pendiente}
-              <button class="ranking-delete" type="button" data-delete-phone="${celular}">🗑️ Eliminar</button>
-            </div>
-            <div class="ranking-stamps">
-              ${sellos} / ${meta}
-              <small>sellos</small>
-            </div>
-          </div>
-        `;
-      }).join("");
-    }
-
-    async function loadCustomersSummary(showRankingAfterLoad = false) {
+    function formatDateTime(value) {
+      if (!value) return "-";
       try {
-        if (dashTotalClientes) dashTotalClientes.textContent = "...";
-        if (dashTotalSellos) dashTotalSellos.textContent = "...";
-        if (dashPremiosPendientes) dashPremiosPendientes.textContent = "...";
-
-        const res = await fetch("/api/admin-customers-summary");
-        const data = await res.json();
-
-        if (!res.ok || !data.ok) {
-          const detail = data.detail || data.error || "No se pudo cargar el resumen VIP.";
-          if (rankingList) rankingList.innerHTML = `<div class="msg err" style="display:block">${escapeHtml(detail)}</div>`;
-          if (dashTotalClientes) dashTotalClientes.textContent = "0";
-          if (dashTotalSellos) dashTotalSellos.textContent = "0";
-          if (dashPremiosPendientes) dashPremiosPendientes.textContent = "0";
-          return;
-        }
-
-        dashTotalClientes.textContent = Number(data.totalCustomers || 0);
-        dashTotalSellos.textContent = Number(data.totalStamps || 0);
-        dashPremiosPendientes.textContent = Number(data.pendingRewards || 0);
-
-        renderRanking(data.ranking || []);
-
-        if (showRankingAfterLoad && rankingPanel) {
-          rankingPanel.classList.add("show");
-          rankingPanel.scrollIntoView({ behavior:"smooth", block:"start" });
-        }
-      } catch (err) {
-        if (dashTotalClientes) dashTotalClientes.textContent = "0";
-        if (dashTotalSellos) dashTotalSellos.textContent = "0";
-        if (dashPremiosPendientes) dashPremiosPendientes.textContent = "0";
-        if (rankingList) rankingList.innerHTML = `<div class="msg err" style="display:block">Error cargando resumen VIP: ${escapeHtml(err.message || String(err))}</div>`;
+        return new Date(value).toLocaleString("es-PE");
+      } catch {
+        return value;
       }
     }
 
@@ -1162,7 +1133,7 @@
     function openPanel() {
       lockScreen.classList.add("hidden");
       adminPanel.classList.remove("hidden");
-      loadCustomersSummary(false);
+      loadDashboard();
       setTimeout(() => buscarCelular.focus(), 100);
     }
 
@@ -1177,11 +1148,8 @@
 
     function tryAutoLogin() {
       const ok = localStorage.getItem(ADMIN_SESSION_KEY);
-      if (ok === "1") {
-        openPanel();
-      } else {
-        closePanel();
-      }
+      if (ok === "1") openPanel();
+      else closePanel();
     }
 
     function unlockPanel() {
@@ -1200,126 +1168,115 @@
 
       localStorage.setItem(ADMIN_SESSION_KEY, "1");
       showLockOk("Clave correcta. Abriendo panel...");
-      setTimeout(() => {
-        openPanel();
-      }, 400);
+      setTimeout(openPanel, 400);
     }
 
-    function getSuggestedRewardNote(stamps) {
-      if (stamps >= 20) return "premio 20 sellos - plato de alitas";
-      if (stamps >= 15) return "premio 15 sellos - burger clásica";
-      if (stamps >= 10) return "premio 10 sellos - salchimix";
-      if (stamps >= 5) return "premio 5 sellos - 1LT DE BEBIDA";
-      return "";
-    }
-
-    function formatDateTime(value) {
-      if (!value) return "-";
+    async function loadDashboard() {
       try {
-        const d = new Date(value);
-        return d.toLocaleString("es-PE");
-      } catch {
-        return value;
+        dashTotalClientes.textContent = "...";
+        dashTotalRanking.textContent = "...";
+        dashTotalDisponibles.textContent = "...";
+        dashPremiosPendientes.textContent = "...";
+
+        const res = await fetch("/api/admin-customers-summary");
+        const data = await res.json();
+
+        if (!res.ok || !data.ok) {
+          dashTotalClientes.textContent = "0";
+          dashTotalRanking.textContent = "0";
+          dashTotalDisponibles.textContent = "0";
+          dashPremiosPendientes.textContent = "0";
+          return;
+        }
+
+        dashTotalClientes.textContent = Number(data.totalCustomers || 0);
+        dashTotalRanking.textContent = Number(data.totalRankingPoints || data.totalStamps || 0);
+        dashTotalDisponibles.textContent = Number(data.totalAvailablePoints || 0);
+        dashPremiosPendientes.textContent = Number(data.pendingRoulettePrizes || data.pendingRewards || 0);
+
+        renderRanking(data.ranking || []);
+      } catch (err) {
+        dashTotalClientes.textContent = "0";
+        dashTotalRanking.textContent = "0";
+        dashTotalDisponibles.textContent = "0";
+        dashPremiosPendientes.textContent = "0";
       }
     }
 
-    function renderHistory(movements) {
-      if (!Array.isArray(movements) || movements.length === 0) {
-        historyBox.innerHTML = "No hay movimientos registrados todavía.";
+    function renderRanking(ranking) {
+      if (!Array.isArray(ranking) || ranking.length === 0) {
+        rankingList.innerHTML = '<div class="list-item">Todavía no hay clientes para mostrar.</div>';
         return;
       }
 
-      historyBox.innerHTML = movements.map(item => {
-        const tipo = item.tipo || "-";
-        const cantidad = Number(item.cantidad || 0);
-        const nota = item.nota || "";
-        const fecha = formatDateTime(item.created_at);
+      rankingList.innerHTML = ranking.map((item, index) => {
+        const puesto = Number(item.puesto || item.posicion || index + 1);
+        const medalla = puesto === 1 ? "🥇" : puesto === 2 ? "🥈" : puesto === 3 ? "🥉" : "#" + puesto;
+        const nombre = escapeHtml(item.nombre || "Cliente sin nombre");
+        const celular = escapeHtml(item.celular_oculto || item.celular || "-");
+        const rankingPts = Number(item.puntos_ranking || item.puntosRanking || item.sellos_actuales || 0);
+        const disponible = Number(item.puntos_disponibles || item.puntosDisponibles || 0);
 
         return `
-          <div class="history-item">
-            <div><b>Tipo:</b> ${tipo}</div>
-            <div><b>Cantidad:</b> ${cantidad}</div>
-            <div><b>Nota:</b> ${nota || "-"}</div>
-            <div><b>Fecha:</b> ${fecha}</div>
+          <div class="ranking-item">
+            <div class="ranking-pos">${medalla}</div>
+            <div>
+              <div class="ranking-name">${nombre}</div>
+              <div class="ranking-phone">📱 ${celular}</div>
+            </div>
+            <div class="ranking-points">
+              ${rankingPts} pts
+              <small>${disponible} disp.</small>
+            </div>
           </div>
         `;
       }).join("");
     }
 
-    async function loadHistoryByCell(celular) {
-      historyBox.innerHTML = "Cargando historial...";
-
-      if (!celular) {
-        historyBox.innerHTML = "Aquí aparecerán los últimos movimientos del cliente.";
-        return;
-      }
+    async function loadPendingPrizes() {
+      pendingList.innerHTML = "Cargando premios pendientes...";
 
       try {
-        const res = await fetch("/api/admin-get-history?celular=" + encodeURIComponent(celular));
+        const res = await fetch("/api/admin-customers-summary");
         const data = await res.json();
 
-        if (!res.ok) {
-          historyBox.innerHTML = "No se pudo cargar el historial.";
+        if (!res.ok || !data.ok) {
+          pendingList.innerHTML = '<div class="list-item">No se pudo cargar premios pendientes.</div>';
           return;
         }
 
-        renderHistory(data.movements || []);
+        const pending = data.pendingPrizes || data.pendingRoulettePrizesList || [];
+
+        if (!Array.isArray(pending) || pending.length === 0) {
+          pendingList.innerHTML = '<div class="list-item">No hay premios pendientes registrados.</div>';
+          return;
+        }
+
+        pendingList.innerHTML = pending.map(item => {
+          const code = escapeHtml(item.prize_unique_code || item.codigo || "");
+          const nombre = escapeHtml(item.nombre || "Cliente");
+          const celular = escapeHtml(item.celular || "-");
+          const premio = escapeHtml(item.prize_name || item.premio || "Premio");
+          const fecha = formatDateTime(item.created_at);
+          const vence = formatDateTime(item.expires_at);
+
+          return `
+            <div class="pending-card">
+              <div class="pending-name">🎁 ${premio}</div>
+              <div class="pending-meta">
+                Cliente: <b>${nombre}</b><br>
+                Celular: ${celular}<br>
+                Código: <b>${code}</b><br>
+                Ganado: ${fecha}<br>
+                Vence: ${vence}
+              </div>
+              <button class="btn-orange" type="button" data-prize-code="${code}">Marcar entregado</button>
+            </div>
+          `;
+        }).join("");
       } catch (err) {
-        historyBox.innerHTML = "Error cargando historial.";
+        pendingList.innerHTML = '<div class="list-item">Error cargando premios pendientes.</div>';
       }
-    }
-
-    function renderCustomer(data) {
-      currentCustomer = data.customer || null;
-      currentCard = data.card || null;
-
-      const actuales = Number(currentCard?.sellos_actuales || 0);
-      const meta = Math.max(20, Number(currentCard?.meta_sellos || 20));
-      const premioPendiente = !!currentCard?.premio_pendiente;
-      const progress = Math.min(100, Math.round((actuales / meta) * 100));
-
-      clienteNombre.textContent = currentCustomer?.nombre || "-";
-      clienteCelular.textContent = currentCustomer?.celular || "-";
-      clienteSellos.textContent = `${actuales} / ${meta}`;
-      clientePremio.textContent = premioPendiente ? "Sí" : "No";
-      clienteEstado.textContent = premioPendiente ? "Premio pendiente" : "Cliente cargado";
-      progressText.textContent = progress + "%";
-      barFill.style.width = progress + "%";
-
-      if (premioPendiente) {
-        stampNote.textContent = `Cliente tiene premio pendiente. Si ya se entregó, registra la nota y presiona "Entregar premio".`;
-        if (!rewardNote.value.trim()) {
-          rewardNote.value = getSuggestedRewardNote(actuales);
-        }
-      } else if ([5, 10, 15, 20].includes(actuales)) {
-        stampNote.textContent = `Cliente llegó a ${actuales} sellos. Puedes entregar el premio correspondiente.`;
-        if (!rewardNote.value.trim()) {
-          rewardNote.value = getSuggestedRewardNote(actuales);
-        }
-      } else {
-        stampNote.textContent = "Cliente cargado correctamente.";
-      }
-
-      loadHistoryByCell(currentCustomer?.celular || "");
-      result.style.display = "block";
-    }
-
-    function clearView() {
-      currentCustomer = null;
-      currentCard = null;
-      buscarCelular.value = "";
-      rewardNote.value = "";
-      clienteNombre.textContent = "-";
-      clienteCelular.textContent = "-";
-      clienteSellos.textContent = "0 / 20";
-      clientePremio.textContent = "No";
-      clienteEstado.textContent = "Cliente cargado";
-      progressText.textContent = "0%";
-      barFill.style.width = "0%";
-      stampNote.textContent = "Busca un cliente para comenzar.";
-      historyBox.innerHTML = "Aquí aparecerán los últimos movimientos del cliente.";
-      result.style.display = "none";
-      hideMessages();
     }
 
     async function searchCustomer() {
@@ -1338,11 +1295,10 @@
 
         if (!res.ok) {
           result.style.display = "none";
-          showErr(data.error + (data.detail ? ": " + data.detail : ""));
+          showErr((data.error || "No se pudo buscar cliente.") + (data.detail ? ": " + data.detail : ""));
           return;
         }
 
-        rewardNote.value = "";
         renderCustomer(data);
         showOk("Cliente encontrado correctamente.");
       } catch (err) {
@@ -1351,6 +1307,238 @@
       }
     }
 
+    function renderCustomer(data) {
+      currentCustomer = data.customer || null;
+      currentCard = data.card || null;
+      currentStatus = data.status || null;
+
+      const puntosDisponibles = Number(
+        currentCard?.puntos_disponibles ??
+        currentStatus?.puntos_disponibles ??
+        0
+      );
+
+      const puntosRanking = Number(
+        currentCard?.puntos_ranking ??
+        currentStatus?.puntos_ranking ??
+        0
+      );
+
+      const girosHoy = Number(currentStatus?.giros_hoy || data.giros_hoy || 0);
+      const girosRestantes = Number(currentStatus?.giros_restantes ?? Math.max(3 - girosHoy, 0));
+      const puedeGirar = currentStatus?.puede_girar ?? (puntosDisponibles >= 20 && girosRestantes > 0);
+
+      clienteNombre.textContent = currentCustomer?.nombre || "-";
+      clienteCelular.textContent = currentCustomer?.celular || "-";
+      clientePuntosDisponibles.textContent = puntosDisponibles;
+      clientePuntosRanking.textContent = puntosRanking;
+      clienteGirosHoy.textContent = `${girosHoy} / 3`;
+      clientePuedeGirar.textContent = puedeGirar ? "Sí" : "No";
+      clienteEstado.textContent = puedeGirar ? "Puede girar" : "Sin giro disponible";
+
+      pointNote.innerHTML = `
+        Cliente cargado. Puntos disponibles: <b>${puntosDisponibles}</b>. 
+        Ranking acumulado: <b>${puntosRanking}</b>. 
+        Giros restantes hoy: <b>${girosRestantes}</b>.
+      `;
+
+      montoCompra.value = "";
+      puntosManual.value = "";
+      pointDescription.value = "";
+
+      renderHistory(data.rouletteHistory || data.history || []);
+      renderMovements(data.pointMovements || data.movements || []);
+      result.style.display = "block";
+    }
+
+    function renderHistory(history) {
+      if (!Array.isArray(history) || history.length === 0) {
+        historyBox.innerHTML = "No hay giros registrados todavía.";
+        return;
+      }
+
+      historyBox.innerHTML = history.map(item => {
+        const premio = escapeHtml(item.prize_name || item.premio || "Resultado");
+        const estado = escapeHtml(item.prize_status || item.estado || "-");
+        const codigo = escapeHtml(item.prize_unique_code || item.codigo || "-");
+        const fecha = formatDateTime(item.created_at);
+        const puntosAntes = Number(item.points_before || item.puntos_antes || 0);
+        const puntosDespues = Number(item.points_after || item.puntos_despues || 0);
+
+        return `
+          <div class="list-item">
+            <div><b>Premio:</b> ${premio}</div>
+            <div><b>Estado:</b> ${estado}</div>
+            <div><b>Código:</b> ${codigo}</div>
+            <div><b>Puntos:</b> ${puntosAntes} → ${puntosDespues}</div>
+            <div><b>Fecha:</b> ${fecha}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderMovements(movements) {
+      if (!Array.isArray(movements) || movements.length === 0) {
+        movementBox.innerHTML = "No hay movimientos de puntos todavía.";
+        return;
+      }
+
+      movementBox.innerHTML = movements.map(item => {
+        const tipo = escapeHtml(item.tipo || "-");
+        const puntos = Number(item.puntos || item.cantidad || 0);
+        const antes = Number(item.puntos_antes || 0);
+        const despues = Number(item.puntos_despues || 0);
+        const descripcion = escapeHtml(item.descripcion || item.nota || "-");
+        const fecha = formatDateTime(item.created_at);
+
+        return `
+          <div class="list-item">
+            <div><b>Tipo:</b> ${tipo}</div>
+            <div><b>Puntos:</b> ${puntos}</div>
+            <div><b>Saldo:</b> ${antes} → ${despues}</div>
+            <div><b>Detalle:</b> ${descripcion}</div>
+            <div><b>Fecha:</b> ${fecha}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function clearView() {
+      currentCustomer = null;
+      currentCard = null;
+      currentStatus = null;
+
+      buscarCelular.value = "";
+      montoCompra.value = "";
+      puntosManual.value = "";
+      pointDescription.value = "";
+      prizeCode.value = "";
+
+      clienteNombre.textContent = "-";
+      clienteCelular.textContent = "-";
+      clientePuntosDisponibles.textContent = "0";
+      clientePuntosRanking.textContent = "0";
+      clienteGirosHoy.textContent = "0 / 3";
+      clientePuedeGirar.textContent = "-";
+      clienteEstado.textContent = "Cliente cargado";
+      pointNote.innerHTML = 'Regla recomendada: <b>S/1 consumido = 1 punto</b>. Los puntos se suman al ranking y a los puntos disponibles.';
+      historyBox.innerHTML = "Aquí aparecerán los giros del cliente.";
+      movementBox.innerHTML = "Aquí aparecerán los movimientos de puntos.";
+      result.style.display = "none";
+      hideMessages();
+    }
+
+    function calculatePointsFromInputs() {
+      const manual = Number(puntosManual.value || 0);
+      const monto = Number(montoCompra.value || 0);
+
+      if (manual > 0) return Math.floor(manual);
+      if (monto > 0) return Math.floor(monto);
+
+      return 0;
+    }
+
+    async function addPoints() {
+      hideMessages();
+
+      if (!currentCustomer || !currentCustomer.celular) {
+        showErr("Primero busca un cliente.");
+        return;
+      }
+
+      const puntos = calculatePointsFromInputs();
+
+      if (!puntos || puntos <= 0) {
+        showErr("Escribe el monto de compra o los puntos a sumar.");
+        return;
+      }
+
+      const descripcion = pointDescription.value.trim() || `Puntos por compra: +${puntos}`;
+      const referencia = "admin_puntos_" + Date.now();
+
+      btnAddPoints.disabled = true;
+      btnAddPoints.textContent = "Sumando...";
+
+      try {
+        const res = await fetch("/api/admin-add-stamp", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            celular: currentCustomer.celular,
+            puntos,
+            descripcion,
+            referencia
+          })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showErr((data.error || "No se pudo sumar puntos.") + (data.detail ? ": " + data.detail : ""));
+          return;
+        }
+
+        renderCustomer(data);
+        await loadDashboard();
+        showOk(`✅ Se sumaron ${puntos} puntos correctamente.`);
+      } catch (err) {
+        showErr("Error inesperado: " + (err.message || String(err)));
+      } finally {
+        btnAddPoints.disabled = false;
+        btnAddPoints.textContent = "Sumar puntos";
+      }
+    }
+
+    async function deliverPrize(codeFromButton = "") {
+      hideMessages();
+
+      const code = String(codeFromButton || prizeCode.value || "").trim().toUpperCase();
+
+      if (!code) {
+        showErr("Escribe o selecciona el código del premio.");
+        return;
+      }
+
+      btnDeliverPrize.disabled = true;
+      btnDeliverPrize.textContent = "Entregando...";
+
+      try {
+        const res = await fetch("/api/admin-claim-reward", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            prize_unique_code: code,
+            delivered_by: deliveredBy.value.trim() || "admin"
+          })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showErr((data.error || "No se pudo entregar premio.") + (data.detail ? ": " + data.detail : ""));
+          return;
+        }
+
+        prizeCode.value = "";
+        await loadPendingPrizes();
+        await loadDashboard();
+
+        if (currentCustomer?.celular) {
+          await searchCustomer();
+        }
+
+        showOk("✅ Premio marcado como entregado.");
+      } catch (err) {
+        showErr("Error inesperado entregando premio: " + (err.message || String(err)));
+      } finally {
+        btnDeliverPrize.disabled = false;
+        btnDeliverPrize.textContent = "Marcar premio entregado";
+      }
+    }
 
     async function deleteCustomerByPhone(celular) {
       const cleanCel = String(celular || "").replace(/\D/g, "").trim();
@@ -1378,10 +1566,8 @@
       }
 
       try {
-        if (btnDeleteCustomer) {
-          btnDeleteCustomer.disabled = true;
-          btnDeleteCustomer.textContent = "Eliminando...";
-        }
+        btnDeleteCustomer.disabled = true;
+        btnDeleteCustomer.textContent = "Eliminando...";
 
         const res = await fetch("/api/admin-delete-customer", {
           method: "POST",
@@ -1401,124 +1587,42 @@
         }
 
         clearView();
-        await loadCustomersSummary(true);
+        await loadDashboard();
         showOk("✅ Cliente eliminado correctamente.");
       } catch (err) {
         showErr("Error inesperado eliminando cliente: " + (err.message || String(err)));
       } finally {
-        if (btnDeleteCustomer) {
-          btnDeleteCustomer.disabled = false;
-          btnDeleteCustomer.textContent = "🗑️ Eliminar cuenta del cliente";
-        }
+        btnDeleteCustomer.disabled = false;
+        btnDeleteCustomer.textContent = "🗑️ Eliminar cuenta";
       }
     }
 
-    async function addStamp() {
-      hideMessages();
-
-      if (!currentCustomer || !currentCustomer.celular) {
-        showErr("Primero busca un cliente.");
-        return;
+    montoCompra.addEventListener("input", () => {
+      const monto = Number(montoCompra.value || 0);
+      if (monto > 0 && !puntosManual.value) {
+        pointDescription.value = `Puntos por compra de S/${Math.floor(monto)}`;
       }
+    });
 
-      btnAddStamp.disabled = true;
-      btnAddStamp.textContent = "Sumando...";
-
-      try {
-        const res = await fetch("/api/admin-add-stamp", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            celular: currentCustomer.celular
-          })
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          showErr(data.error + (data.detail ? ": " + data.detail : ""));
-          return;
-        }
-
-        renderCustomer(data);
-        loadCustomersSummary(false);
-        const stamps = Number(data.card?.sellos_actuales || 0);
-
-        if ([5, 10, 15, 20].includes(stamps)) {
-          showOk(`Se agregó 1 sello. Cliente llegó a ${stamps} sellos.`);
-        } else {
-          showOk("Se agregó 1 sello correctamente.");
-        }
-      } catch (err) {
-        showErr("Error inesperado: " + (err.message || String(err)));
-      } finally {
-        btnAddStamp.disabled = false;
-        btnAddStamp.textContent = "+1 sello";
-      }
-    }
-
-    async function claimReward() {
-      hideMessages();
-
-      if (!currentCustomer || !currentCustomer.celular) {
-        showErr("Primero busca un cliente.");
-        return;
-      }
-
-      const note = rewardNote.value.trim();
-      if (!note) {
-        showErr("Escribe la nota del premio entregado.");
-        return;
-      }
-
-      btnClaimReward.disabled = true;
-      btnClaimReward.textContent = "Registrando...";
-
-      try {
-        const res = await fetch("/api/admin-claim-reward", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            celular: currentCustomer.celular,
-            nota: note
-          })
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          showErr(data.error + (data.detail ? ": " + data.detail : ""));
-          return;
-        }
-
-        rewardNote.value = "";
-        renderCustomer(data);
-        loadCustomersSummary(false);
-        showOk("Premio marcado como entregado y guardado en historial.");
-      } catch (err) {
-        showErr("Error inesperado: " + (err.message || String(err)));
-      } finally {
-        btnClaimReward.disabled = false;
-        btnClaimReward.textContent = "Entregar premio";
-      }
-    }
+    document.querySelectorAll("[data-quick-points]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        puntosManual.value = btn.getAttribute("data-quick-points");
+        montoCompra.value = "";
+        pointDescription.value = `Puntos agregados manualmente: +${puntosManual.value}`;
+      });
+    });
 
     btnUnlock.addEventListener("click", unlockPanel);
     btnLogout.addEventListener("click", closePanel);
 
     adminPassword.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        unlockPanel();
-      }
+      if (e.key === "Enter") unlockPanel();
     });
 
     btnBuscar.addEventListener("click", searchCustomer);
-    btnAddStamp.addEventListener("click", addStamp);
-    btnClaimReward.addEventListener("click", claimReward);
+    btnAddPoints.addEventListener("click", addPoints);
+    btnDeliverPrize.addEventListener("click", () => deliverPrize());
+
     btnRefresh.addEventListener("click", searchCustomer);
     btnClear.addEventListener("click", clearView);
     btnDeleteCustomer.addEventListener("click", () => {
@@ -1526,28 +1630,43 @@
       deleteCustomerByPhone(celular);
     });
 
-    rankingList.addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-delete-phone]");
-      if (!btn) return;
-      deleteCustomerByPhone(btn.getAttribute("data-delete-phone"));
+    btnOpenClientRoulette.addEventListener("click", () => {
+      window.open("/ruleta.html", "_blank");
     });
 
     btnShowRanking.addEventListener("click", () => {
-      rankingPanel.classList.add("show");
-      loadCustomersSummary(true);
+      rankingPanel.classList.remove("hidden");
+      loadDashboard();
+      rankingPanel.scrollIntoView({ behavior:"smooth", block:"start" });
     });
 
     btnHideRanking.addEventListener("click", () => {
-      rankingPanel.classList.remove("show");
+      rankingPanel.classList.add("hidden");
     });
 
-    btnRefreshSummary.addEventListener("click", () => loadCustomersSummary(false));
-    btnReloadSummary.addEventListener("click", () => loadCustomersSummary(true));
+    btnShowPending.addEventListener("click", () => {
+      pendingPanel.classList.remove("hidden");
+      loadPendingPrizes();
+      pendingPanel.scrollIntoView({ behavior:"smooth", block:"start" });
+    });
+
+    btnHidePending.addEventListener("click", () => {
+      pendingPanel.classList.add("hidden");
+    });
+
+    btnReloadRanking.addEventListener("click", loadDashboard);
+    btnRefreshSummary.addEventListener("click", loadDashboard);
+    btnReloadPending.addEventListener("click", loadPendingPrizes);
+
+    pendingList.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-prize-code]");
+      if (!btn) return;
+      const code = btn.getAttribute("data-prize-code");
+      deliverPrize(code);
+    });
 
     buscarCelular.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        searchCustomer();
-      }
+      if (e.key === "Enter") searchCustomer();
     });
 
     tryAutoLogin();
