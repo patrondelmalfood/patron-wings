@@ -311,20 +311,23 @@
       background:
         conic-gradient(
           #1f2937 0deg 22.5deg,
-          #111827 22.5deg 45deg,
-          #374151 45deg 67.5deg,
-          #0f172a 67.5deg 90deg,
-          #92400e 90deg 112.5deg,
+          #92400e 22.5deg 45deg,
+          #14532d 45deg 67.5deg,
+          #581c87 67.5deg 90deg,
+
+          #111827 90deg 112.5deg,
           #78350f 112.5deg 135deg,
-          #7f1d1d 135deg 157.5deg,
-          #14532d 157.5deg 180deg,
-          #164e63 180deg 202.5deg,
-          #312e81 202.5deg 225deg,
-          #365314 225deg 247.5deg,
-          #3f6212 247.5deg 270deg,
-          #0c4a6e 270deg 292.5deg,
-          #581c87 292.5deg 315deg,
-          #7c2d12 315deg 337.5deg,
+          #164e63 135deg 157.5deg,
+          #312e81 157.5deg 180deg,
+
+          #374151 180deg 202.5deg,
+          #365314 202.5deg 225deg,
+          #3f6212 225deg 247.5deg,
+          #0c4a6e 247.5deg 270deg,
+
+          #0f172a 270deg 292.5deg,
+          #7c2d12 292.5deg 315deg,
+          #7f1d1d 315deg 337.5deg,
           #991b1b 337.5deg 360deg
         );
       box-shadow:
@@ -967,21 +970,24 @@
     const RESTORE_DELAY = SPIN_DURATION + 650;
 
     const PRIZES = [
-      { code:"NO_1", name:"Sigue intentando", short:"Sigue", face:"😢" },
-      { code:"NO_2", name:"Sigue intentando", short:"Sigue", face:"😢" },
-      { code:"NO_3", name:"Casi ganas", short:"Casi", face:"😢" },
-      { code:"NO_4", name:"Vuelve a intentarlo", short:"Otra vez", face:"😢" },
+      { code:"NO_1", name:"Sigue intentando", short:"SIGUE", face:"😢" },
       { code:"SALDO_3", name:"S/ 3 saldo", short:"S/3", face:"💰" },
-      { code:"SALDO_5", name:"S/ 5 saldo", short:"S/5", face:"💰" },
-      { code:"SALDO_10", name:"S/ 10 saldo", short:"S/10", face:"💰" },
       { code:"CHIFLE", name:"Chifle", short:"Chifle", face:"🍌" },
+      { code:"BURGER_CLASICA", name:"Burger clásica", short:"Burger", face:"🍔" },
+
+      { code:"NO_2", name:"Sigue intentando", short:"SIGUE", face:"😢" },
+      { code:"SALDO_5", name:"S/ 5 saldo", short:"S/5", face:"💰" },
       { code:"MARACUYA_1L", name:"Maracuyá 1L", short:"Maracuyá", face:"🥤" },
       { code:"NUGGETS", name:"Nuggets", short:"Nuggets", face:"🍗" },
+
+      { code:"NO_3", name:"Casi ganas", short:"SIGUE", face:"😢" },
       { code:"ALITA_EXTRA", name:"Alita extra", short:"Alita", face:"🍗" },
       { code:"PAPAS_PERSONALES", name:"Papas personales", short:"Papas", face:"🍟" },
       { code:"DELIVERY_GRATIS", name:"Delivery gratis", short:"Delivery", face:"🛵" },
-      { code:"BURGER_CLASICA", name:"Burger clásica", short:"Burger", face:"🍔" },
+
+      { code:"NO_4", name:"Vuelve a intentarlo", short:"SIGUE", face:"😢" },
       { code:"CHAUFA_MEDELLIN", name:"Chaufa Medellín", short:"Chaufa", face:"🍚" },
+      { code:"SALDO_10", name:"S/ 10 saldo", short:"S/10", face:"💰" },
       { code:"PLATO_ALITAS", name:"Plato de alitas", short:"Alitas", face:"🔥" }
     ];
 
@@ -1028,7 +1034,7 @@
             style="--angle:${angle}deg; --angleBack:${angleBack}deg; --distance:${distance}px"
           >
             <span class="face">${item.face}</span>
-            <span class="txt">${isNoPrize ? "Sigue" : item.short}</span>
+            <span class="txt">${item.short}</span>
           </span>
         `;
       }).join("");
