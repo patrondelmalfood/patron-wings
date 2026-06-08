@@ -1187,9 +1187,11 @@
       { code:"NO_3", name:"Casi ganas", short:"Casi", emoji:"😢", noPrize:true },
       { code:"NO_4", name:"Vuelve a intentarlo", short:"Otra vez", emoji:"😢", noPrize:true },
 
+      { code:"SALDO_1", name:"S/ 1 saldo", short:"S/1", emoji:"🪙", visualOnly:true },
       { code:"SALDO_3", name:"S/ 3 saldo", short:"S/3", emoji:"💰" },
       { code:"SALDO_5", name:"S/ 5 saldo", short:"S/5", emoji:"💵" },
       { code:"SALDO_10", name:"S/ 10 saldo", short:"S/10", emoji:"🤑" },
+
       { code:"CHIFLE", name:"Chifle", short:"Chifle", emoji:"🍌" },
       { code:"MARACUYA_1L", name:"Maracuyá 1L", short:"Maracuyá", emoji:"🥤" },
       { code:"NUGGETS", name:"Nuggets", short:"Nuggets", emoji:"🍗" },
@@ -1200,6 +1202,12 @@
       { code:"CHAUFA_MEDELLIN", name:"Chaufa Medellín", short:"Chaufa", emoji:"🍚" },
       { code:"PLATO_ALITAS", name:"Plato de alitas", short:"Alitas", emoji:"🔥" }
     ];
+
+    const MONEY_SYMBOLS = SYMBOLS.filter(item =>
+      ["SALDO_1", "SALDO_3", "SALDO_5", "SALDO_10"].includes(item.code)
+    );
+
+    const REAL_PRIZE_SYMBOLS = SYMBOLS.filter(item => !item.noPrize && !item.visualOnly);
 
     const msgBox = document.getElementById("msgBox");
     const clientName = document.getElementById("clientName");
@@ -1321,18 +1329,40 @@
       return SYMBOLS.find(item => item.code === code) || SYMBOLS[0];
     }
 
+    function randomFrom(list){
+      return list[Math.floor(Math.random() * list.length)];
+    }
+
     function randomSymbol(){
-      return SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+      const r = Math.random();
+
+      if (r < 0.55) {
+        return randomFrom(MONEY_SYMBOLS);
+      }
+
+      if (r < 0.85) {
+        return randomFrom(REAL_PRIZE_SYMBOLS);
+      }
+
+      return randomFrom(SYMBOLS.filter(item => item.noPrize));
+    }
+
+    function randomMoneySymbol(){
+      return randomFrom(MONEY_SYMBOLS);
     }
 
     function randomPrizeSymbol(){
-      const prizes = SYMBOLS.filter(item => !item.noPrize);
-      return prizes[Math.floor(Math.random() * prizes.length)];
+      return randomFrom(REAL_PRIZE_SYMBOLS);
     }
 
     function randomDifferentSymbol(baseCode){
       const options = SYMBOLS.filter(item => item.code !== baseCode);
-      return options[Math.floor(Math.random() * options.length)];
+      return randomFrom(options);
+    }
+
+    function randomDifferentMiddleSymbol(baseCode){
+      const options = SYMBOLS.filter(item => item.code !== baseCode);
+      return randomFrom(options);
     }
 
     function symbolHtml(symbol, isMiddle = false){
@@ -1349,9 +1379,9 @@
     }
 
     function renderInitialReels(){
-      renderReel(reel1, [getSymbolByCode("SALDO_3"), getSymbolByCode("BURGER_CLASICA"), getSymbolByCode("NO_1")]);
-      renderReel(reel2, [getSymbolByCode("CHIFLE"), getSymbolByCode("SALDO_10"), getSymbolByCode("PAPAS_PERSONALES")]);
-      renderReel(reel3, [getSymbolByCode("NUGGETS"), getSymbolByCode("DELIVERY_GRATIS"), getSymbolByCode("PLATO_ALITAS")]);
+      renderReel(reel1, [getSymbolByCode("SALDO_10"), getSymbolByCode("SALDO_5"), getSymbolByCode("NO_1")]);
+      renderReel(reel2, [getSymbolByCode("SALDO_3"), getSymbolByCode("SALDO_5"), getSymbolByCode("PAPAS_PERSONALES")]);
+      renderReel(reel3, [getSymbolByCode("NUGGETS"), getSymbolByCode("NO_1"), getSymbolByCode("SALDO_10")]);
     }
 
     function clearStopTimers(){
@@ -1404,10 +1434,25 @@
         return [target, target, target];
       }
 
-      const sad = getSymbolByCode("NO_1");
-      const different = randomPrizeSymbol();
+      const almostWin = Math.random() < 0.78;
 
-      return [sad, different, sad];
+      if (almostWin) {
+        const bait = Math.random() < 0.82
+          ? randomMoneySymbol()
+          : randomPrizeSymbol();
+
+        const fail = Math.random() < 0.70
+          ? getSymbolByCode("NO_1")
+          : randomDifferentMiddleSymbol(bait.code);
+
+        return [bait, bait, fail];
+      }
+
+      const sad = getSymbolByCode("NO_1");
+      const money = randomMoneySymbol();
+      const different = randomDifferentMiddleSymbol(money.code);
+
+      return [money, different, sad];
     }
 
     function stopSingleReel(index, middleSymbol){
@@ -1720,6 +1765,7 @@
           Muestra este código al local para reclamar tu premio.
         `
         : `
+          <b>Te quedaste muy cerca.</b><br>
           <b>No salió premio esta vez.</b><br>
           <b>Puntos:</b> ${spin.points_before || 0} → ${spin.points_after || 0}<br>
           Haz tu pedido y acumula puntos para volver a jugar.
@@ -1730,7 +1776,7 @@
       if (win) {
         showMsg("ok", "Premio ganado: " + (spin.prize_name || "Premio"));
       } else {
-        showMsg("err", "Esta vez no salió premio. Puedes intentar nuevamente si tienes puntos y jugadas disponibles.");
+        showMsg("err", "Casi ganas. Puedes intentar nuevamente si tienes puntos y jugadas disponibles.");
       }
     }
 
