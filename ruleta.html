@@ -28,7 +28,7 @@
       color:var(--text);
       padding:16px;
       background:
-        radial-gradient(circle at 50% 0%, rgba(250,204,21,.22), transparent 28%),
+        radial-gradient(circle at 50% 0%, rgba(250,204,21,.23), transparent 30%),
         radial-gradient(circle at 0% 100%, rgba(255,159,28,.13), transparent 28%),
         radial-gradient(circle at 100% 80%, rgba(56,189,248,.07), transparent 25%),
         linear-gradient(180deg, #000 0%, var(--bg2) 100%);
@@ -243,7 +243,7 @@
     }
 
     .slot-panel h2{
-      margin-bottom:2px;
+      margin-bottom:4px;
     }
 
     .slot-machine{
@@ -252,10 +252,11 @@
       aspect-ratio:1/1;
       margin:0 auto 12px;
       overflow:visible;
-      background:transparent;
-      border:0;
-      padding:0;
-      filter:drop-shadow(0 28px 40px rgba(0,0,0,.55));
+      background:
+        radial-gradient(circle at 50% 48%, rgba(250,204,21,.18), transparent 42%),
+        radial-gradient(circle at 50% 50%, rgba(0,0,0,.90), rgba(0,0,0,.16) 62%, transparent 72%);
+      border-radius:42px;
+      filter:drop-shadow(0 28px 40px rgba(0,0,0,.58));
     }
 
     .slot-machine.win-flash{
@@ -267,8 +268,8 @@
     }
 
     @keyframes machineWin{
-      0%,100%{ filter:drop-shadow(0 28px 40px rgba(0,0,0,.55)) drop-shadow(0 0 20px rgba(250,204,21,.20)); }
-      50%{ filter:drop-shadow(0 28px 40px rgba(0,0,0,.55)) drop-shadow(0 0 38px rgba(250,204,21,.70)); }
+      0%,100%{ filter:drop-shadow(0 28px 40px rgba(0,0,0,.58)) drop-shadow(0 0 18px rgba(250,204,21,.20)); }
+      50%{ filter:drop-shadow(0 28px 40px rgba(0,0,0,.58)) drop-shadow(0 0 40px rgba(250,204,21,.75)); }
     }
 
     @keyframes machineLose{
@@ -283,7 +284,7 @@
       width:100%;
       height:100%;
       object-fit:contain;
-      z-index:6;
+      z-index:4;
       pointer-events:none;
       user-select:none;
     }
@@ -299,21 +300,22 @@
 
     .slot-screen{
       position:absolute;
-      left:17.4%;
-      top:36.4%;
-      width:65.2%;
-      height:30.4%;
-      padding:2.3%;
-      border-radius:20px;
+      left:18.4%;
+      top:36.2%;
+      width:63.2%;
+      height:29.4%;
+      padding:2.2%;
+      border-radius:18px;
       background:
         radial-gradient(circle at center, rgba(250,204,21,.09), transparent 55%),
         linear-gradient(180deg, #020617, #050505);
-      border:1px solid rgba(250,204,21,.26);
+      border:1px solid rgba(250,204,21,.28);
       box-shadow:
         inset 0 0 24px rgba(0,0,0,.88),
-        inset 0 0 8px rgba(250,204,21,.14);
+        inset 0 0 8px rgba(250,204,21,.14),
+        0 0 12px rgba(0,0,0,.45);
       overflow:hidden;
-      z-index:3;
+      z-index:7;
     }
 
     .slot-screen::before{
@@ -342,9 +344,9 @@
 
     .reel{
       height:100%;
-      border-radius:15px;
+      border-radius:14px;
       background:
-        linear-gradient(180deg, rgba(255,255,255,.92), rgba(226,232,240,.94) 48%, rgba(248,250,252,.92));
+        linear-gradient(180deg, rgba(255,255,255,.95), rgba(226,232,240,.96) 48%, rgba(248,250,252,.94));
       border:1px solid rgba(250,204,21,.42);
       box-shadow:
         inset 0 0 16px rgba(0,0,0,.34),
@@ -406,15 +408,15 @@
 
     .symbol.middle{
       background:
-        radial-gradient(circle at center, rgba(255,255,255,.70), rgba(253,230,138,.86));
+        radial-gradient(circle at center, rgba(255,255,255,.78), rgba(253,230,138,.90));
     }
 
     .symbol-img{
-      width:92%;
-      height:92%;
+      width:94%;
+      height:94%;
       object-fit:contain;
       filter:drop-shadow(0 3px 3px rgba(0,0,0,.28));
-      transform:scale(1.02);
+      transform:scale(1.04);
     }
 
     .symbol-fallback{
@@ -924,16 +926,20 @@
       }
 
       .slot-screen{
-        border-radius:13px;
+        border-radius:12px;
+        left:18.6%;
+        top:36.4%;
+        width:62.8%;
+        height:29%;
       }
 
       .reel{
-        border-radius:10px;
+        border-radius:9px;
       }
 
       .symbol-img{
-        width:96%;
-        height:96%;
+        width:97%;
+        height:97%;
       }
 
       .slot-bottom{
@@ -1080,9 +1086,9 @@
   <script>
     const TOKEN_KEY = "pdm_customer_token";
 
-    const STOP_REEL_1 = 4000;
-    const STOP_REEL_2 = 8000;
-    const STOP_REEL_3 = 12000;
+    const STOP_REEL_1 = 5000;
+    const STOP_REEL_2 = 10000;
+    const STOP_REEL_3 = 15000;
     const RESULT_EXTRA_DELAY = 700;
     const RESTORE_EXTRA_DELAY = 1500;
 
@@ -1291,9 +1297,23 @@
     }
 
     function renderInitialReels(){
-      renderReel(reel1, [getSymbolByCode("SALDO_10"), getSymbolByCode("BURGER_CLASICA"), getSymbolByCode("NO_1")]);
-      renderReel(reel2, [getSymbolByCode("ALITA_EXTRA"), getSymbolByCode("SALDO_5"), getSymbolByCode("PAPAS_PERSONALES")]);
-      renderReel(reel3, [getSymbolByCode("NUGGETS"), getSymbolByCode("CHIFLE"), getSymbolByCode("SALDO_10")]);
+      renderReel(reel1, [
+        getSymbolByCode("SALDO_10"),
+        getSymbolByCode("BURGER_CLASICA"),
+        getSymbolByCode("NO_1")
+      ]);
+
+      renderReel(reel2, [
+        getSymbolByCode("ALITA_EXTRA"),
+        getSymbolByCode("SALDO_5"),
+        getSymbolByCode("PAPAS_PERSONALES")
+      ]);
+
+      renderReel(reel3, [
+        getSymbolByCode("NUGGETS"),
+        getSymbolByCode("CHIFLE"),
+        getSymbolByCode("SALDO_10")
+      ]);
     }
 
     function clearStopTimers(){
@@ -1313,7 +1333,7 @@
         box.classList.add("spinning");
       });
 
-      const speeds = [220, 260, 300];
+      const speeds = [150, 170, 190];
 
       reelInners.forEach((reel, index) => {
         const interval = setInterval(() => {
