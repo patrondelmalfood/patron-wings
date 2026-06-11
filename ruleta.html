@@ -392,37 +392,41 @@
 
     .reel-inner{
       height:100%;
-      display:grid;
-      grid-template-rows:repeat(3, 1fr);
+      display:block;
     }
 
     .symbol{
+      width:100%;
+      height:100%;
       display:flex;
       align-items:center;
       justify-content:center;
-      border-bottom:1px solid rgba(15,23,42,.10);
-      background:rgba(255,255,255,.36);
+      border-bottom:0;
+      background:
+        radial-gradient(circle at center, rgba(255,255,255,.88), rgba(253,230,138,.86) 54%, rgba(226,232,240,.94) 100%);
       position:relative;
       overflow:hidden;
     }
 
     .symbol.middle{
       background:
-        radial-gradient(circle at center, rgba(255,255,255,.78), rgba(253,230,138,.90));
+        radial-gradient(circle at center, rgba(255,255,255,.92), rgba(253,230,138,.90) 56%, rgba(226,232,240,.94) 100%);
     }
 
     .symbol-img{
-      width:94%;
-      height:94%;
+      width:118%;
+      height:118%;
+      max-width:none;
+      max-height:none;
       object-fit:contain;
-      filter:drop-shadow(0 3px 3px rgba(0,0,0,.28));
-      transform:scale(1.04);
+      filter:drop-shadow(0 5px 6px rgba(0,0,0,.36));
+      transform:scale(1.08);
     }
 
     .symbol-fallback{
       display:none;
       color:#111827;
-      font-size:28px;
+      font-size:54px;
       font-weight:900;
       line-height:1;
     }
@@ -927,8 +931,8 @@
       }
 
       .symbol-img{
-        width:97%;
-        height:97%;
+        width:122%;
+        height:122%;
       }
 
       .slot-bottom{
@@ -1250,7 +1254,13 @@
     }
 
     function renderReel(reel, symbols){
-      reel.innerHTML = symbols.map((symbol, index) => symbolHtml(symbol, index === 1)).join("");
+      const middleSymbol = Array.isArray(symbols) && symbols.length > 1
+        ? symbols[1]
+        : Array.isArray(symbols) && symbols.length === 1
+          ? symbols[0]
+          : randomSymbol();
+
+      reel.innerHTML = symbolHtml(middleSymbol, true);
     }
 
     function renderInitialReels(){
