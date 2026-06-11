@@ -646,17 +646,6 @@
       font-weight:800;
     }
 
-    .history-code{
-      display:inline-flex;
-      margin-top:4px;
-      padding:4px 8px;
-      border-radius:999px;
-      background:rgba(250,204,21,.13);
-      border:1px solid rgba(250,204,21,.24);
-      color:#fef3c7;
-      font-weight:900;
-    }
-
     .mini{
       margin-top:12px;
       color:#94a3b8;
@@ -975,7 +964,7 @@
       <h2 class="overlay-title" id="overlayTitle">¡Ganaste!</h2>
       <div class="overlay-prize" id="overlayPrize">Premio</div>
       <div class="overlay-code" id="overlayCode">Código</div>
-      <p class="overlay-hint" id="overlayHint">Muestra el código al local.</p>
+      <p class="overlay-hint" id="overlayHint">Puedes seguir jugando o ahorrar tus monedas.</p>
     </div>
   </div>
 
@@ -983,7 +972,7 @@
     <section class="top">
       <img src="LOGO.jpg" alt="El Patrón del Mal" class="logo">
       <h1>VIP SLOT</h1>
-      <p>Canjea 20 puntos por jugada · Máximo 3 jugadas por día</p>
+      <p>1 sol de consumo = 1 moneda · Cada giro cuesta 2 monedas</p>
     </section>
 
     <div id="msgBox" class="msg"></div>
@@ -996,7 +985,7 @@
 
         <div class="points-grid">
           <div class="point-box">
-            <div class="point-label">Puntos para jugar</div>
+            <div class="point-label">Monedas disponibles</div>
             <div class="point-value" id="availablePoints">0</div>
           </div>
 
@@ -1006,17 +995,17 @@
           </div>
 
           <div class="point-box">
-            <div class="point-label">Jugadas disponibles hoy</div>
+            <div class="point-label">Giros disponibles</div>
             <div class="point-value" id="spinsLeft">0</div>
           </div>
         </div>
 
         <div class="spin-note" id="statusMessage">
-          Consultando tus puntos...
+          Consultando tus monedas...
         </div>
 
         <div id="orderBox" class="order-box">
-          🍔 Haz tu pedido y acumula puntos para jugar.
+          🍔 Haz tu pedido y acumula monedas para jugar.
         </div>
 
         <div class="link-row">
@@ -1051,12 +1040,12 @@
           </div>
 
           <div class="slot-bottom">
-            <button id="btnSpin" class="spin-btn" disabled>SPIN · 20 PUNTOS</button>
+            <button id="btnSpin" class="spin-btn" disabled>SPIN · 2 MONEDAS</button>
             <a id="orderCta" class="order-cta" href="https://patron-wings.vercel.app/">
-              🍔 Hacer pedido y ganar puntos
+              🍔 Hacer pedido y ganar monedas
             </a>
             <div class="slot-mini">
-              Alinea 3 iguales para ganar.
+              Alinea 3 iguales para ganar monedas.
             </div>
           </div>
         </div>
@@ -1075,7 +1064,7 @@
 
         <div style="height:16px"></div>
 
-        <h2>🎁 Mis premios / jugadas</h2>
+        <h2>🎰 Mis jugadas</h2>
         <div class="history-list" id="historyList">
           Cargando historial...
         </div>
@@ -1086,6 +1075,7 @@
   <script>
     const TOKEN_KEY = "pdm_customer_token";
 
+    const SPIN_COST = 2;
     const STOP_REEL_1 = 5000;
     const STOP_REEL_2 = 10000;
     const STOP_REEL_3 = 15000;
@@ -1093,32 +1083,15 @@
     const RESTORE_EXTRA_DELAY = 1500;
 
     const SYMBOLS = [
-      { code:"NO_1", name:"Sigue intentando", short:"Sigue", emoji:"😢", img:"vip-symbol-sigue.png", noPrize:true },
-      { code:"NO_2", name:"Sigue intentando", short:"Sigue", emoji:"😢", img:"vip-symbol-sigue.png", noPrize:true },
-      { code:"NO_3", name:"Casi ganas", short:"Casi", emoji:"😢", img:"vip-symbol-sigue.png", noPrize:true },
-      { code:"NO_4", name:"Vuelve a intentarlo", short:"Otra vez", emoji:"😢", img:"vip-symbol-sigue.png", noPrize:true },
-
-      { code:"SALDO_1", name:"S/ 1 saldo", short:"S/1", emoji:"💵", img:"vip-symbol-saldo1.png" },
-      { code:"SALDO_3", name:"S/ 3 saldo", short:"S/3", emoji:"💰", img:"vip-symbol-saldo3.png" },
-      { code:"SALDO_5", name:"S/ 5 saldo", short:"S/5", emoji:"💵", img:"vip-symbol-saldo5.png" },
-      { code:"SALDO_10", name:"S/ 10 saldo", short:"S/10", emoji:"🤑", img:"vip-symbol-saldo10.png" },
-
-      { code:"CHIFLE", name:"Chifle", short:"Chifle", emoji:"🍌", img:"vip-symbol-chifle.png" },
-      { code:"MARACUYA_1L", name:"Maracuyá 1L", short:"Maracuyá", emoji:"🥤", img:"vip-symbol-maracuya.png" },
-      { code:"NUGGETS", name:"Nuggets", short:"Nuggets", emoji:"🍗", img:"vip-symbol-nuggets.png" },
-      { code:"ALITA_EXTRA", name:"Alita extra", short:"Alita", emoji:"🍗", img:"vip-symbol-alitas.png" },
-      { code:"PAPAS_PERSONALES", name:"Papas personales", short:"Papas", emoji:"🍟", img:"vip-symbol-papas.png" },
-      { code:"DELIVERY_GRATIS", name:"Delivery gratis", short:"Delivery", emoji:"🛵", img:"vip-symbol-delivery.png" },
-      { code:"BURGER_CLASICA", name:"Burger clásica", short:"Burger", emoji:"🍔", img:"vip-symbol-burger.png" },
-      { code:"CHAUFA_MEDELLIN", name:"Chaufa Medellín", short:"Chaufa", emoji:"🍚", img:"vip-symbol-chaufa.png" },
-      { code:"PLATO_ALITAS", name:"Plato de alitas", short:"Alitas", emoji:"🔥", img:"vip-symbol-alitas.png" }
+      { code:"CEREZA", name:"3 Cerezas - 10 monedas", short:"Cereza", emoji:"🍒", img:"vip-symbol-cereza.png", coins:10 },
+      { code:"LIMON", name:"3 Limones - 20 monedas", short:"Limón", emoji:"🍋", img:"vip-symbol-limon.png", coins:20 },
+      { code:"CAMPANA", name:"3 Campanas - 50 monedas", short:"Campana", emoji:"🔔", img:"vip-symbol-campana.png", coins:50 },
+      { code:"ESTRELLA", name:"3 Estrellas - 70 monedas", short:"Estrella", emoji:"⭐", img:"vip-symbol-estrella.png", coins:70 },
+      { code:"CORONA", name:"3 Coronas - 100 monedas", short:"Corona", emoji:"👑", img:"vip-symbol-corona.png", coins:100 },
+      { code:"777", name:"3 símbolos 777 - 200 monedas", short:"777", emoji:"777", img:"vip-symbol-777.png", coins:200 },
+      { code:"BAR", name:"3 símbolos BAR - 500 monedas", short:"BAR", emoji:"BAR", img:"vip-symbol-bar.png", coins:500 },
+      { code:"LOGO_PATRON", name:"3 Logos El Patrón - 1000 monedas", short:"Patrón", emoji:"🏆", img:"vip-symbol-logo.png", coins:1000 }
     ];
-
-    const MONEY_SYMBOLS = SYMBOLS.filter(item =>
-      ["SALDO_1", "SALDO_3", "SALDO_5", "SALDO_10"].includes(item.code)
-    );
-
-    const REAL_PRIZE_SYMBOLS = SYMBOLS.filter(item => !item.noPrize && !item.visualOnly);
 
     const msgBox = document.getElementById("msgBox");
     const clientName = document.getElementById("clientName");
@@ -1237,7 +1210,7 @@
     }
 
     function getSymbolByCode(code){
-      return SYMBOLS.find(item => item.code === code) || SYMBOLS[0];
+      return SYMBOLS.find(item => item.code === code) || null;
     }
 
     function randomFrom(list){
@@ -1245,25 +1218,7 @@
     }
 
     function randomSymbol(){
-      const r = Math.random();
-
-      if (r < 0.55) {
-        return randomFrom(MONEY_SYMBOLS);
-      }
-
-      if (r < 0.85) {
-        return randomFrom(REAL_PRIZE_SYMBOLS);
-      }
-
-      return randomFrom(SYMBOLS.filter(item => item.noPrize));
-    }
-
-    function randomMoneySymbol(){
-      return randomFrom(MONEY_SYMBOLS);
-    }
-
-    function randomPrizeSymbol(){
-      return randomFrom(REAL_PRIZE_SYMBOLS);
+      return randomFrom(SYMBOLS);
     }
 
     function randomDifferentSymbol(baseCode){
@@ -1271,23 +1226,25 @@
       return randomFrom(options);
     }
 
-    function randomDifferentMiddleSymbol(baseCode){
-      const options = SYMBOLS.filter(item => item.code !== baseCode);
-      return randomFrom(options);
+    function randomDifferentFromCodes(codes){
+      const options = SYMBOLS.filter(item => !codes.includes(item.code));
+      return options.length ? randomFrom(options) : randomSymbol();
     }
 
     function symbolHtml(symbol, isMiddle = false){
-      const imgHtml = symbol.img
-        ? `<img class="symbol-img" src="${symbol.img}" alt="${symbol.short}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">`
+      const safeSymbol = symbol || SYMBOLS[0];
+
+      const imgHtml = safeSymbol.img
+        ? `<img class="symbol-img" src="${safeSymbol.img}" alt="${safeSymbol.short}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">`
         : "";
 
-      const fallbackStyle = symbol.img ? "" : " style='display:block'";
+      const fallbackStyle = safeSymbol.img ? "" : " style='display:block'";
 
       return `
         <div class="symbol ${isMiddle ? "middle" : ""}">
           ${imgHtml}
-          <div class="symbol-fallback"${fallbackStyle}>${symbol.emoji || "🎁"}</div>
-          <div class="label">${symbol.short}</div>
+          <div class="symbol-fallback"${fallbackStyle}>${safeSymbol.emoji || "🎁"}</div>
+          <div class="label">${safeSymbol.short}</div>
         </div>
       `;
     }
@@ -1298,21 +1255,21 @@
 
     function renderInitialReels(){
       renderReel(reel1, [
-        getSymbolByCode("SALDO_10"),
-        getSymbolByCode("BURGER_CLASICA"),
-        getSymbolByCode("NO_1")
+        getSymbolByCode("CEREZA"),
+        getSymbolByCode("LIMON"),
+        getSymbolByCode("CAMPANA")
       ]);
 
       renderReel(reel2, [
-        getSymbolByCode("ALITA_EXTRA"),
-        getSymbolByCode("SALDO_5"),
-        getSymbolByCode("PAPAS_PERSONALES")
+        getSymbolByCode("ESTRELLA"),
+        getSymbolByCode("CORONA"),
+        getSymbolByCode("777")
       ]);
 
       renderReel(reel3, [
-        getSymbolByCode("NUGGETS"),
-        getSymbolByCode("CHIFLE"),
-        getSymbolByCode("SALDO_10")
+        getSymbolByCode("BAR"),
+        getSymbolByCode("LOGO_PATRON"),
+        getSymbolByCode("CEREZA")
       ]);
     }
 
@@ -1358,33 +1315,35 @@
       });
     }
 
-    function buildFinalMiddleSymbols(spin){
-      const target = getSymbolByCode(spin.prize_code);
-      const win = isWinningSpin(spin);
+    function isWinningSpin(spin){
+      return spin &&
+        spin.prize_code &&
+        spin.prize_code !== "LOSE" &&
+        Number(spin.prize_value || 0) > 0 &&
+        spin.prize_status !== "anulado";
+    }
 
-      if (win) {
+    function buildFinalMiddleSymbols(spin){
+      const win = isWinningSpin(spin);
+      const target = getSymbolByCode(spin.prize_code);
+
+      if (win && target) {
         return [target, target, target];
       }
 
-      const almostWin = Math.random() < 0.78;
+      const almostWin = Math.random() < 0.75;
 
       if (almostWin) {
-        const bait = Math.random() < 0.82
-          ? randomMoneySymbol()
-          : randomPrizeSymbol();
-
-        const fail = Math.random() < 0.70
-          ? getSymbolByCode("NO_1")
-          : randomDifferentMiddleSymbol(bait.code);
-
+        const bait = randomSymbol();
+        const fail = randomDifferentSymbol(bait.code);
         return [bait, bait, fail];
       }
 
-      const sad = getSymbolByCode("NO_1");
-      const money = randomMoneySymbol();
-      const different = randomDifferentMiddleSymbol(money.code);
+      const one = randomSymbol();
+      const two = randomDifferentSymbol(one.code);
+      const three = randomDifferentFromCodes([one.code, two.code]);
 
-      return [money, different, sad];
+      return [one, two, three];
     }
 
     function stopSingleReel(index, middleSymbol){
@@ -1415,6 +1374,9 @@
 
     function normalizeMessage(text){
       return String(text || "")
+        .replaceAll("puntos", "monedas")
+        .replaceAll("Puntos", "Monedas")
+        .replaceAll("20 monedas", "2 monedas")
         .replaceAll("girar la ruleta", "jugar el VIP Slot")
         .replaceAll("girar", "jugar")
         .replaceAll("Girar", "Jugar");
@@ -1459,29 +1421,23 @@
       };
     }
 
-    function isWinningSpin(spin){
-      return spin && (spin.prize_status === "pendiente" || spin.prize_status === "test");
-    }
-
     function renderStatus(status){
       lastStatus = status;
 
-      const puntos = Number(status.puntos_disponibles || 0);
-      const giros = Number(status.giros_restantes || 0);
-      const puede = !!status.puede_girar;
+      const monedas = Number(status.puntos_disponibles || 0);
+      const girosCalculados = Math.floor(monedas / SPIN_COST);
+      const puede = !!status.puede_girar && monedas >= SPIN_COST;
 
       clientName.textContent = status.nombre || "Cliente VIP";
       clientPhone.textContent = status.celular || "";
-      availablePoints.textContent = puntos;
+      availablePoints.textContent = monedas;
       rankingPoints.textContent = Number(status.puntos_ranking || 0);
-      spinsLeft.textContent = giros;
+      spinsLeft.textContent = girosCalculados;
 
       if (puede) {
         statusMessage.textContent = "Puedes jugar el VIP Slot.";
-      } else if (puntos < 20) {
-        statusMessage.textContent = "No tienes puntos suficientes. Necesitas 20 puntos para jugar.";
-      } else if (giros <= 0) {
-        statusMessage.textContent = "Ya usaste tus jugadas de hoy.";
+      } else if (monedas < SPIN_COST) {
+        statusMessage.textContent = "No tienes monedas suficientes. Necesitas 2 monedas para jugar.";
       } else {
         statusMessage.textContent = normalizeMessage(status.mensaje || "Estado cargado.");
       }
@@ -1489,16 +1445,14 @@
       btnSpin.disabled = !puede;
 
       if (puede) {
-        btnSpin.textContent = "SPIN · 20 PUNTOS";
-      } else if (puntos < 20) {
-        btnSpin.textContent = "NECESITAS 20 PUNTOS";
-      } else if (giros <= 0) {
-        btnSpin.textContent = "SIN JUGADAS HOY";
+        btnSpin.textContent = "SPIN · 2 MONEDAS";
+      } else if (monedas < SPIN_COST) {
+        btnSpin.textContent = "NECESITAS 2 MONEDAS";
       } else {
         btnSpin.textContent = "NO PUEDES JUGAR AHORA";
       }
 
-      if (puntos < 20) {
+      if (monedas < SPIN_COST) {
         orderBox.classList.add("show");
         orderCta.classList.add("show");
       } else {
@@ -1536,30 +1490,19 @@
       }
 
       historyList.innerHTML = history.map(item => {
-        const status = item.prize_status || "-";
-        const isPrize = status === "pendiente" || status === "entregado";
-        const estadoTexto =
-          status === "pendiente" ? "Premio pendiente" :
-          status === "entregado" ? "Premio entregado" :
-          status === "vencido" ? "Premio vencido" :
-          "Sin premio";
-
-        const title = isPrize
-          ? item.prize_name || "Premio"
-          : item.prize_name || "Sigue intentando";
-
-        const codigo = item.prize_unique_code || "-";
-        const vencimiento = item.expires_at ? formatDate(item.expires_at) : "-";
+        const win = isWinningSpin(item);
+        const title = win
+          ? item.prize_name || "Monedas ganadas"
+          : "No salió combinación";
 
         return `
-          <div class="history-item ${isPrize ? "prize" : "no-prize"}">
-            <div class="history-title">${isPrize ? "🎁" : "😢"} ${title}</div>
+          <div class="history-item ${win ? "prize" : "no-prize"}">
+            <div class="history-title">${win ? "🪙" : "🎰"} ${title}</div>
             <div class="history-meta">
               Jugada #${item.spin_number_day || "-"} · ${formatDate(item.created_at)}<br>
-              Estado: <b>${estadoTexto}</b><br>
-              Puntos: <b>${item.points_before || 0} → ${item.points_after || 0}</b><br>
-              ${isPrize ? `<span class="history-code">Código: ${codigo}</span><br>` : ""}
-              ${isPrize ? `Vence: ${vencimiento}` : "Sigue intentando si tienes puntos y jugadas disponibles."}
+              Resultado: <b>${win ? "Ganó monedas" : "Sin premio"}</b><br>
+              Monedas: <b>${item.points_before || 0} → ${item.points_after || 0}</b><br>
+              ${win ? `Ganancia: <b>+${Number(item.prize_value || 0)} monedas</b>` : "No salieron 3 símbolos iguales."}
             </div>
           </div>
         `;
@@ -1648,16 +1591,18 @@
         ? "prize-overlay show win"
         : "prize-overlay show lose";
 
-      overlayBadge.textContent = win ? "Premio ganado" : "VIP Slot";
-      overlayTitle.textContent = win ? "🎉 ¡Ganaste!" : "😢 Sigue intentando";
-      overlayPrize.textContent = spin.prize_name || "Resultado";
+      overlayBadge.textContent = win ? "Monedas ganadas" : "VIP Slot";
+      overlayTitle.textContent = win ? "🎉 ¡Ganaste!" : "🎰 No salió";
+      overlayPrize.textContent = win
+        ? (spin.prize_name || "Monedas ganadas")
+        : "No salieron 3 símbolos iguales";
 
       if (win) {
-        overlayCode.innerHTML = `Código: <b>${spin.prize_unique_code || "-"}</b>`;
-        overlayHint.textContent = "Muestra este código en el local para reclamar tu premio.";
+        overlayCode.innerHTML = `Se sumaron <b>${Number(spin.prize_value || 0)} monedas</b> a tu cuenta.`;
+        overlayHint.textContent = "Puedes seguir jugando o ahorrar tus monedas para canjear premios.";
       } else {
-        overlayCode.textContent = "Esta vez no salió premio.";
-        overlayHint.textContent = "Tu jugada quedó registrada. Puedes intentar otra vez si tienes puntos.";
+        overlayCode.textContent = "Perdiste las 2 monedas del giro.";
+        overlayHint.textContent = "Sigue intentando si tienes monedas disponibles.";
       }
 
       overlayTimer = setTimeout(() => {
@@ -1686,29 +1631,27 @@
         playLoseSound();
       }
 
-      resultTitle.textContent = win ? "🎉 ¡GANASTE!" : "😢 ÚLTIMA JUGADA";
+      resultTitle.textContent = win ? "🎉 ¡GANASTE!" : "🎰 NO SALIÓ";
 
       resultDetail.innerHTML = win
         ? `
-          <b>Premio:</b> ${spin.prize_name || "-"}<br>
-          <b>Código:</b> ${spin.prize_unique_code || "-"}<br>
-          <b>Puntos:</b> ${spin.points_before || 0} → ${spin.points_after || 0}<br>
-          <b>Vence:</b> ${formatDate(spin.expires_at)}<br>
-          Muestra este código al local para reclamar tu premio.
+          <b>Resultado:</b> ${spin.prize_name || "-"}<br>
+          <b>Monedas:</b> ${spin.points_before || 0} → ${spin.points_after || 0}<br>
+          <b>Ganancia:</b> +${Number(spin.prize_value || 0)} monedas<br>
+          Puedes seguir jugando o ahorrar tus monedas para canjear premios.
         `
         : `
-          <b>Te quedaste muy cerca.</b><br>
-          <b>No salió premio esta vez.</b><br>
-          <b>Puntos:</b> ${spin.points_before || 0} → ${spin.points_after || 0}<br>
-          Haz tu pedido y acumula puntos para volver a jugar.
+          <b>No salieron 3 símbolos iguales.</b><br>
+          <b>Monedas:</b> ${spin.points_before || 0} → ${spin.points_after || 0}<br>
+          Perdiste las 2 monedas del giro.
         `;
 
       showPrizeOverlay(spin);
 
       if (win) {
-        showMsg("ok", "Premio ganado: " + (spin.prize_name || "Premio"));
+        showMsg("ok", "Ganaste monedas: " + (spin.prize_name || "Premio"));
       } else {
-        showMsg("err", "Casi ganas. Puedes intentar nuevamente si tienes puntos y jugadas disponibles.");
+        showMsg("err", "No salieron 3 símbolos iguales. Intenta nuevamente.");
       }
     }
 
@@ -1753,17 +1696,10 @@
         return;
       }
 
-      const puntosActuales = lastStatus ? Number(lastStatus.puntos_disponibles || 0) : 0;
-      const girosActuales = lastStatus ? Number(lastStatus.giros_restantes || 0) : 0;
+      const monedasActuales = lastStatus ? Number(lastStatus.puntos_disponibles || 0) : 0;
 
-      if (puntosActuales < 20) {
-        showMsg("err", "No tienes puntos suficientes. Necesitas 20 puntos para jugar.");
-        await loadStatus();
-        return;
-      }
-
-      if (girosActuales <= 0) {
-        showMsg("err", "Ya usaste tus jugadas de hoy.");
+      if (monedasActuales < SPIN_COST) {
+        showMsg("err", "No tienes monedas suficientes. Necesitas 2 monedas para jugar.");
         await loadStatus();
         return;
       }
