@@ -603,6 +603,37 @@
       background:rgba(127,29,29,.10);
     }
 
+    .reward-list{
+      display:grid;
+      gap:9px;
+      margin-bottom:16px;
+    }
+
+    .reward-item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:11px;
+      border-radius:16px;
+      background:rgba(250,204,21,.07);
+      border:1px solid rgba(250,204,21,.26);
+    }
+
+    .reward-name{
+      color:#fff;
+      font-size:13px;
+      font-weight:900;
+      line-height:1.25;
+    }
+
+    .reward-price{
+      color:var(--gold);
+      font-size:13px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
     .ranking-item.me{
       border-color:rgba(250,204,21,.55);
       background:rgba(250,204,21,.08);
@@ -993,10 +1024,6 @@
             <div class="point-value" id="availablePoints">0</div>
           </div>
 
-          <div class="point-box">
-            <div class="point-label">Puntos ranking</div>
-            <div class="point-value" id="rankingPoints">0</div>
-          </div>
 
           <div class="point-box">
             <div class="point-label">Giros disponibles</div>
@@ -1061,16 +1088,22 @@
       </main>
 
       <aside class="card ranking-card">
-        <h2>🏆 Ranking VIP</h2>
-        <div class="ranking-list" id="rankingList">
-          Cargando ranking...
+        <h2>🎁 Premios para canjear</h2>
+        <div class="reward-list">
+          <div class="reward-item"><div class="reward-name">Chifle porción / bebida pequeña</div><div class="reward-price">100 monedas</div></div>
+          <div class="reward-item"><div class="reward-name">Papas personales</div><div class="reward-price">200 monedas</div></div>
+          <div class="reward-item"><div class="reward-name">Nuggets personales</div><div class="reward-price">300 monedas</div></div>
+          <div class="reward-item"><div class="reward-name">Burger clásica</div><div class="reward-price">400 monedas</div></div>
+          <div class="reward-item"><div class="reward-name">Salchipapa personal / combo pequeño</div><div class="reward-price">500 monedas</div></div>
+          <div class="reward-item"><div class="reward-name">Plato de alitas personal</div><div class="reward-price">600 monedas</div></div>
+          <div class="reward-item"><div class="reward-name">Chaufa Medellín</div><div class="reward-price">700 monedas</div></div>
+          <div class="reward-item"><div class="reward-name">Combo burger + papas + gaseosa</div><div class="reward-price">800 monedas</div></div>
+          <div class="reward-item"><div class="reward-name">Combo especial</div><div class="reward-price">1000 monedas</div></div>
         </div>
 
-        <div style="height:16px"></div>
-
-        <h2>🎰 Mis jugadas</h2>
-        <div class="history-list" id="historyList">
-          Cargando historial...
+        <h2>🏆 Ranking VIP - Top 5</h2>
+        <div class="ranking-list" id="rankingList">
+          Cargando ranking...
         </div>
       </aside>
     </section>
@@ -1441,7 +1474,7 @@
       clientName.textContent = status.nombre || "Cliente VIP";
       clientPhone.textContent = status.celular || "";
       availablePoints.textContent = monedas;
-      rankingPoints.textContent = Number(status.puntos_ranking || 0);
+      if (rankingPoints) rankingPoints.textContent = Number(status.puntos_ranking || 0);
       spinsLeft.textContent = girosCalculados;
 
       if (puede) {
@@ -1477,7 +1510,9 @@
         return;
       }
 
-      rankingList.innerHTML = ranking.map(item => {
+      const topRanking = ranking.slice(0, 5);
+
+      rankingList.innerHTML = topRanking.map(item => {
         const medal = item.posicion === 1 ? "🥇" : item.posicion === 2 ? "🥈" : item.posicion === 3 ? "🥉" : "#" + item.posicion;
         const meClass = item.es_cliente_actual ? " me" : "";
 
@@ -1494,6 +1529,8 @@
     }
 
     function renderHistory(history){
+      if (!historyList) return;
+
       if (!Array.isArray(history) || history.length === 0) {
         historyList.innerHTML = "<div class='mini'>Aún no tienes jugadas registradas.</div>";
         return;
