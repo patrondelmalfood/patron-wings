@@ -901,6 +901,238 @@
       z-index:1;
     }
 
+
+    /* LOGIN / REGISTRO INTEGRADO */
+    body.auth-open{
+      overflow:hidden;
+    }
+
+    .auth-overlay{
+      position:fixed;
+      inset:0;
+      z-index:90;
+      display:none;
+      align-items:flex-start;
+      justify-content:center;
+      padding:18px;
+      padding-top:28px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(250,204,21,.22), transparent 34%),
+        rgba(0,0,0,.78);
+      backdrop-filter:blur(7px);
+      overflow-y:auto;
+    }
+
+    .auth-overlay.show{
+      display:flex;
+    }
+
+    .auth-card{
+      width:min(460px, 96vw);
+      border-radius:28px;
+      border:1px solid rgba(250,204,21,.42);
+      background:
+        radial-gradient(circle at top right, rgba(250,204,21,.12), transparent 35%),
+        linear-gradient(180deg, rgba(17,24,39,.98), rgba(2,6,23,.98));
+      box-shadow:
+        0 24px 65px rgba(0,0,0,.70),
+        0 0 35px rgba(250,204,21,.15),
+        inset 0 0 0 1px rgba(255,255,255,.04);
+      padding:18px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .auth-card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(120deg, transparent 0%, rgba(255,255,255,.04) 45%, transparent 55%);
+      pointer-events:none;
+    }
+
+    .auth-card > *{
+      position:relative;
+      z-index:1;
+    }
+
+    .auth-head{
+      text-align:center;
+      margin-bottom:14px;
+    }
+
+    .auth-logo{
+      width:74px;
+      height:74px;
+      object-fit:cover;
+      border-radius:50%;
+      border:2px solid rgba(255,255,255,.92);
+      background:#000;
+      box-shadow:0 0 20px rgba(250,204,21,.18);
+      margin-bottom:8px;
+    }
+
+    .auth-title{
+      margin:0;
+      color:var(--gold);
+      font-size:27px;
+      line-height:1;
+      font-weight:900;
+      text-transform:uppercase;
+      text-shadow:0 0 14px rgba(250,204,21,.34);
+      letter-spacing:.5px;
+    }
+
+    .auth-subtitle{
+      margin:7px 0 0;
+      color:#dbeafe;
+      font-size:13px;
+      line-height:1.35;
+      font-weight:800;
+    }
+
+    .auth-tabs{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      margin:12px 0 14px;
+      padding:5px;
+      border-radius:999px;
+      background:rgba(0,0,0,.30);
+      border:1px solid rgba(148,163,184,.22);
+    }
+
+    .auth-tab{
+      border:0;
+      border-radius:999px;
+      padding:11px 8px;
+      font-size:13px;
+      font-weight:900;
+      cursor:pointer;
+      color:#e2e8f0;
+      background:transparent;
+    }
+
+    .auth-tab.active{
+      color:#111827;
+      background:linear-gradient(180deg, #fde047, #facc15);
+      box-shadow:0 8px 18px rgba(250,204,21,.20);
+    }
+
+    .auth-form{
+      display:none;
+    }
+
+    .auth-form.active{
+      display:block;
+    }
+
+    .auth-form label{
+      display:block;
+      margin:12px 0 6px;
+      color:var(--gold-soft);
+      font-size:13px;
+      font-weight:900;
+    }
+
+    .auth-form input{
+      width:100%;
+      padding:13px 14px;
+      border-radius:15px;
+      border:1px solid #334155;
+      background:#020617;
+      color:#fff;
+      font-size:16px;
+      outline:none;
+    }
+
+    .auth-form input:focus{
+      border-color:var(--gold);
+      box-shadow:0 0 0 3px rgba(250,204,21,.12);
+    }
+
+    .auth-pass-wrap{
+      position:relative;
+    }
+
+    .auth-pass-wrap input{
+      padding-right:56px;
+    }
+
+    .auth-toggle-pass{
+      position:absolute;
+      top:50%;
+      right:8px;
+      transform:translateY(-50%);
+      width:auto;
+      min-width:42px;
+      border:1px solid #334155;
+      background:#0f172a;
+      color:var(--gold-soft);
+      border-radius:12px;
+      padding:8px 10px;
+      font-size:17px;
+      cursor:pointer;
+    }
+
+    .auth-main-btn{
+      width:100%;
+      margin-top:16px;
+      padding:14px;
+      border:0;
+      border-radius:16px;
+      background:linear-gradient(180deg, #fde047, #facc15);
+      color:#111827;
+      font-size:16px;
+      font-weight:900;
+      cursor:pointer;
+      box-shadow:0 10px 22px rgba(250,204,21,.18);
+      text-transform:uppercase;
+    }
+
+    .auth-main-btn:disabled{
+      opacity:.72;
+      cursor:not-allowed;
+    }
+
+    .auth-message{
+      display:none;
+      margin-top:12px;
+      padding:11px 12px;
+      border-radius:14px;
+      font-size:13px;
+      line-height:1.35;
+      font-weight:800;
+    }
+
+    .auth-message.ok{
+      display:block;
+      background:#052e16;
+      color:#bbf7d0;
+      border:1px solid var(--ok);
+    }
+
+    .auth-message.err{
+      display:block;
+      background:#450a0a;
+      color:#fecaca;
+      border:1px solid var(--bad);
+    }
+
+    .auth-mini{
+      margin-top:12px;
+      color:#cbd5e1;
+      font-size:12px;
+      line-height:1.45;
+      text-align:center;
+      font-weight:700;
+    }
+
+    button.mini-link{
+      cursor:pointer;
+      font-family:inherit;
+    }
+
     @media (max-width:980px){
       .layout{
         grid-template-columns:1fr;
@@ -1003,6 +1235,57 @@
     </div>
   </div>
 
+
+  <div id="authOverlay" class="auth-overlay">
+    <div class="auth-card">
+      <div class="auth-head">
+        <img src="LOGO.jpg" alt="El Patrón del Mal" class="auth-logo">
+        <h2 class="auth-title">Entra al VIP Slot</h2>
+        <p class="auth-subtitle">Regístrate o inicia sesión aquí mismo para jugar sin salir de esta página.</p>
+      </div>
+
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab active" id="tabLogin">Ya tengo cuenta</button>
+        <button type="button" class="auth-tab" id="tabRegister">Soy nuevo</button>
+      </div>
+
+      <div id="authLoginForm" class="auth-form active">
+        <label for="authLoginPhone">Celular</label>
+        <input id="authLoginPhone" type="text" placeholder="Ej: 944275861" inputmode="numeric" autocomplete="tel">
+
+        <label for="authLoginPassword">Contraseña</label>
+        <div class="auth-pass-wrap">
+          <input id="authLoginPassword" type="password" placeholder="Tu contraseña" autocomplete="current-password">
+          <button type="button" class="auth-toggle-pass" data-target="authLoginPassword">👁</button>
+        </div>
+
+        <button type="button" id="btnAuthLogin" class="auth-main-btn">Entrar y jugar</button>
+      </div>
+
+      <div id="authRegisterForm" class="auth-form">
+        <label for="authRegisterName">Nombre</label>
+        <input id="authRegisterName" type="text" placeholder="Ej: Juan Pérez" autocomplete="name">
+
+        <label for="authRegisterPhone">Celular</label>
+        <input id="authRegisterPhone" type="text" placeholder="Ej: 944275861" inputmode="numeric" autocomplete="tel">
+
+        <label for="authRegisterPassword">Contraseña</label>
+        <div class="auth-pass-wrap">
+          <input id="authRegisterPassword" type="password" placeholder="Crea una contraseña" autocomplete="new-password">
+          <button type="button" class="auth-toggle-pass" data-target="authRegisterPassword">👁</button>
+        </div>
+
+        <button type="button" id="btnAuthRegister" class="auth-main-btn">Registrarme y jugar</button>
+      </div>
+
+      <div id="authMessage" class="auth-message"></div>
+
+      <div class="auth-mini">
+        Tu sesión se guardará en este celular para que la próxima vez entres directo al VIP Slot.
+      </div>
+    </div>
+  </div>
+
   <div class="wrap">
     <section class="top">
       <img src="LOGO.jpg" alt="El Patrón del Mal" class="logo">
@@ -1041,8 +1324,8 @@
 
         <div class="link-row">
           <a class="mini-link gold" href="https://patron-wings.vercel.app/">🍔 Carta principal</a>
-          <a class="mini-link" href="/registro.html">Registro VIP</a>
-          <a class="mini-link" href="/login.html">Cambiar cuenta</a>
+          <button type="button" class="mini-link" id="btnOpenAuth">Registro / Login</button>
+          <button type="button" class="mini-link" id="btnChangeAccount">Cambiar cuenta</button>
         </div>
       </aside>
 
@@ -1168,6 +1451,22 @@
     const overlayCode = document.getElementById("overlayCode");
     const overlayHint = document.getElementById("overlayHint");
 
+    const authOverlay = document.getElementById("authOverlay");
+    const tabLogin = document.getElementById("tabLogin");
+    const tabRegister = document.getElementById("tabRegister");
+    const authLoginForm = document.getElementById("authLoginForm");
+    const authRegisterForm = document.getElementById("authRegisterForm");
+    const authLoginPhone = document.getElementById("authLoginPhone");
+    const authLoginPassword = document.getElementById("authLoginPassword");
+    const authRegisterName = document.getElementById("authRegisterName");
+    const authRegisterPhone = document.getElementById("authRegisterPhone");
+    const authRegisterPassword = document.getElementById("authRegisterPassword");
+    const btnAuthLogin = document.getElementById("btnAuthLogin");
+    const btnAuthRegister = document.getElementById("btnAuthRegister");
+    const authMessage = document.getElementById("authMessage");
+    const btnOpenAuth = document.getElementById("btnOpenAuth");
+    const btnChangeAccount = document.getElementById("btnChangeAccount");
+
     let lastStatus = null;
     let overlayTimer = null;
     let msgTimer = null;
@@ -1176,6 +1475,231 @@
 
     let audioCtx = null;
     let spinSoundTimer = null;
+
+
+    function cleanPhone(value){
+      return String(value || "").replace(/\D/g, "").trim();
+    }
+
+    function showAuthModal(mode = "login"){
+      setAuthTab(mode);
+      authOverlay.classList.add("show");
+      document.body.classList.add("auth-open");
+    }
+
+    function hideAuthModal(){
+      authOverlay.classList.remove("show");
+      document.body.classList.remove("auth-open");
+      clearAuthMessage();
+    }
+
+    function setAuthTab(mode){
+      const isRegister = mode === "register";
+
+      tabLogin.classList.toggle("active", !isRegister);
+      tabRegister.classList.toggle("active", isRegister);
+      authLoginForm.classList.toggle("active", !isRegister);
+      authRegisterForm.classList.toggle("active", isRegister);
+
+      clearAuthMessage();
+
+      setTimeout(() => {
+        if (isRegister) {
+          authRegisterName.focus();
+        } else {
+          authLoginPhone.focus();
+        }
+      }, 100);
+    }
+
+    function showAuthMessage(type, text){
+      authMessage.className = "auth-message " + type;
+      authMessage.textContent = text || "";
+      authMessage.style.display = "block";
+    }
+
+    function clearAuthMessage(){
+      authMessage.className = "auth-message";
+      authMessage.textContent = "";
+      authMessage.style.display = "none";
+    }
+
+    async function loginCustomer(celularVal, passwordVal){
+      const res = await fetch("/api/login-customer", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify({
+          celular:cleanPhone(celularVal),
+          password:String(passwordVal || "").trim()
+        })
+      });
+
+      let data = {};
+      try {
+        data = await res.json();
+      } catch {
+        data = {};
+      }
+
+      if (!res.ok) {
+        throw new Error((data.error || "No se pudo iniciar sesión.") + (data.detail ? ": " + data.detail : ""));
+      }
+
+      if (!data.token) {
+        throw new Error("El login no devolvió token.");
+      }
+
+      localStorage.setItem(TOKEN_KEY, data.token);
+      return data;
+    }
+
+    async function registerCustomer(nombreVal, celularVal, passwordVal){
+      const res = await fetch("/api/register-customer", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify({
+          nombre:String(nombreVal || "").trim(),
+          celular:cleanPhone(celularVal),
+          password:String(passwordVal || "").trim()
+        })
+      });
+
+      let data = {};
+      try {
+        data = await res.json();
+      } catch {
+        data = {};
+      }
+
+      if (!res.ok) {
+        throw new Error((data.error || "No se pudo registrar.") + (data.detail ? ": " + data.detail : ""));
+      }
+
+      return data;
+    }
+
+    async function finishAuthSuccess(message){
+      showAuthMessage("ok", message || "Ingreso correcto. Cargando tu VIP Slot...");
+      hideMsg();
+
+      await loadStatus();
+      await loadRanking();
+
+      setTimeout(() => {
+        hideAuthModal();
+        showMsg("ok", "Listo. Ya estás dentro del VIP Slot.");
+      }, 600);
+    }
+
+    async function handleLoginSubmit(){
+      const celularVal = cleanPhone(authLoginPhone.value);
+      const passwordVal = authLoginPassword.value.trim();
+
+      if (!celularVal || !passwordVal) {
+        showAuthMessage("err", "Completa celular y contraseña.");
+        return;
+      }
+
+      btnAuthLogin.disabled = true;
+      btnAuthLogin.textContent = "ENTRANDO...";
+      clearAuthMessage();
+
+      try {
+        await loginCustomer(celularVal, passwordVal);
+        await finishAuthSuccess("Ingreso correcto. Abriendo tu VIP Slot...");
+      } catch (err) {
+        showAuthMessage("err", err.message || String(err));
+      } finally {
+        btnAuthLogin.disabled = false;
+        btnAuthLogin.textContent = "Entrar y jugar";
+      }
+    }
+
+    async function handleRegisterSubmit(){
+      const nombreVal = authRegisterName.value.trim();
+      const celularVal = cleanPhone(authRegisterPhone.value);
+      const passwordVal = authRegisterPassword.value.trim();
+
+      if (!nombreVal || !celularVal || !passwordVal) {
+        showAuthMessage("err", "Completa nombre, celular y contraseña.");
+        return;
+      }
+
+      btnAuthRegister.disabled = true;
+      btnAuthRegister.textContent = "REGISTRANDO...";
+      clearAuthMessage();
+
+      try {
+        await registerCustomer(nombreVal, celularVal, passwordVal);
+        showAuthMessage("ok", "Registro exitoso. Iniciando sesión...");
+        await loginCustomer(celularVal, passwordVal);
+        await finishAuthSuccess("Registro correcto. Abriendo tu VIP Slot...");
+      } catch (err) {
+        showAuthMessage("err", err.message || String(err));
+      } finally {
+        btnAuthRegister.disabled = false;
+        btnAuthRegister.textContent = "Registrarme y jugar";
+      }
+    }
+
+    function resetVipUiForLoggedOut(){
+      lastStatus = null;
+      clientName.textContent = "Sin sesión";
+      clientPhone.textContent = "--";
+      availablePoints.textContent = "0";
+      if (rankingPoints) rankingPoints.textContent = "0";
+      spinsLeft.textContent = "0";
+      statusMessage.textContent = "Inicia sesión para usar el VIP Slot.";
+      btnSpin.disabled = true;
+      btnSpin.textContent = "INICIA SESIÓN";
+      orderBox.classList.add("show");
+      orderCta.classList.add("show");
+    }
+
+    function initAuthUi(){
+      tabLogin.addEventListener("click", () => setAuthTab("login"));
+      tabRegister.addEventListener("click", () => setAuthTab("register"));
+
+      btnAuthLogin.addEventListener("click", handleLoginSubmit);
+      btnAuthRegister.addEventListener("click", handleRegisterSubmit);
+
+      [authLoginPhone, authLoginPassword].forEach(input => {
+        input.addEventListener("keydown", (event) => {
+          if (event.key === "Enter") handleLoginSubmit();
+        });
+      });
+
+      [authRegisterName, authRegisterPhone, authRegisterPassword].forEach(input => {
+        input.addEventListener("keydown", (event) => {
+          if (event.key === "Enter") handleRegisterSubmit();
+        });
+      });
+
+      document.querySelectorAll(".auth-toggle-pass").forEach(button => {
+        button.addEventListener("click", () => {
+          const input = document.getElementById(button.dataset.target);
+          if (!input) return;
+
+          const hidden = input.type === "password";
+          input.type = hidden ? "text" : "password";
+          button.textContent = hidden ? "🙈" : "👁";
+        });
+      });
+
+      if (btnOpenAuth) {
+        btnOpenAuth.addEventListener("click", () => showAuthModal("login"));
+      }
+
+      if (btnChangeAccount) {
+        btnChangeAccount.addEventListener("click", () => {
+          localStorage.removeItem(TOKEN_KEY);
+          resetVipUiForLoggedOut();
+          showAuthModal("login");
+          showMsg("ok", "Cuenta cerrada. Ingresa con otra cuenta.", true);
+        });
+      }
+    }
+
 
     function getAudioCtx(){
       try {
@@ -1560,11 +2084,8 @@
       const token = getToken();
 
       if (!token) {
-        showMsg("err", "No has iniciado sesión. Primero entra con tu cuenta VIP.", false);
-        btnSpin.disabled = true;
-        clientName.textContent = "Sin sesión";
-        statusMessage.textContent = "Inicia sesión para usar el VIP Slot.";
-        btnSpin.textContent = "INICIA SESIÓN";
+        resetVipUiForLoggedOut();
+        showAuthModal("login");
         return;
       }
 
@@ -1577,8 +2098,9 @@
 
         if (!res.ok) {
           localStorage.removeItem(TOKEN_KEY);
-          showMsg("err", data.error || "Sesión inválida. Vuelve a iniciar sesión.");
-          btnSpin.disabled = true;
+          resetVipUiForLoggedOut();
+          showAuthModal("login");
+          showAuthMessage("err", data.error || "Sesión inválida. Vuelve a iniciar sesión.");
           return;
         }
 
@@ -1739,7 +2261,8 @@
       const token = getToken();
 
       if (!token) {
-        showMsg("err", "Debes iniciar sesión para jugar.");
+        resetVipUiForLoggedOut();
+        showAuthModal("login");
         return;
       }
 
@@ -1808,6 +2331,7 @@
       }
     });
 
+    initAuthUi();
     renderInitialReels();
     loadStatus();
     loadRanking();
