@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Combinados El Patrón - Turno Día</title>
+<style>
+:root{
+  --bg:#030712;--panel:#111827;--panel2:#0f172a;--gold:#facc15;--orange:#fb923c;--red:#ef4444;--green:#22c55e;--blue:#38bdf8;--text:#f8fafc;--muted:#cbd5e1;--line:#334155;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-height:100vh;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at top,rgba(250,204,21,.15),transparent 34%),linear-gradient(180deg,#000,#020617 55%,#030712);color:var(--text);padding-bottom:90px}
+.hero{padding:18px 14px 10px;max-width:1100px;margin:auto}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}.brand{display:flex;align-items:center;gap:12px}.logo{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#fde047,#f97316);color:#111827;font-weight:1000;font-size:25px;border:2px solid #fff;box-shadow:0 0 20px rgba(250,204,21,.35)}
+h1{font-size:23px;line-height:1.05;margin:0;color:var(--gold);text-transform:uppercase}.sub{font-weight:900;color:#fef3c7;font-size:13px;margin-top:4px}.top a{font-size:12px}
+.btn,button{border:0;border-radius:14px;padding:11px 13px;font-weight:1000;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:7px;background:var(--gold);color:#111827;box-shadow:0 8px 18px rgba(0,0,0,.25)}.btn:hover,button:hover{transform:translateY(-1px);opacity:.95}.btn-dark{background:#0f172a;color:#fef3c7;border:1px solid #334155}.btn-green{background:var(--green);color:#052e16}.btn-red{background:var(--red);color:#fff}.btn-blue{background:var(--blue);color:#001827}.btn-orange{background:var(--orange);color:#111827}
+.banner{border:1px solid rgba(250,204,21,.34);background:radial-gradient(circle at top right,rgba(250,204,21,.18),transparent 30%),linear-gradient(135deg,rgba(127,29,29,.75),rgba(2,6,23,.96));border-radius:28px;padding:18px;box-shadow:0 18px 45px rgba(0,0,0,.38);overflow:hidden;position:relative}.banner:after{content:"2x15";position:absolute;right:-8px;top:-18px;font-size:82px;line-height:1;font-weight:1000;color:rgba(250,204,21,.10);transform:rotate(-8deg)}.badge{display:inline-flex;background:rgba(34,197,94,.13);border:1px solid rgba(34,197,94,.35);color:#bbf7d0;border-radius:999px;padding:7px 11px;font-weight:1000;font-size:12px;margin-bottom:10px}.banner h2{font-size:34px;margin:0 0 6px;color:#fff;letter-spacing:-.5px}.banner h2 span{color:var(--gold)}.banner p{margin:0;color:#e5e7eb;font-weight:800;line-height:1.45}.mini-info{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:13px}.mini{background:rgba(0,0,0,.30);border:1px solid rgba(148,163,184,.20);border-radius:15px;padding:10px;text-align:center;font-size:12px;color:#e5e7eb;font-weight:900}.mini b{display:block;color:var(--gold);font-size:15px;margin-bottom:3px}
+.wrap{max-width:1100px;margin:0 auto;padding:0 14px}.grid{display:grid;grid-template-columns:1.25fr .85fr;gap:14px;align-items:start}.card{background:radial-gradient(circle at top right,rgba(250,204,21,.08),transparent 35%),rgba(15,23,42,.95);border:1px solid rgba(250,204,21,.22);border-radius:24px;padding:15px;box-shadow:0 14px 35px rgba(0,0,0,.32);margin-top:14px}.card h3{margin:0 0 12px;color:var(--gold);font-size:21px}.notice{background:rgba(250,204,21,.10);border:1px solid rgba(250,204,21,.25);padding:10px;border-radius:16px;color:#fef3c7;font-weight:900;font-size:13px;line-height:1.4}.products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.product{border:1px solid rgba(148,163,184,.20);background:rgba(0,0,0,.25);border-radius:19px;padding:13px}.product-image{width:100%;height:220px;object-fit:contain;display:block;margin:0 0 12px;border-radius:16px;background:radial-gradient(circle at top,rgba(250,204,21,.08),transparent 38%),rgba(2,6,23,.55);padding:10px;border:1px solid rgba(250,204,21,.12)}.product-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.product strong{font-size:17px;line-height:1.15}.price{color:var(--gold);font-weight:1000;font-size:19px;white-space:nowrap}.desc{font-size:12px;color:#cbd5e1;font-weight:800;line-height:1.35;margin:8px 0 10px}.qty{display:flex;gap:8px;align-items:center;margin-top:9px}input,select,textarea{width:100%;border-radius:13px;border:1px solid #334155;background:#020617;color:#fff;padding:11px;font-size:14px;outline:none}input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(250,204,21,.10)}input[type=number]{width:76px;text-align:center;font-weight:1000}label{display:block;color:#fde68a;font-weight:1000;font-size:12px;margin:10px 0 5px}.opts{border:1px dashed rgba(250,204,21,.28);border-radius:15px;padding:10px;margin-top:10px;background:rgba(2,6,23,.42)}.opts-title{color:var(--gold);font-weight:1000;font-size:13px;margin-bottom:7px}.checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.check{display:flex;gap:6px;align-items:center;border:1px solid rgba(148,163,184,.16);background:rgba(0,0,0,.22);border-radius:10px;padding:7px;font-size:12px;color:#e5e7eb;font-weight:800;cursor:pointer}.check input{width:auto;accent-color:#facc15}.drinks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.drink{border:1px solid rgba(148,163,184,.20);background:rgba(0,0,0,.25);border-radius:17px;padding:12px}.drink strong{display:block;min-height:34px;line-height:1.15}.drink .price{font-size:17px;margin:7px 0}.order-type{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.radio{position:relative;border:1px solid #334155;background:#020617;border-radius:15px;text-align:center;padding:10px;color:#e5e7eb;font-weight:1000;font-size:13px;cursor:pointer}.radio input{position:absolute;opacity:0;pointer-events:none}.radio:has(input:checked){border-color:var(--gold);background:rgba(250,204,21,.13);color:#fff7cc}.form2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.full{grid-column:1/-1}.cart{display:grid;gap:8px;margin-top:10px}.cart-item{border:1px solid rgba(148,163,184,.18);background:rgba(0,0,0,.25);border-radius:15px;padding:10px}.cart-top{display:flex;justify-content:space-between;gap:8px}.cart-name{font-weight:1000;line-height:1.25}.cart-price{color:var(--gold);font-weight:1000;white-space:nowrap}.cart-notes{color:#cbd5e1;font-size:12px;font-weight:800;line-height:1.35;white-space:pre-line;margin-top:5px}.cart-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.mini-btn{padding:6px 8px;border-radius:10px;font-size:12px;background:#1f2937;color:#fef3c7;border:1px solid #334155;box-shadow:none}.summary{border-top:1px dashed #334155;margin-top:12px;padding-top:12px;display:grid;gap:7px}.line{display:flex;justify-content:space-between;gap:10px;color:#e5e7eb;font-size:14px}.line b{color:var(--gold)}.total{font-size:24px;color:var(--gold);font-weight:1000}.sticky-bar{position:fixed;left:0;right:0;bottom:0;background:rgba(2,6,23,.96);backdrop-filter:blur(8px);border-top:1px solid rgba(250,204,21,.25);padding:10px 14px;z-index:30}.sticky-inner{max-width:1100px;margin:auto;display:flex;gap:10px;align-items:center;justify-content:space-between}.sticky-total{font-weight:1000;color:#fff}.sticky-total b{color:var(--gold);font-size:20px}.msg{min-height:18px;color:#fecaca;font-size:12px;font-weight:900;white-space:pre-line}.hide{display:none!important}.empty{color:#94a3b8;font-weight:900;text-align:center;padding:18px;border:1px dashed #334155;border-radius:16px}.footer{text-align:center;color:#94a3b8;font-weight:800;font-size:12px;padding:18px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.products{grid-template-columns:1fr}.drinks{grid-template-columns:repeat(2,1fr)}.mini-info{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.top{align-items:flex-start;flex-direction:column}.top .btn{width:100%}.banner h2{font-size:29px}.product-image{height:190px}.products,.drinks,.checks,.form2,.order-type{grid-template-columns:1fr}.qty button{flex:1}.sticky-inner{align-items:stretch;flex-direction:column}.sticky-bar .btn{width:100%}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="top">
+    <div class="brand">
+      <div class="logo">P</div>
+      <div>
+        <h1>Combinados El Patrón</h1>
+        <div class="sub">Turno día · Lunes a domingo · Santa</div>
+      </div>
+    </div>
+    <a class="btn btn-dark" href="https://maps.app.goo.gl/MAvu9jXbc5yHJkVx8" target="_blank" rel="noopener">📍 Ubicación</a>
+  </div>
+  <section class="banner">
+    <span class="badge">🔥 Promo de la semana</span>
+    <h2>Combinado personal <span>desde S/9</span></h2>
+    <p>Promo especial: <b>2 combinados por S/15</b>. Para llevar o delivery se suma <b>S/1 de taper por plato</b>.</p>
+    <div class="mini-info">
+      <div class="mini"><b>S/9</b>Personal</div>
+      <div class="mini"><b>S/15</b>Promo 2x</div>
+      <div class="mini"><b>+S/1</b>Taper por plato</div>
+      <div class="mini"><b>944 275 861</b>Pedidos</div>
+    </div>
+  </section>
+</header>
+
+<main class="wrap grid">
+  <section>
+    <div class="card">
+      <h3>🍽️ Combinados</h3>
+      <div class="notice">Elige tu combinado y agrega tus observaciones. En la promo 2x15 puedes personalizar cada plato por separado.</div>
+      <div class="products" style="margin-top:12px">
+        <article class="product">
+          <img class="product-image" src="combinado_peruano_en_plato_elegante.png" alt="Combinado personal El Patrón">
+          <div class="product-head"><strong>Combinado personal</strong><span class="price">S/9</span></div>
+          <div class="desc">Plato personal con combinación del día. Ideal para una persona.</div>
+          <div class="opts">
+            <div class="opts-title">Opciones del plato</div>
+            <div class="checks" id="optsPersonal"></div>
+            <label>Nota extra</label>
+            <textarea id="notePersonal" rows="2" placeholder="Ej: bastante juguito, ají aparte..."></textarea>
+          </div>
+          <div class="qty"><input type="number" id="qtyPersonal" min="1" value="1"><button id="addPersonal">Agregar</button></div>
+        </article>
+        <article class="product">
+          <img class="product-image" src="combinado_peruano_delicioso_por_s_15.png" alt="Promo 2 combinados por S/15 El Patrón">
+          <div class="product-head"><strong>Promo 2 combinados</strong><span class="price">S/15</span></div>
+          <div class="desc">Dos platos personales. Cada plato puede ir con opciones diferentes.</div>
+          <div class="opts">
+            <div class="opts-title">Plato 1</div>
+            <div class="checks" id="optsPromo1"></div>
+            <label>Nota plato 1</label>
+            <textarea id="notePromo1" rows="2" placeholder="Ej: sin ceviche..."></textarea>
+            <div class="opts-title" style="margin-top:10px">Plato 2</div>
+            <div class="checks" id="optsPromo2"></div>
+            <label>Nota plato 2</label>
+            <textarea id="notePromo2" rows="2" placeholder="Ej: ají aparte..."></textarea>
+          </div>
+          <div class="qty"><input type="number" id="qtyPromo" min="1" value="1"><button id="addPromo">Agregar</button></div>
+        </article>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>🥤 Bebidas</h3>
+      <div class="drinks" id="drinks"></div>
+    </div>
+  </section>
+
+  <aside>
+    <div class="card">
+      <h3>🛒 Tu pedido</h3>
+      <label>Tipo de pedido</label>
+      <div class="order-type">
+        <label class="radio"><input type="radio" name="orderType" value="local" checked>🍽️ Local</label>
+        <label class="radio"><input type="radio" name="orderType" value="recojo">🥡 Recojo</label>
+        <label class="radio"><input type="radio" name="orderType" value="delivery">🛵 Delivery</label>
+      </div>
+
+      <div class="form2">
+        <div>
+          <label>Nombre</label>
+          <input id="customerName" placeholder="Tu nombre">
+        </div>
+        <div>
+          <label>Celular</label>
+          <input id="customerPhone" inputmode="tel" placeholder="Ej: 944275861">
+        </div>
+        <div class="full hide" id="addressWrap">
+          <label>Dirección / referencia</label>
+          <textarea id="customerAddress" rows="2" placeholder="Ej: Santa, frente a..."></textarea>
+        </div>
+        <div id="deliveryWrap" class="hide">
+          <label>Delivery</label>
+          <input id="deliveryFee" type="number" min="0" step="0.5" value="3">
+        </div>
+        <div>
+          <label>Pago</label>
+          <select id="paymentMethod">
+            <option value="efectivo">Efectivo</option>
+            <option value="yape">Yape</option>
+          </select>
+        </div>
+        <div class="full">
+          <label>Observación general</label>
+          <textarea id="generalNote" rows="2" placeholder="Ej: enviar cubiertos, tocar puerta..."></textarea>
+        </div>
+      </div>
+
+      <div class="cart" id="cart"></div>
+      <div class="summary">
+        <div class="line"><span>Productos</span><b id="subtotal">S/0.00</b></div>
+        <div class="line"><span>Taper</span><b id="taperTotal">S/0.00</b></div>
+        <div class="line"><span>Delivery</span><b id="deliveryTotal">S/0.00</b></div>
+        <div class="line total"><span>Total</span><b id="total">S/0.00</b></div>
+      </div>
+      <div class="msg" id="msg"></div>
+      <button class="btn-green" id="sendWhatsApp" style="width:100%;margin-top:10px">📲 Enviar pedido por WhatsApp</button>
+      <button class="btn-dark" id="clearCart" style="width:100%;margin-top:8px">🧹 Limpiar pedido</button>
+    </div>
+  </aside>
+</main>
+
+<div class="footer">Combinados El Patrón · Turno día · Taper para llevar + S/1 por plato</div>
+
+<div class="sticky-bar">
+  <div class="sticky-inner">
+    <div class="sticky-total">Total pedido: <b id="stickyTotal">S/0.00</b></div>
+    <a href="#" class="btn btn-green" id="stickySend">📲 Pedir por WhatsApp</a>
+  </div>
+</div>
+
+<script>
+const WHATSAPP_NUMBER="51944275861";
+const TAPER_PRICE=1;
+const OPTIONS=["Con todo","Sin chanfainita","Sin ceviche","Sin pescado","Solo juguito","Solo cebolla y juguito de pescado","Ají aparte","Más juguito","Poco juguito","Sin cancha","Limón aparte"];
+const DRINKS=[
+  {name:"Gaseosa 600 ml",price:4,emoji:"🥤"},
+  {name:"Gaseosa 1 litro",price:8,emoji:"🥤"},
+  {name:"Maracuyá 1 litro",price:7,emoji:"🟡"},
+  {name:"Chicha morada 1 litro",price:7,emoji:"🟣"},
+  {name:"Vaso de maracuyá",price:2,emoji:"🥤"},
+  {name:"Agua 750 ml",price:3,emoji:"💧"}
+];
+let cart=[];
+const $=id=>document.getElementById(id);
+const money=n=>"S/"+Number(n||0).toFixed(2);
+function esc(s){return String(s||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+function makeChecks(containerId,prefix){$(containerId).innerHTML=OPTIONS.map((op,i)=>`<label class="check"><input type="checkbox" name="${prefix}" value="${esc(op)}" ${i===0?"checked":""}>${esc(op)}</label>`).join("")}
+function getOptions(prefix,noteId){
+  const selected=[...document.querySelectorAll(`input[name='${prefix}']:checked`)].map(x=>x.value);
+  const note=($(noteId).value||"").trim();
+  if(!selected.length && !note)return "Sin observación";
+  return [...selected,note].filter(Boolean).join(" / ");
+}
+function resetGroup(prefix,noteId){document.querySelectorAll(`input[name='${prefix}']`).forEach((x,i)=>x.checked=i===0);$(noteId).value=""}
+function orderType(){return document.querySelector("input[name='orderType']:checked").value}
+function orderTypeLabel(t=orderType()){return t==="local"?"Consumo en local":t==="recojo"?"Recojo en local":"Delivery"}
+function addItem(item){
+  item.id="ITEM-"+Date.now()+"-"+Math.floor(Math.random()*9999);
+  item.subtotal=item.qty*item.unitPrice;
+  cart.push(item);
+  renderCart();
+  showMsg("Agregado al pedido.",true);
+}
+function portions(){return cart.reduce((a,i)=>a+(i.portionsPerUnit||0)*i.qty,0)}
+function totals(){
+  const subtotal=cart.reduce((a,i)=>a+i.subtotal,0);
+  const t=orderType();
+  const taperQty=(t==="local")?0:portions();
+  const taperTotal=taperQty*TAPER_PRICE;
+  const deliveryTotal=(t==="delivery")?Number($("deliveryFee").value||0):0;
+  return {subtotal,taperQty,taperTotal,deliveryTotal,total:subtotal+taperTotal+deliveryTotal};
+}
+function renderCart(){
+  const box=$("cart");
+  if(!cart.length){box.innerHTML='<div class="empty">Tu pedido está vacío.</div>'}
+  else{
+    box.innerHTML=cart.map((i,idx)=>`<div class="cart-item"><div class="cart-top"><div class="cart-name">${i.qty} x ${esc(i.name)}</div><div class="cart-price">${money(i.subtotal)}</div></div>${i.notes?`<div class="cart-notes">${esc(i.notes)}</div>`:""}<div class="cart-actions"><button class="mini-btn" onclick="removeItem(${idx})">Quitar</button></div></div>`).join("");
+  }
+  const t=totals();
+  $("subtotal").textContent=money(t.subtotal);
+  $("taperTotal").textContent=money(t.taperTotal)+(t.taperQty?` (${t.taperQty})`:"");
+  $("deliveryTotal").textContent=money(t.deliveryTotal);
+  $("total").textContent=money(t.total);
+  $("stickyTotal").textContent=money(t.total);
+}
+function removeItem(idx){cart.splice(idx,1);renderCart()}
+function renderDrinks(){
+  $("drinks").innerHTML=DRINKS.map((d,idx)=>`<article class="drink"><strong>${d.emoji} ${esc(d.name)}</strong><div class="price">${money(d.price)}</div><div class="qty"><input type="number" min="1" value="1" id="drinkQty${idx}"><button onclick="addDrink(${idx})">Agregar</button></div></article>`).join("");
+}
+function addDrink(idx){const d=DRINKS[idx];const q=Math.max(1,Number($("drinkQty"+idx).value||1));addItem({type:"bebida",name:d.name,qty:q,unitPrice:d.price,portionsPerUnit:0,notes:""})}
+function handleType(){
+  const t=orderType();
+  $("addressWrap").classList.toggle("hide",t==="local");
+  $("deliveryWrap").classList.toggle("hide",t!=="delivery");
+  if(t!=="delivery")$("deliveryFee").value="0"; else if(Number($("deliveryFee").value||0)<=0)$("deliveryFee").value="3";
+  renderCart();
+}
+function validate(){
+  if(!cart.length)return "Agrega al menos un producto.";
+  if(orderType()==="delivery"&&!($("customerAddress").value||"").trim())return "Para delivery coloca dirección o referencia.";
+  return "";
+}
+function buildOrder(){
+  const t=totals();
+  return {
+    id:"WEB-DIA-"+Date.now(),createdAt:new Date().toISOString(),orderType:orderType(),orderTypeLabel:orderTypeLabel(),
+    customerName:($("customerName").value||"Cliente").trim()||"Cliente",customerPhone:($("customerPhone").value||"").replace(/\D/g,""),customerAddress:($("customerAddress").value||"").trim(),paymentMethod:$("paymentMethod").value,generalNote:($("generalNote").value||"").trim(),items:cart.map(x=>({...x})),...t
+  }
+}
+function waText(o){
+  const items=o.items.map(i=>{let line=`• ${i.qty} x ${i.name} - ${money(i.subtotal)}`;if(i.notes)line+=`\n  ${i.notes}`;return line}).join("\n");
+  return `🍽️ *COMBINADOS EL PATRÓN - TURNO DÍA*\nPedido: ${o.id}\nTipo: ${o.orderTypeLabel}\nCliente: ${o.customerName}\n${o.customerPhone?`Celular: ${o.customerPhone}\n`:""}${o.customerAddress?`Dirección/ref.: ${o.customerAddress}\n`:""}\n${items}\n\nProductos: ${money(o.subtotal)}\nTaper: ${money(o.taperTotal)}${o.taperQty?` (${o.taperQty})`:""}\nDelivery: ${money(o.deliveryTotal)}\n*TOTAL: ${money(o.total)}*\nPago: ${o.paymentMethod==="yape"?"Yape":"Efectivo"}\n${o.generalNote?`Obs.: ${o.generalNote}\n`:""}`;
+}
+function sendWhatsApp(e){
+  if(e)e.preventDefault();
+  const er=validate();
+  if(er){showMsg(er,false);return}
+  const o=buildOrder();
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waText(o))}`,'_blank');
+}
+function showMsg(text,ok=false){const m=$("msg");m.textContent=text;m.style.color=ok?"#bbf7d0":"#fecaca";setTimeout(()=>{if(m.textContent===text)m.textContent=""},3500)}
+function clearCart(){if(!cart.length)return; if(confirm("¿Limpiar todo el pedido?")){cart=[];renderCart();showMsg("Pedido limpio.",true)}}
+function setup(){
+  makeChecks("optsPersonal","personal");makeChecks("optsPromo1","promo1");makeChecks("optsPromo2","promo2");renderDrinks();
+  document.querySelectorAll("input[name='orderType']").forEach(x=>x.addEventListener("change",handleType));
+  $("deliveryFee").addEventListener("input",renderCart);
+  $("addPersonal").onclick=()=>{addItem({type:"combinado",name:"Combinado personal",qty:Math.max(1,Number($("qtyPersonal").value||1)),unitPrice:9,portionsPerUnit:1,notes:"Plato: "+getOptions("personal","notePersonal")});resetGroup("personal","notePersonal")};
+  $("addPromo").onclick=()=>{addItem({type:"promo",name:"Promo 2 combinados",qty:Math.max(1,Number($("qtyPromo").value||1)),unitPrice:15,portionsPerUnit:2,notes:"Plato 1: "+getOptions("promo1","notePromo1")+"\nPlato 2: "+getOptions("promo2","notePromo2")});resetGroup("promo1","notePromo1");resetGroup("promo2","notePromo2")};
+  $("sendWhatsApp").onclick=sendWhatsApp;$("stickySend").onclick=sendWhatsApp;$("clearCart").onclick=clearCart;
+  handleType();renderCart();
+}
+setup();
+</script>
+</body>
+</html>

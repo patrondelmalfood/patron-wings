@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin Día - Combinados El Patrón</title>
+<style>
+:root{--bg:#020617;--panel:#111827;--gold:#facc15;--orange:#ff9f1c;--text:#f8fafc;--muted:#cbd5e1;--green:#22c55e;--red:#ef4444;--blue:#38bdf8;--line:#334155;--soft:#1f2937}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at top,rgba(250,204,21,.13),transparent 30%),linear-gradient(180deg,#000,#020617);color:var(--text);padding:14px}.wrap{max-width:1220px;margin:auto}.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;position:sticky;top:0;z-index:20;background:rgba(2,6,23,.95);backdrop-filter:blur(8px);border:1px solid rgba(250,204,21,.32);border-radius:20px;padding:12px;box-shadow:0 10px 28px rgba(0,0,0,.35)}.brand{display:flex;align-items:center;gap:10px}.logo{width:54px;height:54px;border-radius:50%;object-fit:contain;background:#fff;border:2px solid var(--gold)}h1{margin:0;color:var(--gold);font-size:20px;line-height:1;text-transform:uppercase}.brand p{margin:4px 0 0;color:var(--muted);font-size:12px;font-weight:800}.top-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}button,.btn{border:0;border-radius:12px;padding:10px 12px;font-weight:900;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--orange);color:#111827;font-size:13px}button:hover,.btn:hover{opacity:.94;transform:translateY(-1px)}button:disabled{opacity:.55;cursor:not-allowed;transform:none}.btn-green{background:var(--green);color:#052e16}.btn-red{background:var(--red);color:#fff}.btn-blue{background:var(--blue);color:#001827}.btn-dark{background:#0f172a;color:#fef3c7;border:1px solid #334155}.btn-gold{background:linear-gradient(180deg,#fde047,#facc15);color:#111827}.status{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px;padding:10px;border-radius:15px;background:rgba(0,0,0,.26);border:1px solid rgba(148,163,184,.18);color:#cbd5e1;font-size:13px;font-weight:800}.dot{width:10px;height:10px;border-radius:50%;background:var(--red);box-shadow:0 0 9px var(--red)}.dot.open{background:var(--green);box-shadow:0 0 9px var(--green)}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}.card{background:radial-gradient(circle at top right,rgba(250,204,21,.08),transparent 35%),rgba(15,23,42,.94);border:1px solid rgba(250,204,21,.24);border-radius:22px;padding:14px;box-shadow:0 14px 38px rgba(0,0,0,.30)}.card h2{margin:0 0 10px;color:var(--gold);font-size:18px}.stat{min-height:112px}.stat .label{color:#cbd5e1;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.3px}.stat .value{font-size:30px;font-weight:900;margin-top:8px;color:#fff}.stat .sub{color:#94a3b8;font-size:12px;font-weight:800;margin-top:6px;line-height:1.35}.filters{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end;margin-top:14px}.field label{display:block;color:#fde68a;font-size:12px;font-weight:900;margin:0 0 5px}input,select,textarea{width:100%;border-radius:12px;border:1px solid #334155;background:#020617;color:#fff;padding:10px;font-size:14px;outline:none}input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(250,204,21,.10)}.two{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}.list{display:grid;gap:8px}.mini-row{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed rgba(148,163,184,.22);padding:7px 0;color:#e5e7eb;font-size:13px}.mini-row b{color:#fff}.pill{display:inline-flex;align-items:center;border:1px solid #334155;background:#020617;border-radius:999px;padding:5px 9px;color:#fef3c7;font-size:12px;font-weight:900}.table-wrap{overflow:auto;border-radius:18px;border:1px solid rgba(148,163,184,.22);margin-top:12px}table{width:100%;border-collapse:collapse;min-width:980px;background:rgba(2,6,23,.35)}th,td{padding:10px;border-bottom:1px solid rgba(148,163,184,.16);text-align:left;font-size:13px;vertical-align:top}th{position:sticky;top:0;background:#111827;color:#fde68a;text-transform:uppercase;font-size:11px;letter-spacing:.3px;z-index:1}td{color:#e5e7eb}.money{font-weight:900;color:#facc15}.muted{color:#94a3b8;font-size:12px}.items{white-space:pre-wrap;line-height:1.35}.actions{display:flex;gap:6px;flex-wrap:wrap}.mini-btn{padding:7px 9px;border-radius:9px;font-size:12px}.msg{margin-top:10px;min-height:20px;color:#fecaca;font-size:13px;font-weight:900}.msg.ok{color:#bbf7d0}.empty{padding:24px;text-align:center;color:#cbd5e1;font-weight:900}.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:50;align-items:center;justify-content:center;padding:16px}.modal.show{display:flex}.modal-card{width:min(760px,100%);max-height:88vh;overflow:auto;background:#020617;border:1px solid rgba(250,204,21,.32);border-radius:22px;padding:16px;box-shadow:0 20px 70px rgba(0,0,0,.6)}.modal-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:10px}.ticket{background:#fff;color:#000;border-radius:12px;padding:14px;font-family:monospace;white-space:pre-wrap;line-height:1.35;font-size:13px}.danger-zone{margin-top:14px;border:1px solid rgba(239,68,68,.35);background:rgba(127,29,29,.16);border-radius:18px;padding:12px}.danger-zone h2{color:#fecaca}.small-note{color:#cbd5e1;font-size:12px;line-height:1.4;font-weight:800}.hide{display:none!important}@media(max-width:900px){.topbar{align-items:flex-start;flex-direction:column}.grid{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr}.two{grid-template-columns:1fr}}@media(max-width:560px){body{padding:10px}.grid{grid-template-columns:1fr}.stat .value{font-size:26px}.logo{width:48px;height:48px}h1{font-size:17px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="topbar">
+    <div class="brand">
+      <img class="logo" src="https://i.imgur.com/9QZQZQp.png" onerror="this.style.display='none'" alt="El Patrón" />
+      <div>
+        <h1>Admin Turno Día</h1>
+        <p>Combinados El Patrón · Resumen de ventas</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <a class="btn btn-dark" href="carta-dia-moza.html">📋 Carta moza</a>
+      <button id="btnRefresh" class="btn-blue">🔄 Actualizar</button>
+      <button id="btnPrintSummary" class="btn-green">🖨️ RawBT resumen</button>
+      <button id="btnExport" class="btn-gold">⬇️ Exportar CSV</button>
+    </div>
+  </header>
+
+  <div class="status">
+    <span id="dayDot" class="dot"></span>
+    <span id="dayStatus">Cargando estado...</span>
+    <span class="pill" id="allCount">0 ventas totales guardadas</span>
+  </div>
+
+  <section class="filters card">
+    <div class="field">
+      <label>Fecha</label>
+      <input type="date" id="dateFilter" />
+    </div>
+    <div class="field">
+      <label>Tipo de pedido</label>
+      <select id="typeFilter">
+        <option value="todos">Todos</option>
+        <option value="local">Consumo en local</option>
+        <option value="recojo">Recojo</option>
+        <option value="delivery">Delivery</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Medio de pago</label>
+      <select id="payFilter">
+        <option value="todos">Todos</option>
+        <option value="efectivo">Efectivo</option>
+        <option value="yape">Yape</option>
+        <option value="mixto">Mixto</option>
+      </select>
+    </div>
+    <button id="btnToday" class="btn-gold">📅 Hoy</button>
+  </section>
+
+  <section class="grid">
+    <div class="card stat"><div class="label">Venta total</div><div id="statTotal" class="value">S/0.00</div><div id="statTotalSub" class="sub">0 pedidos</div></div>
+    <div class="card stat"><div class="label">Efectivo</div><div id="statCash" class="value">S/0.00</div><div class="sub">Dinero en caja</div></div>
+    <div class="card stat"><div class="label">Yape</div><div id="statYape" class="value">S/0.00</div><div class="sub">Pagos digitales</div></div>
+    <div class="card stat"><div class="label">Combinados vendidos</div><div id="statPortions" class="value">0</div><div id="statTapers" class="sub">0 tapers cobrados</div></div>
+  </section>
+
+  <section class="two">
+    <div class="card">
+      <h2>📌 Resumen por tipo</h2>
+      <div id="typeSummary" class="list"></div>
+    </div>
+    <div class="card">
+      <h2>🥤 Productos vendidos</h2>
+      <div id="productSummary" class="list"></div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:14px">
+    <h2>🧾 Ventas registradas</h2>
+    <div class="small-note">Este admin lee solo las ventas guardadas por <b>carta-dia-moza.html</b>. No se mezcla con el turno noche.</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Hora</th>
+            <th>Tipo</th>
+            <th>Cliente</th>
+            <th>Pedido</th>
+            <th>Productos</th>
+            <th>Taper</th>
+            <th>Delivery</th>
+            <th>Total</th>
+            <th>Pago</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="ordersBody"></tbody>
+      </table>
+    </div>
+    <div id="msg" class="msg"></div>
+  </section>
+
+  <section class="danger-zone">
+    <h2>⚠️ Zona de cuidado</h2>
+    <div class="small-note">Usa esto solo si registraste mal una venta. Borrar ventas no se puede deshacer.</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+      <button id="btnDeleteFiltered" class="btn-red">🗑️ Borrar ventas filtradas</button>
+      <button id="btnCloseDay" class="btn-dark">🔒 Cerrar día</button>
+      <button id="btnOpenDay" class="btn-green">🟢 Abrir día</button>
+    </div>
+  </section>
+</main>
+
+<div id="modal" class="modal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h2 style="margin:0;color:#facc15">Detalle de venta</h2>
+      <button id="btnCloseModal" class="btn-red">Cerrar</button>
+    </div>
+    <pre id="modalTicket" class="ticket"></pre>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+      <button id="btnModalPrintClient" class="btn-blue">🖨️ RawBT boleta</button>
+      <button id="btnModalPrintKitchen" class="btn-green">👨‍🍳 RawBT comanda</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ORDERS_KEY="pdm_turno_dia_combinados_orders_v1";
+const DAY_STATE_KEY="pdm_turno_dia_combinados_state_v1";
+const money=n=>"S/"+Number(n||0).toFixed(2);
+const el=id=>document.getElementById(id);
+let currentView=[];
+let selectedOrder=null;
+
+const E={
+  dayDot:el("dayDot"),dayStatus:el("dayStatus"),allCount:el("allCount"),dateFilter:el("dateFilter"),typeFilter:el("typeFilter"),payFilter:el("payFilter"),btnToday:el("btnToday"),btnRefresh:el("btnRefresh"),btnPrintSummary:el("btnPrintSummary"),btnExport:el("btnExport"),statTotal:el("statTotal"),statTotalSub:el("statTotalSub"),statCash:el("statCash"),statYape:el("statYape"),statPortions:el("statPortions"),statTapers:el("statTapers"),typeSummary:el("typeSummary"),productSummary:el("productSummary"),ordersBody:el("ordersBody"),msg:el("msg"),btnDeleteFiltered:el("btnDeleteFiltered"),btnCloseDay:el("btnCloseDay"),btnOpenDay:el("btnOpenDay"),modal:el("modal"),btnCloseModal:el("btnCloseModal"),modalTicket:el("modalTicket"),btnModalPrintClient:el("btnModalPrintClient"),btnModalPrintKitchen:el("btnModalPrintKitchen")
+};
+
+function getOrders(){try{return JSON.parse(localStorage.getItem(ORDERS_KEY)||"[]")}catch{return[]}}
+function saveOrders(orders){localStorage.setItem(ORDERS_KEY,JSON.stringify(orders))}
+function getDayState(){try{return JSON.parse(localStorage.getItem(DAY_STATE_KEY)||'{"open":false}')}catch{return{open:false}}}
+function saveDayState(state){localStorage.setItem(DAY_STATE_KEY,JSON.stringify(state))}
+function showMsg(text,ok=false){E.msg.textContent=text;E.msg.className=ok?"msg ok":"msg";setTimeout(()=>{if(E.msg.textContent===text){E.msg.textContent="";E.msg.className="msg"}},4500)}
+function localDateValue(date=new Date()){const d=new Date(date);d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)}
+function orderDateValue(o){return localDateValue(new Date(o.createdAt||Date.now()))}
+function orderTime(o){return new Date(o.createdAt||Date.now()).toLocaleTimeString("es-PE",{hour:"2-digit",minute:"2-digit"})}
+function typeLabel(t){return t==="delivery"?"Delivery":t==="recojo"?"Recojo":"Local"}
+function payMethod(o){return o?.payment?.method||"efectivo"}
+function payLabel(o){return o?.payment?.label||payMethod(o)}
+function esc(t){return String(t||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+function asciiText(text){return String(text||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^\x20-\x7E\n]/g,"").replace(/[ \t]+\n/g,"\n").replace(/\n{4,}/g,"\n\n\n")}
+function line58(){return "--------------------------------"}
+function centerText(text,width=32){text=asciiText(text).trim();if(text.length>=width)return text;const left=Math.floor((width-text.length)/2);return " ".repeat(left)+text}
+function rawMoney(n){return "S/"+Number(n||0).toFixed(2)}
+function sendToRawBT(text){try{const payload=asciiText(text);if(!payload.trim()){alert("No hay contenido para imprimir.");return}window.location.href="rawbt:base64,"+btoa(unescape(encodeURIComponent(payload)))}catch(err){console.error(err);alert("No se pudo abrir RawBT. Verifica que RawBT esté instalado.")}}
+
+function filteredOrders(){
+  const all=getOrders().filter(o=>o&&o.shift==="dia");
+  const date=E.dateFilter.value;
+  const type=E.typeFilter.value;
+  const pay=E.payFilter.value;
+  return all.filter(o=>{
+    if(date&&orderDateValue(o)!==date)return false;
+    if(type!=="todos"&&(o.orderType||"local")!==type)return false;
+    if(pay!=="todos"&&payMethod(o)!==pay)return false;
+    return true;
+  }).sort((a,b)=>new Date(b.createdAt||0)-new Date(a.createdAt||0));
+}
+function summarize(orders){
+  const s={count:orders.length,total:0,subtotal:0,taper:0,delivery:0,efectivo:0,yape:0,portions:0,taperQty:0,types:{local:{count:0,total:0},recojo:{count:0,total:0},delivery:{count:0,total:0}},products:{}};
+  orders.forEach(o=>{
+    s.total+=Number(o.total||0);s.subtotal+=Number(o.subtotal||0);s.taper+=Number(o.taperTotal||0);s.delivery+=Number(o.deliveryFee||0);s.portions+=Number(o.portions||0);s.taperQty+=Number(o.taperQty||0);
+    s.efectivo+=Number(o.payment?.efectivo||0);s.yape+=Number(o.payment?.yape||0);
+    const t=o.orderType||"local"; if(!s.types[t])s.types[t]={count:0,total:0}; s.types[t].count++; s.types[t].total+=Number(o.total||0);
+    (o.items||[]).forEach(i=>{const key=i.name||"Producto";if(!s.products[key])s.products[key]={qty:0,total:0,portions:0};s.products[key].qty+=Number(i.qty||0);s.products[key].total+=Number(i.subtotal||0);s.products[key].portions+=Number(i.portions||0)});
+  });
+  return s;
+}
+function renderStatus(){
+  const state=getDayState();
+  E.dayDot.classList.toggle("open",!!state.open);
+  E.dayStatus.textContent=state.open?"Día abierto desde "+new Date(state.openedAt).toLocaleString("es-PE"):"Día cerrado";
+  E.allCount.textContent=getOrders().length+" ventas totales guardadas";
+}
+function renderSummary(s){
+  E.statTotal.textContent=money(s.total);E.statTotalSub.textContent=s.count+" pedido(s) · Productos "+money(s.subtotal);
+  E.statCash.textContent=money(s.efectivo);E.statYape.textContent=money(s.yape);E.statPortions.textContent=s.portions;E.statTapers.textContent=s.taperQty+" taper(s) cobrados · "+money(s.taper);
+  const rows=["local","recojo","delivery"].map(k=>`<div class="mini-row"><span>${typeLabel(k)} <span class="muted">(${s.types[k]?.count||0})</span></span><b>${money(s.types[k]?.total||0)}</b></div>`).join("")+`<div class="mini-row"><span>Delivery cobrado</span><b>${money(s.delivery)}</b></div>`;
+  E.typeSummary.innerHTML=rows||"<div class='empty'>Sin ventas.</div>";
+  const prod=Object.entries(s.products).sort((a,b)=>b[1].qty-a[1].qty);
+  E.productSummary.innerHTML=prod.length?prod.map(([name,v])=>`<div class="mini-row"><span>${esc(name)} <span class="muted">x${v.qty}${v.portions?` · ${v.portions} platos`:""}</span></span><b>${money(v.total)}</b></div>`).join(""):"<div class='empty'>Sin productos vendidos.</div>";
+}
+function itemsText(o){return (o.items||[]).map(i=>`${i.qty} x ${i.name}${i.notes?`\n${i.notes}`:""}`).join("\n\n")}
+function renderTable(orders){
+  if(!orders.length){E.ordersBody.innerHTML=`<tr><td colspan="10"><div class="empty">No hay ventas con este filtro.</div></td></tr>`;return}
+  E.ordersBody.innerHTML=orders.map(o=>`
+    <tr>
+      <td><b>${orderTime(o)}</b><br><span class="muted">${esc(o.id||"")}</span></td>
+      <td><span class="pill">${typeLabel(o.orderType||"local")}</span></td>
+      <td>${esc(o.customerName||"Cliente")}<br><span class="muted">${esc(o.customerPhone||"")}</span>${o.customerAddress?`<br><span class="muted">${esc(o.customerAddress)}</span>`:""}</td>
+      <td class="items">${esc(itemsText(o))}</td>
+      <td class="money">${money(o.subtotal)}</td>
+      <td>${money(o.taperTotal)}<br><span class="muted">${o.taperQty||0} taper</span></td>
+      <td>${money(o.deliveryFee)}</td>
+      <td class="money">${money(o.total)}</td>
+      <td>${esc(payLabel(o))}</td>
+      <td><div class="actions"><button class="mini-btn btn-blue" onclick="viewOrder('${o.id}')">Ver</button><button class="mini-btn btn-green" onclick="printOrder('${o.id}','cliente')">Boleta</button><button class="mini-btn btn-dark" onclick="printOrder('${o.id}','cocina')">Comanda</button><button class="mini-btn btn-red" onclick="deleteOrder('${o.id}')">Borrar</button></div></td>
+    </tr>`).join("");
+}
+function render(){renderStatus();currentView=filteredOrders();const s=summarize(currentView);renderSummary(s);renderTable(currentView)}
+function buildOrderRaw(o,type="cliente"){
+  const kitchen=type==="cocina",lines=[];lines.push(centerText(kitchen?"COMANDA COCINA":"BOLETA CLIENTE"));lines.push(centerText("COMBINADOS EL PATRON"));lines.push(centerText("TURNO DIA"));lines.push(line58());lines.push(`Pedido: ${o.id||""}`);lines.push(`Fecha: ${new Date(o.createdAt||Date.now()).toLocaleString("es-PE")}`);lines.push(`Tipo: ${typeLabel(o.orderType||"local")}`);lines.push(`Cliente: ${o.customerName||"Cliente"}`);if(o.customerPhone)lines.push(`Cel: ${o.customerPhone}`);if(o.customerAddress)lines.push(`Dir/Ref: ${o.customerAddress}`);if(o.generalNote)lines.push(`Obs: ${o.generalNote}`);lines.push(line58());
+  (o.items||[]).forEach((i,idx)=>{lines.push(`${i.qty} x ${i.name}${kitchen?"":"  "+rawMoney(i.subtotal)}`);if(i.notes)String(i.notes).split("\n").forEach(n=>lines.push("  "+n));if(idx<(o.items||[]).length-1)lines.push("")});
+  lines.push(line58());
+  if(kitchen){lines.push("Preparar segun observaciones.")}
+  else{lines.push(`Productos: ${rawMoney(o.subtotal)}`);lines.push(`Taper: ${rawMoney(o.taperTotal)}${o.taperQty?` (${o.taperQty})`:""}`);lines.push(`Delivery: ${rawMoney(o.deliveryFee)}`);lines.push(line58());lines.push(`TOTAL: ${rawMoney(o.total)}`);lines.push(`Pago: ${payLabel(o)}`);lines.push(line58());lines.push("Gracias por tu compra.")}
+  return asciiText(lines.join("\n")+"\n\n\n");
+}
+function buildSummaryRaw(){
+  const s=summarize(currentView),date=E.dateFilter.value||"Todas";const lines=[];lines.push(centerText("RESUMEN TURNO DIA"));lines.push(centerText("COMBINADOS EL PATRON"));lines.push(line58());lines.push(`Fecha: ${date}`);lines.push(`Pedidos: ${s.count}`);lines.push(`Combinados: ${s.portions}`);lines.push(`Tapers: ${s.taperQty} / ${rawMoney(s.taper)}`);lines.push(line58());lines.push(`Venta total: ${rawMoney(s.total)}`);lines.push(`Efectivo: ${rawMoney(s.efectivo)}`);lines.push(`Yape: ${rawMoney(s.yape)}`);lines.push(`Delivery: ${rawMoney(s.delivery)}`);lines.push(line58());lines.push("POR TIPO");["local","recojo","delivery"].forEach(k=>lines.push(`${typeLabel(k)}: ${s.types[k]?.count||0} / ${rawMoney(s.types[k]?.total||0)}`));lines.push(line58());lines.push("PRODUCTOS");Object.entries(s.products).sort((a,b)=>b[1].qty-a[1].qty).forEach(([name,v])=>lines.push(`${v.qty} x ${name} - ${rawMoney(v.total)}`));lines.push(line58());lines.push(`Impreso: ${new Date().toLocaleString("es-PE")}`);return asciiText(lines.join("\n")+"\n\n\n");
+}
+function findOrder(id){return getOrders().find(o=>String(o.id)===String(id))}
+window.viewOrder=function(id){selectedOrder=findOrder(id);if(!selectedOrder)return;E.modalTicket.textContent=buildOrderRaw(selectedOrder,"cliente");E.modal.classList.add("show")}
+window.printOrder=function(id,type){const o=findOrder(id);if(!o)return alert("Venta no encontrada.");sendToRawBT(buildOrderRaw(o,type))}
+window.deleteOrder=function(id){const o=findOrder(id);if(!o)return;if(!confirm("¿Borrar esta venta?\n"+(o.id||"")))return;saveOrders(getOrders().filter(x=>String(x.id)!==String(id)));render();showMsg("Venta borrada.",true)}
+function exportCSV(){
+  const rows=[["fecha","hora","id","tipo","cliente","celular","direccion","items","productos","taper","delivery","total","pago","efectivo","yape"]];
+  currentView.slice().reverse().forEach(o=>rows.push([orderDateValue(o),orderTime(o),o.id||"",typeLabel(o.orderType||"local"),o.customerName||"",o.customerPhone||"",o.customerAddress||"",itemsText(o).replace(/\n/g," | "),Number(o.subtotal||0).toFixed(2),Number(o.taperTotal||0).toFixed(2),Number(o.deliveryFee||0).toFixed(2),Number(o.total||0).toFixed(2),payLabel(o),Number(o.payment?.efectivo||0).toFixed(2),Number(o.payment?.yape||0).toFixed(2)]));
+  const csv=rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(",")).join("\n");
+  const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="ventas-turno-dia-"+(E.dateFilter.value||"todo")+".csv";a.click();URL.revokeObjectURL(a.href);
+}
+function setup(){
+  E.dateFilter.value=localDateValue();
+  [E.dateFilter,E.typeFilter,E.payFilter].forEach(x=>x.addEventListener("change",render));
+  E.btnToday.onclick=()=>{E.dateFilter.value=localDateValue();E.typeFilter.value="todos";E.payFilter.value="todos";render()};
+  E.btnRefresh.onclick=()=>{render();showMsg("Actualizado.",true)};
+  E.btnPrintSummary.onclick=()=>sendToRawBT(buildSummaryRaw());
+  E.btnExport.onclick=exportCSV;
+  E.btnCloseModal.onclick=()=>E.modal.classList.remove("show");
+  E.modal.addEventListener("click",e=>{if(e.target===E.modal)E.modal.classList.remove("show")});
+  E.btnModalPrintClient.onclick=()=>{if(selectedOrder)sendToRawBT(buildOrderRaw(selectedOrder,"cliente"))};
+  E.btnModalPrintKitchen.onclick=()=>{if(selectedOrder)sendToRawBT(buildOrderRaw(selectedOrder,"cocina"))};
+  E.btnOpenDay.onclick=()=>{const s=getDayState();if(s.open){showMsg("El día ya está abierto.",true);return}saveDayState({open:true,openedAt:new Date().toISOString()});render();showMsg("Día abierto.",true)};
+  E.btnCloseDay.onclick=()=>{if(!confirm("¿Cerrar el día del turno día?"))return;const s=getDayState();saveDayState({...s,open:false,closedAt:new Date().toISOString()});render();showMsg("Día cerrado.",true)};
+  E.btnDeleteFiltered.onclick=()=>{if(!currentView.length){showMsg("No hay ventas filtradas para borrar.");return}const pass=prompt(`Se borrarán ${currentView.length} venta(s) filtradas. Escribe BORRAR para confirmar:`);if(pass!=="BORRAR"){showMsg("No se borró nada.");return}const ids=new Set(currentView.map(o=>String(o.id)));saveOrders(getOrders().filter(o=>!ids.has(String(o.id))));render();showMsg("Ventas filtradas borradas.",true)};
+}
+setup();render();
+</script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Accesos Turno Día - El Patrón</title>
+<style>
+:root{
+  --bg:#030712;
+  --panel:#111827;
+  --gold:#facc15;
+  --orange:#fb923c;
+  --green:#22c55e;
+  --blue:#38bdf8;
+  --red:#ef4444;
+  --text:#f8fafc;
+  --muted:#cbd5e1;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:Arial,Helvetica,sans-serif;
+  background:
+    radial-gradient(circle at top,rgba(250,204,21,.20),transparent 34%),
+    linear-gradient(180deg,#000,#020617 60%,#030712);
+  color:var(--text);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+}
+.wrap{
+  width:100%;
+  max-width:520px;
+}
+.card{
+  background:rgba(15,23,42,.96);
+  border:1px solid rgba(250,204,21,.28);
+  border-radius:28px;
+  padding:22px;
+  box-shadow:0 20px 55px rgba(0,0,0,.45);
+}
+.logo{
+  width:76px;
+  height:76px;
+  border-radius:50%;
+  margin:0 auto 12px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(145deg,#fde047,#f97316);
+  color:#111827;
+  font-weight:1000;
+  font-size:34px;
+  border:3px solid #fff;
+  box-shadow:0 0 25px rgba(250,204,21,.40);
+}
+h1{
+  margin:0;
+  text-align:center;
+  color:var(--gold);
+  font-size:27px;
+  text-transform:uppercase;
+  line-height:1.05;
+}
+.sub{
+  margin:8px 0 18px;
+  text-align:center;
+  color:#fef3c7;
+  font-weight:900;
+  font-size:14px;
+}
+.btns{
+  display:grid;
+  gap:12px;
+}
+a{
+  text-decoration:none;
+}
+.btn{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:16px;
+  border-radius:18px;
+  font-weight:1000;
+  color:#111827;
+  background:var(--gold);
+  box-shadow:0 10px 25px rgba(0,0,0,.30);
+}
+.btn:hover{
+  transform:translateY(-1px);
+  opacity:.95;
+}
+.btn span{
+  display:block;
+  font-size:18px;
+}
+.btn small{
+  display:block;
+  margin-top:3px;
+  font-size:12px;
+  opacity:.82;
+}
+.btn-public{background:var(--gold)}
+.btn-moza{background:var(--green)}
+.btn-admin{background:var(--blue)}
+.btn-home{background:#1f2937;color:#fef3c7;border:1px solid #334155}
+.note{
+  margin-top:18px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.45;
+  text-align:center;
+  font-weight:800;
+}
+.footer{
+  margin-top:13px;
+  text-align:center;
+  color:#94a3b8;
+  font-size:11px;
+  font-weight:800;
+}
+</style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <div class="logo">P</div>
+      <h1>Turno Día</h1>
+      <div class="sub">Combinados El Patrón</div>
+
+      <div class="btns">
+        <a class="btn btn-public" href="index-dia.html">
+          <div>
+            <span>🍽️ Carta pública</span>
+            <small>Para clientes: combinados, bebidas y pedido por WhatsApp</small>
+          </div>
+          <b>Entrar</b>
+        </a>
+
+        <a class="btn btn-moza" href="carta-dia-moza.html">
+          <div>
+            <span>🧾 Carta moza</span>
+            <small>Registrar venta, comanda, boleta y RawBT</small>
+          </div>
+          <b>Entrar</b>
+        </a>
+
+        <a class="btn btn-admin" href="admin-dia.html">
+          <div>
+            <span>📊 Admin día</span>
+            <small>Resumen, ventas, productos, taper y delivery</small>
+          </div>
+          <b>Entrar</b>
+        </a>
+
+        <a class="btn btn-home" href="index.html">
+          <div>
+            <span>🌙 Turno noche</span>
+            <small>Volver a la carta principal de noche</small>
+          </div>
+          <b>Ir</b>
+        </a>
+      </div>
+
+      <div class="note">
+        Este panel es solo para el turno día. No mezcla ventas con el turno noche.
+      </div>
+    </section>
+
+    <div class="footer">
+      El Patrón del Mal Fast Food · Sistema interno
+    </div>
+  </main>
+</body>
+</html>
