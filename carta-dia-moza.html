@@ -3,303 +3,104 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Combinados El Patrón - Turno Día</title>
+<title>Combinados El Patrón - Turno Día / Moza</title>
 <style>
-:root{
-  --bg:#030712;--panel:#111827;--panel2:#0f172a;--gold:#facc15;--orange:#fb923c;--red:#ef4444;--green:#22c55e;--blue:#38bdf8;--text:#f8fafc;--muted:#cbd5e1;--line:#334155;
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;min-height:100vh;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at top,rgba(250,204,21,.15),transparent 34%),linear-gradient(180deg,#000,#020617 55%,#030712);color:var(--text);padding-bottom:90px}
-.hero{padding:18px 14px 10px;max-width:1100px;margin:auto}
-.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}.brand{display:flex;align-items:center;gap:12px}.logo{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#fde047,#f97316);color:#111827;font-weight:1000;font-size:25px;border:2px solid #fff;box-shadow:0 0 20px rgba(250,204,21,.35)}
-h1{font-size:23px;line-height:1.05;margin:0;color:var(--gold);text-transform:uppercase}.sub{font-weight:900;color:#fef3c7;font-size:13px;margin-top:4px}.top a{font-size:12px}
-.btn,button{border:0;border-radius:14px;padding:11px 13px;font-weight:1000;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:7px;background:var(--gold);color:#111827;box-shadow:0 8px 18px rgba(0,0,0,.25)}.btn:hover,button:hover{transform:translateY(-1px);opacity:.95}.btn-dark{background:#0f172a;color:#fef3c7;border:1px solid #334155}.btn-green{background:var(--green);color:#052e16}.btn-red{background:var(--red);color:#fff}.btn-blue{background:var(--blue);color:#001827}.btn-orange{background:var(--orange);color:#111827}
-.banner{border:1px solid rgba(250,204,21,.34);background:radial-gradient(circle at top right,rgba(250,204,21,.18),transparent 30%),linear-gradient(135deg,rgba(127,29,29,.75),rgba(2,6,23,.96));border-radius:28px;padding:18px;box-shadow:0 18px 45px rgba(0,0,0,.38);overflow:hidden;position:relative}.banner:after{content:"2x15";position:absolute;right:-8px;top:-18px;font-size:82px;line-height:1;font-weight:1000;color:rgba(250,204,21,.10);transform:rotate(-8deg)}.badge{display:inline-flex;background:rgba(34,197,94,.13);border:1px solid rgba(34,197,94,.35);color:#bbf7d0;border-radius:999px;padding:7px 11px;font-weight:1000;font-size:12px;margin-bottom:10px}.banner h2{font-size:34px;margin:0 0 6px;color:#fff;letter-spacing:-.5px}.banner h2 span{color:var(--gold)}.banner p{margin:0;color:#e5e7eb;font-weight:800;line-height:1.45}.mini-info{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:13px}.mini{background:rgba(0,0,0,.30);border:1px solid rgba(148,163,184,.20);border-radius:15px;padding:10px;text-align:center;font-size:12px;color:#e5e7eb;font-weight:900}.mini b{display:block;color:var(--gold);font-size:15px;margin-bottom:3px}
-.wrap{max-width:1100px;margin:0 auto;padding:0 14px}.grid{display:grid;grid-template-columns:1.25fr .85fr;gap:14px;align-items:start}.card{background:radial-gradient(circle at top right,rgba(250,204,21,.08),transparent 35%),rgba(15,23,42,.95);border:1px solid rgba(250,204,21,.22);border-radius:24px;padding:15px;box-shadow:0 14px 35px rgba(0,0,0,.32);margin-top:14px}.card h3{margin:0 0 12px;color:var(--gold);font-size:21px}.notice{background:rgba(250,204,21,.10);border:1px solid rgba(250,204,21,.25);padding:10px;border-radius:16px;color:#fef3c7;font-weight:900;font-size:13px;line-height:1.4}.products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.product{border:1px solid rgba(148,163,184,.20);background:rgba(0,0,0,.25);border-radius:19px;padding:13px}.product-image{width:100%;height:230px;object-fit:cover;display:block;margin:0 0 12px;border-radius:16px;background:#020617;border:1px solid rgba(250,204,21,.12);box-shadow:0 10px 25px rgba(0,0,0,.28)}.product-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.product strong{font-size:17px;line-height:1.15}.price{color:var(--gold);font-weight:1000;font-size:19px;white-space:nowrap}.desc{font-size:12px;color:#cbd5e1;font-weight:800;line-height:1.35;margin:8px 0 10px}.qty{display:flex;gap:8px;align-items:center;margin-top:9px}input,select,textarea{width:100%;border-radius:13px;border:1px solid #334155;background:#020617;color:#fff;padding:11px;font-size:14px;outline:none}input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(250,204,21,.10)}input[type=number]{width:76px;text-align:center;font-weight:1000}label{display:block;color:#fde68a;font-weight:1000;font-size:12px;margin:10px 0 5px}.opts{border:1px dashed rgba(250,204,21,.28);border-radius:15px;padding:10px;margin-top:10px;background:rgba(2,6,23,.42)}.opts-title{color:var(--gold);font-weight:1000;font-size:13px;margin-bottom:7px}.checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.check{display:flex;gap:6px;align-items:center;border:1px solid rgba(148,163,184,.16);background:rgba(0,0,0,.22);border-radius:10px;padding:7px;font-size:12px;color:#e5e7eb;font-weight:800;cursor:pointer}.check input{width:auto;accent-color:#facc15}.drinks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.drink{border:1px solid rgba(148,163,184,.20);background:rgba(0,0,0,.25);border-radius:17px;padding:12px}.drink strong{display:block;min-height:34px;line-height:1.15}.drink .price{font-size:17px;margin:7px 0}.order-type{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.radio{position:relative;border:1px solid #334155;background:#020617;border-radius:15px;text-align:center;padding:10px;color:#e5e7eb;font-weight:1000;font-size:13px;cursor:pointer}.radio input{position:absolute;opacity:0;pointer-events:none}.radio:has(input:checked){border-color:var(--gold);background:rgba(250,204,21,.13);color:#fff7cc}.form2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.full{grid-column:1/-1}.cart{display:grid;gap:8px;margin-top:10px}.cart-item{border:1px solid rgba(148,163,184,.18);background:rgba(0,0,0,.25);border-radius:15px;padding:10px}.cart-top{display:flex;justify-content:space-between;gap:8px}.cart-name{font-weight:1000;line-height:1.25}.cart-price{color:var(--gold);font-weight:1000;white-space:nowrap}.cart-notes{color:#cbd5e1;font-size:12px;font-weight:800;line-height:1.35;white-space:pre-line;margin-top:5px}.cart-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.mini-btn{padding:6px 8px;border-radius:10px;font-size:12px;background:#1f2937;color:#fef3c7;border:1px solid #334155;box-shadow:none}.summary{border-top:1px dashed #334155;margin-top:12px;padding-top:12px;display:grid;gap:7px}.line{display:flex;justify-content:space-between;gap:10px;color:#e5e7eb;font-size:14px}.line b{color:var(--gold)}.total{font-size:24px;color:var(--gold);font-weight:1000}.sticky-bar{position:fixed;left:0;right:0;bottom:0;background:rgba(2,6,23,.96);backdrop-filter:blur(8px);border-top:1px solid rgba(250,204,21,.25);padding:10px 14px;z-index:30}.sticky-inner{max-width:1100px;margin:auto;display:flex;gap:10px;align-items:center;justify-content:space-between}.sticky-total{font-weight:1000;color:#fff}.sticky-total b{color:var(--gold);font-size:20px}.msg{min-height:18px;color:#fecaca;font-size:12px;font-weight:900;white-space:pre-line}.hide{display:none!important}.empty{color:#94a3b8;font-weight:900;text-align:center;padding:18px;border:1px dashed #334155;border-radius:16px}.footer{text-align:center;color:#94a3b8;font-weight:800;font-size:12px;padding:18px}.options-toggle{margin-top:10px;border-radius:16px;border:1px dashed rgba(250,204,21,.28);background:rgba(2,6,23,.45);overflow:hidden}.options-toggle summary{list-style:none;cursor:pointer;padding:12px;color:#111827;background:linear-gradient(180deg,#fde047,#facc15);font-weight:1000;border-radius:15px;display:flex;align-items:center;justify-content:space-between;gap:8px}.options-toggle summary::-webkit-details-marker{display:none}.options-toggle summary:after{content:'▼';font-size:12px}.options-toggle[open] summary:after{content:'▲'}.options-toggle .opts{margin:0;border:0;border-radius:0;background:rgba(2,6,23,.42)}.cart-pulse{animation:cartPulse .8s ease}@keyframes cartPulse{0%{box-shadow:0 0 0 0 rgba(250,204,21,.55)}70%{box-shadow:0 0 0 12px rgba(250,204,21,0)}100%{box-shadow:none}}
-@media(max-width:900px){.grid{grid-template-columns:1fr}.products{grid-template-columns:1fr}.drinks{grid-template-columns:repeat(2,1fr)}.mini-info{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:560px){.top{align-items:flex-start;flex-direction:column}.top .btn{width:100%}.banner h2{font-size:29px}.product-image{width:100%;height:230px;object-fit:cover;display:block;margin:0 0 12px;border-radius:16px;background:#020617;border:1px solid rgba(250,204,21,.12);box-shadow:0 10px 25px rgba(0,0,0,.28)}.products,.drinks,.checks,.form2,.order-type{grid-template-columns:1fr}.qty button{flex:1}.sticky-inner{align-items:stretch;flex-direction:column}.sticky-bar .btn{width:100%}}
+:root{--bg:#020617;--panel:#111827;--gold:#facc15;--orange:#ff9f1c;--text:#f8fafc;--muted:#cbd5e1;--green:#22c55e;--red:#ef4444;--blue:#38bdf8;--line:#334155}*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at top,rgba(250,204,21,.14),transparent 32%),linear-gradient(180deg,#000,#020617);color:var(--text);padding:14px}.wrap{max-width:1120px;margin:auto}.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;position:sticky;top:0;z-index:20;background:rgba(2,6,23,.94);backdrop-filter:blur(8px);border:1px solid rgba(250,204,21,.32);border-radius:20px;padding:12px;box-shadow:0 10px 28px rgba(0,0,0,.35)}.brand{display:flex;align-items:center;gap:10px}.logo{width:54px;height:54px;border-radius:50%;object-fit:contain;background:#fff;border:2px solid var(--gold)}h1{margin:0;color:var(--gold);font-size:20px;line-height:1;text-transform:uppercase}.brand p{margin:4px 0 0;color:var(--muted);font-size:12px;font-weight:700}.top-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}button,.btn{border:0;border-radius:12px;padding:10px 12px;font-weight:900;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--orange);color:#111827;font-size:13px}button:hover,.btn:hover{opacity:.94;transform:translateY(-1px)}button:disabled{opacity:.55;cursor:not-allowed;transform:none}.btn-green{background:var(--green);color:#052e16}.btn-red{background:var(--red);color:#fff}.btn-blue{background:var(--blue);color:#001827}.btn-dark{background:#0f172a;color:#fef3c7;border:1px solid #334155}.btn-gold{background:linear-gradient(180deg,#fde047,#facc15);color:#111827}.status{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px;padding:10px;border-radius:15px;background:rgba(0,0,0,.26);border:1px solid rgba(148,163,184,.18);color:#cbd5e1;font-size:13px;font-weight:800}.dot{width:10px;height:10px;border-radius:50%;background:var(--red);box-shadow:0 0 9px var(--red)}.dot.open{background:var(--green);box-shadow:0 0 9px var(--green)}.grid{display:grid;grid-template-columns:1.3fr .9fr;gap:14px;margin-top:14px;align-items:start}.card{background:radial-gradient(circle at top right,rgba(250,204,21,.08),transparent 35%),rgba(15,23,42,.94);border:1px solid rgba(250,204,21,.24);border-radius:22px;padding:14px;box-shadow:0 14px 38px rgba(0,0,0,.32)}h2{margin:0 0 12px;color:var(--gold);font-size:20px}.notice{margin:10px 0;border-radius:16px;border:1px solid rgba(250,204,21,.25);background:rgba(250,204,21,.08);color:#fef3c7;padding:11px;font-size:13px;line-height:1.4;font-weight:800}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.tab{background:#020617;color:#fef3c7;border:1px solid #334155}.tab.active{background:linear-gradient(180deg,#fde047,#facc15);color:#111827}.section{display:none}.section.active{display:block}.product-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.product,.drink{border-radius:18px;border:1px solid rgba(148,163,184,.20);background:rgba(0,0,0,.25);padding:13px}.product-title{display:flex;justify-content:space-between;gap:8px;margin-bottom:7px}.product-name{font-weight:900;color:#fff;font-size:16px;line-height:1.2}.price,.product-price{color:var(--gold);font-weight:900;white-space:nowrap;font-size:17px}.desc{color:#cbd5e1;font-size:12px;line-height:1.35;margin-bottom:10px}.qty-row{display:flex;gap:8px;align-items:center;margin-top:8px}input,select,textarea{width:100%;border-radius:12px;border:1px solid #334155;background:#020617;color:#fff;padding:10px;font-size:14px;outline:none}input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(250,204,21,.10)}input[type=number]{width:76px;text-align:center;font-weight:900}label{display:block;color:#fde68a;font-size:12px;font-weight:900;margin:9px 0 5px}.options{margin-top:10px;padding:10px;border-radius:16px;border:1px dashed rgba(250,204,21,.28);background:rgba(2,6,23,.45)}.options-toggle{margin-top:10px;border-radius:16px;border:1px dashed rgba(250,204,21,.28);background:rgba(2,6,23,.45);overflow:hidden}.options-toggle summary{list-style:none;cursor:pointer;padding:12px;color:#111827;background:linear-gradient(180deg,#fde047,#facc15);font-weight:1000;border-radius:15px;display:flex;align-items:center;justify-content:space-between;gap:8px}.options-toggle summary::-webkit-details-marker{display:none}.options-toggle summary:after{content:'▼';font-size:12px}.options-toggle[open] summary:after{content:'▲'}.options-toggle .options{margin:0;border:0;border-radius:0;background:rgba(2,6,23,.35)}.cart-pulse{animation:cartPulse .8s ease}@keyframes cartPulse{0%{box-shadow:0 0 0 0 rgba(250,204,21,.55)}70%{box-shadow:0 0 0 12px rgba(250,204,21,0)}100%{box-shadow:none}}.plate-title{color:var(--gold);font-weight:900;font-size:13px;margin:0 0 7px}.checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.check{display:flex;align-items:center;gap:6px;font-size:12px;color:#e5e7eb;background:rgba(0,0,0,.18);border:1px solid rgba(148,163,184,.13);border-radius:10px;padding:7px;cursor:pointer}.check input{width:auto;accent-color:#facc15}.drink-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.drink strong{display:block;color:#fff;font-size:14px;line-height:1.2;min-height:34px}.order-type{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.radio-card{position:relative;border-radius:15px;border:1px solid #334155;background:#020617;padding:10px;text-align:center;cursor:pointer;color:#e5e7eb;font-size:13px;font-weight:900}.radio-card input{position:absolute;opacity:0;pointer-events:none}.radio-card:has(input:checked){border-color:var(--gold);background:rgba(250,204,21,.13);color:#fff7cc}.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.full{grid-column:1/-1}.paybox{display:none;margin-top:10px;padding:10px;border-radius:15px;border:1px dashed #334155;background:rgba(2,6,23,.50)}.paybox.show{display:block}.cart-list{display:grid;gap:8px;margin-top:8px}.cart-item{border:1px solid rgba(148,163,184,.18);background:rgba(0,0,0,.24);border-radius:15px;padding:10px;display:grid;gap:7px}.cart-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.cart-name{color:#fff;font-weight:900;font-size:14px;line-height:1.25}.cart-sub{color:var(--gold);font-weight:900;white-space:nowrap}.cart-notes{color:#cbd5e1;font-size:12px;line-height:1.4;white-space:pre-line}.cart-actions{display:flex;gap:6px;flex-wrap:wrap}.mini-btn{padding:6px 8px;border-radius:10px;font-size:12px;background:#1f2937;color:#fef3c7;border:1px solid #334155}.summary{margin-top:10px;border-top:1px dashed #334155;padding-top:10px;display:grid;gap:7px}.line{display:flex;justify-content:space-between;gap:10px;color:#e5e7eb;font-size:14px}.line b{color:var(--gold)}.total{font-size:22px;font-weight:900;color:var(--gold)}.ticket{display:none;margin-top:12px;background:#fff;color:#000;padding:12px;border-radius:10px;font-size:12px;line-height:1.35}.ticket.show{display:block}.ticket h3{margin:0 0 6px;text-align:center;color:#000;font-size:15px}.ticket hr{border:0;border-top:1px dashed #000;margin:6px 0}.msg{min-height:18px;color:#fecaca;font-size:12px;font-weight:800;margin-top:8px;white-space:pre-line}.ok{color:#bbf7d0}.hide{display:none!important}@media(max-width:900px){.grid{grid-template-columns:1fr}.product-grid{grid-template-columns:1fr}.drink-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){body{padding:10px}.topbar{align-items:flex-start;flex-direction:column}.top-actions{width:100%;justify-content:flex-start}.order-type,.checks,.drink-grid,.form-grid{grid-template-columns:1fr}button,.btn{width:100%}.qty-row button{width:auto;flex:1}}@media print{body{background:#fff;color:#000;padding:0}.topbar,.left-panel,.right-panel .card:not(.print-area),.top-actions,.tabs,.notice,.status,.msg,.btn,.cart-actions,button{display:none!important}.grid{display:block}.card{box-shadow:none;border:0;padding:0;background:#fff}.ticket{display:block!important;border-radius:0;padding:0;color:#000;background:#fff}}
 </style>
 </head>
 <body>
-<header class="hero">
-  <div class="top">
-    <div class="brand">
-      <div class="logo">P</div>
-      <div>
-        <h1>Combinados El Patrón</h1>
-        <div class="sub">Turno día · Lunes a domingo · Santa</div>
-      </div>
-    </div>
-    <a class="btn btn-dark" href="https://maps.app.goo.gl/MAvu9jXbc5yHJkVx8" target="_blank" rel="noopener">📍 Ubicación</a>
-  </div>
-  <section class="banner">
-    <span class="badge">🔥 Promo de la semana</span>
-    <h2>Combinado personal <span>desde S/9</span></h2>
-    <p>Promo especial: <b>2 combinados por S/15</b>. Para llevar o delivery se suma <b>S/1 de taper por plato</b>.</p>
-    <div class="mini-info">
-      <div class="mini"><b>S/9</b>Personal</div>
-      <div class="mini"><b>S/15</b>Promo 2x</div>
-      <div class="mini"><b>+S/1</b>Taper por plato</div>
-      <div class="mini"><b>944 275 861</b>Pedidos</div>
-    </div>
+<main class="wrap">
+  <section class="topbar">
+    <div class="brand"><img src="LOGO.jpg" alt="El Patrón" class="logo"><div><h1>Combinados El Patrón</h1><p>Turno día · Moza / Cocina</p></div></div>
+    <div class="top-actions"><button id="btnOpenDay" class="btn-green">🟢 Abrir día</button><button id="btnCloseDay" class="btn-red">🔴 Cerrar día</button><a class="btn btn-dark" href="https://patron-wings.vercel.app/">🌙 Carta noche</a></div>
   </section>
-</header>
-
-<main class="wrap grid">
-  <section>
-    <div class="card">
-      <h3>🍽️ Combinados</h3>
-      <div class="notice">Elige tu combinado y agrega tus observaciones. En la promo 2x15 puedes personalizar cada plato por separado.</div>
-      <div class="products" style="margin-top:12px">
-        <article class="product">
-          <img class="product-image" src="plato_gourmet_con_pasta_y_ceviche.png" alt="Combinado personal El Patrón">
-          <div class="product-head"><strong>Combinado personal</strong><span class="price">S/9</span></div>
-          <div class="desc">Plato personal con combinación del día. Ideal para una persona.</div>
-          <details class="options-toggle">
-            <summary>⚙️ Personalizar plato</summary>
-            <div class="opts">
-              <div class="opts-title">Opciones del plato</div>
-              <div class="checks" id="optsPersonal"></div>
-              <label>Nota extra</label>
-              <textarea id="notePersonal" rows="2" placeholder="Ej: bastante juguito, ají aparte..."></textarea>
-            </div>
-          </details>
-          <div class="qty"><input type="number" id="qtyPersonal" min="1" value="1"><button id="addPersonal">Agregar</button></div>
-        </article>
-        <article class="product">
-          <img class="product-image" src="plato_fusión_con_pasta_y_guarniciones.png" alt="Promo 2 combinados El Patrón">
-          <div class="product-head"><strong>Promo 2 combinados</strong><span class="price">S/15</span></div>
-          <div class="desc">Dos platos personales. Cada plato puede ir con opciones diferentes.</div>
-          <details class="options-toggle">
-            <summary>⚙️ Personalizar plato 1</summary>
-            <div class="opts">
-              <div class="opts-title">Plato 1</div>
-              <div class="checks" id="optsPromo1"></div>
-              <label>Nota plato 1</label>
-              <textarea id="notePromo1" rows="2" placeholder="Ej: sin ceviche..."></textarea>
-            </div>
-          </details>
-          <details class="options-toggle">
-            <summary>⚙️ Personalizar plato 2</summary>
-            <div class="opts">
-              <div class="opts-title">Plato 2</div>
-              <div class="checks" id="optsPromo2"></div>
-              <label>Nota plato 2</label>
-              <textarea id="notePromo2" rows="2" placeholder="Ej: ají aparte..."></textarea>
-            </div>
-          </details>
-          <div class="qty"><input type="number" id="qtyPromo" min="1" value="1"><button id="addPromo">Agregar</button></div>
-        </article>
-      </div>
+  <div class="status"><span class="dot" id="dayDot"></span><span id="dayStatus">Día cerrado</span><span>·</span><span id="salesCount">0 ventas registradas</span></div>
+  <section class="grid">
+    <div class="left-panel">
+      <section class="card">
+        <h2>🍽️ Carta turno día</h2>
+        <div class="notice">Combinado personal S/9 · Promo 2 combinados S/15 · Para llevar suma taper automático S/1 por plato.</div>
+        <div class="tabs"><button class="tab active" data-tab="combos">🍽️ Combinados</button><button class="tab" data-tab="bebidas">🥤 Bebidas</button></div>
+        <div id="tab-combos" class="section active">
+          <div class="product-grid">
+            <article class="product">
+              <div class="product-title"><div class="product-name">Combinado personal</div><div class="product-price">S/9</div></div>
+              <div class="desc">1 plato combinado. Para recojo o delivery suma 1 taper automáticamente.</div>
+              <details class="options-toggle">
+                <summary>⚙️ Personalizar plato</summary>
+                <div class="options">
+                  <p class="plate-title">Opciones del plato</p>
+                  <div class="checks" id="personalOptions"></div>
+                  <label>Nota adicional</label>
+                  <input id="personalExtraNote" type="text" placeholder="Ej: poco ají, separado">
+                </div>
+              </details>
+              <div class="qty-row"><input id="qtyPersonal" type="number" min="1" value="1"><button class="btn-gold" id="btnAddPersonal">Agregar</button></div>
+            </article>
+            <article class="product">
+              <div class="product-title"><div class="product-name">Promo 2 combinados</div><div class="product-price">S/15</div></div>
+              <div class="desc">2 platos combinados. Cada plato puede ir con indicaciones diferentes.</div>
+              <details class="options-toggle">
+                <summary>⚙️ Personalizar plato 1</summary>
+                <div class="options">
+                  <p class="plate-title">Plato 1</p>
+                  <div class="checks" id="promoPlate1Options"></div>
+                  <label>Nota plato 1</label>
+                  <input id="promoPlate1Extra" type="text" placeholder="Ej: ceviche aparte">
+                </div>
+              </details>
+              <details class="options-toggle">
+                <summary>⚙️ Personalizar plato 2</summary>
+                <div class="options">
+                  <p class="plate-title">Plato 2</p>
+                  <div class="checks" id="promoPlate2Options"></div>
+                  <label>Nota plato 2</label>
+                  <input id="promoPlate2Extra" type="text" placeholder="Ej: sin cancha">
+                </div>
+              </details>
+              <div class="qty-row"><input id="qtyPromo" type="number" min="1" value="1"><button class="btn-gold" id="btnAddPromo">Agregar promo</button></div>
+            </article>
+          </div>
+        </div>
+        <div id="tab-bebidas" class="section"><div class="drink-grid" id="drinkGrid"></div></div>
+      </section>
+      <section class="card" style="margin-top:14px"><h2>🚚 Tipo de pedido</h2><div class="order-type"><label class="radio-card"><input type="radio" name="orderType" value="local" checked>🍽️ Consumo en local</label><label class="radio-card"><input type="radio" name="orderType" value="recojo">🛍️ Recojo</label><label class="radio-card"><input type="radio" name="orderType" value="delivery">🛵 Delivery</label></div><div class="form-grid"><div><label>Nombre cliente</label><input id="customerName" placeholder="Cliente"></div><div><label>Celular</label><input id="customerPhone" placeholder="944275861" inputmode="numeric"></div><div class="full" id="addressWrap"><label>Dirección / referencia</label><input id="customerAddress" placeholder="Dirección para delivery o referencia de recojo"></div><div><label>Delivery S/</label><input id="deliveryFee" type="number" min="0" step="0.5" value="3"></div><div><label>Método de pago</label><select id="paymentMethod"><option value="efectivo">Efectivo</option><option value="yape">Yape</option><option value="mixto">Mixto</option></select></div></div><div class="paybox" id="mixedPaymentBox"><div class="form-grid"><div><label>Monto efectivo</label><input id="cashAmount" type="number" min="0" step="0.1" value="0"></div><div><label>Monto Yape</label><input id="yapeAmount" type="number" min="0" step="0.1" value="0"></div></div></div><label>Observación general</label><textarea id="generalNote" placeholder="Ej: apurado, mandar cubiertos"></textarea></section>
     </div>
-
-    <div class="card">
-      <h3>🥤 Bebidas</h3>
-      <div class="drinks" id="drinks"></div>
-    </div>
+    <aside class="right-panel">
+      <section class="card"><h2>🛒 Carrito</h2><div id="cartList" class="cart-list"><div class="notice">Aún no agregaste productos.</div></div><div class="summary"><div class="line"><span>Productos</span><b id="subtotalText">S/0.00</b></div><div class="line"><span>Tapers automáticos</span><b id="taperText">S/0.00</b></div><div class="line"><span>Delivery</span><b id="deliveryText">S/0.00</b></div><div class="line"><span>Total</span><b class="total" id="totalText">S/0.00</b></div></div><div class="notice" id="taperNotice">Consumo en local: no se cobra taper.</div><div style="display:grid;gap:8px;margin-top:12px"><button id="btnGenerate" class="btn-blue">🧾 Generar boleta / comanda</button><button id="btnRegisterSale" class="btn-green">✅ Registrar venta</button><button id="btnWhatsapp" class="btn-gold">📲 Enviar por WhatsApp</button><button id="btnClear" class="btn-red">🗑️ Limpiar pedido</button></div><div id="msg" class="msg"></div></section>
+      <section class="card print-area" style="margin-top:14px"><h2>🧾 Boleta / Comanda</h2><div id="ticket" class="ticket"></div><div style="display:grid;gap:8px;margin-top:10px"><button id="btnPrintClient" class="btn-blue">🖨️ RawBT boleta</button><button id="btnPrintKitchen" class="btn-green">👨‍🍳 RawBT comanda</button></div></section>
+    </aside>
   </section>
-
-  <aside>
-    <div class="card">
-      <h3>🛒 Tu pedido</h3>
-      <label>Tipo de pedido</label>
-      <div class="order-type">
-        <label class="radio"><input type="radio" name="orderType" value="local" checked>🍽️ Local</label>
-        <label class="radio"><input type="radio" name="orderType" value="recojo">🥡 Recojo</label>
-        <label class="radio"><input type="radio" name="orderType" value="delivery">🛵 Delivery</label>
-      </div>
-
-      <div class="form2">
-        <div>
-          <label>Nombre</label>
-          <input id="customerName" placeholder="Tu nombre">
-        </div>
-        <div>
-          <label>Celular</label>
-          <input id="customerPhone" inputmode="tel" placeholder="Ej: 944275861">
-        </div>
-        <div class="full hide" id="addressWrap">
-          <label>Dirección / referencia</label>
-          <textarea id="customerAddress" rows="2" placeholder="Ej: Santa, frente a..."></textarea>
-        </div>
-        <div id="deliveryWrap" class="hide">
-          <label>Delivery</label>
-          <input id="deliveryFee" type="number" min="0" step="0.5" value="3">
-        </div>
-        <div>
-          <label>Pago</label>
-          <select id="paymentMethod">
-            <option value="efectivo">Efectivo</option>
-            <option value="yape">Yape</option>
-          </select>
-        </div>
-        <div class="full">
-          <label>Observación general</label>
-          <textarea id="generalNote" rows="2" placeholder="Ej: enviar cubiertos, tocar puerta..."></textarea>
-        </div>
-      </div>
-
-      <div class="cart" id="cart"></div>
-      <div class="summary">
-        <div class="line"><span>Productos</span><b id="subtotal">S/0.00</b></div>
-        <div class="line"><span>Taper</span><b id="taperTotal">S/0.00</b></div>
-        <div class="line"><span>Delivery</span><b id="deliveryTotal">S/0.00</b></div>
-        <div class="line total"><span>Total</span><b id="total">S/0.00</b></div>
-      </div>
-      <div class="msg" id="msg"></div>
-      <button class="btn-green" id="sendWhatsApp" style="width:100%;margin-top:10px">📲 Enviar pedido por WhatsApp</button>
-      <button class="btn-dark" id="clearCart" style="width:100%;margin-top:8px">🧹 Limpiar pedido</button>
-    </div>
-  </aside>
 </main>
-
-<div class="footer">Combinados El Patrón · Turno día · Taper para llevar + S/1 por plato</div>
-
-<div class="sticky-bar">
-  <div class="sticky-inner">
-    <div class="sticky-total">Total pedido: <b id="stickyTotal">S/0.00</b></div>
-    <a href="#" class="btn btn-green" id="stickySend">📲 Pedir por WhatsApp</a>
-  </div>
-</div>
-
 <script>
-const WHATSAPP_NUMBER="51944275861";
-const TAPER_PRICE=1;
-const OPTIONS=["Con todo","Sin chanfainita","Sin ceviche","Sin pescado","Solo juguito","Solo cebolla y juguito de pescado","Ají aparte","Más juguito","Poco juguito","Sin cancha","Limón aparte"];
-const DRINKS=[
-  {name:"Gaseosa 600 ml",price:4,emoji:"🥤"},
-  {name:"Gaseosa 1 litro",price:8,emoji:"🥤"},
-  {name:"Maracuyá 1 litro",price:7,emoji:"🟡"},
-  {name:"Chicha morada 1 litro",price:7,emoji:"🟣"},
-  {name:"Vaso de maracuyá",price:2,emoji:"🥤"},
-  {name:"Agua 750 ml",price:3,emoji:"💧"}
-];
-let cart=[];
-const $=id=>document.getElementById(id);
-const money=n=>"S/"+Number(n||0).toFixed(2);
-function esc(s){return String(s||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
-function makeChecks(containerId,prefix){$(containerId).innerHTML=OPTIONS.map((op,i)=>`<label class="check"><input type="checkbox" name="${prefix}" value="${esc(op)}" ${i===0?"checked":""}>${esc(op)}</label>`).join("")}
-function getOptions(prefix,noteId){
-  const selected=[...document.querySelectorAll(`input[name='${prefix}']:checked`)].map(x=>x.value);
-  const note=($(noteId).value||"").trim();
-  if(!selected.length && !note)return "Sin observación";
-  return [...selected,note].filter(Boolean).join(" / ");
-}
-function resetGroup(prefix,noteId){document.querySelectorAll(`input[name='${prefix}']`).forEach((x,i)=>x.checked=i===0);$(noteId).value=""}
-function orderType(){return document.querySelector("input[name='orderType']:checked").value}
-function orderTypeLabel(t=orderType()){return t==="local"?"Consumo en local":t==="recojo"?"Recojo en local":"Delivery"}
-function addItem(item){
-  item.id="ITEM-"+Date.now()+"-"+Math.floor(Math.random()*9999);
-  item.subtotal=item.qty*item.unitPrice;
-  cart.push(item);
-  renderCart();
-  playAddSound();
-  closeOptionPanels();
-  showMsg("✅ Producto agregado al carrito.",true);
-  setTimeout(focusCart,120);
-}
-function portions(){return cart.reduce((a,i)=>a+(i.portionsPerUnit||0)*i.qty,0)}
-function totals(){
-  const subtotal=cart.reduce((a,i)=>a+i.subtotal,0);
-  const t=orderType();
-  const taperQty=(t==="local")?0:portions();
-  const taperTotal=taperQty*TAPER_PRICE;
-  const deliveryTotal=(t==="delivery")?Number($("deliveryFee").value||0):0;
-  return {subtotal,taperQty,taperTotal,deliveryTotal,total:subtotal+taperTotal+deliveryTotal};
-}
-function renderCart(){
-  const box=$("cart");
-  if(!cart.length){box.innerHTML='<div class="empty">Tu pedido está vacío.</div>'}
-  else{
-    box.innerHTML=cart.map((i,idx)=>`<div class="cart-item"><div class="cart-top"><div class="cart-name">${i.qty} x ${esc(i.name)}</div><div class="cart-price">${money(i.subtotal)}</div></div>${i.notes?`<div class="cart-notes">${esc(i.notes)}</div>`:""}<div class="cart-actions"><button class="mini-btn" onclick="removeItem(${idx})">Quitar</button></div></div>`).join("");
-  }
-  const t=totals();
-  $("subtotal").textContent=money(t.subtotal);
-  $("taperTotal").textContent=money(t.taperTotal)+(t.taperQty?` (${t.taperQty})`:"");
-  $("deliveryTotal").textContent=money(t.deliveryTotal);
-  $("total").textContent=money(t.total);
-  $("stickyTotal").textContent=money(t.total);
-}
-function removeItem(idx){cart.splice(idx,1);renderCart()}
-function renderDrinks(){
-  $("drinks").innerHTML=DRINKS.map((d,idx)=>`<article class="drink"><strong>${d.emoji} ${esc(d.name)}</strong><div class="price">${money(d.price)}</div><div class="qty"><input type="number" min="1" value="1" id="drinkQty${idx}"><button onclick="addDrink(${idx})">Agregar</button></div></article>`).join("");
-}
-function addDrink(idx){const d=DRINKS[idx];const q=Math.max(1,Number($("drinkQty"+idx).value||1));addItem({type:"bebida",name:d.name,qty:q,unitPrice:d.price,portionsPerUnit:0,notes:""})}
-function handleType(){
-  const t=orderType();
-  $("addressWrap").classList.toggle("hide",t==="local");
-  $("deliveryWrap").classList.toggle("hide",t!=="delivery");
-  if(t!=="delivery")$("deliveryFee").value="0"; else if(Number($("deliveryFee").value||0)<=0)$("deliveryFee").value="3";
-  renderCart();
-}
-function playAddSound(){
-  try{
-    const AudioContext=window.AudioContext||window.webkitAudioContext;
-    if(!AudioContext)return;
-    const ctx=new AudioContext();
-    const osc=ctx.createOscillator();
-    const gain=ctx.createGain();
-    osc.type="sine";
-    osc.frequency.value=880;
-    gain.gain.setValueAtTime(.0001,ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(.18,ctx.currentTime+.02);
-    gain.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+.16);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime+.18);
-  }catch(e){}
-}
-function closeOptionPanels(){
-  document.querySelectorAll(".options-toggle[open]").forEach(d=>d.open=false);
-}
-function focusCart(){
-  try{
-    const card=$("cart").closest(".card");
-    if(card){
-      card.classList.remove("cart-pulse");
-      void card.offsetWidth;
-      card.classList.add("cart-pulse");
-      card.scrollIntoView({behavior:"smooth",block:"start"});
-    }
-  }catch(e){}
-}
-function validate(){
-  if(!cart.length)return "Agrega al menos un producto.";
-  if(orderType()==="delivery"&&!($("customerAddress").value||"").trim())return "Para delivery coloca dirección o referencia.";
-  return "";
-}
-function buildOrder(){
-  const t=totals();
-  return {
-    id:"WEB-DIA-"+Date.now(),createdAt:new Date().toISOString(),orderType:orderType(),orderTypeLabel:orderTypeLabel(),
-    customerName:($("customerName").value||"Cliente").trim()||"Cliente",customerPhone:($("customerPhone").value||"").replace(/\D/g,""),customerAddress:($("customerAddress").value||"").trim(),paymentMethod:$("paymentMethod").value,generalNote:($("generalNote").value||"").trim(),items:cart.map(x=>({...x})),...t
-  }
-}
-function waText(o){
-  const items=o.items.map(i=>{let line=`• ${i.qty} x ${i.name} - ${money(i.subtotal)}`;if(i.notes)line+=`\n  ${i.notes}`;return line}).join("\n");
-  return `🍽️ *COMBINADOS EL PATRÓN - TURNO DÍA*\nPedido: ${o.id}\nTipo: ${o.orderTypeLabel}\nCliente: ${o.customerName}\n${o.customerPhone?`Celular: ${o.customerPhone}\n`:""}${o.customerAddress?`Dirección/ref.: ${o.customerAddress}\n`:""}\n${items}\n\nProductos: ${money(o.subtotal)}\nTaper: ${money(o.taperTotal)}${o.taperQty?` (${o.taperQty})`:""}\nDelivery: ${money(o.deliveryTotal)}\n*TOTAL: ${money(o.total)}*\nPago: ${o.paymentMethod==="yape"?"Yape":"Efectivo"}\n${o.generalNote?`Obs.: ${o.generalNote}\n`:""}`;
-}
-function sendWhatsApp(e){
-  if(e)e.preventDefault();
-  const er=validate();
-  if(er){showMsg(er,false);return}
-  const o=buildOrder();
-  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waText(o))}`,'_blank');
-}
-function showMsg(text,ok=false){const m=$("msg");m.textContent=text;m.style.color=ok?"#bbf7d0":"#fecaca";setTimeout(()=>{if(m.textContent===text)m.textContent=""},3500)}
-function clearCart(){if(!cart.length)return; if(confirm("¿Limpiar todo el pedido?")){cart=[];renderCart();showMsg("Pedido limpio.",true)}}
-function setup(){
-  makeChecks("optsPersonal","personal");makeChecks("optsPromo1","promo1");makeChecks("optsPromo2","promo2");renderDrinks();
-  document.querySelectorAll("input[name='orderType']").forEach(x=>x.addEventListener("change",handleType));
-  $("deliveryFee").addEventListener("input",renderCart);
-  $("addPersonal").onclick=()=>{addItem({type:"combinado",name:"Combinado personal",qty:Math.max(1,Number($("qtyPersonal").value||1)),unitPrice:9,portionsPerUnit:1,notes:"Plato: "+getOptions("personal","notePersonal")});resetGroup("personal","notePersonal");$("qtyPersonal").value="1"};
-  $("addPromo").onclick=()=>{addItem({type:"promo",name:"Promo 2 combinados",qty:Math.max(1,Number($("qtyPromo").value||1)),unitPrice:15,portionsPerUnit:2,notes:"Plato 1: "+getOptions("promo1","notePromo1")+"\nPlato 2: "+getOptions("promo2","notePromo2")});resetGroup("promo1","notePromo1");resetGroup("promo2","notePromo2");$("qtyPromo").value="1"};
-  $("sendWhatsApp").onclick=sendWhatsApp;$("stickySend").onclick=sendWhatsApp;$("clearCart").onclick=clearCart;
-  handleType();renderCart();
-}
-setup();
+const ORDERS_KEY="pdm_turno_dia_combinados_orders_v1",DAY_STATE_KEY="pdm_turno_dia_combinados_state_v1",TAPER_PRICE=1,TAPER_COST=.45,WHATSAPP_NUMBER="51944275861";
+const OPTION_LIST=["Con todo","Sin chanfainita","Sin ceviche","Sin pescado","Solo juguito","Solo cebolla y juguito de pescado","Ají aparte","Más juguito","Poco juguito","Sin cancha","Limón aparte"];
+const DRINKS=[{id:"gaseosa600",name:"Gaseosa 600 ml",price:4},{id:"gaseosa1l",name:"Gaseosa 1 litro",price:8},{id:"maracuya1l",name:"Maracuyá 1 litro",price:7},{id:"chicha1l",name:"Chicha morada 1 litro",price:7},{id:"vasoMaracuya",name:"Vaso de maracuyá",price:2},{id:"agua750",name:"Agua 750 ml",price:3}];
+let cart=[],lastTicketOrder=null;const money=n=>"S/"+Number(n||0).toFixed(2),el=id=>document.getElementById(id);const E={dayDot:el("dayDot"),dayStatus:el("dayStatus"),salesCount:el("salesCount"),btnOpenDay:el("btnOpenDay"),btnCloseDay:el("btnCloseDay"),personalOptions:el("personalOptions"),promoPlate1Options:el("promoPlate1Options"),promoPlate2Options:el("promoPlate2Options"),personalExtraNote:el("personalExtraNote"),promoPlate1Extra:el("promoPlate1Extra"),promoPlate2Extra:el("promoPlate2Extra"),qtyPersonal:el("qtyPersonal"),qtyPromo:el("qtyPromo"),btnAddPersonal:el("btnAddPersonal"),btnAddPromo:el("btnAddPromo"),drinkGrid:el("drinkGrid"),cartList:el("cartList"),subtotalText:el("subtotalText"),taperText:el("taperText"),deliveryText:el("deliveryText"),totalText:el("totalText"),taperNotice:el("taperNotice"),customerName:el("customerName"),customerPhone:el("customerPhone"),customerAddress:el("customerAddress"),addressWrap:el("addressWrap"),deliveryFee:el("deliveryFee"),paymentMethod:el("paymentMethod"),mixedPaymentBox:el("mixedPaymentBox"),cashAmount:el("cashAmount"),yapeAmount:el("yapeAmount"),generalNote:el("generalNote"),btnGenerate:el("btnGenerate"),btnRegisterSale:el("btnRegisterSale"),btnWhatsapp:el("btnWhatsapp"),btnClear:el("btnClear"),btnPrintClient:el("btnPrintClient"),btnPrintKitchen:el("btnPrintKitchen"),ticket:el("ticket"),msg:el("msg")};
+function getOrders(){try{return JSON.parse(localStorage.getItem(ORDERS_KEY)||"[]")}catch{return[]}}function saveOrders(o){localStorage.setItem(ORDERS_KEY,JSON.stringify(o))}function getDayState(){try{return JSON.parse(localStorage.getItem(DAY_STATE_KEY)||'{"open":false}')}catch{return{open:false}}}function saveDayState(s){localStorage.setItem(DAY_STATE_KEY,JSON.stringify(s))}function showMsg(t,ok=false){E.msg.textContent=t;E.msg.className=ok?"msg ok":"msg";setTimeout(()=>{if(E.msg.textContent===t){E.msg.textContent="";E.msg.className="msg"}},4200)}function updateDayStatus(){const s=getDayState(),o=getOrders();E.dayDot.classList.toggle("open",!!s.open);E.dayStatus.textContent=s.open?"Día abierto desde "+new Date(s.openedAt).toLocaleString("es-PE"):"Día cerrado";E.salesCount.textContent=o.length+" ventas registradas";E.btnRegisterSale.disabled=!s.open}
+function playAddSound(){try{const AudioContext=window.AudioContext||window.webkitAudioContext;if(!AudioContext)return;const ctx=new AudioContext();const osc=ctx.createOscillator();const gain=ctx.createGain();osc.type="sine";osc.frequency.value=880;gain.gain.setValueAtTime(.0001,ctx.currentTime);gain.gain.exponentialRampToValueAtTime(.18,ctx.currentTime+.02);gain.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+.16);osc.connect(gain);gain.connect(ctx.destination);osc.start();osc.stop(ctx.currentTime+.18)}catch(e){}}
+function focusCart(){try{const card=E.cartList.closest(".card");if(card){card.classList.remove("cart-pulse");void card.offsetWidth;card.classList.add("cart-pulse");card.scrollIntoView({behavior:"smooth",block:"start"})}}catch(e){}}
+function closeOptionPanels(){document.querySelectorAll(".options-toggle[open]").forEach(d=>d.open=false)}
+function createChecks(c,prefix){c.innerHTML=OPTION_LIST.map((n,i)=>`<label class="check"><input type="checkbox" name="${prefix}" value="${n}" ${i===0?"checked":""}><span>${n}</span></label>`).join("");c.querySelectorAll("input").forEach(inp=>inp.addEventListener("change",()=>{const all=[...c.querySelectorAll("input")],ct=all.find(x=>x.value==="Con todo");if(inp.value==="Con todo"&&inp.checked)all.forEach(x=>{if(x!==ct)x.checked=false});if(inp.value!=="Con todo"&&inp.checked&&ct)ct.checked=false;if(!all.some(x=>x.value!=="Con todo"&&x.checked)&&ct)ct.checked=true}))}function getOptions(c,e){const s=[...c.querySelectorAll("input:checked")].map(x=>x.value);let t=s.length?s.join(", "):"Con todo";const n=(e.value||"").trim();return n?t+". Nota: "+n:t}function resetOptions(c,e){[...c.querySelectorAll("input")].forEach(x=>x.checked=x.value==="Con todo");e.value=""}
+function getOrderType(){return document.querySelector("input[name='orderType']:checked")?.value||"local"}function orderTypeLabel(t){return t==="delivery"?"Delivery":t==="recojo"?"Recojo":"Consumo en local"}function totals(){const type=getOrderType(),subtotal=cart.reduce((s,i)=>s+i.subtotal,0),portions=cart.reduce((s,i)=>s+(i.portions||0),0),taperQty=type==="local"?0:portions,taperTotal=taperQty*TAPER_PRICE,deliveryTotal=type==="delivery"?Number(E.deliveryFee.value||0):0,total=subtotal+taperTotal+deliveryTotal;return{subtotal,portions,taperQty,taperTotal,deliveryTotal,total}}
+function renderCart(){if(!cart.length)E.cartList.innerHTML="<div class='notice'>Aún no agregaste productos.</div>";else E.cartList.innerHTML=cart.map((i,idx)=>`<div class="cart-item"><div class="cart-top"><div class="cart-name">${i.qty} x ${i.name}</div><div class="cart-sub">${money(i.subtotal)}</div></div>${i.notes?`<div class="cart-notes">${esc(i.notes)}</div>`:""}<div class="cart-actions"><button class="mini-btn" onclick="changeQty(${idx},-1)">-</button><button class="mini-btn" onclick="changeQty(${idx},1)">+</button><button class="mini-btn" onclick="removeItem(${idx})">Eliminar</button></div></div>`).join("");const t=totals();E.subtotalText.textContent=money(t.subtotal);E.taperText.textContent=money(t.taperTotal)+(t.taperQty?` (${t.taperQty})`:"");E.deliveryText.textContent=money(t.deliveryTotal);E.totalText.textContent=money(t.total);const type=getOrderType();E.taperNotice.textContent=type==="local"?"Consumo en local: no se cobra taper.":`Para ${orderTypeLabel(type).toLowerCase()}: se cobra ${t.taperQty} taper(s) automático(s) x S/1.`;if(E.paymentMethod.value!=="mixto"){E.cashAmount.value=E.paymentMethod.value==="efectivo"?t.total.toFixed(2):"0";E.yapeAmount.value=E.paymentMethod.value==="yape"?t.total.toFixed(2):"0"}}
+window.changeQty=(idx,d)=>{const i=cart[idx];if(!i)return;i.qty+=d;if(i.qty<=0)cart.splice(idx,1);else{i.subtotal=i.qty*i.unitPrice;i.portions=i.qty*i.portionsPerUnit}renderCart()};window.removeItem=idx=>{cart.splice(idx,1);renderCart()};function addToCart(i){cart.push({id:Date.now()+"_"+Math.random().toString(16).slice(2),...i,subtotal:i.qty*i.unitPrice,portions:i.qty*i.portionsPerUnit});lastTicketOrder=null;renderCart();playAddSound();closeOptionPanels();showMsg("✅ Producto agregado al carrito.",true);setTimeout(focusCart,120)}function renderDrinks(){E.drinkGrid.innerHTML=DRINKS.map(d=>`<div class="drink"><strong>${d.name}</strong><div class="price">${money(d.price)}</div><div class="qty-row"><input id="qty_${d.id}" type="number" min="1" value="1"><button onclick="addDrink('${d.id}')">Agregar</button></div></div>`).join("")}window.addDrink=id=>{const d=DRINKS.find(x=>x.id===id);if(!d)return;addToCart({type:"bebida",name:d.name,qty:Math.max(1,Number(el("qty_"+id).value||1)),unitPrice:d.price,portionsPerUnit:0,notes:""})};function esc(t){return String(t||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+function validate(){if(!cart.length)return"Agrega al menos un producto.";if(getOrderType()==="delivery"&&!(E.customerAddress.value||"").trim())return"Para delivery coloca dirección o referencia.";const t=totals();if(E.paymentMethod.value==="mixto"){const c=Number(E.cashAmount.value||0),y=Number(E.yapeAmount.value||0);if(Math.abs(c+y-t.total)>.05)return"En pago mixto, efectivo + Yape debe sumar "+money(t.total)+"."}return""}function paymentInfo(){const m=E.paymentMethod.value,t=totals();if(m==="mixto")return{method:m,label:`Mixto: efectivo ${money(Number(E.cashAmount.value||0))} / Yape ${money(Number(E.yapeAmount.value||0))}`,efectivo:Number(E.cashAmount.value||0),yape:Number(E.yapeAmount.value||0)};return{method:m,label:m==="yape"?"Yape":"Efectivo",efectivo:m==="efectivo"?t.total:0,yape:m==="yape"?t.total:0}}
+function orderObj(){const t=totals(),p=paymentInfo(),type=getOrderType();return{id:"DIA-"+Date.now(),createdAt:new Date().toISOString(),shift:"dia",system:"combinados",orderType:type,orderTypeLabel:orderTypeLabel(type),customerName:(E.customerName.value||"Cliente").trim()||"Cliente",customerPhone:(E.customerPhone.value||"").replace(/\D/g,""),customerAddress:(E.customerAddress.value||"").trim(),generalNote:(E.generalNote.value||"").trim(),items:cart.map(x=>({...x})),subtotal:t.subtotal,portions:t.portions,taperQty:t.taperQty,taperUnitPrice:TAPER_PRICE,taperCost:TAPER_COST,taperTotal:t.taperTotal,deliveryFee:t.deliveryTotal,total:t.total,payment:p,status:"registrado"}}
+function ticketHtml(o,type="cliente"){const kitchen=type==="cocina",items=o.items.map(i=>`<div><b>${i.qty} x ${esc(i.name)}</b> ${kitchen?"":`- ${money(i.subtotal)}`}<br>${i.notes?`<span>${esc(i.notes).replaceAll("\n","<br>")}</span><br>`:""}</div>`).join("<hr>");const pay=kitchen?"":`<hr>Productos: ${money(o.subtotal)}<br>Taper: ${money(o.taperTotal)} ${o.taperQty?`(${o.taperQty})`:""}<br>Delivery: ${money(o.deliveryFee)}<br><b>TOTAL: ${money(o.total)}</b><br>Pago: ${esc(o.payment.label)}`;return`<h3>${kitchen?"COMANDA COCINA":"BOLETA VIRTUAL"}</h3><div style="text-align:center"><b>COMBINADOS EL PATRÓN</b><br>Turno día</div><hr>Pedido: ${esc(o.id)}<br>Fecha: ${new Date(o.createdAt).toLocaleString("es-PE")}<br>Tipo: <b>${esc(o.orderTypeLabel)}</b><br>Cliente: ${esc(o.customerName)}<br>${o.customerPhone?`Cel: ${esc(o.customerPhone)}<br>`:""}${o.customerAddress?`Dirección/ref.: ${esc(o.customerAddress)}<br>`:""}${o.generalNote?`Obs.: ${esc(o.generalNote)}<br>`:""}<hr>${items}${pay}<hr>${kitchen?"Preparar según observaciones.":"Gracias por tu compra."}`}
+function generate(type="cliente"){const er=validate();if(er){showMsg(er);return null}const o=orderObj();lastTicketOrder=o;E.ticket.innerHTML=ticketHtml(o,type);E.ticket.classList.add("show");showMsg(type==="cocina"?"Comanda generada.":"Boleta generada.",true);return o}function registerSale(){const er=validate();if(er){showMsg(er);return}if(!getDayState().open){showMsg("Primero abre el día para registrar ventas.");return}const o=orderObj(),orders=getOrders();orders.push(o);saveOrders(orders);lastTicketOrder=o;E.ticket.innerHTML=ticketHtml(o,"cliente");E.ticket.classList.add("show");clearOrder(false);updateDayStatus();showMsg("✅ Venta registrada. Ahora puedes imprimir boleta o comanda.",true);setTimeout(()=>{try{E.ticket.closest(".card").scrollIntoView({behavior:"smooth",block:"start"})}catch(e){}},120)}function clearOrder(clearTicket=true){cart=[];[E.customerName,E.customerPhone,E.customerAddress,E.generalNote].forEach(x=>x.value="");E.deliveryFee.value="3";E.paymentMethod.value="efectivo";E.cashAmount.value="0";E.yapeAmount.value="0";document.querySelector("input[name='orderType'][value='local']").checked=true;resetOptions(E.personalOptions,E.personalExtraNote);resetOptions(E.promoPlate1Options,E.promoPlate1Extra);resetOptions(E.promoPlate2Options,E.promoPlate2Extra);E.qtyPersonal.value="1";E.qtyPromo.value="1";closeOptionPanels();if(clearTicket){lastTicketOrder=null;E.ticket.classList.remove("show");E.ticket.innerHTML=""}handleOrderType();renderCart()}
+function waText(o){const items=o.items.map(i=>{let l=`• ${i.qty} x ${i.name} - ${money(i.subtotal)}`;if(i.notes)l+=`\n  ${i.notes}`;return l}).join("\n");return`🍽️ *COMBINADOS EL PATRÓN - TURNO DÍA*\nPedido: ${o.id}\nTipo: ${o.orderTypeLabel}\nCliente: ${o.customerName}\n${o.customerPhone?`Celular: ${o.customerPhone}\n`:""}${o.customerAddress?`Dirección/ref.: ${o.customerAddress}\n`:""}\n${items}\n\nProductos: ${money(o.subtotal)}\nTaper: ${money(o.taperTotal)} ${o.taperQty?`(${o.taperQty})`:""}\nDelivery: ${money(o.deliveryFee)}\n*TOTAL: ${money(o.total)}*\nPago: ${o.payment.label}\n${o.generalNote?`Obs.: ${o.generalNote}\n`:""}`}function openWhatsapp(){const er=validate();if(er){showMsg(er);return}const o=orderObj();window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waText(o))}`,"_blank")}
+function handleOrderType(){const type=getOrderType();if(type==="local"){E.addressWrap.classList.add("hide");E.deliveryFee.disabled=true;E.deliveryFee.value="0"}else if(type==="recojo"){E.addressWrap.classList.remove("hide");E.deliveryFee.disabled=true;E.deliveryFee.value="0"}else{E.addressWrap.classList.remove("hide");E.deliveryFee.disabled=false;if(Number(E.deliveryFee.value||0)<=0)E.deliveryFee.value="3"}renderCart()}
+function asciiText(text){return String(text||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^\x20-\x7E\n]/g,"").replace(/[ \t]+\n/g,"\n").replace(/\n{4,}/g,"\n\n\n")}
+function line58(){return "--------------------------------"}
+function centerText(text,width=32){text=asciiText(text).trim();if(text.length>=width)return text;const left=Math.floor((width-text.length)/2);return " ".repeat(left)+text}
+function rawMoney(n){return "S/"+Number(n||0).toFixed(2)}
+function itemLinesForRaw(item,showPrices=true){const lines=[];const head=`${item.qty} x ${item.name}`+(showPrices?`  ${rawMoney(item.subtotal)}`:"");lines.push(head);if(item.notes){String(item.notes).split("\n").map(x=>x.trim()).filter(Boolean).forEach(x=>lines.push("  "+x))}return lines}
+function buildRawTicketText(o,type="cliente"){const kitchen=type==="cocina",lines=[];lines.push(centerText(kitchen?"COMANDA COCINA":"BOLETA CLIENTE"));lines.push(centerText("COMBINADOS EL PATRON"));lines.push(centerText("TURNO DIA"));lines.push(line58());lines.push(`Pedido: ${o.id}`);lines.push(`Fecha: ${new Date(o.createdAt).toLocaleString("es-PE")}`);lines.push(`Tipo: ${o.orderTypeLabel}`);lines.push(`Cliente: ${o.customerName||"Cliente"}`);if(o.customerPhone)lines.push(`Cel: ${o.customerPhone}`);if(o.customerAddress)lines.push(`Dir/Ref: ${o.customerAddress}`);if(o.generalNote)lines.push(`Obs: ${o.generalNote}`);lines.push(line58());o.items.forEach((item,idx)=>{lines.push(...itemLinesForRaw(item,!kitchen));if(idx<o.items.length-1)lines.push("")});lines.push(line58());if(kitchen){lines.push("Preparar segun observaciones.");lines.push("No entregar sin confirmar pedido.")}else{lines.push(`Productos: ${rawMoney(o.subtotal)}`);lines.push(`Taper: ${rawMoney(o.taperTotal)}${o.taperQty?` (${o.taperQty})`:""}`);lines.push(`Delivery: ${rawMoney(o.deliveryFee)}`);lines.push(line58());lines.push(`TOTAL: ${rawMoney(o.total)}`);lines.push(`Pago: ${o.payment.label}`);lines.push(line58());lines.push("Gracias por tu compra.")}return asciiText(lines.join("\n")+"\n\n\n")}
+function sendToRawBT(text){try{const payload=asciiText(text);if(!payload.trim()){alert("No hay contenido para imprimir.");return}const rawbtUrl="rawbt:base64,"+btoa(unescape(encodeURIComponent(payload)));window.location.href=rawbtUrl}catch(err){console.error(err);alert("No se pudo abrir RawBT. Verifica que la app RawBT este instalada y configurada.")}}
+function printTicket(type){let o=null;if(cart.length){o=generate(type)}else if(lastTicketOrder){o=lastTicketOrder;E.ticket.innerHTML=ticketHtml(o,type);E.ticket.classList.add("show")}else{showMsg("No hay pedido o venta registrada para imprimir.");return}sendToRawBT(buildRawTicketText(o,type));showMsg(type==="cocina"?"Comanda enviada a RawBT.":"Boleta enviada a RawBT.",true)}
+function setup(){document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));b.classList.add("active");el("tab-"+b.dataset.tab).classList.add("active")}));document.querySelectorAll("input[name='orderType']").forEach(i=>i.addEventListener("change",handleOrderType));E.deliveryFee.addEventListener("input",renderCart);E.paymentMethod.addEventListener("change",()=>{E.mixedPaymentBox.classList.toggle("show",E.paymentMethod.value==="mixto");renderCart()});E.cashAmount.addEventListener("input",renderCart);E.yapeAmount.addEventListener("input",renderCart);E.btnOpenDay.onclick=()=>{if(getDayState().open){showMsg("El día ya está abierto.",true);return}saveDayState({open:true,openedAt:new Date().toISOString()});updateDayStatus();showMsg("Día abierto correctamente.",true)};E.btnCloseDay.onclick=()=>{if(!confirm("¿Cerrar el día?"))return;const s=getDayState();saveDayState({...s,open:false,closedAt:new Date().toISOString()});updateDayStatus();showMsg("Día cerrado.",true)};E.btnAddPersonal.onclick=()=>{addToCart({type:"combinado",name:"Combinado personal",qty:Math.max(1,Number(E.qtyPersonal.value||1)),unitPrice:9,portionsPerUnit:1,notes:`Plato: ${getOptions(E.personalOptions,E.personalExtraNote)}`});resetOptions(E.personalOptions,E.personalExtraNote);E.qtyPersonal.value="1"};E.btnAddPromo.onclick=()=>{addToCart({type:"promo",name:"Promo 2 combinados",qty:Math.max(1,Number(E.qtyPromo.value||1)),unitPrice:15,portionsPerUnit:2,notes:`Plato 1: ${getOptions(E.promoPlate1Options,E.promoPlate1Extra)}\nPlato 2: ${getOptions(E.promoPlate2Options,E.promoPlate2Extra)}`});resetOptions(E.promoPlate1Options,E.promoPlate1Extra);resetOptions(E.promoPlate2Options,E.promoPlate2Extra);E.qtyPromo.value="1"};E.btnGenerate.onclick=()=>generate("cliente");E.btnRegisterSale.onclick=registerSale;E.btnWhatsapp.onclick=openWhatsapp;E.btnClear.onclick=()=>{if(confirm("¿Limpiar todo el pedido?"))clearOrder(true)};E.btnPrintClient.onclick=()=>printTicket("cliente");E.btnPrintKitchen.onclick=()=>printTicket("cocina")}
+function init(){createChecks(E.personalOptions,"personal");createChecks(E.promoPlate1Options,"promo1");createChecks(E.promoPlate2Options,"promo2");renderDrinks();setup();handleOrderType();renderCart();updateDayStatus()}init();
 </script>
 </body>
 </html>
