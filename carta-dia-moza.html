@@ -680,8 +680,8 @@
           <h2>🍽️ Carta turno día</h2>
 
           <div class="notice">
-            Combinado personal S/9 · Combinado especial S/10 · Promo 2 combinados S/15 ·
-            Para llevar suma taper automático S/1 por plato.
+            Combinado personal S/9 · Kids S/5 · Especial S/10 · Promo 2x S/15 ·
+            Taper extra S/1. Para llevar suma taper automático S/1 por plato.
           </div>
 
           <div class="tabs">
@@ -738,6 +738,46 @@
                 <div class="qty-row">
                   <input id="qtyEspecial" type="number" min="1" value="1">
                   <button class="btn-gold" id="btnAddEspecial" type="button">Agregar</button>
+                </div>
+              </article>
+
+              <article class="product">
+                <div class="product-title">
+                  <div class="product-name">Combinado kids</div>
+                  <div class="product-price">S/5</div>
+                </div>
+                <div class="desc">
+                  Plato pequeño para niños. Ideal para hijitos. Para recojo o delivery suma 1 taper automáticamente.
+                </div>
+
+                <details class="options-toggle">
+                  <summary>⚙️ Personalizar kids</summary>
+                  <div class="options">
+                    <p class="plate-title">Opciones del plato kids</p>
+                    <div class="checks" id="kidsOptions"></div>
+                    <label>Nota adicional</label>
+                    <input id="kidsExtraNote" type="text" placeholder="Ej: poquito tallarín, sin ají">
+                  </div>
+                </details>
+
+                <div class="qty-row">
+                  <input id="qtyKids" type="number" min="1" value="1">
+                  <button class="btn-gold" id="btnAddKids" type="button">Agregar kids</button>
+                </div>
+              </article>
+
+              <article class="product">
+                <div class="product-title">
+                  <div class="product-name">Taper adicional</div>
+                  <div class="product-price">S/1</div>
+                </div>
+                <div class="desc">
+                  Para clientes que piden 1 taper extra aparte.
+                </div>
+
+                <div class="qty-row">
+                  <input id="qtyTaperExtra" type="number" min="1" value="1">
+                  <button class="btn-gold" id="btnAddTaperExtra" type="button">Agregar taper</button>
                 </div>
               </article>
 
@@ -984,20 +1024,26 @@
 
       personalOptions: el("personalOptions"),
       especialOptions: el("especialOptions"),
+      kidsOptions: el("kidsOptions"),
       promoPlate1Options: el("promoPlate1Options"),
       promoPlate2Options: el("promoPlate2Options"),
 
       personalExtraNote: el("personalExtraNote"),
       especialExtraNote: el("especialExtraNote"),
+      kidsExtraNote: el("kidsExtraNote"),
       promoPlate1Extra: el("promoPlate1Extra"),
       promoPlate2Extra: el("promoPlate2Extra"),
 
       qtyPersonal: el("qtyPersonal"),
       qtyEspecial: el("qtyEspecial"),
+      qtyKids: el("qtyKids"),
+      qtyTaperExtra: el("qtyTaperExtra"),
       qtyPromo: el("qtyPromo"),
 
       btnAddPersonal: el("btnAddPersonal"),
       btnAddEspecial: el("btnAddEspecial"),
+      btnAddKids: el("btnAddKids"),
+      btnAddTaperExtra: el("btnAddTaperExtra"),
       btnAddPromo: el("btnAddPromo"),
 
       drinkGrid: el("drinkGrid"),
@@ -1267,12 +1313,14 @@
       const type = getOrderType();
       const subtotal = cart.reduce((sum, item) => sum + item.subtotal, 0);
       const portions = cart.reduce((sum, item) => sum + (item.portions || 0), 0);
+      const taperExtraQty = cart.reduce((sum, item) => sum + (item.extraTaperQty || 0), 0);
+      const taperExtraTotal = cart.reduce((sum, item) => sum + (item.extraTaperTotal || 0), 0);
       const taperQty = type === "local" ? 0 : portions;
       const taperTotal = taperQty * TAPER_PRICE;
       const deliveryTotal = type === "delivery" ? Number(E.deliveryFee.value || 0) : 0;
       const total = subtotal + taperTotal + deliveryTotal;
 
-      return { subtotal, portions, taperQty, taperTotal, deliveryTotal, total };
+      return { subtotal, portions, taperQty, taperTotal, taperExtraQty, taperExtraTotal, deliveryTotal, total };
     }
 
     function renderCart() {
@@ -1297,14 +1345,14 @@
 
       const t = totals();
       E.subtotalText.textContent = money(t.subtotal);
-      E.taperText.textContent = money(t.taperTotal) + (t.taperQty ? ` (${t.taperQty})` : "");
+      E.taperText.textContent = money(t.taperTotal) + (t.taperQty ? ` (${t.taperQty} auto)` : "") + (t.taperExtraQty ? ` + extra ${t.taperExtraQty}` : "");
       E.deliveryText.textContent = money(t.deliveryTotal);
       E.totalText.textContent = money(t.total);
 
       const type = getOrderType();
       E.taperNotice.textContent = type === "local"
         ? "Consumo en local: no se cobra taper."
-        : `Para ${orderTypeLabel(type).toLowerCase()}: se cobra ${t.taperQty} taper(s) automático(s) x S/1.`;
+        : `Para ${orderTypeLabel(type).toLowerCase()}: se cobra ${t.taperQty} taper(s) automático(s) x S/1.${t.taperExtraQty ? " Además: "+t.taperExtraQty+" taper(s) extra." : ""}`;
 
       const method = getPaymentMethod();
       if (method !== "mixto") {
@@ -1438,6 +1486,8 @@
         subtotal: t.subtotal,
         portions: t.portions,
         taperQty: t.taperQty,
+        taperExtraQty: t.taperExtraQty,
+        taperExtraTotal: t.taperExtraTotal,
         taperUnitPrice: TAPER_PRICE,
         taperCost: TAPER_COST,
         taperTotal: t.taperTotal,
@@ -1461,7 +1511,7 @@
       const pay = kitchen ? "" : `
         <hr>
         Productos: ${money(order.subtotal)}<br>
-        Taper: ${money(order.taperTotal)} ${order.taperQty ? `(${order.taperQty})` : ""}<br>
+        Taper auto: ${money(order.taperTotal)} ${order.taperQty ? `(${order.taperQty})` : ""}<br>${order.taperExtraQty ? `Taper extra: ${money(order.taperExtraTotal)} (${order.taperExtraQty})<br>` : ""}
         Delivery: ${money(order.deliveryFee)}<br>
         <b>TOTAL: ${money(order.total)}</b><br>
         Pago: ${esc(order.payment.label)}
@@ -1548,11 +1598,14 @@
 
       resetOptions(E.personalOptions, E.personalExtraNote);
       resetOptions(E.especialOptions, E.especialExtraNote);
+      resetOptions(E.kidsOptions, E.kidsExtraNote);
       resetOptions(E.promoPlate1Options, E.promoPlate1Extra);
       resetOptions(E.promoPlate2Options, E.promoPlate2Extra);
 
       E.qtyPersonal.value = "1";
       E.qtyEspecial.value = "1";
+      E.qtyKids.value = "1";
+      E.qtyTaperExtra.value = "1";
       E.qtyPromo.value = "1";
 
       closeOptionPanels();
@@ -1585,8 +1638,8 @@ ${order.customerPhone ? `Celular: ${order.customerPhone}\n` : ""}${order.custome
 ${items}
 
 Productos: ${money(order.subtotal)}
-Taper: ${money(order.taperTotal)} ${order.taperQty ? `(${order.taperQty})` : ""}
-Delivery: ${money(order.deliveryFee)}
+Taper auto: ${money(order.taperTotal)} ${order.taperQty ? `(${order.taperQty})` : ""}
+${order.taperExtraQty ? `Taper extra: ${money(order.taperExtraTotal)} (${order.taperExtraQty})\n` : ""}Delivery: ${money(order.deliveryFee)}
 *TOTAL: ${money(order.total)}*
 Pago: ${order.payment.label}
 ${order.generalNote ? `Obs.: ${order.generalNote}\n` : ""}`;
@@ -1704,7 +1757,7 @@ ${order.generalNote ? `Obs.: ${order.generalNote}\n` : ""}`;
         lines.push("No entregar sin confirmar pedido.");
       } else {
         lines.push(`Productos: ${rawMoney(order.subtotal)}`);
-        lines.push(`Taper: ${rawMoney(order.taperTotal)}${order.taperQty ? ` (${order.taperQty})` : ""}`);
+        lines.push(`Taper auto: ${rawMoney(order.taperTotal)}${order.taperQty ? ` (${order.taperQty})` : ""}`); if(order.taperExtraQty) lines.push(`Taper extra: ${rawMoney(order.taperExtraTotal)} (${order.taperExtraQty})`);
         lines.push(`Delivery: ${rawMoney(order.deliveryFee)}`);
         lines.push(line58());
         lines.push(`TOTAL: ${rawMoney(order.total)}`);
@@ -1861,6 +1914,36 @@ ${order.generalNote ? `Obs.: ${order.generalNote}\n` : ""}`;
         E.qtyEspecial.value = "1";
       };
 
+      E.btnAddKids.onclick = () => {
+        addToCart({
+          type: "combinado",
+          name: "Combinado kids",
+          qty: Math.max(1, Number(E.qtyKids.value || 1)),
+          unitPrice: 5,
+          portionsPerUnit: 1,
+          notes: `Plato kids: ${getOptions(E.kidsOptions, E.kidsExtraNote)}`
+        });
+
+        resetOptions(E.kidsOptions, E.kidsExtraNote);
+        E.qtyKids.value = "1";
+      };
+
+      E.btnAddTaperExtra.onclick = () => {
+        const qty = Math.max(1, Number(E.qtyTaperExtra.value || 1));
+        addToCart({
+          type: "taper_extra",
+          name: "Taper adicional",
+          qty: qty,
+          unitPrice: 1,
+          portionsPerUnit: 0,
+          extraTaperQty: qty,
+          extraTaperTotal: qty,
+          notes: "Taper extra pedido por cliente"
+        });
+
+        E.qtyTaperExtra.value = "1";
+      };
+
       E.btnAddPromo.onclick = () => {
         addToCart({
           type: "promo",
@@ -1892,6 +1975,7 @@ ${order.generalNote ? `Obs.: ${order.generalNote}\n` : ""}`;
     function init() {
       createChecks(E.personalOptions, "personal");
       createChecks(E.especialOptions, "especial");
+      createChecks(E.kidsOptions, "kids");
       createChecks(E.promoPlate1Options, "promo1");
       createChecks(E.promoPlate2Options, "promo2");
 
