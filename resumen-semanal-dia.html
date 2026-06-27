@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Resumen semanal día - Combinados El Patrón</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style>
+:root{
+  --bg:#020617;
+  --card:#0b1220;
+  --line:#1e293b;
+  --gold:#fde68a;
+  --gold2:#facc15;
+  --text:#e5e7eb;
+  --muted:#94a3b8;
+  --green:#22c55e;
+  --red:#ef4444;
+  --blue:#38bdf8;
+  --purple:#7c3aed;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:radial-gradient(circle at top,#111827 0,#020617 55%,#000 100%);
+  color:var(--text);
+  min-height:100vh;
+}
+.wrap{max-width:1120px;margin:0 auto;padding:14px}
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  background:rgba(2,6,23,.94);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:12px 14px;
+  margin-bottom:12px;
+  position:sticky;
+  top:0;
+  z-index:5;
+  backdrop-filter:blur(10px);
+}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  border:2px solid var(--gold2);
+  background:#fff;
+  object-fit:contain;
+}
+h1{font-size:20px;margin:0;color:var(--gold)}
+.sub{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.35}
+.login{
+  max-width:420px;
+  margin:70px auto;
+  background:rgba(15,23,42,.96);
+  border:1px solid #334155;
+  border-radius:20px;
+  padding:18px;
+  box-shadow:0 18px 60px rgba(0,0,0,.45);
+}
+.login h2{margin:0 0 8px;color:var(--gold)}
+input,button{
+  width:100%;
+  padding:10px;
+  border-radius:12px;
+  border:1px solid #334155;
+  background:#020617;
+  color:#fff;
+  font-size:14px;
+}
+button{
+  border:0;
+  background:#f59e0b;
+  color:#111827;
+  font-weight:900;
+  cursor:pointer;
+}
+button:hover,.btn:hover{opacity:.92;transform:translateY(-1px)}
+button:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.btn{
+  border:0;
+  border-radius:12px;
+  padding:10px 12px;
+  font-weight:900;
+  cursor:pointer;
+  text-decoration:none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  background:#1f2937;
+  color:#fef3c7;
+  border:1px solid #334155;
+  width:auto;
+}
+.btn-blue{background:#0284c7;color:#fff;border:0}
+.btn-red{background:#dc2626;color:#fff;border:0}
+.btn-green{background:#16a34a;color:#052e16;border:0}
+.btn-purple{background:#7c3aed;color:#fff;border:0}
+.card{
+  background:rgba(15,23,42,.92);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:14px;
+  box-shadow:0 10px 30px rgba(0,0,0,.24);
+  margin-bottom:12px;
+}
+.controls{
+  display:grid;
+  grid-template-columns:1fr auto auto auto auto;
+  gap:10px;
+  align-items:end;
+}
+label{font-size:12px;color:#cbd5e1;font-weight:700;display:block;margin-bottom:5px}
+.grid{display:grid;gap:12px}
+.grid-4{grid-template-columns:repeat(4,1fr)}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+.metric{
+  background:linear-gradient(180deg,#0b1220,#020617);
+  border:1px solid #1e293b;
+  border-radius:18px;
+  padding:14px;
+  min-height:96px;
+}
+.metric .label{font-size:12px;color:#cbd5e1}
+.metric .value{
+  font-size:26px;
+  font-weight:900;
+  color:var(--gold);
+  margin-top:8px;
+}
+.metric .hint{font-size:11px;color:var(--muted);margin-top:5px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{
+  border-bottom:1px dashed #1e293b;
+  padding:10px;
+  text-align:left;
+  vertical-align:top;
+}
+th{
+  color:var(--gold);
+  font-size:12px;
+  background:rgba(2,6,23,.55);
+}
+.good{color:#86efac;font-weight:900}
+.bad{color:#fca5a5;font-weight:900}
+.warn{color:#fde68a;font-weight:900}
+.muted{color:var(--muted)}
+.small{font-size:12px;color:#cbd5e1;line-height:1.4}
+.tag{
+  display:inline-flex;
+  padding:4px 8px;
+  border-radius:999px;
+  border:1px solid #334155;
+  background:#0b1220;
+  color:#e5e7eb;
+  font-size:11px;
+  font-weight:900;
+}
+.tag.ok{border-color:#22c55e;color:#86efac}
+.tag.pending{border-color:#facc15;color:#fde68a}
+.hide{display:none!important}
+.note{font-size:12px;color:#94a3b8;line-height:1.45;margin-top:8px}
+.status-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  border:1px solid #334155;
+  border-radius:999px;
+  padding:7px 10px;
+  background:#020617;
+  color:#cbd5e1;
+  font-size:12px;
+}
+.dot{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:#22c55e;
+  box-shadow:0 0 10px #22c55e;
+}
+.dot.red{background:#ef4444;box-shadow:0 0 10px #ef4444}
+.rowline{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:7px 0;
+  border-bottom:1px dashed #1e293b;
+}
+.rowline b{color:var(--gold)}
+@media(max-width:850px){
+  .topbar{position:relative;flex-direction:column;align-items:stretch}
+  .brand{justify-content:center;text-align:center}
+  .controls,.grid-4,.grid-3{grid-template-columns:1fr}
+  .btn{width:100%}
+  .metric .value{font-size:22px}
+}
+@media print{
+  body{background:#fff;color:#000}
+  .topbar,#loginBox,#controlsCard,.no-print{display:none!important}
+  .wrap{max-width:none;padding:0}
+  .card,.metric{box-shadow:none;border:0;background:#fff;color:#000}
+  .metric .value,th{color:#000}
+  td,th{border-bottom:1px dashed #000}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="loginBox" class="login">
+    <h2>🔐 Resumen semanal día</h2>
+    <p class="sub">Ingresa la clave del dueño.</p>
+    <label for="pass">Clave</label>
+    <input id="pass" type="password" placeholder="Clave">
+    <button id="btnLogin" style="margin-top:10px">Ingresar</button>
+    <div id="loginError" class="bad small" style="margin-top:8px"></div>
+  </div>
+
+  <div id="app" class="hide">
+    <div class="topbar">
+      <div class="brand">
+        <img src="LOGO.jpg" class="logo" alt="Logo">
+        <div>
+          <h1>Resumen semanal día</h1>
+          <div class="sub">Turno día · Combinados · No mezcla ventas del turno noche.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+        <span class="status-pill"><span id="liveDot" class="dot"></span><span id="liveStatus">Actualizado</span></span>
+        <a class="btn" href="admin-dia.html" target="_blank">Admin diario</a>
+        <button id="btnLogout" class="btn-red" type="button" style="width:auto">Salir</button>
+      </div>
+    </div>
+
+    <div id="controlsCard" class="card">
+      <div class="controls">
+        <div>
+          <label for="weekDate">Selecciona cualquier fecha de la semana</label>
+          <input id="weekDate" type="date">
+        </div>
+        <button id="btnPrev" class="btn" type="button">← Semana anterior</button>
+        <button id="btnToday" class="btn-blue" type="button">Semana actual</button>
+        <button id="btnNext" class="btn" type="button">Semana siguiente →</button>
+        <button id="btnPrint" class="btn-purple" type="button">Imprimir</button>
+      </div>
+      <div class="note" id="weekLabel">Semana: --</div>
+      <div class="note">Este resumen usa la misma clave de ventas del <b>admin día</b> y filtra por <b>fecha de caja</b>.</div>
+    </div>
+
+    <div class="grid grid-4">
+      <div class="metric">
+        <div class="label">Total semana</div>
+        <div class="value" id="mWeekTotal">S/ 0.00</div>
+        <div class="hint">Efectivo + Yape</div>
+      </div>
+      <div class="metric">
+        <div class="label">Efectivo semana</div>
+        <div class="value" id="mWeekCash">S/ 0.00</div>
+        <div class="hint">Solo venta efectivo</div>
+      </div>
+      <div class="metric">
+        <div class="label">Yape semana</div>
+        <div class="value" id="mWeekYape">S/ 0.00</div>
+        <div class="hint">Cobros digitales</div>
+      </div>
+      <div class="metric">
+        <div class="label">Pedidos registrados</div>
+        <div class="value" id="mWeekOrders">0</div>
+        <div class="hint">No incluye anulados</div>
+      </div>
+    </div>
+
+    <div class="grid grid-3">
+      <div class="metric">
+        <div class="label">Combinados vendidos</div>
+        <div class="value" id="mWeekPortions">0</div>
+        <div class="hint">Platos / porciones</div>
+      </div>
+      <div class="metric">
+        <div class="label">Tapers cobrados</div>
+        <div class="value" id="mWeekTapers">S/ 0.00</div>
+        <div class="hint" id="mWeekTaperQty">0 tapers</div>
+      </div>
+      <div class="metric">
+        <div class="label">Delivery cobrado</div>
+        <div class="value" id="mWeekDelivery">S/ 0.00</div>
+        <div class="hint">Solo pedidos válidos</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 style="font-size:17px;color:var(--gold);margin:0 0 10px">📅 Lunes a domingo</h2>
+      <div style="overflow:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>Día</th>
+              <th>Fecha caja</th>
+              <th>Estado</th>
+              <th>Total venta</th>
+              <th>Efectivo</th>
+              <th>Yape</th>
+              <th>Caja inicial</th>
+              <th>Pedidos</th>
+              <th>Combinados</th>
+              <th>Tapers</th>
+              <th>Delivery</th>
+            </tr>
+          </thead>
+          <tbody id="weekRows"></tbody>
+        </table>
+      </div>
+      <div class="note">La caja inicial se muestra como referencia/sencillo aparte y no se suma al total de venta.</div>
+    </div>
+
+    <div class="grid grid-3">
+      <div class="card">
+        <h2 style="font-size:17px;color:var(--gold);margin:0 0 10px">🍽️ Productos vendidos</h2>
+        <div id="productSummary"></div>
+      </div>
+      <div class="card">
+        <h2 style="font-size:17px;color:var(--gold);margin:0 0 10px">🥤 Bebidas vendidas</h2>
+        <div id="drinkSummary"></div>
+      </div>
+      <div class="card">
+        <h2 style="font-size:17px;color:var(--gold);margin:0 0 10px">🚚 Tipos de pedido</h2>
+        <div id="typeSummary"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const ADMIN_PASSWORD = "181221";
+const SESSION_KEY = "pdm_week_summary_dia_logged_v2";
+const ORDERS_KEY = "pdm_turno_dia_combinados_orders_v2";
+const SETUP_KEY_PREFIX = "pdm_turno_dia_setup_";
+
+const $ = id => document.getElementById(id);
+const els = [
+  "loginBox","app","pass","btnLogin","btnLogout","loginError",
+  "weekDate","btnPrev","btnToday","btnNext","btnPrint","weekLabel",
+  "mWeekTotal","mWeekCash","mWeekYape","mWeekOrders","mWeekPortions",
+  "mWeekTapers","mWeekTaperQty","mWeekDelivery","weekRows","liveDot",
+  "liveStatus","productSummary","drinkSummary","typeSummary"
+].reduce((a,id)=>(a[id]=$(id),a),{});
+
+let logged = false;
+const dayNames = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+
+function safeNum(n){return Number.isFinite(Number(n)) ? Number(n) : 0}
+function safeInt(n){return Math.round(safeNum(n))}
+function round2(n){return Number(safeNum(n).toFixed(2))}
+function money(n){return "S/ " + safeNum(n).toFixed(2)}
+function pad2(n){return String(n).padStart(2,"0")}
+function esc(s){return String(s ?? "").replace(/[&<>'"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;"}[c]))}
+function dateKey(d){return d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate())}
+function todayISO(){const now=new Date();const peruString=now.toLocaleString("sv-SE",{timeZone:"America/Lima"});return peruString.slice(0,10)}
+function dateFromKey(key){const [y,m,d]=String(key||todayISO()).split("-").map(Number);return new Date(y,(m||1)-1,d||1)}
+function mondayOf(d){const x=new Date(d);const day=x.getDay();const diff=day===0?-6:1-day;x.setDate(x.getDate()+diff);x.setHours(0,0,0,0);return x}
+function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
+function weekRange(){const base=els.weekDate.value?dateFromKey(els.weekDate.value):new Date();const mon=mondayOf(base);const sun=addDays(mon,6);return{mon,sun,start:dateKey(mon),end:dateKey(sun)}}
+function formatDateHuman(key){const d=dateFromKey(key);return `${pad2(d.getDate())}/${pad2(d.getMonth()+1)}/${d.getFullYear()}`}
+function setLive(ok,text){els.liveDot.classList.toggle("red",!ok);els.liveStatus.textContent=text}
+function getOrders(){try{return JSON.parse(localStorage.getItem(ORDERS_KEY)||"[]")}catch{return[]}}
+function setupKey(dateKey){return SETUP_KEY_PREFIX+dateKey}
+function loadSetup(dateKey){try{return JSON.parse(localStorage.getItem(setupKey(dateKey))||"{}")}catch{return{}}}
+function isDayOrder(o){return o && (o.shift==="dia" || o.system==="combinados" || String(o.id||"").startsWith("DIA-"))}
+function isAnnulled(o){return String(o.status||"registrado").toUpperCase()==="ANULADO"}
+function orderBoxDate(o){return o.boxDate || (o.createdAt ? dateKey(new Date(o.createdAt)) : todayISO())}
+function paymentMethodOf(o){return String(o.paymentMethod || o.payment?.method || "efectivo").toLowerCase()}
+function totalOf(o){return safeNum(o.total)}
+function cashOf(o){const method=paymentMethodOf(o);if(method==="mixto")return safeNum(o.mixedCash ?? o.payment?.efectivo);if(method==="yape")return 0;return totalOf(o)}
+function yapeOf(o){const method=paymentMethodOf(o);if(method==="mixto")return safeNum(o.mixedYape ?? o.payment?.yape);if(method==="yape")return totalOf(o);return 0}
+function deliveryOf(o){return safeNum(o.deliveryFee)}
+function tapersOf(o){return safeNum(o.taperTotal)}
+function tapersQtyOf(o){return safeInt(o.taperQty)}
+function portionsOf(o){return safeInt(o.portions)}
+function validOrders(){return getOrders().filter(o=>isDayOrder(o) && !isAnnulled(o))}
+function weekOrders(){const {start,end}=weekRange();return validOrders().filter(o=>{const k=orderBoxDate(o);return k>=start && k<=end})}
+function byDate(rows){
+  const map=new Map();
+  rows.forEach(o=>{
+    const k=orderBoxDate(o);
+    if(!map.has(k))map.set(k,[]);
+    map.get(k).push(o);
+  });
+  return map;
+}
+function calc(rows){
+  const s={total:0,cash:0,yape:0,orders:rows.length,portions:0,tapers:0,taperQty:0,delivery:0};
+  rows.forEach(o=>{
+    s.total+=totalOf(o);
+    s.cash+=cashOf(o);
+    s.yape+=yapeOf(o);
+    s.portions+=portionsOf(o);
+    s.tapers+=tapersOf(o);
+    s.taperQty+=tapersQtyOf(o);
+    s.delivery+=deliveryOf(o);
+  });
+  return s;
+}
+function summarizeProducts(rows){
+  const map=new Map();
+  rows.forEach(o=>{
+    (o.items||[]).forEach(i=>{
+      const name=String(i.name||"Producto");
+      const prev=map.get(name)||{qty:0,total:0};
+      prev.qty+=safeNum(i.qty);
+      prev.total+=safeNum(i.subtotal || safeNum(i.qty)*safeNum(i.unitPrice));
+      map.set(name,prev);
+    });
+  });
+  return [...map.entries()].sort((a,b)=>b[1].qty-a[1].qty);
+}
+function summarizeDrinks(rows){
+  const map=new Map();
+  rows.forEach(o=>{
+    (o.items||[]).forEach(i=>{
+      if(String(i.type||"").toLowerCase()==="bebida" || /gaseosa|maracuy|chicha|agua/i.test(i.name||"")){
+        const name=String(i.name||"Bebida");
+        map.set(name,(map.get(name)||0)+safeInt(i.qty));
+      }
+    });
+  });
+  return [...map.entries()].sort((a,b)=>b[1]-a[1]);
+}
+function summarizeTypes(rows){
+  const labels={local:"Local",recojo:"Recojo",delivery:"Delivery"};
+  const map={local:{qty:0,total:0},recojo:{qty:0,total:0},delivery:{qty:0,total:0}};
+  rows.forEach(o=>{
+    const type=o.orderType||"local";
+    if(!map[type])map[type]={qty:0,total:0};
+    map[type].qty++;
+    map[type].total+=totalOf(o);
+  });
+  return Object.entries(map).map(([k,v])=>[labels[k]||k,v]);
+}
+function renderSummaryBox(id, list, type="money"){
+  if(!list.length){
+    $(id).innerHTML=`<div class="muted">Sin datos.</div>`;
+    return;
+  }
+  $(id).innerHTML=list.map(([name,v])=>{
+    if(type==="qty")return `<div class="rowline"><span>${esc(name)}</span><b>${safeInt(v)}</b></div>`;
+    if(type==="type")return `<div class="rowline"><span>${esc(name)} (${safeInt(v.qty)})</span><b>${money(v.total)}</b></div>`;
+    return `<div class="rowline"><span>${esc(name)} <span class="muted">x${v.qty}</span></span><b>${money(v.total)}</b></div>`;
+  }).join("");
+}
+function render(){
+  const {mon,sun}=weekRange();
+  els.weekLabel.textContent=`Semana del ${formatDateHuman(dateKey(mon))} al ${formatDateHuman(dateKey(sun))}`;
+  const rows=weekOrders();
+  const map=byDate(rows);
+  const week=calc(rows);
+
+  const trs=[];
+  for(let i=0;i<7;i++){
+    const d=addDays(mon,i);
+    const k=dateKey(d);
+    const dayRows=map.get(k)||[];
+    const s=calc(dayRows);
+    const setup=loadSetup(k);
+    const hasSales=dayRows.length>0;
+    trs.push(`<tr>
+      <td><b>${dayNames[d.getDay()]}</b></td>
+      <td>${k}</td>
+      <td>${hasSales?'<span class="tag ok">CON VENTA</span>':'<span class="tag pending">PENDIENTE</span>'}</td>
+      <td class="warn"><b>${money(s.total)}</b></td>
+      <td>${money(s.cash)}</td>
+      <td>${money(s.yape)}</td>
+      <td>${setup.openCash?money(setup.openCash):"--"}</td>
+      <td>${s.orders}</td>
+      <td>${s.portions}</td>
+      <td>${s.taperQty} / ${money(s.tapers)}</td>
+      <td>${money(s.delivery)}</td>
+    </tr>`);
+  }
+
+  els.weekRows.innerHTML=trs.join("");
+  els.mWeekTotal.textContent=money(round2(week.total));
+  els.mWeekCash.textContent=money(round2(week.cash));
+  els.mWeekYape.textContent=money(round2(week.yape));
+  els.mWeekOrders.textContent=String(week.orders);
+  els.mWeekPortions.textContent=String(week.portions);
+  els.mWeekTapers.textContent=money(round2(week.tapers));
+  els.mWeekTaperQty.textContent=String(week.taperQty)+" tapers";
+  els.mWeekDelivery.textContent=money(round2(week.delivery));
+
+  renderSummaryBox("productSummary",summarizeProducts(rows));
+  renderSummaryBox("drinkSummary",summarizeDrinks(rows),"qty");
+  renderSummaryBox("typeSummary",summarizeTypes(rows),"type");
+}
+function refresh(){
+  if(!logged)return;
+  setLive(false,"Actualizando...");
+  try{
+    render();
+    setLive(true,"Actualizado");
+  }catch(err){
+    console.error(err);
+    setLive(false,"Error");
+    alert("No pude cargar resumen semanal día: "+(err.message||String(err)));
+  }
+}
+function showApp(){
+  logged=true;
+  els.loginBox.classList.add("hide");
+  els.app.classList.remove("hide");
+  if(!els.weekDate.value)els.weekDate.value=todayISO();
+  refresh();
+}
+function login(){
+  if(String(els.pass.value||"")!==ADMIN_PASSWORD){
+    els.loginError.textContent="Clave incorrecta.";
+    return;
+  }
+  localStorage.setItem(SESSION_KEY,"1");
+  els.pass.value="";
+  els.loginError.textContent="";
+  showApp();
+}
+function logout(){
+  localStorage.removeItem(SESSION_KEY);
+  logged=false;
+  els.app.classList.add("hide");
+  els.loginBox.classList.remove("hide");
+}
+function moveWeek(n){
+  const base=els.weekDate.value?dateFromKey(els.weekDate.value):new Date();
+  els.weekDate.value=dateKey(addDays(base,n*7));
+  refresh();
+}
+function printPage(){window.print()}
+
+els.btnLogin.addEventListener("click",login);
+els.pass.addEventListener("keydown",e=>{if(e.key==="Enter")login()});
+els.btnLogout.addEventListener("click",logout);
+els.weekDate.addEventListener("change",refresh);
+els.btnPrev.addEventListener("click",()=>moveWeek(-1));
+els.btnNext.addEventListener("click",()=>moveWeek(1));
+els.btnToday.addEventListener("click",()=>{els.weekDate.value=todayISO();refresh()});
+els.btnPrint.addEventListener("click",printPage);
+
+setInterval(refresh,10000);
+if(localStorage.getItem(SESSION_KEY)==="1")showApp();
+</script>
+</body>
+</html>
