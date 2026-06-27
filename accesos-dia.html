@@ -3,18 +3,21 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Accesos Turno Día - El Patrón</title>
+<title>Accesos Turno Día - Combinados El Patrón</title>
 <style>
 :root{
   --bg:#030712;
   --panel:#111827;
+  --card:#0b1220;
   --gold:#facc15;
-  --orange:#fb923c;
+  --goldSoft:#fde68a;
   --green:#22c55e;
   --blue:#38bdf8;
   --red:#ef4444;
+  --purple:#a855f7;
   --text:#f8fafc;
   --muted:#cbd5e1;
+  --line:#334155;
 }
 *{box-sizing:border-box}
 body{
@@ -22,157 +25,268 @@ body{
   min-height:100vh;
   font-family:Arial,Helvetica,sans-serif;
   background:
-    radial-gradient(circle at top,rgba(250,204,21,.20),transparent 34%),
-    linear-gradient(180deg,#000,#020617 60%,#030712);
+    radial-gradient(circle at top,rgba(250,204,21,.14),transparent 34%),
+    linear-gradient(180deg,#000,#020617 65%,#030712);
   color:var(--text);
-  display:flex;
-  align-items:center;
-  justify-content:center;
   padding:18px;
 }
 .wrap{
   width:100%;
-  max-width:520px;
+  max-width:1120px;
+  margin:0 auto;
 }
-.card{
-  background:rgba(15,23,42,.96);
-  border:1px solid rgba(250,204,21,.28);
-  border-radius:28px;
-  padding:22px;
+.hero{
+  background:
+    radial-gradient(circle at top,rgba(250,204,21,.20),transparent 35%),
+    rgba(15,23,42,.92);
+  border:1px solid rgba(250,204,21,.32);
+  border-radius:26px;
+  padding:28px 18px 22px;
+  text-align:center;
   box-shadow:0 20px 55px rgba(0,0,0,.45);
+  margin-bottom:16px;
 }
 .logo{
-  width:76px;
-  height:76px;
+  width:92px;
+  height:92px;
   border-radius:50%;
-  margin:0 auto 12px;
-  display:grid;
-  place-items:center;
-  background:linear-gradient(145deg,#fde047,#f97316);
-  color:#111827;
-  font-weight:1000;
-  font-size:34px;
-  border:3px solid #fff;
-  box-shadow:0 0 25px rgba(250,204,21,.40);
+  object-fit:contain;
+  background:#fff;
+  border:3px solid var(--gold);
+  box-shadow:0 0 32px rgba(250,204,21,.40);
+  margin-bottom:12px;
 }
 h1{
   margin:0;
-  text-align:center;
-  color:var(--gold);
-  font-size:27px;
+  color:var(--goldSoft);
+  font-size:38px;
   text-transform:uppercase;
   line-height:1.05;
+  text-shadow:0 0 18px rgba(250,204,21,.55);
 }
-.sub{
-  margin:8px 0 18px;
-  text-align:center;
+.hero .sub{
+  margin:8px 0 0;
   color:#fef3c7;
   font-weight:900;
-  font-size:14px;
+  font-size:15px;
 }
-.btns{
-  display:grid;
+.badge{
+  display:inline-flex;
+  margin-top:14px;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  padding:8px 14px;
+  border-radius:999px;
+  background:rgba(34,197,94,.12);
+  border:1px solid rgba(34,197,94,.55);
+  color:#bbf7d0;
+  font-size:12px;
+  font-weight:1000;
+}
+.panel{
+  background:rgba(15,23,42,.94);
+  border:1px solid rgba(250,204,21,.28);
+  border-radius:24px;
+  padding:22px;
+  box-shadow:0 20px 55px rgba(0,0,0,.42);
+}
+.panel-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
   gap:12px;
+  margin-bottom:16px;
 }
-a{
+h2{
+  margin:0;
+  color:var(--gold);
+  font-size:22px;
+}
+.panel-sub{
+  margin-top:5px;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:800;
+}
+.exit{
   text-decoration:none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:11px 15px;
+  border-radius:14px;
+  background:rgba(239,68,68,.18);
+  border:1px solid rgba(239,68,68,.55);
+  color:#fecaca;
+  font-weight:1000;
+  white-space:nowrap;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+.card{
+  min-height:174px;
+  position:relative;
+  overflow:hidden;
+  border-radius:20px;
+  padding:20px;
+  background:
+    radial-gradient(circle at bottom right,rgba(250,204,21,.13),transparent 33%),
+    linear-gradient(135deg,rgba(2,6,23,.95),rgba(15,23,42,.95));
+  border:1px solid rgba(148,163,184,.24);
+  box-shadow:0 10px 30px rgba(0,0,0,.25);
+}
+.card.gold{border-color:rgba(250,204,21,.55)}
+.card.green{border-color:rgba(34,197,94,.55)}
+.card.blue{border-color:rgba(56,189,248,.55)}
+.card.purple{border-color:rgba(168,85,247,.55)}
+.icon{
+  width:48px;
+  height:48px;
+  display:grid;
+  place-items:center;
+  border-radius:16px;
+  background:#020617;
+  border:1px solid rgba(250,204,21,.35);
+  font-size:24px;
+  margin-bottom:14px;
+  box-shadow:0 0 20px rgba(0,0,0,.35);
+}
+.card-title{
+  color:var(--goldSoft);
+  font-size:25px;
+  font-weight:1000;
+  text-transform:uppercase;
+  margin-bottom:8px;
+  line-height:1.05;
+}
+.card-text{
+  color:#cbd5e1;
+  font-size:13px;
+  font-weight:800;
+  line-height:1.38;
+  max-width:82%;
+  margin-bottom:18px;
 }
 .btn{
-  display:flex;
+  text-decoration:none;
+  display:inline-flex;
   align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  padding:16px;
-  border-radius:18px;
-  font-weight:1000;
+  justify-content:center;
+  gap:6px;
+  padding:11px 16px;
+  border-radius:999px;
+  background:linear-gradient(180deg,#fde047,#facc15);
   color:#111827;
-  background:var(--gold);
-  box-shadow:0 10px 25px rgba(0,0,0,.30);
+  font-size:13px;
+  font-weight:1000;
+  box-shadow:0 8px 22px rgba(0,0,0,.25);
 }
-.btn:hover{
+.btn:hover,.exit:hover{
+  opacity:.94;
   transform:translateY(-1px);
-  opacity:.95;
-}
-.btn span{
-  display:block;
-  font-size:18px;
-}
-.btn small{
-  display:block;
-  margin-top:3px;
-  font-size:12px;
-  opacity:.82;
-}
-.btn-public{background:var(--gold)}
-.btn-moza{background:var(--green)}
-.btn-admin{background:var(--blue)}
-.btn-home{background:#1f2937;color:#fef3c7;border:1px solid #334155}
-.note{
-  margin-top:18px;
-  color:var(--muted);
-  font-size:12px;
-  line-height:1.45;
-  text-align:center;
-  font-weight:800;
 }
 .footer{
-  margin-top:13px;
   text-align:center;
   color:#94a3b8;
-  font-size:11px;
+  font-size:12px;
   font-weight:800;
+  margin-top:18px;
+  line-height:1.45;
+}
+.quick{
+  margin-top:16px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+.quick a{
+  text-decoration:none;
+  border-radius:14px;
+  padding:11px;
+  text-align:center;
+  background:#020617;
+  color:#fef3c7;
+  border:1px solid #334155;
+  font-weight:900;
+  font-size:12px;
+}
+.quick a:hover{
+  border-color:var(--gold);
+}
+@media(max-width:850px){
+  body{padding:12px}
+  h1{font-size:30px}
+  .grid,.quick{grid-template-columns:1fr}
+  .panel-top{flex-direction:column}
+  .exit{width:100%}
+  .card-text{max-width:100%}
 }
 </style>
 </head>
 <body>
-  <main class="wrap">
-    <section class="card">
-      <div class="logo">P</div>
-      <h1>Turno Día</h1>
-      <div class="sub">Combinados El Patrón</div>
+<main class="wrap">
+  <section class="hero">
+    <img src="LOGO.jpg" class="logo" alt="Logo El Patrón">
+    <h1>Combinados El Patrón</h1>
+    <div class="sub">Turno día · Sistema separado del turno noche</div>
+    <div class="badge">🔐 Solo personal autorizado</div>
+  </section>
 
-      <div class="btns">
-        <a class="btn btn-public" href="index-dia.html">
-          <div>
-            <span>🍽️ Carta pública</span>
-            <small>Para clientes: combinados, bebidas y pedido por WhatsApp</small>
-          </div>
-          <b>Entrar</b>
-        </a>
-
-        <a class="btn btn-moza" href="carta-dia-moza.html">
-          <div>
-            <span>🧾 Carta moza</span>
-            <small>Registrar venta, comanda, boleta y RawBT</small>
-          </div>
-          <b>Entrar</b>
-        </a>
-
-        <a class="btn btn-admin" href="admin-dia.html">
-          <div>
-            <span>📊 Admin día</span>
-            <small>Resumen, ventas, productos, taper y delivery</small>
-          </div>
-          <b>Entrar</b>
-        </a>
-
-        <a class="btn btn-home" href="index.html">
-          <div>
-            <span>🌙 Turno noche</span>
-            <small>Volver a la carta principal de noche</small>
-          </div>
-          <b>Ir</b>
-        </a>
+  <section class="panel">
+    <div class="panel-top">
+      <div>
+        <h2>Panel de accesos - Turno día</h2>
+        <div class="panel-sub">Entra rápido a cada parte del sistema de combinados.</div>
       </div>
+      <a class="exit" href="index.html">Salir</a>
+    </div>
 
-      <div class="note">
-        Este panel es solo para el turno día. No mezcla ventas con el turno noche.
-      </div>
-    </section>
+    <div class="grid">
+      <article class="card gold">
+        <div class="icon">🍽️</div>
+        <div class="card-title">Carta principal</div>
+        <div class="card-text">Carta pública para clientes. Muestra combinados, bebidas y pedido por WhatsApp.</div>
+        <a class="btn" href="index-dia.html">Abrir carta →</a>
+      </article>
+
+      <article class="card green">
+        <div class="icon">👨‍🍳</div>
+        <div class="card-title">Carta moza</div>
+        <div class="card-text">Registra pedidos, imprime comanda, boleta RawBT y guarda ventas del día.</div>
+        <a class="btn" href="carta-dia-moza.html">Abrir moza →</a>
+      </article>
+
+      <article class="card blue">
+        <div class="icon">📊</div>
+        <div class="card-title">Administrador</div>
+        <div class="card-text">Ventas del día, efectivo, Yape, caja inicial, pedidos, editar pago y anular.</div>
+        <a class="btn" href="admin-dia.html">Abrir admin →</a>
+      </article>
+
+      <article class="card purple">
+        <div class="icon">🗓️</div>
+        <div class="card-title">Resumen semanal</div>
+        <div class="card-text">Lunes a domingo del turno día: total, efectivo, Yape, combinados, tapers y delivery.</div>
+        <a class="btn" href="resumen-semanal-dia.html">Abrir resumen →</a>
+      </article>
+    </div>
+
+    <div class="quick">
+      <a href="index-dia.html">🍽️ Carta cliente</a>
+      <a href="carta-dia-moza.html">🧾 Moza</a>
+      <a href="admin-dia.html">📊 Admin día</a>
+      <a href="resumen-semanal-dia.html">🗓️ Resumen</a>
+    </div>
 
     <div class="footer">
-      El Patrón del Mal Fast Food · Sistema interno
+      Este panel es solo para turno día. No mezcla ventas con turno noche.<br>
+      Guarda este enlace en el celular del local como acceso directo.
     </div>
-  </main>
+  </section>
+</main>
 </body>
 </html>
