@@ -54,14 +54,6 @@
       z-index:1;
     }
     .page-content{ position:relative; z-index:2; }
-    .gif-dinero{
-      position:fixed; bottom:80px; left:8px;
-      width:140px;
-      pointer-events:none;
-      z-index:3;
-    }
-    .gif-dinero img{ width:100%; height:auto; display:block; }
-
     h1,h2,h3{ color:#ff9f1c; margin:10px 0; }
     p{ margin:4px 0; }
 
@@ -464,7 +456,6 @@
 
     @media (max-width:600px){
       body{ padding:10px; }
-      .gif-dinero{ bottom:70px; left:4px; width:100px; }
       .bottom-bar-mobile{ display:flex; }
       .carrito-actions{ gap:8px; }
       .carrito-actions > *{ flex:1 1 46%; text-align:center; }
@@ -1016,8 +1007,6 @@
 <body>
   <div class="bg-rayos"></div>
   <div class="bg-estrellas"></div>
-  <div class="gif-dinero"><img src="dinero.gif" alt="Dinero cayendo"></div>
-
   <div class="page-content">
     <div class="header">
       <div class="header-logo"><img src="LOGO.jpg" alt="Logo El Patrón del Mal"></div>
@@ -1048,7 +1037,7 @@
       <button id="nav-admin" class="primary" type="button">🔐 Admin</button>
 
       <a href="#combos">Combos y Promociones 🔥</a>
-      <a href="#alitas">Alitas 🍗</a>
+      <a href="#alitas">Alitas - Patitas Broster 🍗</a>
       <a href="#hamburguesas">Burger - Wrap 🍔🌯</a>
       <a href="#cartel">Mostritos y Broaster 🍗</a>
       <a href="#torres">Torres del Cartel 🗼</a>
@@ -1518,6 +1507,9 @@ function deepCopy(obj){
       if (itemId === 74) return 4; // Torre Nápoles
       if (itemId === 75) return 3; // Torre Cali
 
+      // Patitas Broster: 1 taper por plato en delivery o recojo.
+      if ([76,77,78].includes(itemId)) return 1;
+
       if (itemId === 21) return 2;
       if (itemId === 3) return 2;
       if (itemId === 4) return 3;
@@ -1537,7 +1529,7 @@ function deepCopy(obj){
     }
 
     function isMainWingComboId(id){
-      return [20,1,2,21,3,4,5,6,7,69,71,73,74].includes(Number(id));
+      return [20,1,2,21,3,4,5,6,7,69,71,73,74,78].includes(Number(id));
     }
 
 
@@ -1556,6 +1548,7 @@ function deepCopy(obj){
       if (itemId === 71) return 30;
       if (itemId === 73) return 7;
       if (itemId === 74) return 10;
+      if (itemId === 78) return 3; // Dúo del Patrón: 3 alitas
       return 0;
     }
 
@@ -1665,6 +1658,9 @@ function deepCopy(obj){
       if (itemId === 74) return 5;
       if (itemId === 75) return 2;
 
+      // Patitas Broster: una porción de papas por plato.
+      if ([76,77,78].includes(itemId)) return 1;
+
       if ([12,13,14,15,16,17,18,19,66,67].includes(itemId)) return 1;
       if ([60,61,62,63].includes(itemId)) return 2;
       if (itemId === 24) return 2;
@@ -1688,6 +1684,7 @@ function deepCopy(obj){
       if (itemId === 71) return 30;
       if (itemId === 73) return 7;
       if (itemId === 74) return 10;
+      if (itemId === 78) return 3; // Dúo del Patrón
       return 0;
     }
 
@@ -1781,6 +1778,20 @@ function deepCopy(obj){
           { id: 7,  name: "Salchi Alitas - Popeye",            price: 22, desc: "+ chorizo + hotdog + 5 alitas + papas + cremas" },
           { id: 8,  name: "Salchi Mix - Medellín",             price: 16, desc: "+ chorizo + hotdog + huevo + papas + cremas" },
           { id: 9,  name: "El Golpe de la DEA",                price: 19, desc: "Trocitos pollo + chaufa + papas + ensalada + cremas" }
+        ]
+      },
+      {
+        anchorId: "patitas-broster",
+        name: "🐔 Patitas Broster",
+        image: "cat-alitas.png",
+        sauceMode: "single",
+        allowNoSauce: false,
+        sauces: ["Salsa Acevichada", "Salsa BBQ", "Salsa Picante", "Salsa Maracuyá"],
+        footerText: "Salsas a escoger: Acevichada, BBQ, Picante o Maracuyá. Cada plato suma 1 taper únicamente para delivery o recojo en local.",
+        items: [
+          { id: 76, name: "4 Patitas Broster", price: 12.00, desc: "4 patitas + porción de papas + ensalada fresca + salsa a escoger", image: "patitas-broaster-4.png", imageFallbacks: ["cat-alitas.png"] },
+          { id: 77, name: "6 Patitas Broster", price: 15.00, desc: "6 patitas + porción de papas + ensalada fresca + salsa a escoger", image: "patitas-broaster-6.png", imageFallbacks: ["cat-alitas.png"] },
+          { id: 78, name: "Dúo del Patrón", price: 17.00, desc: "3 patitas + 3 alitas + porción de papas + ensalada fresca + salsa a escoger", image: "duo-del-patron.png", imageFallbacks: ["cat-alitas.png"] }
         ]
       },
       {
@@ -2008,7 +2019,17 @@ const menuContainer = document.getElementById("menu");
       img.src = src;
       img.alt = item.name;
       img.loading = "lazy";
+
+      const fallbackImages = [...(item.imageFallbacks || []), section.image || ""]
+        .filter(Boolean)
+        .filter((value, index, arr) => value !== src && arr.indexOf(value) === index);
+      let fallbackIndex = 0;
+
       img.onerror = function(){
+        if (fallbackIndex < fallbackImages.length) {
+          this.src = fallbackImages[fallbackIndex++];
+          return;
+        }
         this.style.display = "none";
       };
       return img;
@@ -2174,12 +2195,16 @@ const menuContainer = document.getElementById("menu");
       o0.textContent = "Elegir 1 salsa";
       sel.appendChild(o0);
 
-      const oSin = document.createElement("option");
-      oSin.value = "SIN_SALSA";
-      oSin.textContent = "Sin salsa";
-      sel.appendChild(oSin);
+      const allowNoSauce = item.allowNoSauce ?? section.allowNoSauce ?? true;
+      if (allowNoSauce) {
+        const oSin = document.createElement("option");
+        oSin.value = "SIN_SALSA";
+        oSin.textContent = "Sin salsa";
+        sel.appendChild(oSin);
+      }
 
-      SAUCES.forEach(s => {
+      const sauceOptions = item.sauces || section.sauces || SAUCES;
+      sauceOptions.forEach(s => {
         const o = document.createElement("option");
         o.value = s;
         o.textContent = s.replace("Salsa ", "");
