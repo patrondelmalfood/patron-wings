@@ -2769,8 +2769,8 @@ body.home-screen .app-category-card span small{
   </a>
 
   <a href="#" class="app-category-card" data-cat="alitas">
-    <img src="cat-alitas.png" alt="Alitas">
-    <span><strong>Alitas 🍗</strong><small>Elige tus salsas favoritas</small></span>
+    <img src="cat-alitas.png" alt="Alitas y Patitas Broster">
+    <span><strong>Alitas - Patitas Broster 🍗</strong><small>Elige tus alitas, patitas y salsa favorita</small></span>
     <b>›</b>
   </a>
 
@@ -2921,7 +2921,7 @@ function pad2(n){ return String(n).padStart(2,"0"); }
 function safeNum(n){ return Number.isFinite(Number(n)) ? Number(n) : 0; }
 function round2(n){ return Number((safeNum(n)).toFixed(2)); }
 function money(n){ return `S/ ${safeNum(n).toFixed(2)}`; }
-function cleanName(n){ return String(n || "").replace(/🔫|💣|👑|🕶|🔥|🍔|🌯|🧂|🥤|➕|🍗|🗼|🎉/g, "").trim(); }
+function cleanName(n){ return String(n || "").replace(/🔫|💣|👑|🕶|🔥|🍔|🌯|🧂|🥤|➕|🍗|🐔|🗼|🎉/g, "").trim(); }
 function shortSauces(arr){ return (arr || []).map(s => s.replace("Salsa ", "")).join(", "); }
 function isNoSauceValue(v){ return String(v || "").toUpperCase() === "SIN_SALSA"; }
 
@@ -2958,6 +2958,8 @@ function getSauceMaxForItemName(name){
   if (name.includes("Torre Medellín")) return 2;
   if (name.includes("Torre Nápoles")) return 2;
   if (name.includes("Torre Cali")) return 1;
+  if (name.includes("Patitas Broaster")) return 1;
+  if (name.includes("Dúo del Patrón")) return 1;
   if (name.startsWith("4 Alitas")) return 1;
   if (name.startsWith("5 Alitas")) return 1;
   if (name.startsWith("6 Alitas")) return 2;
@@ -2988,6 +2990,9 @@ function getTaperPerUnit(id){
   if (id === 70) return 2; // Combo Pareja Burger
   if (id === 71) return 5; // Combo Familiar
   if (id === 72) return 3; // Combo Broaster Martes y Jueves
+
+  // Patitas Broster: 1 taper por plato en delivery o recojo.
+  if (id === 76 || id === 77 || id === 78) return 1;
 
   if (id === 21 || id === 3) return 2;
   if (id === 4) return 3;
@@ -3075,6 +3080,20 @@ const SECTIONS = [
           { id: 7,  name: "Salchi Alitas - Popeye",            price: 22, desc: "+ chorizo + hotdog + 5 alitas + papas + cremas", fixedAlitasImg: "salchi-alitas.png" },
           { id: 8,  name: "Salchi Mix - Medellín",             price: 16, desc: "+ chorizo + hotdog + huevo + papas + cremas", fixedAlitasImg: "Salchi Mix - Medellín.png" },
           { id: 9,  name: "El Golpe de la DEA",                price: 19, desc: "Trocitos pollo + chaufa + papas + ensalada + cremas", fixedAlitasImg: "golpe-dea.png" }
+        ]
+      },
+      {
+        anchorId: "patitas-broster",
+        name: "🐔 Patitas Broster",
+        image: "cat-alitas.png",
+        sauceMode: "single",
+        allowNoSauce: false,
+        sauces: ["Salsa Acevichada", "Salsa BBQ", "Salsa Picante", "Salsa Maracuyá"],
+        footerText: "Salsas a escoger: Acevichada, BBQ, Picante o Maracuyá. Cada plato suma 1 taper únicamente para delivery o recojo en local.",
+        items: [
+          { id: 76, name: "4 Patitas Broster", price: 12.00, desc: "4 patitas + porción de papas + ensalada fresca + salsa a escoger", cardImg: "patitas-broaster-4.png" },
+          { id: 77, name: "6 Patitas Broster", price: 15.00, desc: "6 patitas + porción de papas + ensalada fresca + salsa a escoger", cardImg: "patitas-broaster-6.png" },
+          { id: 78, name: "Dúo del Patrón", price: 17.00, desc: "3 patitas + 3 alitas + porción de papas + ensalada fresca + salsa a escoger", cardImg: "duo-del-patron.png" }
         ]
       },
       {
@@ -3234,7 +3253,7 @@ let currentCategoryKey = null;
 
 const CATEGORY_GROUPS = {
   combos: { title: "🔥 Combos y Promociones", keys: ["combos"] },
-  alitas: { title: "🍗 Alitas", keys: ["alitas", "agregado_alitas"] },
+  alitas: { title: "🍗 Alitas - Patitas Broster", keys: ["alitas", "patitas-broster", "agregado_alitas"] },
   hamburguesas: { title: "🍔 Burger - Wrap", keys: ["hamburguesas"] },
   cartel: { title: "🍗 Mostritos y Broaster", keys: ["cartel", "agregado_broaster"] },
   torres: { title: "🗼 Torres del Cartel", keys: ["torres"] },
@@ -3322,7 +3341,8 @@ function renderMenu(selectedCategoryKey = currentCategoryKey){
         saucesDiv.innerHTML = `<p>Salsas (máx. ${max}):</p>`;
         const none = document.createElement("label"); none.innerHTML = `<input type="checkbox" value="SIN_SALSA" name="salsa-none-${item.id}"> Sin salsa`;
         saucesDiv.appendChild(none); saucesDiv.appendChild(document.createElement("br"));
-        SAUCES.forEach(s => {
+        const sauceOptions = item.sauces || section.sauces || SAUCES;
+        sauceOptions.forEach(s => {
           const lab = document.createElement("label");
           lab.innerHTML = `<input type="checkbox" value="${s}" name="salsa-${item.id}"> ${s.replace("Salsa ","")}`;
           saucesDiv.appendChild(lab);
@@ -3335,8 +3355,16 @@ function renderMenu(selectedCategoryKey = currentCategoryKey){
       if (effectiveSauceMode === "single") {
         const wrap = document.createElement("div"); wrap.className = "salsa-select-wrap";
         const sel = document.createElement("select"); sel.className = "salsa-select"; sel.name = `salsa-select-${item.id}`;
-        sel.innerHTML = `<option value="">Selecciona una opción</option><option value="SIN_SALSA">Sin salsa</option>`;
-        SAUCES.forEach(s => { const o = document.createElement("option"); o.value = s; o.textContent = s.replace("Salsa ",""); sel.appendChild(o); });
+        sel.innerHTML = `<option value="">Selecciona una opción</option>`;
+        const allowNoSauce = item.allowNoSauce ?? section.allowNoSauce ?? true;
+        if (allowNoSauce) {
+          const noSauceOption = document.createElement("option");
+          noSauceOption.value = "SIN_SALSA";
+          noSauceOption.textContent = "Sin salsa";
+          sel.appendChild(noSauceOption);
+        }
+        const sauceOptions = item.sauces || section.sauces || SAUCES;
+        sauceOptions.forEach(s => { const o = document.createElement("option"); o.value = s; o.textContent = s.replace("Salsa ",""); sel.appendChild(o); });
         wrap.innerHTML = `<div class="salsa-select-title">Elige salsa</div>`; wrap.appendChild(sel); card.appendChild(wrap);
       }
 
@@ -3568,8 +3596,16 @@ function renderMenu(selectedCategoryKey = currentCategoryKey){
         const sel = document.createElement("select");
         sel.className = "salsa-select";
         sel.name = `salsa-select-${item.id}`;
-        sel.innerHTML = `<option value="">Elegir salsa</option><option value="SIN_SALSA">Sin salsa</option>`;
-        SAUCES.forEach(s => {
+        sel.innerHTML = `<option value="">Elegir salsa</option>`;
+        const allowNoSauce = item.allowNoSauce ?? section.allowNoSauce ?? true;
+        if (allowNoSauce) {
+          const noSauceOption = document.createElement("option");
+          noSauceOption.value = "SIN_SALSA";
+          noSauceOption.textContent = "Sin salsa";
+          sel.appendChild(noSauceOption);
+        }
+        const sauceOptions = item.sauces || section.sauces || SAUCES;
+        sauceOptions.forEach(s => {
           const o = document.createElement("option");
           o.value = s;
           o.textContent = s.replace("Salsa ", "");
