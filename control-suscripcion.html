@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Control de suscripción | RestoFlow 4.0</title>
+
+  <style>
+    :root{
+      --fondo:#020817;
+      --panel:#08162e;
+      --panel-claro:#0d2143;
+      --borde:rgba(83,166,255,.25);
+      --azul:#168cff;
+      --celeste:#67c7ff;
+      --verde:#22c55e;
+      --rojo:#ef4444;
+      --amarillo:#ffd400;
+      --blanco:#f8fbff;
+      --texto:#d8e7f8;
+      --gris:#91a8c4;
+      --sombra:0 24px 70px rgba(0,0,0,.45);
+    }
+
+    *{
+      box-sizing:border-box;
+    }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:Arial, Helvetica, sans-serif;
+      color:var(--blanco);
+      background:
+        radial-gradient(circle at 10% 5%, rgba(22,140,255,.18), transparent 30%),
+        radial-gradient(circle at 90% 15%, rgba(255,212,0,.08), transparent 25%),
+        linear-gradient(180deg,#020817,#051229 55%,#020817);
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      z-index:-1;
+      background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size:35px 35px;
+    }
+
+    .contenedor{
+      width:min(960px,92vw);
+      margin:auto;
+      padding:32px 0 48px;
+    }
+
+    .cabecera{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:18px;
+      padding:18px 22px;
+      border-radius:22px;
+      background:rgba(5,18,42,.88);
+      border:1px solid var(--borde);
+      box-shadow:var(--sombra);
+    }
+
+    .marca{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+
+    .marca img{
+      width:60px;
+      height:60px;
+      object-fit:contain;
+      border-radius:16px;
+      padding:5px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(103,199,255,.22);
+    }
+
+    .marca h1{
+      margin:0;
+      font-size:22px;
+    }
+
+    .marca h1 span{
+      color:var(--amarillo);
+    }
+
+    .marca p{
+      margin:5px 0 0;
+      color:var(--gris);
+      font-size:13px;
+    }
+
+    .etiqueta{
+      padding:10px 14px;
+      border-radius:999px;
+      background:rgba(22,140,255,.10);
+      border:1px solid rgba(103,199,255,.25);
+      color:#d5f1ff;
+      font-size:13px;
+      font-weight:800;
+    }
+
+    .panel{
+      margin-top:24px;
+      padding:30px;
+      border-radius:28px;
+      background:
+        radial-gradient(circle at top right, rgba(22,140,255,.13), transparent 34%),
+        linear-gradient(180deg,rgba(9,31,63,.96),rgba(3,13,31,.98));
+      border:1px solid var(--borde);
+      box-shadow:var(--sombra);
+    }
+
+    .panel h2{
+      margin:0 0 10px;
+      font-size:32px;
+    }
+
+    .descripcion{
+      margin:0;
+      color:var(--texto);
+      line-height:1.6;
+      max-width:720px;
+    }
+
+    .estado-grid{
+      margin-top:26px;
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:18px;
+    }
+
+    .tarjeta{
+      padding:24px;
+      border-radius:22px;
+      background:rgba(255,255,255,.035);
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .titulo-pequeno{
+      color:var(--gris);
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.8px;
+      font-weight:900;
+    }
+
+    .estado{
+      margin:12px 0 8px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      font-size:34px;
+      font-weight:900;
+    }
+
+    .punto{
+      width:16px;
+      height:16px;
+      border-radius:50%;
+      background:var(--verde);
+      box-shadow:0 0 18px rgba(34,197,94,.8);
+    }
+
+    .nota{
+      margin:0;
+      color:var(--gris);
+      line-height:1.55;
+      font-size:14px;
+    }
+
+    .cliente{
+      color:var(--amarillo);
+      font-weight:900;
+      margin-bottom:9px;
+    }
+
+    .datos{
+      color:var(--texto);
+      line-height:1.65;
+      font-size:14px;
+    }
+
+    .acciones{
+      margin-top:22px;
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:16px;
+    }
+
+    button,
+    .boton-enlace{
+      min-height:58px;
+      border:none;
+      border-radius:17px;
+      padding:0 20px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:9px;
+      font-size:15px;
+      font-weight:900;
+      cursor:pointer;
+      text-decoration:none;
+      transition:transform .16s ease, box-shadow .16s ease, opacity .16s ease;
+    }
+
+    button:hover,
+    .boton-enlace:hover{
+      transform:translateY(-2px);
+      box-shadow:0 14px 30px rgba(0,0,0,.30);
+    }
+
+    .activar{
+      background:linear-gradient(135deg,#83efad,var(--verde));
+      color:#05150b;
+    }
+
+    .suspender{
+      background:linear-gradient(135deg,#ff7f7f,var(--rojo));
+      color:white;
+    }
+
+    .secundario{
+      background:rgba(22,140,255,.10);
+      border:1px solid rgba(103,199,255,.25);
+      color:var(--blanco);
+    }
+
+    .historial{
+      margin-top:22px;
+      border-radius:20px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .fila{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+      padding:15px 18px;
+    }
+
+    .encabezado-fila{
+      background:rgba(255,255,255,.045);
+      color:#d5f1ff;
+      font-size:13px;
+      font-weight:900;
+    }
+
+    .contenido-fila{
+      background:rgba(2,8,23,.58);
+      color:var(--texto);
+      font-size:14px;
+    }
+
+    .aviso{
+      margin-top:20px;
+      padding:15px 17px;
+      border-radius:16px;
+      color:#ffe9b4;
+      background:rgba(255,212,0,.07);
+      border:1px solid rgba(255,212,0,.18);
+      font-size:13px;
+      line-height:1.55;
+    }
+
+    .pie{
+      margin-top:20px;
+      display:flex;
+      justify-content:space-between;
+      gap:15px;
+      flex-wrap:wrap;
+      color:var(--gris);
+      font-size:12px;
+    }
+
+    @media(max-width:760px){
+      .cabecera{
+        align-items:flex-start;
+      }
+
+      .estado-grid,
+      .acciones{
+        grid-template-columns:1fr;
+      }
+
+      .panel{
+        padding:24px 18px;
+      }
+
+      .estado{
+        font-size:28px;
+      }
+
+      .fila{
+        grid-template-columns:1fr;
+      }
+
+      .etiqueta{
+        display:none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="contenedor">
+
+    <header class="cabecera">
+      <div class="marca">
+        <img src="restoflow_marca_agua.png" alt="Logo de RestoFlow 4.0">
+
+        <div>
+          <h1>RestoFlow <span>4.0</span></h1>
+          <p>Administración de suscripciones</p>
+        </div>
+      </div>
+
+      <div class="etiqueta">🔐 Panel administrativo</div>
+    </header>
+
+    <section class="panel">
+      <h2>Control de suscripción</h2>
+
+      <p class="descripcion">
+        Desde este panel puedes activar o suspender temporalmente el acceso
+        del restaurante al sistema RestoFlow 4.0.
+      </p>
+
+      <div class="estado-grid">
+        <article class="tarjeta">
+          <div class="titulo-pequeno">Estado actual del servicio</div>
+
+          <div class="estado">
+            <span class="punto" id="puntoEstado"></span>
+            <span id="textoEstado">ACTIVO</span>
+          </div>
+
+          <p class="nota" id="notaEstado">
+            El restaurante puede utilizar normalmente todos los módulos.
+          </p>
+        </article>
+
+        <aside class="tarjeta">
+          <div class="cliente">Restaurante piloto</div>
+
+          <div class="datos">
+            El Patrón del Mal Fast Food<br>
+            Plan mensual referencial: S/120
+          </div>
+        </aside>
+      </div>
+
+      <div class="acciones">
+        <button class="activar" id="botonActivar" type="button">
+          ✅ Activar servicio
+        </button>
+
+        <button class="suspender" id="botonSuspender" type="button">
+          ⛔ Suspender servicio
+        </button>
+
+        <a
+          class="boton-enlace secundario"
+          href="accesos.html"
+          target="_blank"
+          rel="noopener noreferrer">
+          🌐 Abrir panel de accesos
+        </a>
+
+        <a
+          class="boton-enlace secundario"
+          href="suspendido.html"
+          target="_blank"
+          rel="noopener noreferrer">
+          ⚠️ Ver pantalla de suspensión
+        </a>
+      </div>
+
+      <div class="historial">
+        <div class="fila encabezado-fila">
+          <div>Última actualización</div>
+          <div>Acción realizada</div>
+        </div>
+
+        <div class="fila contenido-fila">
+          <div id="ultimaActualizacion">Sin cambios registrados</div>
+          <div id="ultimaAccion">Servicio activo</div>
+        </div>
+      </div>
+
+      <div class="aviso">
+        Este control funciona dentro del mismo dominio
+        <strong>patron-wings.vercel.app</strong>. Para completar el bloqueo,
+        el archivo <strong>accesos.html</strong> debe revisar el estado guardado
+        y redirigir a <strong>suspendido.html</strong>.
+      </div>
+    </section>
+
+    <footer class="pie">
+      <span>RestoFlow 4.0 · Control del servicio</span>
+      <span>Demostración académica del modelo de suscripción</span>
+    </footer>
+
+  </main>
+
+  <script>
+    const CLAVE_ESTADO = "restoflow_subscription_status";
+    const CLAVE_FECHA = "restoflow_subscription_updated_at";
+
+    const textoEstado = document.getElementById("textoEstado");
+    const puntoEstado = document.getElementById("puntoEstado");
+    const notaEstado = document.getElementById("notaEstado");
+    const ultimaActualizacion = document.getElementById("ultimaActualizacion");
+    const ultimaAccion = document.getElementById("ultimaAccion");
+
+    const botonActivar = document.getElementById("botonActivar");
+    const botonSuspender = document.getElementById("botonSuspender");
+
+    function obtenerEstado() {
+      return localStorage.getItem(CLAVE_ESTADO) || "activo";
+    }
+
+    function formatearFecha(fecha) {
+      if (!fecha) {
+        return "Sin cambios registrados";
+      }
+
+      return new Intl.DateTimeFormat("es-PE", {
+        dateStyle: "medium",
+        timeStyle: "short"
+      }).format(new Date(fecha));
+    }
+
+    function mostrarEstado() {
+      const estado = obtenerEstado();
+      const fecha = localStorage.getItem(CLAVE_FECHA);
+
+      if (estado === "suspendido") {
+        textoEstado.textContent = "SUSPENDIDO";
+        puntoEstado.style.background = "#ef4444";
+        puntoEstado.style.boxShadow = "0 0 18px rgba(239,68,68,.8)";
+
+        notaEstado.textContent =
+          "El acceso del restaurante está bloqueado temporalmente.";
+
+        ultimaAccion.textContent = "Servicio suspendido";
+      } else {
+        textoEstado.textContent = "ACTIVO";
+        puntoEstado.style.background = "#22c55e";
+        puntoEstado.style.boxShadow = "0 0 18px rgba(34,197,94,.8)";
+
+        notaEstado.textContent =
+          "El restaurante puede utilizar normalmente todos los módulos.";
+
+        ultimaAccion.textContent = "Servicio activado";
+      }
+
+      ultimaActualizacion.textContent = formatearFecha(fecha);
+    }
+
+    function cambiarEstado(nuevoEstado) {
+      const mensaje =
+        nuevoEstado === "suspendido"
+          ? "¿Confirmas que deseas suspender temporalmente el servicio?"
+          : "¿Confirmas que deseas activar nuevamente el servicio?";
+
+      if (!confirm(mensaje)) {
+        return;
+      }
+
+      const fechaActual = new Date().toISOString();
+
+      localStorage.setItem(CLAVE_ESTADO, nuevoEstado);
+      localStorage.setItem(CLAVE_FECHA, fechaActual);
+
+      mostrarEstado();
+
+      if (nuevoEstado === "suspendido") {
+        alert("Servicio suspendido correctamente.");
+      } else {
+        alert("Servicio activado correctamente.");
+      }
+    }
+
+    botonActivar.addEventListener("click", function () {
+      cambiarEstado("activo");
+    });
+
+    botonSuspender.addEventListener("click", function () {
+      cambiarEstado("suspendido");
+    });
+
+    mostrarEstado();
+  </script>
+</body>
+</html>
