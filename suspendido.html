@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Servicio suspendido | RestoFlow 4.0</title>
+
+  <style>
+    :root{
+      --fondo:#020817;
+      --panel:#08162e;
+      --borde:rgba(239,68,68,.28);
+      --rojo:#ef4444;
+      --rojo-claro:#ff8a8a;
+      --amarillo:#ffd400;
+      --blanco:#f8fbff;
+      --texto:#d8e7f8;
+      --gris:#91a8c4;
+      --azul:#168cff;
+      --sombra:0 28px 80px rgba(0,0,0,.5);
+    }
+
+    *{
+      box-sizing:border-box;
+    }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-family:Arial, Helvetica, sans-serif;
+      color:var(--blanco);
+      background:
+        radial-gradient(circle at 50% 12%, rgba(239,68,68,.16), transparent 34%),
+        radial-gradient(circle at 10% 10%, rgba(22,140,255,.10), transparent 28%),
+        linear-gradient(180deg,#020817,#071225 55%,#020817);
+      padding:24px;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      z-index:-1;
+      background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size:35px 35px;
+    }
+
+    .contenedor{
+      width:min(760px,100%);
+      text-align:center;
+    }
+
+    .panel{
+      padding:42px 34px;
+      border-radius:30px;
+      background:
+        radial-gradient(circle at top center, rgba(239,68,68,.10), transparent 34%),
+        linear-gradient(180deg,rgba(10,26,54,.97),rgba(3,13,31,.99));
+      border:1px solid var(--borde);
+      box-shadow:var(--sombra);
+    }
+
+    .logo{
+      width:92px;
+      height:92px;
+      object-fit:contain;
+      border-radius:22px;
+      padding:8px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      margin-bottom:18px;
+    }
+
+    .icono{
+      width:82px;
+      height:82px;
+      margin:0 auto 20px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:50%;
+      background:rgba(239,68,68,.12);
+      border:1px solid rgba(239,68,68,.30);
+      font-size:42px;
+      box-shadow:0 0 30px rgba(239,68,68,.16);
+    }
+
+    h1{
+      margin:0;
+      font-size:42px;
+      line-height:1.1;
+      color:var(--rojo-claro);
+    }
+
+    .subtitulo{
+      margin:14px auto 0;
+      max-width:590px;
+      color:var(--texto);
+      font-size:18px;
+      line-height:1.65;
+    }
+
+    .mensaje{
+      margin:26px auto 0;
+      padding:18px 20px;
+      border-radius:18px;
+      background:rgba(255,255,255,.035);
+      border:1px solid rgba(255,255,255,.08);
+      color:var(--gris);
+      line-height:1.6;
+      font-size:15px;
+    }
+
+    .mensaje strong{
+      color:var(--amarillo);
+    }
+
+    .acciones{
+      margin-top:26px;
+      display:flex;
+      justify-content:center;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+
+    .boton{
+      min-height:54px;
+      padding:0 22px;
+      border-radius:16px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:9px;
+      text-decoration:none;
+      font-weight:900;
+      transition:transform .16s ease, box-shadow .16s ease;
+    }
+
+    .boton:hover{
+      transform:translateY(-2px);
+      box-shadow:0 14px 30px rgba(0,0,0,.28);
+    }
+
+    .principal{
+      background:linear-gradient(135deg,#3aa0ff,var(--azul));
+      color:white;
+    }
+
+    .secundario{
+      background:rgba(255,255,255,.04);
+      color:var(--blanco);
+      border:1px solid rgba(255,255,255,.10);
+    }
+
+    .pie{
+      margin-top:20px;
+      color:var(--gris);
+      font-size:12px;
+      line-height:1.5;
+    }
+
+    @media(max-width:620px){
+      .panel{
+        padding:34px 20px;
+      }
+
+      h1{
+        font-size:34px;
+      }
+
+      .subtitulo{
+        font-size:16px;
+      }
+
+      .acciones{
+        flex-direction:column;
+      }
+
+      .boton{
+        width:100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="contenedor">
+    <section class="panel">
+      <img
+        src="restoflow_marca_agua.png"
+        alt="Logo RestoFlow 4.0"
+        class="logo">
+
+      <div class="icono">⛔</div>
+
+      <h1>Servicio suspendido</h1>
+
+      <p class="subtitulo">
+        El acceso al sistema RestoFlow 4.0 se encuentra temporalmente
+        suspendido por falta de regularización del pago.
+      </p>
+
+      <div class="mensaje">
+        Para reactivar el servicio, comuníquese con el administrador o soporte
+        de RestoFlow 4.0. Una vez regularizada la suscripción, el acceso será
+        habilitado nuevamente.
+        <br><br>
+        <strong>Restaurante:</strong> El Patrón del Mal Fast Food
+      </div>
+
+      <div class="acciones">
+        <a
+          class="boton principal"
+          href="https://wa.me/51944275861"
+          target="_blank"
+          rel="noopener noreferrer">
+          💬 Contactar soporte
+        </a>
+
+        <a
+          class="boton secundario"
+          href="control-suscripcion.html">
+          🔐 Ir al control
+        </a>
+      </div>
+
+      <div class="pie">
+        RestoFlow 4.0 · Plataforma de gestión para restaurantes
+      </div>
+    </section>
+  </main>
+</body>
+</html>
