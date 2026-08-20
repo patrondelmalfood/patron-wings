@@ -279,6 +279,110 @@
 
 
 
+
+
+    /* ===== MODO COMPACTO ===== */
+    body{font-size:13px}
+    .wrap{max-width:1180px}
+    .header{padding:11px 14px;border-radius:15px}
+    .header h1{font-size:20px;margin:0 0 2px}
+    .logo{width:58px;height:58px}
+    .topbar{gap:8px;margin:10px 0}
+    .topbar .panel{padding:9px 11px}
+    .panel{padding:10px;border-radius:14px}
+    input,textarea{padding:8px 9px;border-radius:10px;font-size:13px}
+    textarea{min-height:46px}
+    button{padding:9px 11px;border-radius:10px}
+    .section-title{margin:14px 0 7px;font-size:15px;padding-bottom:5px}
+    .grid{grid-template-columns:repeat(6,1fr);gap:7px}
+    .metric{padding:8px 9px;border-radius:12px}
+    .metric small{font-size:10px}
+    .metric b{font-size:17px;margin-top:3px}
+    .note,.status{font-size:11px;padding:8px}
+    .quick-entry-box,.paper-order-box,.manual-usage-box,.oil-card{padding:10px;border-radius:14px}
+    .quick-entry-list{margin-top:8px}
+    table th,table td{padding:7px 8px;font-size:11px}
+
+    .compact-alert-summary{
+      display:flex;gap:7px;flex-wrap:wrap;margin-bottom:7px
+    }
+    .compact-count{
+      padding:5px 8px;border-radius:999px;border:1px solid #334155;
+      font-size:11px;font-weight:900;background:#020617
+    }
+    .compact-count.out{color:#fecaca;border-color:#991b1b}
+    .compact-count.low{color:#fde68a;border-color:#a16207}
+    .compact-alert-list{
+      display:grid;grid-template-columns:repeat(2,1fr);gap:4px 12px
+    }
+    .compact-alert-row{
+      display:grid;grid-template-columns:minmax(160px,1.7fr) .7fr .65fr;
+      gap:8px;align-items:center;padding:5px 3px;border-bottom:1px solid rgba(148,163,184,.13)
+    }
+    .compact-alert-row .name{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .compact-alert-row .qty{text-align:right;font-weight:900}
+    .compact-alert-row .state{text-align:right;font-size:10px;font-weight:900}
+    .compact-alert-row.out .state{color:#fca5a5}
+    .compact-alert-row.low .state{color:#fde68a}
+
+    details.compact-section{
+      margin-top:10px;border:1px solid rgba(250,204,21,.28);
+      border-radius:14px;background:rgba(7,16,31,.94);overflow:hidden
+    }
+    details.compact-section>summary{
+      cursor:pointer;list-style:none;padding:10px 12px;font-size:14px;font-weight:900;
+      color:#facc15;background:#0b1220;display:flex;justify-content:space-between;align-items:center
+    }
+    details.compact-section>summary::-webkit-details-marker{display:none}
+    details.compact-section>summary::after{content:"▼";font-size:10px;color:#94a3b8}
+    details.compact-section[open]>summary::after{content:"▲"}
+    details.compact-section>.compact-body{padding:9px 10px}
+
+    .oil-compact-row{
+      display:grid;grid-template-columns:1.2fr .7fr .7fr auto auto;
+      gap:8px;align-items:end
+    }
+    .oil-mini-status{
+      padding:8px 10px;border-radius:12px;background:#020617;border:1px solid #334155;
+      min-height:54px;display:flex;flex-direction:column;justify-content:center
+    }
+    .oil-mini-status small{color:#94a3b8}
+    .oil-mini-status b{font-size:18px;color:#86efac;margin-top:2px}
+    .oil-progress{margin:7px 0 3px;height:8px}
+    #oilAlertBox .oil-alert{padding:8px 10px;font-size:12px;margin-top:8px}
+
+    @media(max-width:900px){
+      .grid{grid-template-columns:repeat(3,1fr)}
+      .compact-alert-list{grid-template-columns:1fr}
+      .oil-compact-row{grid-template-columns:1fr 1fr}
+    }
+    @media(max-width:600px){
+      .grid{grid-template-columns:repeat(2,1fr)}
+      .oil-compact-row{grid-template-columns:1fr}
+      .compact-alert-row{grid-template-columns:1.5fr .7fr .7fr}
+    }
+
+    .quick-entry-box{
+      background:linear-gradient(180deg,rgba(14,165,233,.06),rgba(7,16,31,.97));
+      border:1px solid rgba(56,189,248,.30);
+      border-radius:16px;
+      padding:14px;
+    }
+    .quick-entry-row{
+      display:grid;
+      grid-template-columns:minmax(280px,2.3fr) .7fr .55fr auto;
+      gap:8px;
+      align-items:end;
+    }
+    .quick-entry-list{
+      margin-top:12px;
+      overflow:auto;
+      border:1px solid #334155;
+      border-radius:14px;
+    }
+    .quick-entry-list table{min-width:640px}
+    .search-hint{margin-top:6px;color:#94a3b8;font-size:11px}
+
     .paper-order-box{
       background:linear-gradient(180deg,rgba(34,197,94,.08),rgba(7,16,31,.97));
       border:1px solid rgba(34,197,94,.38);
@@ -473,37 +577,70 @@
   <div id="oilAlertBox"></div>
 
   <div class="section-title">
-    <span>⚠️ Estado rápido del inventario</span>
-    <span class="mini-pill">Ver primero antes de comprar</span>
+    <span>⚠️ Estado rápido</span>
+    <span class="mini-pill">Lo que debes revisar</span>
   </div>
   <div class="panel">
-    <div id="stockAlerts" class="alert-grid"></div>
+    <div id="stockAlerts"></div>
   </div>
 
-  <div class="section-title">📊 Stock actual estimado</div>
-  <div class="table-wrap"><table id="stockTable"></table></div>
+  <details class="compact-section">
+    <summary>📊 Ver stock completo</summary>
+    <div class="compact-body">
+      <div class="table-wrap"><table id="stockTable"></table></div>
+    </div>
+  </details>
 
-  <div class="note" style="margin-top:12px">
-    <b>📌 Insumos agregados según tus boletas:</b> queso suizo, mayonesa base Macbel, mostaza,
-    Leche Gloria, maizena, harina, sal, ajinomoto, pimienta, ajo en polvo, paprika, orégano,
-    vinagre, salsa de ostión, aceite de ajonjolí, laurel y hongos, azúcar rubia, galleta soda,
-    bolsas 16×19, servilletas, papel toalla, detergente, Clorox/lejía y Poett.
-    <br><br>
-    <b>Importante:</b> los insumos nuevos que todavía no tienen una receta exacta por plato se controlan
-    mediante <b>ingresos + conteo físico + consumo manual</b>. No inventé cantidades automáticas por receta.
-  </div>
+  <details class="compact-section">
+    <summary>ℹ️ Ver información de insumos</summary>
+    <div class="compact-body note">
+      Los insumos nuevos de receta se controlan por ingresos, conteo físico y consumo manual hasta definir gramajes exactos por plato.
+    </div>
+  </details>
 
-  <div class="section-title">
-    <span>📥 Registrar ingreso de mercadería</span>
+<div class="section-title">
+    <span>📥 Ingreso rápido de mercadería</span>
     <span class="mini-pill">Se suma al stock</span>
   </div>
 
   <div class="panel">
     <div class="note" style="margin-bottom:12px">
-      Coloca únicamente lo que realmente ingresó al local. El consumo por platos se descuenta automáticamente cuando la moza registra ventas en el sistema.
+      Busca el producto que compraste, escribe la cantidad y pulsa <b>Agregar</b>. Puedes agregar varios productos y al final guardar todo junto.
     </div>
 
-    <div class="input-grid" id="entriesGrid"></div>
+    <div class="quick-entry-box">
+      <div class="quick-entry-row">
+        <div>
+          <label>🔎 Buscar producto / insumo</label>
+          <input id="quickEntrySearch" list="inventoryProductsList" autocomplete="off"
+                 placeholder="Escribe: chorizo, leche, harina, paprika...">
+          <datalist id="inventoryProductsList"></datalist>
+          <div class="search-hint">Escribe las primeras letras y selecciona el producto.</div>
+        </div>
+        <div>
+          <label>Cantidad</label>
+          <input id="quickEntryQty" type="number" min="0" step="0.01" value="1">
+        </div>
+        <div>
+          <label>Unidad</label>
+          <input id="quickEntryUnit" type="text" readonly value="—">
+        </div>
+        <button class="green" id="btnAddQuickEntry" type="button">➕ Agregar</button>
+      </div>
+
+      <div class="quick-entry-list">
+        <table>
+          <thead>
+            <tr><th>Producto / insumo</th><th>Cantidad a ingresar</th><th>Unidad</th><th></th></tr>
+          </thead>
+          <tbody id="quickEntryRows">
+            <tr><td colspan="4" class="muted" style="text-align:center">Aún no agregaste ningún ingreso.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="entriesGrid" style="display:none"></div>
 
     <label style="margin-top:12px">Nota del ingreso / observación</label>
     <textarea id="entryNote" placeholder="Ej: Ingresaron 100 bolsas de papa, 30 kg de alitas y 24 gaseosas."></textarea>
@@ -516,10 +653,10 @@
 
 
 
-  <div class="section-title">
-    <span>🧾 Ingresar comanda de papel al sistema</span>
-    <span class="mini-pill">Opción recomendada si conservas la comanda</span>
-  </div>
+  <details class="compact-section" >
+    <summary>🧾 Comanda de papel</summary>
+    <div class="compact-body">
+
 
   <div class="paper-order-box">
     <div class="recommended-note">
@@ -707,10 +844,14 @@
     </div>
   </div>
 
-  <div class="section-title">
-    <span>📤 Consumo manual del día</span>
-    <span class="mini-pill">Solo cuando la venta fue en papel</span>
-  </div>
+
+    </div>
+  </details>
+
+  <details class="compact-section" >
+    <summary>📤 Consumo manual (si no tienes comanda)</summary>
+    <div class="compact-body">
+
   <div class="manual-usage-box">
     <div class="mode-note">
       <span class="mini-pill">💻 Moza usa sistema → NO llenes esto</span>
@@ -737,10 +878,14 @@
     </div>
   </div>
 
-  <div class="section-title">
-    <span>🧮 Conteo físico / Ajustar stock real</span>
-    <span class="mini-pill">Para corregir diferencias</span>
-  </div>
+
+    </div>
+  </details>
+
+  <details class="compact-section" >
+    <summary>🧮 Conteo físico / corregir stock</summary>
+    <div class="compact-body">
+
   <div class="panel physical-box">
     <div class="note" style="margin-bottom:12px">
       Usa esta sección cuando cuentes físicamente el local y el stock no coincida con el sistema.
@@ -760,36 +905,56 @@
     </div>
   </div>
 
-  <div class="section-title">🛢️ Control de aceite</div>
-  <div class="oil-card">
-    <div class="grid2">
-      <div>
-        <label>Fecha del último cambio del balde de 20 L</label>
-        <input type="date" id="oilStartDate">
-        <div class="small">El balde se controla por 10 días. Aviso preventivo desde el día 8.</div>
-      </div>
-      <div>
-        <label>Estado del balde</label>
-        <div class="metric" style="margin-top:0">
-          <small>Días de uso</small>
-          <b id="oilDaysValue">-</b>
-        </div>
-      </div>
+
     </div>
+  </details>
+
+  <div class="section-title">🛢️ Balde de aceite 20 L</div>
+  <div class="oil-card">
+    <div class="oil-compact-row">
+      <div class="oil-mini-status">
+        <small>Uso actual</small>
+        <b id="oilDaysValue">-</b>
+      </div>
+
+      <div>
+        <label>Días usados</label>
+        <input type="number" id="oilUsedDaysEdit" min="1" max="14" step="1" value="1">
+      </div>
+
+      <div>
+        <label>Máximo de uso</label>
+        <select id="oilMaxDays" style="width:100%;padding:8px 9px;border-radius:10px;border:1px solid #334155;background:#020617;color:#fff">
+          <option value="12">12 días</option>
+          <option value="13">13 días</option>
+          <option value="14" selected>14 días</option>
+        </select>
+      </div>
+
+      <button class="blue" id="btnSaveOilSettings" type="button">💾 Guardar ajuste</button>
+      <button class="green" id="btnOilChange" type="button">♻️ Cambio hoy</button>
+    </div>
+
+    <input type="date" id="oilStartDate" style="display:none">
+
     <div class="oil-progress"><div id="oilProgressBar"></div></div>
     <div class="small" id="oilProgressText">Sin fecha registrada.</div>
-    <div class="actions" style="margin-top:12px">
-      <button class="green" id="btnOilChange">♻️ Registrar cambio de aceite hoy</button>
-    </div>
-    <div class="note" style="margin-top:10px">
-      El otro aceite del inventario se registra como <b>Aceite MASS 3 L</b> por botella.
+    <div class="status" id="oilEditStatus">
+      Puedes corregir los días usados. Por ejemplo, si ya lleva 6 días, escribe <b>6</b> y guarda.
     </div>
   </div>
 
-  <div class="section-title">📚 Movimientos del día seleccionado</div>
+  <details class="compact-section" >
+    <summary>📚 Movimientos del día</summary>
+    <div class="compact-body">
+
   <div class="panel">
     <div class="table-wrap"><table id="movementsTable"></table></div>
   </div>
+
+
+    </div>
+  </details>
 
   <details class="advanced">
     <summary>🔥 Ver consumo automático / producción del día</summary>
@@ -957,6 +1122,90 @@ const NAMES = Object.fromEntries(ENTRY_FIELDS.map(x => [x[0], x[1]]));
 
 // El balde de 20 L se controla por días/cambio, no como consumo manual por cantidad.
 const MANUAL_USAGE_FIELDS = ENTRY_FIELDS.filter(([k]) => k !== "oilBucket20L");
+
+let QUICK_ENTRY_BUFFER = {};
+
+function buildInventoryProductDatalist(){
+  const dl=document.getElementById("inventoryProductsList");
+  if(!dl) return;
+  dl.innerHTML=ENTRY_FIELDS.map(([k,label,unit])=>
+    `<option value="${label.replace(/"/g,'&quot;')}">${unit}</option>`
+  ).join("");
+}
+
+function normalizeSearchText(v){
+  return String(v||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();
+}
+
+function findInventoryFieldByText(text){
+  const q=normalizeSearchText(text);
+  if(!q) return null;
+  return ENTRY_FIELDS.find(([k,label])=>normalizeSearchText(label)===q)
+      || ENTRY_FIELDS.find(([k,label])=>normalizeSearchText(label).includes(q));
+}
+
+function syncHiddenEntryInputs(){
+  ENTRY_FIELDS.forEach(([k])=>{
+    const el=document.getElementById("daily_"+k);
+    if(el) el.value=String(round2(n(QUICK_ENTRY_BUFFER[k])));
+  });
+}
+
+function renderQuickEntryRows(){
+  const body=document.getElementById("quickEntryRows");
+  if(!body) return;
+  const rows=ENTRY_FIELDS
+    .filter(([k])=>n(QUICK_ENTRY_BUFFER[k])>0)
+    .map(([k,label,unit])=>`
+      <tr>
+        <td><b>${label}</b></td>
+        <td class="num">${fmt(QUICK_ENTRY_BUFFER[k])}</td>
+        <td>${unit}</td>
+        <td><button class="red" type="button" style="padding:6px 9px" onclick="removeQuickEntry('${k}')">Quitar</button></td>
+      </tr>
+    `);
+  body.innerHTML=rows.length ? rows.join("") :
+    `<tr><td colspan="4" class="muted" style="text-align:center">Aún no agregaste ningún ingreso.</td></tr>`;
+  syncHiddenEntryInputs();
+}
+
+window.removeQuickEntry=function(k){
+  delete QUICK_ENTRY_BUFFER[k];
+  renderQuickEntryRows();
+};
+
+function addQuickEntry(){
+  const search=document.getElementById("quickEntrySearch");
+  const qtyEl=document.getElementById("quickEntryQty");
+  const st=document.getElementById("saveStatus");
+  const found=findInventoryFieldByText(search?.value);
+  const qty=n(qtyEl?.value);
+
+  if(!found){
+    st.textContent="⚠️ Escribe y selecciona un producto válido.";
+    return;
+  }
+  if(qty<=0){
+    st.textContent="⚠️ La cantidad debe ser mayor a 0.";
+    return;
+  }
+
+  const [k,label,unit]=found;
+  QUICK_ENTRY_BUFFER[k]=round2(n(QUICK_ENTRY_BUFFER[k])+qty);
+  renderQuickEntryRows();
+
+  search.value="";
+  qtyEl.value="1";
+  document.getElementById("quickEntryUnit").value="—";
+  st.textContent=`✅ Agregado: ${label} · ${fmt(qty)} ${unit}.`;
+  search.focus();
+}
+
+function updateQuickEntryUnit(){
+  const found=findInventoryFieldByText(document.getElementById("quickEntrySearch")?.value);
+  document.getElementById("quickEntryUnit").value=found ? found[2] : "—";
+}
+
 
 const PAPER_PRODUCT_CATALOG = [{"id": 20, "name": "4 Alitas (1 salsa)", "price": 16.0}, {"id": 1, "name": "5 Alitas (1 salsa)", "price": 18.0}, {"id": 2, "name": "6 Alitas (2 salsas mixtas)", "price": 21.0}, {"id": 21, "name": "8 Alitas (2 salsas mixtas)", "price": 29.0}, {"id": 3, "name": "10 Alitas (2 salsas mixtas)", "price": 33.0}, {"id": 4, "name": "15 Alitas (3 salsas mixtas)", "price": 46.0}, {"id": 5, "name": "30 Alitas (3 salsas mixtas)", "price": 96.0}, {"id": 6, "name": "Chaufi Alitas - Montoya", "price": 20.0}, {"id": 7, "name": "Salchi Alitas - Popeye", "price": 22.0}, {"id": 8, "name": "Salchi Mix - Medellín", "price": 16.0}, {"id": 9, "name": "El Golpe de la DEA", "price": 19.0}, {"id": 64, "name": "Alita extra (1 pieza)", "price": 3.0}, {"id": 10, "name": "Tequeños (6 und, jamón y queso)", "price": 13.0}, {"id": 11, "name": "Porción de Nuggets", "price": 11.0}, {"id": 12, "name": "Burger Clásica Ochoa", "price": 11.0}, {"id": 13, "name": "Burger Royal Gaviria", "price": 13.0}, {"id": 14, "name": "Burger Premium Ulloa", "price": 15.0}, {"id": 15, "name": "Burger Pablo Escobar", "price": 21.0}, {"id": 16, "name": "Burger Crispy Motoa", "price": 14.0}, {"id": 60, "name": "El Sicario", "price": 18.9}, {"id": 61, "name": "Plata o Plomo", "price": 22.9}, {"id": 62, "name": "El Capo", "price": 23.9}, {"id": 63, "name": "El Informante", "price": 17.9}, {"id": 65, "name": "Presa broaster extra (1 und)", "price": 6.0}, {"id": 23, "name": "Porción de chaufa", "price": 6.0}, {"id": 24, "name": "Porción de papas", "price": 6.0}, {"id": 25, "name": "Porción de ensalada", "price": 4.0}, {"id": 26, "name": "Porción de chorizo", "price": 5.0}, {"id": 27, "name": "Porción de hotdog", "price": 4.0}, {"id": 28, "name": "Huevo extra", "price": 3.0}, {"id": 39, "name": "Ají adicional", "price": 1.0}, {"id": 40, "name": "Mayonesa adicional", "price": 1.0}, {"id": 41, "name": "Ketchup adicional", "price": 1.0}, {"id": 29, "name": "Limonada Frozen 1 L", "price": 10.0}, {"id": 30, "name": "Maracuyá 1 L", "price": 10.0}, {"id": 31, "name": "Chicha Morada 1 L", "price": 10.0}, {"id": 32, "name": "Agua mineral 750 ml", "price": 3.0}, {"id": 45, "name": "Vaso de chicha", "price": 3.0}, {"id": 44, "name": "Vaso de maracuyá", "price": 3.0}, {"id": 42, "name": "Gaseosa vidrio mediana (Coca o Inka)", "price": 2.5}, {"id": 35, "name": "Gaseosa 600 ml (Coca o Inka)", "price": 4.5}, {"id": 37, "name": "Gaseosa 1 L (Inka o Coca)", "price": 9.0}, {"id": 38, "name": "Vaso de hielo", "price": 3.0}];
 const PAPER_PRODUCT_MAP = Object.fromEntries(PAPER_PRODUCT_CATALOG.map(x=>[String(x.id),x]));
@@ -1425,6 +1674,7 @@ async function loadInitialStock(){
     entries: normalizeEntries(src.entries),
     note: src.note || "",
     oilStartDate: src.oilStartDate || todayKey(),
+    oilMaxDays: Math.min(14, Math.max(12, Math.round(n(src.oilMaxDays) || 14))),
     riceKgPerPortion: n(src.riceKgPerPortion) || 0.125,
     baselineDate: src.baselineDate || "0000-00-00",
     baselineAt: src.baselineAt || null,
@@ -1439,6 +1689,7 @@ async function saveInitialStock(){
     entries: readInputs("initial"),
     note: document.getElementById("initialNote").value.trim(),
     oilStartDate: document.getElementById("oilStartDate").value || todayKey(),
+    oilMaxDays: Math.min(14, Math.max(12, Math.round(n(document.getElementById("oilMaxDays")?.value) || currentBase.oilMaxDays || 14))),
     riceKgPerPortion: getRiceKgPerPortion(),
     baselineDate: currentBase.baselineDate || document.getElementById("inventoryBaseDate")?.value || "0000-00-00",
     baselineAt: currentBase.baselineAt || null,
@@ -2062,66 +2313,59 @@ async function loadOrdersOfDay(dateKey, baselineAt=null){
 }
 
 function renderOilAlert(initial, purchases, used, dateKey, initialInfo){
-  const box = document.getElementById("oilAlertBox");
-  const startDate = initialInfo.oilStartDate || todayKey();
-  const days = daysBetween(startDate, dateKey);
-  const massBottles = round2(
-    n(initial.massOil3L) + n(purchases.massOil3L) - n(used.massOil3L)
-  );
+  const box=document.getElementById("oilAlertBox");
+  const startDate=initialInfo.oilStartDate || todayKey();
+  const maxDays=Math.min(14,Math.max(12,Math.round(n(initialInfo.oilMaxDays)||14)));
+  const days=Math.max(1,daysBetween(startDate,dateKey));
+  const warningFrom=Math.max(10,maxDays-2);
 
-  let lines = [];
-  if (days >= 10) {
-    lines.push(`🚨 BALDE 20 L: van ${days} días desde ${humanDate(startDate)}. Corresponde cambio de aceite.`);
-  } else if (days >= 8) {
-    lines.push(`⚠️ BALDE 20 L: van ${days} días desde ${humanDate(startDate)}. Faltan ${Math.max(0,10-days)} día(s) para el cambio.`);
-  } else {
-    lines.push(`🛢️ BALDE 20 L: día ${days || 1} de 10 desde ${humanDate(startDate)}.`);
+  let msg="";
+  if(days>=maxDays){
+    msg=`🚨 BALDE 20 L: día ${days} de ${maxDays}. Ya corresponde cambiar el aceite.`;
+  }else if(days>=warningFrom){
+    msg=`⚠️ BALDE 20 L: día ${days} de ${maxDays}. Faltan ${maxDays-days} día(s) para el límite.`;
+  }else{
+    msg=`🛢️ BALDE 20 L: día ${days} de ${maxDays}.`;
   }
+  box.innerHTML=`<div class="oil-alert">${msg}</div>`;
 
-  if (massBottles <= 0) {
-    lines.push(`🚨 Aceite MASS 3 L: sin botellas registradas en stock.`);
-  } else if (massBottles <= 1) {
-    lines.push(`⚠️ Aceite MASS 3 L: queda ${fmt(massBottles)} botella.`);
-  }
+  const value=document.getElementById("oilDaysValue");
+  const bar=document.getElementById("oilProgressBar");
+  const txt=document.getElementById("oilProgressText");
+  const edit=document.getElementById("oilUsedDaysEdit");
+  const maxSel=document.getElementById("oilMaxDays");
 
-  box.innerHTML = `<div class="oil-alert">${lines.join("<br>")}</div>`;
-
-  const value = document.getElementById("oilDaysValue");
-  const bar = document.getElementById("oilProgressBar");
-  const txt = document.getElementById("oilProgressText");
-  if (value) value.textContent = `${days || 1} / 10 días`;
-  if (bar) bar.style.width = Math.min(100, Math.max(10, ((days || 1) / 10) * 100)) + "%";
-  if (txt) {
-    txt.textContent = days >= 10
-      ? "🚨 Cambio de aceite requerido."
-      : `Faltan ${Math.max(0,10-(days || 1))} día(s) para el cambio.`;
+  if(value) value.textContent=`${days}/${maxDays} días`;
+  if(edit && document.activeElement!==edit) edit.value=String(days);
+  if(maxSel) maxSel.value=String(maxDays);
+  if(bar) bar.style.width=Math.min(100,(days/maxDays)*100)+"%";
+  if(txt){
+    txt.textContent=days>=maxDays
+      ? "🚨 Límite alcanzado."
+      : `Faltan ${maxDays-days} día(s) para el máximo configurado.`;
   }
 }
 
 function renderMetrics(initial, purchases, used, meta, initialInfo){
-  const available = addEntries(initial, purchases);
-  const final = subtractEntries(available, used);
-  lastFinalStock = final;
+  const available=addEntries(initial,purchases);
+  const final=subtractEntries(available,used);
+  lastFinalStock=final;
 
-  const dateKey = document.getElementById("dateKey").value || todayKey();
-  const oilDays = initialInfo.oilStartDate ? daysBetween(initialInfo.oilStartDate, dateKey) : 0;
-  const lowCount = ENTRY_FIELDS.filter(([k]) => n(final[k]) > 0 && n(final[k]) <= n(LOW_STOCK[k])).length;
-  const outCount = ENTRY_FIELDS.filter(([k]) => n(final[k]) <= 0).length;
+  const alertable=ENTRY_FIELDS.filter(([k])=>k!=="oilBucket20L");
+  const lowCount=alertable.filter(([k])=>n(final[k])>0 && n(final[k])<=n(LOW_STOCK[k])).length;
+  const outCount=alertable.filter(([k])=>n(final[k])<=0).length;
 
-  const cards = [
-    ["Papa restante", fmt(final.potatoBags) + " bolsas", n(final.potatoBags) <= 0 ? "warn" : (n(final.potatoBags)<=LOW_STOCK.potatoBags?"alert":"ok")],
-    ["Alitas restantes", fmt(final.wingsKg) + " kg", n(final.wingsKg) <= 0 ? "warn" : (n(final.wingsKg)<=LOW_STOCK.wingsKg?"alert":"ok")],
-    ["Carnes burger", fmt(final.burgerMeat) + " und", n(final.burgerMeat) <= 0 ? "warn" : (n(final.burgerMeat)<=LOW_STOCK.burgerMeat?"alert":"ok")],
-    ["Panes burger", fmt(final.burgerBuns) + " und", n(final.burgerBuns) <= 0 ? "warn" : (n(final.burgerBuns)<=LOW_STOCK.burgerBuns?"alert":"ok")],
-    ["Presas broaster", fmt(final.broasterPieces) + " presas", n(final.broasterPieces) <= 0 ? "warn" : (n(final.broasterPieces)<=LOW_STOCK.broasterPieces?"alert":"ok")],
-    ["Tapers", fmt(final.tapers) + " und", n(final.tapers) <= 0 ? "warn" : (n(final.tapers)<=LOW_STOCK.tapers?"alert":"ok")],
-    ["Stock bajo", lowCount + " producto(s)", lowCount ? "alert" : "ok"],
-    ["Agotados / negativos", outCount + " producto(s)", outCount ? "warn" : "ok"],
-    ["Balde aceite 20 L", oilDays ? `${oilDays}/10 días` : "-", oilDays >= 10 ? "warn" : (oilDays >= 8 ? "alert" : "ok")]
+  const cards=[
+    ["Papa",fmt(final.potatoBags)+" bolsas",n(final.potatoBags)<=0?"warn":(n(final.potatoBags)<=LOW_STOCK.potatoBags?"alert":"ok")],
+    ["Alitas",fmt(final.wingsKg)+" kg",n(final.wingsKg)<=0?"warn":(n(final.wingsKg)<=LOW_STOCK.wingsKg?"alert":"ok")],
+    ["Carne burger",fmt(final.burgerMeat)+" und",n(final.burgerMeat)<=0?"warn":(n(final.burgerMeat)<=LOW_STOCK.burgerMeat?"alert":"ok")],
+    ["Pan burger",fmt(final.burgerBuns)+" und",n(final.burgerBuns)<=0?"warn":(n(final.burgerBuns)<=LOW_STOCK.burgerBuns?"alert":"ok")],
+    ["🟡 Por comprar",lowCount+" producto(s)",lowCount?"alert":"ok"],
+    ["🔴 Agotados",outCount+" producto(s)",outCount?"warn":"ok"]
   ];
 
-  document.getElementById("mainMetrics").innerHTML = cards
-    .map(c => `<div class="metric ${c[2]}"><small>${c[0]}</small><b>${c[1]}</b></div>`)
+  document.getElementById("mainMetrics").innerHTML=cards
+    .map(c=>`<div class="metric ${c[2]}"><small>${c[0]}</small><b>${c[1]}</b></div>`)
     .join("");
 
   renderStockAlerts(final);
@@ -2135,25 +2379,41 @@ function stockState(key, rest){
 }
 
 function renderStockAlerts(final){
-  const alerts = ENTRY_FIELDS
-    .map(([k,label,unit]) => ({k,label,unit,rest:n(final[k]),state:stockState(k,n(final[k]))}))
-    .filter(x => x.state.cls !== "state-ok")
-    .sort((a,b)=>a.rest-b.rest);
+  const alerts=ENTRY_FIELDS
+    .filter(([k])=>k!=="oilBucket20L")
+    .map(([k,label,unit])=>({k,label,unit,rest:n(final[k]),state:stockState(k,n(final[k]))}))
+    .filter(x=>x.state.cls!=="state-ok")
+    .sort((a,b)=>{
+      const ao=a.rest<=0?0:1, bo=b.rest<=0?0:1;
+      return ao-bo || a.rest-b.rest;
+    });
 
   const box=document.getElementById("stockAlerts");
   if(!box) return;
 
   if(!alerts.length){
-    box.innerHTML=`<div class="stock-alert okay"><b>✅ Inventario sin alertas</b>Todos los productos están por encima de sus mínimos configurados.</div>`;
+    box.innerHTML=`<div class="compact-alert-summary"><span class="compact-count">✅ Sin alertas de stock</span></div>`;
     return;
   }
 
-  box.innerHTML=alerts.map(x=>`
-    <div class="stock-alert ${x.rest<=0?"out":"low"}">
-      <b>${x.label}</b>
-      ${x.state.label} · queda <strong>${fmt(x.rest)}</strong> ${x.unit}
+  const out=alerts.filter(x=>x.rest<=0).length;
+  const low=alerts.filter(x=>x.rest>0).length;
+
+  box.innerHTML=`
+    <div class="compact-alert-summary">
+      <span class="compact-count out">🔴 ${out} agotado(s)</span>
+      <span class="compact-count low">🟡 ${low} por comprar</span>
     </div>
-  `).join("");
+    <div class="compact-alert-list">
+      ${alerts.map(x=>`
+        <div class="compact-alert-row ${x.rest<=0?"out":"low"}">
+          <div class="name">${x.label}</div>
+          <div class="qty">${fmt(x.rest)} ${x.unit}</div>
+          <div class="state">${x.rest<=0?"AGOTADO":"POCO"}</div>
+        </div>
+      `).join("")}
+    </div>
+  `;
 }
 
 function renderStock(initial, purchases, used){
@@ -2355,6 +2615,7 @@ async function savePhysicalCount(){
     entries:physical,
     note,
     oilStartDate:currentInitial.oilStartDate || baselineDate,
+    oilMaxDays:currentInitial.oilMaxDays || 14,
     riceKgPerPortion:currentInitial.riceKgPerPortion || 0.125,
     baselineDate,
     baselineAt,
@@ -2436,17 +2697,70 @@ async function savePhysicalCount(){
   }
 }
 
+
+function shiftDateKey(key,deltaDays){
+  const d=dateFromKey(key);
+  d.setDate(d.getDate()+Number(deltaDays||0));
+  return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+}
+
+async function saveOilSettings(){
+  const st=document.getElementById("oilEditStatus");
+  const current=await loadInitialStock();
+  const dk=document.getElementById("dateKey").value || todayKey();
+  const usedDays=Math.min(14,Math.max(1,Math.round(n(document.getElementById("oilUsedDaysEdit").value)||1)));
+  const maxDays=Math.min(14,Math.max(12,Math.round(n(document.getElementById("oilMaxDays").value)||14)));
+
+  if(usedDays>maxDays){
+    st.textContent=`⚠️ Tienes ${usedDays} días usados y el máximo está en ${maxDays}. Puedes guardarlo, pero ya está pasado del límite.`;
+  }else{
+    st.textContent="Guardando ajuste del balde...";
+  }
+
+  const oilStartDate=shiftDateKey(dk,-(usedDays-1));
+  const payload={
+    __type:"inventory_initial_stock",
+    entries:current.entries,
+    note:current.note||"",
+    oilStartDate,
+    oilMaxDays:maxDays,
+    riceKgPerPortion:current.riceKgPerPortion||0.125,
+    baselineDate:current.baselineDate||"0000-00-00",
+    baselineAt:current.baselineAt||null,
+    updatedAt:new Date().toISOString()
+  };
+
+  saveLocal(LOCAL_INITIAL_KEY,payload);
+  try{
+    const {error}=await supabaseClient.from(ORDERS_TABLE).upsert({
+      order_id:INVENTORY_INITIAL_ID,
+      date_key:"0000-00-00",
+      boleta_number:"",
+      status:"DAY_SETUP",
+      updated_at:new Date().toISOString(),
+      data:payload
+    },{onConflict:"order_id"});
+    if(error) throw error;
+
+    st.textContent=`✅ Balde ajustado: ${usedDays} día(s) usados · máximo ${maxDays} días.`;
+    await reloadAll();
+  }catch(err){
+    st.textContent="❌ No se pudo guardar el ajuste: "+(err.message||String(err));
+  }
+}
+
 async function registerOilChange(){
   const current=await loadInitialStock();
   const dk=document.getElementById("dateKey").value || todayKey();
 
-  if(!confirm(`¿Registrar cambio del balde de aceite de 20 L con fecha ${humanDate(dk)}?\n\nEl contador volverá al día 1 de 10.`)) return;
+  if(!confirm(`¿Registrar CAMBIO del balde de aceite de 20 L hoy ${humanDate(dk)}?\n\nEl contador volverá al día 1.`)) return;
 
   const payload={
     __type:"inventory_initial_stock",
     entries:current.entries,
     note:current.note || "",
     oilStartDate:dk,
+    oilMaxDays:current.oilMaxDays || 14,
     riceKgPerPortion:current.riceKgPerPortion || 0.125,
     baselineDate:current.baselineDate || "0000-00-00",
     baselineAt:current.baselineAt || null,
@@ -2481,6 +2795,7 @@ async function reloadAll(){
   renderInputs("initialGrid", "initial", initial.entries);
   document.getElementById("initialNote").value = initial.note || "";
   document.getElementById("oilStartDate").value = initial.oilStartDate || todayKey();
+  document.getElementById("oilMaxDays").value = String(initial.oilMaxDays || 14);
   document.getElementById("riceKgPerPortion").value = initial.riceKgPerPortion || 0.125;
   document.getElementById("inventoryBaseDate").value =
     initial.baselineDate && initial.baselineDate !== "0000-00-00" ? initial.baselineDate : "";
@@ -2493,6 +2808,8 @@ async function reloadAll(){
 
   const daily = await loadDailyEntry(dateKey);
   renderInputs("entriesGrid", "daily", daily.entries);
+  QUICK_ENTRY_BUFFER={...normalizeEntries(daily.entries || {})};
+  renderQuickEntryRows();
   document.getElementById("entryNote").value = daily.note || "";
 
   let dailyEntries = [];
@@ -2581,6 +2898,13 @@ document.getElementById("btnLoad").addEventListener("click", reloadAll);
 document.getElementById("btnRefresh").addEventListener("click", reloadAll);
 document.getElementById("btnSaveInitial").addEventListener("click", saveInitialStock);
 document.getElementById("btnSaveDailyInline").addEventListener("click", saveDailyEntry);
+document.getElementById("btnAddQuickEntry").addEventListener("click", addQuickEntry);
+document.getElementById("quickEntrySearch").addEventListener("input", updateQuickEntryUnit);
+document.getElementById("quickEntrySearch").addEventListener("change", updateQuickEntryUnit);
+document.getElementById("quickEntryQty").addEventListener("keydown",(e)=>{
+  if(e.key==="Enter"){ e.preventDefault(); addQuickEntry(); }
+});
+
 
 document.getElementById("paperProduct").addEventListener("change",()=>{
   const sel=document.getElementById("paperProduct");
@@ -2621,6 +2945,7 @@ document.getElementById("btnCopyCurrentToPhysical").addEventListener("click", ()
   renderInputs("physicalGrid","physical",lastFinalStock);
   document.getElementById("physicalStatus").textContent="Stock estimado copiado. Corrige TODAS las cantidades con el conteo físico antes de guardar.";
 });
+document.getElementById("btnSaveOilSettings").addEventListener("click", saveOilSettings);
 document.getElementById("btnOilChange").addEventListener("click", registerOilChange);
 document.getElementById("btnGoExpenses").addEventListener("click", () => {
   window.location.href="gastos_compras.html";
@@ -2634,6 +2959,8 @@ document.getElementById("btnGoExpenses").addEventListener("click", () => {
 (async () => {
   renderInputs("initialGrid", "initial", emptyEntries());
   renderInputs("entriesGrid", "daily", emptyEntries());
+  buildInventoryProductDatalist();
+  QUICK_ENTRY_BUFFER={};
   renderManualUsageInputs(emptyEntries());
   renderInputs("physicalGrid", "physical", emptyEntries());
   clearPaperOrderForm();
