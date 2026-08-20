@@ -276,9 +276,161 @@
       line-height:1.45;
     }
 
+
+
+
+    .paper-order-box{
+      background:linear-gradient(180deg,rgba(34,197,94,.08),rgba(7,16,31,.97));
+      border:1px solid rgba(34,197,94,.38);
+      border-radius:18px;
+      padding:14px;
+    }
+    .paper-head{
+      display:grid;
+      grid-template-columns:1.1fr .75fr .75fr .75fr;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .paper-add-row{
+      display:grid;
+      grid-template-columns:minmax(240px,2.4fr) .65fr .8fr auto;
+      gap:8px;
+      align-items:end;
+      margin-top:12px;
+    }
+    .paper-cart{
+      margin-top:12px;
+      overflow:auto;
+      border:1px solid #334155;
+      border-radius:14px;
+    }
+    .paper-cart table{min-width:760px}
+    .paper-summary{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+      margin-top:12px;
+    }
+    .paper-total{
+      font-size:25px!important;
+      color:#86efac!important;
+    }
+    .paper-history{
+      margin-top:12px;
+      overflow:auto;
+      border:1px solid #334155;
+      border-radius:14px;
+    }
+    .paper-history table{min-width:820px}
+    .danger-note{
+      background:#3b1a06;
+      border:1px solid #c2410c;
+      color:#fed7aa;
+      border-radius:12px;
+      padding:10px;
+      font-size:12px;
+      line-height:1.45;
+    }
+    .recommended-note{
+      background:#052e16;
+      border:1px solid #16a34a;
+      color:#bbf7d0;
+      border-radius:12px;
+      padding:10px;
+      font-size:12px;
+      line-height:1.45;
+    }
+
+    .manual-usage-box{
+      background:linear-gradient(180deg,rgba(250,204,21,.08),rgba(7,16,31,.97));
+      border:1px solid rgba(250,204,21,.38);
+      border-radius:18px;
+      padding:14px;
+    }
+    .mode-note{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+    .mode-note .mini-pill{background:#0b1220}
+
+    details.advanced{
+      background:rgba(7,16,31,.96);
+      border:1px solid rgba(148,163,184,.24);
+      border-radius:16px;
+      margin-top:12px;
+      overflow:hidden;
+    }
+    details.advanced > summary{
+      cursor:pointer;
+      padding:13px 14px;
+      font-weight:900;
+      color:#fde68a;
+      background:#0b1220;
+      list-style:none;
+    }
+    details.advanced > summary::-webkit-details-marker{display:none}
+    details.advanced .inside{padding:14px}
+    .alert-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+    }
+    .stock-alert{
+      background:#020617;
+      border:1px solid #334155;
+      border-radius:14px;
+      padding:10px;
+      line-height:1.4;
+    }
+    .stock-alert.low{border-color:#f59e0b;background:#2b1b04}
+    .stock-alert.out{border-color:#ef4444;background:#2a0b0b}
+    .stock-alert.okay{border-color:#166534;background:#052e16}
+    .stock-alert b{display:block;margin-bottom:3px}
+    .physical-box{
+      background:linear-gradient(180deg,rgba(14,165,233,.08),rgba(7,16,31,.96));
+      border-color:rgba(56,189,248,.40);
+    }
+    .oil-card{
+      background:linear-gradient(180deg,rgba(251,146,60,.09),rgba(7,16,31,.96));
+      border:1px solid rgba(251,146,60,.38);
+      border-radius:18px;
+      padding:14px;
+    }
+    .oil-progress{
+      height:12px;
+      background:#111827;
+      border:1px solid #334155;
+      border-radius:999px;
+      overflow:hidden;
+      margin:10px 0 5px;
+    }
+    .oil-progress > div{
+      height:100%;
+      background:#fb923c;
+      width:0%;
+      transition:width .2s ease;
+    }
+    .state-pill{
+      display:inline-flex;
+      padding:4px 8px;
+      border-radius:999px;
+      font-size:10px;
+      font-weight:900;
+      border:1px solid #334155;
+      white-space:nowrap;
+    }
+    .state-ok{color:#86efac;border-color:#166534;background:#052e16}
+    .state-low{color:#fde68a;border-color:#a16207;background:#2b1b04}
+    .state-out{color:#fecaca;border-color:#991b1b;background:#2a0b0b}
+    .movement-type-in{color:#86efac;font-weight:900}
+    .movement-type-out{color:#fca5a5;font-weight:900}
+    .movement-type-count{color:#7dd3fc;font-weight:900}
+
     @media(max-width:850px){
       .topbar{grid-template-columns:1fr}
-      .grid,.grid2,.input-grid{grid-template-columns:1fr 1fr}
+      .grid,.grid2,.input-grid,.alert-grid,.paper-head,.paper-summary{grid-template-columns:1fr 1fr}
       .header{align-items:flex-start}
       .logo{width:58px;height:58px}
       h1{font-size:20px}
@@ -286,7 +438,7 @@
     }
 
     @media(max-width:520px){
-      .grid,.grid2,.input-grid{grid-template-columns:1fr}
+      .grid,.grid2,.input-grid,.alert-grid,.paper-head,.paper-summary,.paper-add-row{grid-template-columns:1fr}
       body{padding:10px}
       .panel{padding:11px}
     }
@@ -300,9 +452,9 @@
     <div>
       <h1>📦 Control de Inventario y Producción</h1>
       <div class="sub">
-        Stock inicial + compras acumuladas - consumo automático según pedidos entregados/válidos.
+        Stock real + ingresos · consumo por moza, comandas de papel o ajuste manual.
       </div>
-      <span class="badge">Inventario acumulado conectado a Supabase / orders_cloud</span>
+      <span class="badge">Inventario conectado · sistema + comandas de papel + consumo manual</span>
     </div>
   </div>
 
@@ -313,7 +465,7 @@
       <div class="small" id="activeDayText">Cargando caja activa...</div>
     </div>
     <button class="blue" id="btnLoad">🔄 Cargar inventario</button>
-    <button class="green" id="btnSaveDaily">💾 Guardar compras del día</button>
+    <button class="dark" id="btnGoExpenses" type="button">💸 Ir a compras rápidas</button>
   </div>
 
   <div class="grid" id="mainMetrics"></div>
@@ -321,110 +473,390 @@
   <div id="oilAlertBox"></div>
 
   <div class="section-title">
-    <span>📦 Stock inicial / Saldo inicial del negocio</span>
-    <span class="mini-pill">Base inicial para evitar negativos falsos</span>
+    <span>⚠️ Estado rápido del inventario</span>
+    <span class="mini-pill">Ver primero antes de comprar</span>
   </div>
-
   <div class="panel">
-    <div class="note" style="margin-bottom:12px">
-      Aquí coloca lo que tienes actualmente en el local antes de empezar a usar el inventario acumulado.
-      Esto evita que aparezcan negativos como <b>-315 bolsas</b>, porque el sistema ya tendrá una base inicial.
-    </div>
-
-    <div class="input-grid" id="initialGrid"></div>
-
-    <div class="grid2" style="margin-top:12px">
-      <div>
-        <label>Fecha de inicio del balde de aceite 20L</label>
-        <input type="date" id="oilStartDate">
-        <div class="small">El sistema avisa al día 8 y al día 10 desde esta fecha.</div>
-      </div>
-
-      <div>
-        <label>Kg de arroz que equivale a 1 porción de chaufa</label>
-        <input type="number" id="riceKgPerPortion" min="0" step="0.01" value="0.125">
-        <div class="small">Puedes cambiarlo. Se usa para descontar Arroz Kg en El Capo y porción de chaufa. Recomendado: 0.125 kg por porción.</div>
-      </div>
-    </div>
-
-    <label style="margin-top:12px">Nota de stock inicial / ajuste</label>
-    <textarea id="initialNote" placeholder="Ej: Conteo inicial realizado el lunes al abrir."></textarea>
-
-    <div class="actions" style="margin-top:12px">
-      <button class="green" id="btnSaveInitial">💾 Guardar stock inicial</button>
-      <button class="dark" id="btnCopyFinalToInitial">Usar stock actual como nuevo inicial</button>
-    </div>
-
-    <div class="status" id="initialStatus">Carga tu stock inicial y presiona guardar.</div>
+    <div id="stockAlerts" class="alert-grid"></div>
   </div>
+
+  <div class="section-title">📊 Stock actual estimado</div>
+  <div class="table-wrap"><table id="stockTable"></table></div>
 
   <div class="section-title">
-    <span>📥 Compras nuevas del día</span>
-    <span class="mini-pill">Se suma al acumulado</span>
+    <span>📥 Registrar ingreso de mercadería</span>
+    <span class="mini-pill">Se suma al stock</span>
   </div>
 
   <div class="panel">
     <div class="note" style="margin-bottom:12px">
-      Aquí solo van productos que compras o ingresas como stock.
-      Ya se quitó chicha 1L, bolsas delivery, vasos de chicha, vasos de maracuyá y vasos de hielo.
+      Coloca únicamente lo que realmente ingresó al local. El consumo por platos se descuenta automáticamente cuando la moza registra ventas en el sistema.
     </div>
 
     <div class="input-grid" id="entriesGrid"></div>
 
-    <label style="margin-top:12px">Nota de compra / observación</label>
-    <textarea id="entryNote" placeholder="Ej: Compré 100 bolsas papa, 50 carnes, 40 panes, 1 caja de ketchup..."></textarea>
+    <label style="margin-top:12px">Nota del ingreso / observación</label>
+    <textarea id="entryNote" placeholder="Ej: Ingresaron 100 bolsas de papa, 30 kg de alitas y 24 gaseosas."></textarea>
 
-    <div class="status" id="saveStatus">Ingresa tus compras del día y presiona guardar.</div>
+    <div class="actions" style="margin-top:12px">
+      <button class="green" id="btnSaveDailyInline">💾 Guardar ingresos</button>
+    </div>
+    <div class="status" id="saveStatus">Ingresa las cantidades recibidas y presiona guardar.</div>
   </div>
 
-  <div class="section-title">📊 Stock actual acumulado</div>
-  <div class="table-wrap"><table id="stockTable"></table></div>
 
-  <div class="section-title">🔥 Consumo por producción</div>
-  <div class="grid2">
-    <div class="panel">
-      <h3 style="margin-top:0;color:#facc15">🍟 Papa / 🍔 Burger / 🍗 Cocina</h3>
-      <div class="table-wrap"><table id="productionTable"></table></div>
+
+  <div class="section-title">
+    <span>🧾 Ingresar comanda de papel al sistema</span>
+    <span class="mini-pill">Opción recomendada si conservas la comanda</span>
+  </div>
+
+  <div class="paper-order-box">
+    <div class="recommended-note">
+      <b>✅ Mejor opción:</b> si tienes la comanda de papel, ingrésala aquí completa. Se guardará como un pedido real en
+      <b>orders_cloud</b>, aparecerá en ventas y el inventario descontará automáticamente los productos que tengan regla.
     </div>
 
-    <div class="panel">
-      <h3 style="margin-top:0;color:#facc15">🥤 Bebidas vendidas</h3>
-      <div class="table-wrap"><table id="drinksTable"></table></div>
+    <div class="danger-note" style="margin-top:10px">
+      <b>Importante:</b> para un mismo día elige una forma de inventario:
+      <b>comandas completas</b> o <b>consumo manual</b>. Si guardas una comanda, el sistema considera que ese día tendrá consumo por pedidos.
+    </div>
+
+    <div class="paper-head" style="margin-top:12px">
+      <div>
+        <label>N.º de comanda de papel (opcional)</label>
+        <input id="paperCommandNumber" type="text" placeholder="Ej: 025">
+      </div>
+      <div>
+        <label>Hora (opcional)</label>
+        <input id="paperCommandTime" type="time">
+      </div>
+      <div>
+        <label>Tipo</label>
+        <select id="paperOrderType" style="width:100%;padding:11px;border-radius:12px;border:1px solid #334155;background:#020617;color:#fff">
+          <option value="Consumo en local">Consumo en local</option>
+          <option value="Recojo en local">Recojo / para llevar</option>
+          <option value="Delivery">Delivery</option>
+        </select>
+      </div>
+      <div>
+        <label>Forma de pago</label>
+        <select id="paperPaymentMethod" style="width:100%;padding:11px;border-radius:12px;border:1px solid #334155;background:#020617;color:#fff">
+          <option value="efectivo">Efectivo</option>
+          <option value="yape">Yape</option>
+          <option value="mixto">Mixto</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div>
+        <label>Cliente (opcional)</label>
+        <input id="paperCustomer" type="text" placeholder="Nombre o dejar vacío">
+      </div>
+      <div>
+        <label>Observación (opcional)</label>
+        <input id="paperComment" type="text" placeholder="Ej: Comanda pasada del papel">
+      </div>
+    </div>
+
+    <div class="paper-add-row">
+      <div>
+        <label>Producto</label>
+        <select id="paperProduct" style="width:100%;padding:11px;border-radius:12px;border:1px solid #334155;background:#020617;color:#fff">
+          <option value="">Selecciona producto...</option>
+<option value="20" data-name="4 Alitas (1 salsa)" data-price="16.00">4 Alitas (1 salsa) — S/ 16.00</option>
+<option value="1" data-name="5 Alitas (1 salsa)" data-price="18.00">5 Alitas (1 salsa) — S/ 18.00</option>
+<option value="2" data-name="6 Alitas (2 salsas mixtas)" data-price="21.00">6 Alitas (2 salsas mixtas) — S/ 21.00</option>
+<option value="21" data-name="8 Alitas (2 salsas mixtas)" data-price="29.00">8 Alitas (2 salsas mixtas) — S/ 29.00</option>
+<option value="3" data-name="10 Alitas (2 salsas mixtas)" data-price="33.00">10 Alitas (2 salsas mixtas) — S/ 33.00</option>
+<option value="4" data-name="15 Alitas (3 salsas mixtas)" data-price="46.00">15 Alitas (3 salsas mixtas) — S/ 46.00</option>
+<option value="5" data-name="30 Alitas (3 salsas mixtas)" data-price="96.00">30 Alitas (3 salsas mixtas) — S/ 96.00</option>
+<option value="6" data-name="Chaufi Alitas - Montoya" data-price="20.00">Chaufi Alitas - Montoya — S/ 20.00</option>
+<option value="7" data-name="Salchi Alitas - Popeye" data-price="22.00">Salchi Alitas - Popeye — S/ 22.00</option>
+<option value="8" data-name="Salchi Mix - Medellín" data-price="16.00">Salchi Mix - Medellín — S/ 16.00</option>
+<option value="9" data-name="El Golpe de la DEA" data-price="19.00">El Golpe de la DEA — S/ 19.00</option>
+<option value="64" data-name="Alita extra (1 pieza)" data-price="3.00">Alita extra (1 pieza) — S/ 3.00</option>
+<option value="10" data-name="Tequeños (6 und, jamón y queso)" data-price="13.00">Tequeños (6 und, jamón y queso) — S/ 13.00</option>
+<option value="11" data-name="Porción de Nuggets" data-price="11.00">Porción de Nuggets — S/ 11.00</option>
+<option value="12" data-name="Burger Clásica Ochoa" data-price="11.00">Burger Clásica Ochoa — S/ 11.00</option>
+<option value="13" data-name="Burger Royal Gaviria" data-price="13.00">Burger Royal Gaviria — S/ 13.00</option>
+<option value="14" data-name="Burger Premium Ulloa" data-price="15.00">Burger Premium Ulloa — S/ 15.00</option>
+<option value="15" data-name="Burger Pablo Escobar" data-price="21.00">Burger Pablo Escobar — S/ 21.00</option>
+<option value="16" data-name="Burger Crispy Motoa" data-price="14.00">Burger Crispy Motoa — S/ 14.00</option>
+<option value="60" data-name="El Sicario" data-price="18.90">El Sicario — S/ 18.90</option>
+<option value="61" data-name="Plata o Plomo" data-price="22.90">Plata o Plomo — S/ 22.90</option>
+<option value="62" data-name="El Capo" data-price="23.90">El Capo — S/ 23.90</option>
+<option value="63" data-name="El Informante" data-price="17.90">El Informante — S/ 17.90</option>
+<option value="65" data-name="Presa broaster extra (1 und)" data-price="6.00">Presa broaster extra (1 und) — S/ 6.00</option>
+<option value="23" data-name="Porción de chaufa" data-price="6.00">Porción de chaufa — S/ 6.00</option>
+<option value="24" data-name="Porción de papas" data-price="6.00">Porción de papas — S/ 6.00</option>
+<option value="25" data-name="Porción de ensalada" data-price="4.00">Porción de ensalada — S/ 4.00</option>
+<option value="26" data-name="Porción de chorizo" data-price="5.00">Porción de chorizo — S/ 5.00</option>
+<option value="27" data-name="Porción de hotdog" data-price="4.00">Porción de hotdog — S/ 4.00</option>
+<option value="28" data-name="Huevo extra" data-price="3.00">Huevo extra — S/ 3.00</option>
+<option value="39" data-name="Ají adicional" data-price="1.00">Ají adicional — S/ 1.00</option>
+<option value="40" data-name="Mayonesa adicional" data-price="1.00">Mayonesa adicional — S/ 1.00</option>
+<option value="41" data-name="Ketchup adicional" data-price="1.00">Ketchup adicional — S/ 1.00</option>
+<option value="29" data-name="Limonada Frozen 1 L" data-price="10.00">Limonada Frozen 1 L — S/ 10.00</option>
+<option value="30" data-name="Maracuyá 1 L" data-price="10.00">Maracuyá 1 L — S/ 10.00</option>
+<option value="31" data-name="Chicha Morada 1 L" data-price="10.00">Chicha Morada 1 L — S/ 10.00</option>
+<option value="32" data-name="Agua mineral 750 ml" data-price="3.00">Agua mineral 750 ml — S/ 3.00</option>
+<option value="45" data-name="Vaso de chicha" data-price="3.00">Vaso de chicha — S/ 3.00</option>
+<option value="44" data-name="Vaso de maracuyá" data-price="3.00">Vaso de maracuyá — S/ 3.00</option>
+<option value="42" data-name="Gaseosa vidrio mediana (Coca o Inka)" data-price="2.50">Gaseosa vidrio mediana (Coca o Inka) — S/ 2.50</option>
+<option value="35" data-name="Gaseosa 600 ml (Coca o Inka)" data-price="4.50">Gaseosa 600 ml (Coca o Inka) — S/ 4.50</option>
+<option value="37" data-name="Gaseosa 1 L (Inka o Coca)" data-price="9.00">Gaseosa 1 L (Inka o Coca) — S/ 9.00</option>
+<option value="38" data-name="Vaso de hielo" data-price="3.00">Vaso de hielo — S/ 3.00</option>
+<option value="CUSTOM">➕ Otro producto / no aparece en la lista</option>
+        </select>
+      </div>
+      <div>
+        <label>Cantidad</label>
+        <input id="paperQty" type="number" min="1" step="1" value="1">
+      </div>
+      <div>
+        <label>Precio unitario</label>
+        <input id="paperUnitPrice" type="number" min="0" step="0.01" value="0.00">
+      </div>
+      <button id="btnPaperAddItem" class="green" type="button">➕ Agregar</button>
+    </div>
+
+    <div id="paperCustomBox" class="grid2" style="display:none;margin-top:10px">
+      <div>
+        <label>Nombre del producto no listado</label>
+        <input id="paperCustomName" type="text" placeholder="Ej: Promo especial">
+      </div>
+      <div class="note">
+        Los productos personalizados sí entran en la venta, pero <b>no descuentan inventario automáticamente</b>
+        porque no tienen una regla de consumo.
+      </div>
+    </div>
+
+    <div class="paper-cart">
+      <table>
+        <thead><tr><th>Producto</th><th>Cant.</th><th>P. unit.</th><th>Subtotal</th><th></th></tr></thead>
+        <tbody id="paperCartRows">
+          <tr><td colspan="5" class="muted">Todavía no agregaste productos.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="paper-summary">
+      <div class="input-card">
+        <label>Productos</label>
+        <input id="paperSubtotal" type="number" readonly value="0.00">
+        <span>Subtotal de la comanda</span>
+      </div>
+      <div class="input-card">
+        <label>Empaque / tapers S/</label>
+        <input id="paperTaperFee" type="number" min="0" step="0.01" value="0.00">
+        <span>Si en la comanda cobraron empaque</span>
+      </div>
+      <div class="input-card">
+        <label>Delivery S/</label>
+        <input id="paperDeliveryFee" type="number" min="0" step="0.01" value="0.00">
+        <span>0 si no hubo cobro</span>
+      </div>
+      <div class="input-card">
+        <label>TOTAL</label>
+        <input id="paperTotal" class="paper-total" type="number" readonly value="0.00">
+        <span>Subtotal + empaque + delivery</span>
+      </div>
+    </div>
+
+    <div id="paperMixedBox" class="grid2" style="display:none;margin-top:10px">
+      <div>
+        <label>Yape</label>
+        <input id="paperMixedYape" type="number" min="0" step="0.01" value="0.00">
+      </div>
+      <div>
+        <label>Efectivo</label>
+        <input id="paperMixedCash" type="number" min="0" step="0.01" value="0.00">
+      </div>
+    </div>
+
+    <div class="actions" style="margin-top:12px">
+      <button id="btnSavePaperOrder" class="green" type="button">✅ Guardar comanda en el sistema</button>
+      <button id="btnClearPaperCart" class="dark" type="button">🧹 Limpiar comanda</button>
+    </div>
+    <div class="status" id="paperOrderStatus">
+      La fecha usada será la que aparece arriba en “Fecha de inventario”.
+    </div>
+
+    <div style="margin-top:16px">
+      <h3 style="margin:0 0 8px;color:#facc15">📋 Comandas de papel ya cargadas en esta fecha</h3>
+      <div class="paper-history">
+        <table>
+          <thead><tr><th>Comanda</th><th>Hora</th><th>Pago</th><th>Productos</th><th>Total</th><th></th></tr></thead>
+          <tbody id="paperOrdersRows">
+            <tr><td colspan="6" class="muted">Sin comandas manuales registradas.</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
-  <div class="section-title">🧾 Pedidos leídos del día seleccionado</div>
+  <div class="section-title">
+    <span>📤 Consumo manual del día</span>
+    <span class="mini-pill">Solo cuando la venta fue en papel</span>
+  </div>
+  <div class="manual-usage-box">
+    <div class="mode-note">
+      <span class="mini-pill">💻 Moza usa sistema → NO llenes esto</span>
+      <span class="mini-pill">📝 Venta en papel → registra aquí el consumo</span>
+    </div>
+
+    <div class="note" style="margin-bottom:12px">
+      Esta sección sirve para descontar inventario cuando la venta del día no pasó por la carta de la moza.
+      Si el sistema detecta pedidos reales en esa fecha, bloqueará el consumo manual para evitar descontar dos veces.
+    </div>
+
+    <div class="input-grid" id="manualUsageGrid"></div>
+
+    <label style="margin-top:12px">Observación del consumo manual</label>
+    <textarea id="manualUsageNote" placeholder="Ej: Consumo calculado desde los apuntes de ventas en papel."></textarea>
+
+    <div class="actions" style="margin-top:12px">
+      <button class="green" id="btnSaveManualUsage">💾 Guardar / actualizar consumo manual</button>
+      <button class="red" id="btnDeleteManualUsage">🗑️ Eliminar consumo manual</button>
+    </div>
+
+    <div class="status" id="manualUsageStatus">
+      Selecciona la fecha del inventario. Si ese día se trabajó en papel, coloca lo consumido.
+    </div>
+  </div>
+
+  <div class="section-title">
+    <span>🧮 Conteo físico / Ajustar stock real</span>
+    <span class="mini-pill">Para corregir diferencias</span>
+  </div>
+  <div class="panel physical-box">
+    <div class="note" style="margin-bottom:12px">
+      Usa esta sección cuando cuentes físicamente el local y el stock no coincida con el sistema.
+      <b>Lo ideal es hacerlo antes de empezar las ventas del día.</b>
+      El conteo guardado se convierte en una nueva base y desde esa fecha el sistema vuelve a descontar los consumos.
+    </div>
+    <div class="input-grid" id="physicalGrid"></div>
+    <label style="margin-top:12px">Motivo / observación del conteo</label>
+    <textarea id="physicalNote" placeholder="Ej: Conteo físico realizado al abrir el local."></textarea>
+    <div class="actions" style="margin-top:12px">
+      <button class="blue" id="btnCopyCurrentToPhysical">📋 Copiar stock estimado</button>
+      <button class="green" id="btnSavePhysical">✅ Guardar conteo físico como nueva base</button>
+    </div>
+    <div class="status" id="physicalStatus">Primero carga el inventario. Luego corrige únicamente lo que hayas contado físicamente.</div>
+  </div>
+
+  <div class="section-title">🛢️ Control de aceite</div>
+  <div class="oil-card">
+    <div class="grid2">
+      <div>
+        <label>Fecha del último cambio del balde de 20 L</label>
+        <input type="date" id="oilStartDate">
+        <div class="small">El balde se controla por 10 días. Aviso preventivo desde el día 8.</div>
+      </div>
+      <div>
+        <label>Estado del balde</label>
+        <div class="metric" style="margin-top:0">
+          <small>Días de uso</small>
+          <b id="oilDaysValue">-</b>
+        </div>
+      </div>
+    </div>
+    <div class="oil-progress"><div id="oilProgressBar"></div></div>
+    <div class="small" id="oilProgressText">Sin fecha registrada.</div>
+    <div class="actions" style="margin-top:12px">
+      <button class="green" id="btnOilChange">♻️ Registrar cambio de aceite hoy</button>
+    </div>
+    <div class="note" style="margin-top:10px">
+      El otro aceite del inventario se registra como <b>Aceite MASS 3 L</b> por botella.
+    </div>
+  </div>
+
+  <div class="section-title">📚 Movimientos del día seleccionado</div>
   <div class="panel">
-    <div class="actions">
-      <button class="blue" id="btnRefresh">Actualizar pedidos</button>
-      <button class="red" id="btnClearLocal">Limpiar compras locales de este día</button>
-    </div>
-    <div class="status" id="ordersStatus">Sin cargar.</div>
-    <div class="table-wrap"><table id="ordersTable"></table></div>
+    <div class="table-wrap"><table id="movementsTable"></table></div>
   </div>
 
-  <div class="section-title">📚 Historial acumulado</div>
-  <div class="grid2">
-    <div class="panel">
-      <h3 style="margin-top:0;color:#facc15">📥 Compras acumuladas hasta la fecha</h3>
-      <div class="table-wrap"><table id="purchasesTable"></table></div>
+  <details class="advanced">
+    <summary>🔥 Ver consumo automático / producción del día</summary>
+    <div class="inside">
+      <div class="grid2">
+        <div class="panel">
+          <h3 style="margin-top:0;color:#facc15">🍟 Papa / 🍔 Burger / 🍗 Cocina</h3>
+          <div class="table-wrap"><table id="productionTable"></table></div>
+        </div>
+        <div class="panel">
+          <h3 style="margin-top:0;color:#facc15">🥤 Bebidas vendidas</h3>
+          <div class="table-wrap"><table id="drinksTable"></table></div>
+        </div>
+      </div>
     </div>
+  </details>
 
-    <div class="panel">
-      <h3 style="margin-top:0;color:#facc15">📉 Consumo acumulado hasta la fecha</h3>
-      <div class="table-wrap"><table id="usedTable"></table></div>
+  <details class="advanced">
+    <summary>🔧 Diagnóstico: pedidos leídos del día</summary>
+    <div class="inside">
+      <div class="actions">
+        <button class="blue" id="btnRefresh">Actualizar diagnóstico</button>
+      </div>
+      <div class="status" id="ordersStatus">Sin cargar.</div>
+      <div class="table-wrap"><table id="ordersTable"></table></div>
     </div>
-  </div>
+  </details>
+
+  <details class="advanced">
+    <summary>⚙️ Configuración avanzada / stock base</summary>
+    <div class="inside">
+      <div class="note" style="margin-bottom:12px">
+        Esta parte normalmente no se usa a diario. La fecha base indica desde cuándo se deben sumar compras y descontar ventas.
+      </div>
+
+      <div class="grid2">
+        <div>
+          <label>Fecha base del inventario</label>
+          <input type="date" id="inventoryBaseDate">
+        </div>
+        <div>
+          <label>Kg de arroz por porción de chaufa</label>
+          <input type="number" id="riceKgPerPortion" min="0" step="0.01" value="0.125">
+        </div>
+      </div>
+
+      <div class="input-grid" id="initialGrid" style="margin-top:12px"></div>
+
+      <label style="margin-top:12px">Nota de stock base</label>
+      <textarea id="initialNote" placeholder="Ej: Conteo inicial del negocio."></textarea>
+
+      <div class="actions" style="margin-top:12px">
+        <button class="green" id="btnSaveInitial">💾 Guardar configuración base</button>
+      </div>
+      <div class="status" id="initialStatus">Configuración avanzada.</div>
+
+      <div class="section-title" style="margin-top:18px">Historial técnico acumulado</div>
+      <div class="grid2">
+        <div class="panel">
+          <h3 style="margin-top:0;color:#facc15">📥 Ingresos acumulados desde la base</h3>
+          <div class="table-wrap"><table id="purchasesTable"></table></div>
+        </div>
+        <div class="panel">
+          <h3 style="margin-top:0;color:#facc15">📉 Consumo acumulado desde la base</h3>
+          <div class="table-wrap"><table id="usedTable"></table></div>
+        </div>
+      </div>
+    </div>
+  </details>
 
   <div class="section-title">⚙️ Reglas usadas</div>
   <div class="note">
-    <b>Equivalencias principales:</b><br>
-    4, 5 y 6 alitas = 1 bolsa de papa · 8 alitas = 2 · 10 alitas = 3 · 15 alitas = 4 · 30 alitas = 7.<br>
-    Todas las burgers descuentan 1 bolsa de papa + 1 pan. Pablo Escobar descuenta 2 carnes; las demás burgers 1 carne.<br>
-    Platos del Cartel descuentan papa y presas broaster: Sicario 2 presas, Plata o Plomo 3, El Capo 2, Presa extra 1.
-    El Informante descuenta papa, pero no presa broaster porque es pechuga plancha.<br><br>
-    <b>Mayonesa y ketchup:</b> cada producto de comida descuenta 1 sachet de mayonesa y 1 sachet de ketchup. No descuenta en bebidas, cremas extras ni vaso de hielo.<br>
-    <b>Aceite:</b> el balde de 20L se controla por días. Aviso al día 8 y cambio recomendado al día 10.
+    <b>Equivalencias automáticas que se conservan:</b><br>
+    4, 5 y 6 alitas = 1 bolsa de papa de 180 g · 8 alitas = 2 · 10 alitas = 3 · 15 alitas = 4 · 30 alitas = 7.<br>
+    Para alitas, el cálculo actual usa aproximadamente <b>16 piezas = 1 kg</b>.<br>
+    Las burgers descuentan papa + pan + carne; Pablo Escobar descuenta 2 carnes. También se controlan huevo, hot dog, chorizo y tocino cuando la receta los usa.<br>
+    Platos del Cartel descuentan papa y presas broaster según su regla; El Capo además descuenta arroz/chaufa.<br><br>
+    <b>Mayonesa y ketchup:</b> cada producto de comida descuenta 1 sachet de cada uno, excepto bebidas y extras excluidos.<br>
+    <b>Tres formas:</b> 1) moza usa sistema → automático; 2) conservas comandas de papel → ingrésalas como pedidos y el consumo vuelve a ser automático; 3) no tienes detalle de comandas → usa consumo manual. No mezcles comanda y consumo manual en una misma fecha.<br>
+    <b>Aceite:</b> balde de 20 L con cambio a los 10 días y aviso desde el día 8. Aceite adicional: MASS de 3 L por botella.
   </div>
 </div>
 
@@ -432,13 +864,14 @@
 
 <script>
 const SUPABASE_URL = "https://defdwzzewzfjuseozwkn.supabase.co";
-const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
+const SB_KEY = "sb_publishable_ybJZO45G37nMvSHwQYfIhA_qWi9UR0K";
 
 const ORDERS_TABLE = "orders_cloud";
 const CASH_STATE_TABLE = "cash_register_state";
 
 const INVENTORY_INITIAL_ID = "INVENTORY_INITIAL_STOCK";
 const INVENTORY_DAILY_PREFIX = "INVENTORY_ENTRY_";
+const INVENTORY_MANUAL_USAGE_PREFIX = "INVENTORY_MANUAL_USAGE_";
 
 const LOCAL_INITIAL_KEY = "pdm_inventory_initial_stock_v3";
 const LOCAL_DAILY_PREFIX = "pdm_inventory_daily_entry_v3_";
@@ -448,12 +881,16 @@ const supabaseClient = window.supabase
   : null;
 
 const ENTRY_FIELDS = [
-  ["potatoBags","🍟 Bolsas de papa 180g","unidades"],
+  ["potatoBags","🍟 Bolsas de papa 180g","bolsas"],
   ["burgerMeat","🥩 Carnes de burger","unidades"],
   ["burgerBuns","🍞 Pan de hamburguesa","unidades"],
   ["wingsKg","🍗 Kilos de alitas","kg"],
   ["broasterPieces","🍗 Presas broaster","presas"],
-  ["riceKg","🍚 Arroz Kg","kg"],
+  ["riceKg","🍚 Arroz","kg"],
+  ["eggs","🥚 Huevos","unidades"],
+  ["hotdog","🌭 Hot dog","unidades"],
+  ["chorizo","🌭 Chorizo","unidades"],
+  ["tocino","🥓 Tocino","porciones"],
   ["sodaOneL","🥤 Gaseosa 1L","unidades"],
   ["sodaGlass","🥤 Gaseosa vidrio mediana","unidades"],
   ["sodaHalfPlastic","🥤 Gaseosa 600ml plástico","unidades"],
@@ -462,11 +899,44 @@ const ENTRY_FIELDS = [
   ["tapers","🥡 Tapers","unidades"],
   ["mayoSachets","🧴 Mayonesa sachets","sachets"],
   ["ketchupSachets","🍅 Ketchup sachets","sachets"],
-  ["oilBucket20L","🛢️ Balde aceite 20L","baldes"],
-  ["oilLiters","🧴 Aceite B1 / litros sueltos","litros"]
+  ["oilBucket20L","🛢️ Balde aceite 20 L","baldes"],
+  ["massOil3L","🧴 Aceite MASS 3 L","botellas"]
 ];
 
 const NAMES = Object.fromEntries(ENTRY_FIELDS.map(x => [x[0], x[1]]));
+
+// El balde de 20 L se controla por días/cambio, no como consumo manual por cantidad.
+const MANUAL_USAGE_FIELDS = ENTRY_FIELDS.filter(([k]) => k !== "oilBucket20L");
+
+const PAPER_PRODUCT_CATALOG = [{"id": 20, "name": "4 Alitas (1 salsa)", "price": 16.0}, {"id": 1, "name": "5 Alitas (1 salsa)", "price": 18.0}, {"id": 2, "name": "6 Alitas (2 salsas mixtas)", "price": 21.0}, {"id": 21, "name": "8 Alitas (2 salsas mixtas)", "price": 29.0}, {"id": 3, "name": "10 Alitas (2 salsas mixtas)", "price": 33.0}, {"id": 4, "name": "15 Alitas (3 salsas mixtas)", "price": 46.0}, {"id": 5, "name": "30 Alitas (3 salsas mixtas)", "price": 96.0}, {"id": 6, "name": "Chaufi Alitas - Montoya", "price": 20.0}, {"id": 7, "name": "Salchi Alitas - Popeye", "price": 22.0}, {"id": 8, "name": "Salchi Mix - Medellín", "price": 16.0}, {"id": 9, "name": "El Golpe de la DEA", "price": 19.0}, {"id": 64, "name": "Alita extra (1 pieza)", "price": 3.0}, {"id": 10, "name": "Tequeños (6 und, jamón y queso)", "price": 13.0}, {"id": 11, "name": "Porción de Nuggets", "price": 11.0}, {"id": 12, "name": "Burger Clásica Ochoa", "price": 11.0}, {"id": 13, "name": "Burger Royal Gaviria", "price": 13.0}, {"id": 14, "name": "Burger Premium Ulloa", "price": 15.0}, {"id": 15, "name": "Burger Pablo Escobar", "price": 21.0}, {"id": 16, "name": "Burger Crispy Motoa", "price": 14.0}, {"id": 60, "name": "El Sicario", "price": 18.9}, {"id": 61, "name": "Plata o Plomo", "price": 22.9}, {"id": 62, "name": "El Capo", "price": 23.9}, {"id": 63, "name": "El Informante", "price": 17.9}, {"id": 65, "name": "Presa broaster extra (1 und)", "price": 6.0}, {"id": 23, "name": "Porción de chaufa", "price": 6.0}, {"id": 24, "name": "Porción de papas", "price": 6.0}, {"id": 25, "name": "Porción de ensalada", "price": 4.0}, {"id": 26, "name": "Porción de chorizo", "price": 5.0}, {"id": 27, "name": "Porción de hotdog", "price": 4.0}, {"id": 28, "name": "Huevo extra", "price": 3.0}, {"id": 39, "name": "Ají adicional", "price": 1.0}, {"id": 40, "name": "Mayonesa adicional", "price": 1.0}, {"id": 41, "name": "Ketchup adicional", "price": 1.0}, {"id": 29, "name": "Limonada Frozen 1 L", "price": 10.0}, {"id": 30, "name": "Maracuyá 1 L", "price": 10.0}, {"id": 31, "name": "Chicha Morada 1 L", "price": 10.0}, {"id": 32, "name": "Agua mineral 750 ml", "price": 3.0}, {"id": 45, "name": "Vaso de chicha", "price": 3.0}, {"id": 44, "name": "Vaso de maracuyá", "price": 3.0}, {"id": 42, "name": "Gaseosa vidrio mediana (Coca o Inka)", "price": 2.5}, {"id": 35, "name": "Gaseosa 600 ml (Coca o Inka)", "price": 4.5}, {"id": 37, "name": "Gaseosa 1 L (Inka o Coca)", "price": 9.0}, {"id": 38, "name": "Vaso de hielo", "price": 3.0}];
+const PAPER_PRODUCT_MAP = Object.fromEntries(PAPER_PRODUCT_CATALOG.map(x=>[String(x.id),x]));
+let paperCart = [];
+
+
+
+const LOW_STOCK = {
+  potatoBags:15,
+  burgerMeat:10,
+  burgerBuns:10,
+  wingsKg:5,
+  broasterPieces:10,
+  riceKg:3,
+  eggs:10,
+  hotdog:6,
+  chorizo:6,
+  tocino:6,
+  sodaOneL:4,
+  sodaGlass:6,
+  sodaHalfPlastic:6,
+  water:6,
+  maracuyaOneL:3,
+  tapers:20,
+  mayoSachets:20,
+  ketchupSachets:20,
+  oilBucket20L:1,
+  massOil3L:1
+};
+
 
 const FOOD_EXCLUDED_IDS = [
   29,30,31,32,35,37,38,42,44,45, // bebidas y vasos
@@ -637,6 +1107,32 @@ function readInputs(prefix){
   return e;
 }
 
+function renderManualUsageInputs(entries){
+  const grid=document.getElementById("manualUsageGrid");
+  if(!grid) return;
+  grid.innerHTML="";
+  MANUAL_USAGE_FIELDS.forEach(([key,label,unit])=>{
+    const div=document.createElement("div");
+    div.className="input-card";
+    div.innerHTML=`
+      <label>${label}</label>
+      <input type="number" min="0" step="0.01" id="manual_${key}" value="${n((entries||{})[key]) || 0}">
+      <span>${unit} consumidos</span>
+    `;
+    grid.appendChild(div);
+  });
+}
+function readManualUsageInputs(){
+  const e=emptyEntries();
+  MANUAL_USAGE_FIELDS.forEach(([k])=>{
+    e[k]=n(document.getElementById("manual_"+k)?.value);
+  });
+  return e;
+}
+function hasPositiveEntries(entries, fields=ENTRY_FIELDS){
+  return fields.some(([k])=>n((entries||{})[k])>0);
+}
+
 function localDailyKey(dateKey){
   return LOCAL_DAILY_PREFIX + dateKey;
 }
@@ -665,6 +1161,7 @@ function getMap(item){
 }
 
 function isFoodItem(item){
+  if (item?.customPaperItem) return false;
   const id = Number(item.id);
   if (FOOD_EXCLUDED_IDS.includes(id)) return false;
   return true;
@@ -678,6 +1175,7 @@ function calculateTapers(order){
   let extraWings = 0;
 
   (order.items || []).forEach(e => {
+    if (e?.customPaperItem) return;
     const id = Number(e.id);
     const q = n(e.qty);
 
@@ -810,6 +1308,7 @@ async function loadInitialStock(){
     note: src.note || "",
     oilStartDate: src.oilStartDate || todayKey(),
     riceKgPerPortion: n(src.riceKgPerPortion) || 0.125,
+    baselineDate: src.baselineDate || "0000-00-00",
     updatedAt: src.updatedAt || null
   };
 }
@@ -821,6 +1320,7 @@ async function saveInitialStock(){
     note: document.getElementById("initialNote").value.trim(),
     oilStartDate: document.getElementById("oilStartDate").value || todayKey(),
     riceKgPerPortion: getRiceKgPerPortion(),
+    baselineDate: document.getElementById("inventoryBaseDate")?.value || "0000-00-00",
     updatedAt: new Date().toISOString()
   };
 
@@ -849,7 +1349,7 @@ async function saveInitialStock(){
 
     if (error) throw error;
 
-    st.textContent = "✅ Stock inicial guardado en Supabase y local.";
+    st.textContent = "✅ Configuración base guardada en Supabase y local.";
   } catch(err) {
     st.textContent = "⚠️ Guardado local, pero no confirmó nube: " + (err.message || String(err));
   }
@@ -937,7 +1437,422 @@ async function saveDailyEntry(){
   await reloadAll();
 }
 
-async function loadDailyEntriesUpTo(dateKey){
+
+
+function escHtml(v){
+  return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function paperMoney(v){ return "S/ "+n(v).toFixed(2); }
+function normalizePaperName(name){
+  return String(name||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();
+}
+function selectedPaperProduct(){
+  const sel=document.getElementById("paperProduct");
+  const v=String(sel?.value||"");
+  if(v==="CUSTOM"){
+    return {id:null,name:(document.getElementById("paperCustomName")?.value||"").trim(),price:n(document.getElementById("paperUnitPrice")?.value),custom:true};
+  }
+  const p=PAPER_PRODUCT_MAP[v];
+  return p ? {...p,custom:false} : null;
+}
+function calcPaperTotals(){
+  const subtotal=round2(paperCart.reduce((s,x)=>s+n(x.unitPrice)*n(x.qty),0));
+  const taper=round2(n(document.getElementById("paperTaperFee")?.value));
+  const delivery=round2(n(document.getElementById("paperDeliveryFee")?.value));
+  const total=round2(subtotal+taper+delivery);
+  document.getElementById("paperSubtotal").value=subtotal.toFixed(2);
+  document.getElementById("paperTotal").value=total.toFixed(2);
+  return {subtotal,taper,delivery,total};
+}
+function renderPaperCart(){
+  const body=document.getElementById("paperCartRows");
+  if(!body) return;
+  if(!paperCart.length){
+    body.innerHTML='<tr><td colspan="5" class="muted">Todavía no agregaste productos.</td></tr>';
+    calcPaperTotals();
+    return;
+  }
+  body.innerHTML=paperCart.map((x,i)=>`
+    <tr>
+      <td>${escHtml(x.name)}${x.custom?' <span class="state-pill state-low">SIN REGLA INVENTARIO</span>':''}</td>
+      <td class="num">
+        <input type="number" min="1" step="1" value="${x.qty}" style="width:74px"
+          onchange="paperCartQty(${i},this.value)">
+      </td>
+      <td class="num">
+        <input type="number" min="0" step="0.01" value="${n(x.unitPrice).toFixed(2)}" style="width:92px"
+          onchange="paperCartPrice(${i},this.value)">
+      </td>
+      <td class="num"><b>${paperMoney(n(x.qty)*n(x.unitPrice))}</b></td>
+      <td><button class="red" type="button" style="padding:6px 9px" onclick="paperCartRemove(${i})">Quitar</button></td>
+    </tr>
+  `).join("");
+  calcPaperTotals();
+}
+window.paperCartQty=function(i,v){
+  if(!paperCart[i]) return;
+  paperCart[i].qty=Math.max(1,Math.floor(n(v)||1));
+  renderPaperCart();
+};
+window.paperCartPrice=function(i,v){
+  if(!paperCart[i]) return;
+  paperCart[i].unitPrice=Math.max(0,round2(n(v)));
+  renderPaperCart();
+};
+window.paperCartRemove=function(i){
+  paperCart.splice(i,1);
+  renderPaperCart();
+};
+
+function clearPaperOrderForm(){
+  paperCart=[];
+  renderPaperCart();
+  const ids=["paperCommandNumber","paperCustomer","paperComment","paperCustomName"];
+  ids.forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});
+  document.getElementById("paperProduct").value="";
+  document.getElementById("paperQty").value="1";
+  document.getElementById("paperUnitPrice").value="0.00";
+  document.getElementById("paperTaperFee").value="0.00";
+  document.getElementById("paperDeliveryFee").value="0.00";
+  document.getElementById("paperMixedYape").value="0.00";
+  document.getElementById("paperMixedCash").value="0.00";
+  document.getElementById("paperCustomBox").style.display="none";
+  const now=new Date();
+  document.getElementById("paperCommandTime").value=pad2(now.getHours())+":"+pad2(now.getMinutes());
+  document.getElementById("paperPaymentMethod").value="efectivo";
+  document.getElementById("paperMixedBox").style.display="none";
+}
+
+function addPaperItem(){
+  const p=selectedPaperProduct();
+  const st=document.getElementById("paperOrderStatus");
+  if(!p || !p.name){
+    st.textContent="⚠️ Selecciona un producto. Si elegiste 'Otro', escribe su nombre.";
+    return;
+  }
+  const qty=Math.max(1,Math.floor(n(document.getElementById("paperQty").value)||1));
+  const unitPrice=Math.max(0,round2(n(document.getElementById("paperUnitPrice").value)));
+  const key=p.custom ? "CUSTOM:"+p.name.toLowerCase() : String(p.id);
+  const found=paperCart.find(x=>x.key===key && n(x.unitPrice)===unitPrice);
+  if(found) found.qty+=qty;
+  else paperCart.push({key,id:p.id,name:p.name,qty,unitPrice,custom:!!p.custom});
+  renderPaperCart();
+  st.textContent="✅ Producto agregado a la comanda.";
+}
+
+function paperPaymentLabel(o){
+  const m=String(o?.paymentMethod||"efectivo").toLowerCase();
+  if(m==="mixto") return `Mixto: Yape ${paperMoney(o.mixedYape)} + Efec. ${paperMoney(o.mixedCash)}`;
+  return m==="yape" ? "Yape" : "Efectivo";
+}
+function paperDateTime(dateKey,timeValue){
+  const [y,m,d]=String(dateKey).split("-").map(Number);
+  const [hh,mm]=String(timeValue||"12:00").split(":").map(Number);
+  const dt=new Date(y,m-1,d,Number.isFinite(hh)?hh:12,Number.isFinite(mm)?mm:0,0,0);
+  return {
+    iso:dt.toISOString(),
+    text:`${pad2(d)}/${pad2(m)}/${y} ${pad2(Number.isFinite(hh)?hh:12)}:${pad2(Number.isFinite(mm)?mm:0)}`
+  };
+}
+function makePaperOrderNumber(dateKey,provided){
+  const p=String(provided||"").trim();
+  if(p) return "PAPEL-"+p;
+  const compact=String(dateKey||"").replaceAll("-","");
+  return "PAPEL-"+compact+"-"+String(Date.now()).slice(-5);
+}
+
+async function loadPaperOrdersOfDay(dateKey){
+  if(!supabaseClient) return [];
+  const {data,error}=await supabaseClient
+    .from(ORDERS_TABLE)
+    .select("*")
+    .eq("date_key",dateKey)
+    .order("updated_at",{ascending:true})
+    .limit(1000);
+  if(error) throw error;
+  return (data||[]).filter(row=>{
+    const o=row.data||{};
+    return String(o.source||"").toUpperCase()==="COMANDA_PAPEL";
+  });
+}
+async function renderPaperOrdersHistory(dateKey){
+  const body=document.getElementById("paperOrdersRows");
+  if(!body) return;
+  try{
+    const rows=await loadPaperOrdersOfDay(dateKey);
+    if(!rows.length){
+      body.innerHTML='<tr><td colspan="6" class="muted">Sin comandas manuales registradas.</td></tr>';
+      return;
+    }
+    body.innerHTML=rows.map(row=>{
+      const o=row.data||{};
+      const items=(o.items||[]).map(x=>`${n(x.qty)}× ${escHtml(x.name)}`).join("<br>");
+      return `<tr>
+        <td><b>${escHtml(o.dailyOrderNumber||row.order_id)}</b></td>
+        <td>${escHtml(o.dateTime||"")}</td>
+        <td>${escHtml(paperPaymentLabel(o))}</td>
+        <td>${items||"—"}</td>
+        <td class="num"><b>${paperMoney(o.total)}</b></td>
+        <td><button class="red" type="button" style="padding:6px 9px" onclick="deletePaperOrder('${escHtml(row.order_id)}')">🗑️</button></td>
+      </tr>`;
+    }).join("");
+  }catch(err){
+    body.innerHTML=`<tr><td colspan="6" class="muted">No se pudo cargar historial: ${escHtml(err.message||String(err))}</td></tr>`;
+  }
+}
+window.deletePaperOrder=async function(orderId){
+  if(!confirm("¿Eliminar esta comanda de papel? Esto quitará también su venta y su consumo automático de inventario.")) return;
+  try{
+    const {error}=await supabaseClient.from(ORDERS_TABLE).delete().eq("order_id",orderId);
+    if(error) throw error;
+    document.getElementById("paperOrderStatus").textContent="✅ Comanda eliminada. Ventas e inventario fueron recalculados.";
+    await reloadAll();
+  }catch(err){
+    document.getElementById("paperOrderStatus").textContent="❌ No se pudo eliminar: "+(err.message||String(err));
+  }
+};
+
+async function savePaperOrder(){
+  const st=document.getElementById("paperOrderStatus");
+  const dateKey=document.getElementById("dateKey").value || todayKey();
+  if(!paperCart.length){
+    st.textContent="⚠️ Agrega al menos un producto a la comanda.";
+    return;
+  }
+
+  const totals=calcPaperTotals();
+  if(totals.total<=0){
+    st.textContent="⚠️ El total de la comanda debe ser mayor a S/ 0.";
+    return;
+  }
+
+  const method=String(document.getElementById("paperPaymentMethod").value||"efectivo").toLowerCase();
+  let mixedYape=0,mixedCash=0;
+  if(method==="mixto"){
+    mixedYape=round2(n(document.getElementById("paperMixedYape").value));
+    mixedCash=round2(n(document.getElementById("paperMixedCash").value));
+    if(Math.abs(round2(mixedYape+mixedCash)-totals.total)>0.009){
+      st.textContent=`⚠️ Pago mixto no cuadra. Total ${paperMoney(totals.total)} ≠ Yape + efectivo ${paperMoney(mixedYape+mixedCash)}.`;
+      return;
+    }
+  }
+
+  try{
+    // If manual inventory consumption exists for this date, command mode supersedes it.
+    const {data:manualRow,error:manualErr}=await supabaseClient
+      .from(ORDERS_TABLE)
+      .select("*")
+      .eq("order_id",INVENTORY_MANUAL_USAGE_PREFIX+dateKey)
+      .maybeSingle();
+    if(manualErr) throw manualErr;
+
+    if(manualRow && hasPositiveEntries(manualRow?.data?.entries||{},MANUAL_USAGE_FIELDS)){
+      const ok=confirm(
+        "⚠️ Este día ya tiene CONSUMO MANUAL de inventario.\n\n"+
+        "Si vas a ingresar las comandas completas, ese consumo manual debe eliminarse para no mezclar métodos.\n\n"+
+        "¿Eliminar el consumo manual y continuar con la comanda?"
+      );
+      if(!ok) return;
+      const del=await supabaseClient.from(ORDERS_TABLE).delete().eq("order_id",INVENTORY_MANUAL_USAGE_PREFIX+dateKey);
+      if(del.error) throw del.error;
+    }
+
+    const cmdNumber=makePaperOrderNumber(dateKey,document.getElementById("paperCommandNumber").value);
+    const dt=paperDateTime(dateKey,document.getElementById("paperCommandTime").value);
+    const id="PAPER_COMMAND_"+dateKey+"_"+Date.now()+"_"+Math.floor(Math.random()*9999);
+    const now=new Date().toISOString();
+    const orderType=document.getElementById("paperOrderType").value || "Consumo en local";
+    const customer=(document.getElementById("paperCustomer").value||"").trim();
+    const comment=(document.getElementById("paperComment").value||"").trim();
+
+    const order={
+      id,
+      createdAt:dt.iso,
+      updatedAt:now,
+      capturedAt:now,
+      dateKey,
+      realDateKey:dateKey,
+      operationalDateKey:dateKey,
+      dateTime:dt.text,
+      dailyOrderNumber:cmdNumber,
+      boletaNumber:cmdNumber.replace("PAPEL-",""),
+      source:"COMANDA_PAPEL",
+      status:"ENTREGADO",
+      customerName:customer,
+      customerDni:"",
+      comment:comment || "Comanda de papel digitada posteriormente",
+      paymentMethod:method,
+      mixedYape:method==="mixto"?mixedYape:0,
+      mixedCash:method==="mixto"?mixedCash:0,
+      deliveryMode:orderType,
+      subtotal:totals.subtotal,
+      tapersFee:totals.taper,
+      deliveryFee:totals.delivery,
+      rewardDiscount:0,
+      rewardFreeWings:0,
+      rewardLabel:"",
+      rewardKey:"",
+      total:totals.total,
+      paymentHistory:[],
+      ruleta:null,
+      paperEntry:true,
+      items:paperCart.map(x=>({
+        id:x.custom ? ("CUSTOM_"+Math.floor(Math.random()*999999)) : x.id,
+        name:x.name,
+        nameNorm:normalizePaperName(x.name),
+        qty:n(x.qty),
+        unitPrice:round2(n(x.unitPrice)),
+        lineTotal:round2(n(x.unitPrice)*n(x.qty)),
+        sauces:[],
+        noSauce:false,
+        sauceApart:false,
+        brand:null,
+        customPaperItem:!!x.custom
+      }))
+    };
+
+    const {error}=await supabaseClient.from(ORDERS_TABLE).upsert({
+      order_id:id,
+      date_key:dateKey,
+      boleta_number:String(order.boletaNumber||""),
+      status:"ENTREGADO",
+      updated_at:now,
+      data:order
+    },{onConflict:"order_id"});
+    if(error) throw error;
+
+    st.textContent=`✅ Comanda guardada: ${cmdNumber} · ${paperMoney(totals.total)}. Ya cuenta como venta y como consumo automático.`;
+    clearPaperOrderForm();
+    await reloadAll();
+  }catch(err){
+    console.error(err);
+    st.textContent="❌ No se pudo guardar la comanda: "+(err.message||String(err));
+  }
+}
+
+
+async function loadManualUsage(dateKey){
+  let cloud=null;
+  if(supabaseClient){
+    try{
+      const {data,error}=await supabaseClient
+        .from(ORDERS_TABLE)
+        .select("*")
+        .eq("order_id", INVENTORY_MANUAL_USAGE_PREFIX + dateKey)
+        .maybeSingle();
+      if(error) throw error;
+      cloud=data?.data || null;
+    }catch(err){
+      console.warn("No pude leer consumo manual:",err);
+    }
+  }
+  const src=cloud || {dateKey,entries:emptyEntries(),note:""};
+  return {
+    dateKey,
+    entries:normalizeEntries(src.entries),
+    note:src.note || "",
+    updatedAt:src.updatedAt || null
+  };
+}
+
+async function loadManualUsageUpTo(dateKey, baselineDate="0000-00-00"){
+  if(!supabaseClient) return [];
+  try{
+    const {data,error}=await supabaseClient
+      .from(ORDERS_TABLE)
+      .select("*")
+      .gte("date_key",baselineDate)
+      .lte("date_key",dateKey)
+      .like("order_id", INVENTORY_MANUAL_USAGE_PREFIX + "%")
+      .order("date_key",{ascending:true})
+      .limit(5000);
+    if(error) throw error;
+
+    return (data||[]).map(row=>{
+      const p=row.data || {};
+      return {
+        dateKey:p.dateKey || row.date_key,
+        entries:normalizeEntries(p.entries),
+        note:p.note || "",
+        updatedAt:p.updatedAt || row.updated_at || null
+      };
+    });
+  }catch(err){
+    console.warn("No pude leer consumo manual acumulado:",err);
+    return [];
+  }
+}
+
+async function saveManualUsage(){
+  const dateKey=document.getElementById("dateKey").value || todayKey();
+  const st=document.getElementById("manualUsageStatus");
+  const entries=readManualUsageInputs();
+  const note=document.getElementById("manualUsageNote").value.trim();
+
+  if(!hasPositiveEntries(entries,MANUAL_USAGE_FIELDS)){
+    st.textContent="⚠️ Ingresa al menos una cantidad consumida.";
+    return;
+  }
+
+  st.textContent="Verificando que no existan pedidos del sistema...";
+  try{
+    const ordersDay=await loadOrdersOfDay(dateKey);
+    if(ordersDay.length){
+      st.textContent=`🔒 NO guardado. Ese día ya tiene ${ordersDay.length} pedido(s) reales en el sistema. El consumo debe salir automáticamente para evitar duplicados.`;
+      return;
+    }
+
+    const payload={
+      __type:"inventory_manual_usage",
+      dateKey,
+      entries,
+      note:note || "Consumo manual por ventas registradas en papel",
+      updatedAt:new Date().toISOString()
+    };
+
+    const {error}=await supabaseClient
+      .from(ORDERS_TABLE)
+      .upsert({
+        order_id:INVENTORY_MANUAL_USAGE_PREFIX + dateKey,
+        date_key:dateKey,
+        boleta_number:"",
+        status:"DAY_SETUP",
+        updated_at:new Date().toISOString(),
+        data:payload
+      },{onConflict:"order_id"});
+    if(error) throw error;
+
+    st.textContent="✅ Consumo manual guardado. Ya fue descontado del stock.";
+    await reloadAll();
+  }catch(err){
+    st.textContent="❌ No se pudo guardar el consumo manual: "+(err.message || String(err));
+  }
+}
+
+async function deleteManualUsage(){
+  const dateKey=document.getElementById("dateKey").value || todayKey();
+  const st=document.getElementById("manualUsageStatus");
+
+  if(!confirm(`¿Eliminar el consumo manual del ${humanDate(dateKey)}?`)) return;
+
+  try{
+    const {error}=await supabaseClient
+      .from(ORDERS_TABLE)
+      .delete()
+      .eq("order_id",INVENTORY_MANUAL_USAGE_PREFIX + dateKey);
+    if(error) throw error;
+
+    renderManualUsageInputs(emptyEntries());
+    document.getElementById("manualUsageNote").value="";
+    st.textContent="✅ Consumo manual eliminado. El stock fue recalculado.";
+    await reloadAll();
+  }catch(err){
+    st.textContent="❌ No se pudo eliminar: "+(err.message || String(err));
+  }
+}
+
+
+async function loadDailyEntriesUpTo(dateKey, baselineDate="0000-00-00"){
   const entries = [];
   const localToday = loadLocal(localDailyKey(dateKey));
   const seen = new Set();
@@ -947,6 +1862,7 @@ async function loadDailyEntriesUpTo(dateKey){
       const {data,error} = await supabaseClient
         .from(ORDERS_TABLE)
         .select("*")
+        .gte("date_key", baselineDate)
         .lte("date_key", dateKey)
         .or(`order_id.like.${INVENTORY_DAILY_PREFIX}%,order_id.like.INVENTORY_%`)
         .order("date_key", {ascending:true})
@@ -987,12 +1903,13 @@ async function loadDailyEntriesUpTo(dateKey){
   return entries;
 }
 
-async function loadOrdersUpTo(dateKey){
+async function loadOrdersUpTo(dateKey, baselineDate="0000-00-00"){
   if (!supabaseClient) return [];
 
   const {data,error} = await supabaseClient
     .from(ORDERS_TABLE)
     .select("*")
+    .gte("date_key", baselineDate)
     .lte("date_key", dateKey)
     .order("date_key", {ascending:true})
     .limit(5000);
@@ -1000,7 +1917,7 @@ async function loadOrdersUpTo(dateKey){
   if (error) throw error;
 
   return (data || [])
-    .map(r => r.data)
+    .map(r => ({...(r.data || {}), __rowDateKey:r.date_key}))
     .filter(isRealOrder);
 }
 
@@ -1017,40 +1934,45 @@ async function loadOrdersOfDay(dateKey){
   if (error) throw error;
 
   return (data || [])
-    .map(r => r.data)
+    .map(r => ({...(r.data || {}), __rowDateKey:r.date_key}))
     .filter(isRealOrder);
 }
 
 function renderOilAlert(initial, purchases, used, dateKey, initialInfo){
   const box = document.getElementById("oilAlertBox");
-  const totalBuckets = n(initial.oilBucket20L) + n(purchases.oilBucket20L);
-  const totalLiters = n(initial.oilLiters) + n(purchases.oilLiters);
-  const remainingLiters = totalLiters - n(used.oilLiters);
-
   const startDate = initialInfo.oilStartDate || todayKey();
   const days = daysBetween(startDate, dateKey);
+  const massBottles = round2(
+    n(initial.massOil3L) + n(purchases.massOil3L) - n(used.massOil3L)
+  );
 
   let lines = [];
-
-  if (totalBuckets > 0) {
-    if (days >= 10) {
-      lines.push(`🚨 Aceite del balde: ya pasaron ${days} días desde ${humanDate(startDate)}. Recomendado cambiar/revisar el balde de aceite.`);
-    } else if (days >= 8) {
-      lines.push(`⚠️ Aceite del balde: van ${days} días desde ${humanDate(startDate)}. Ya está cerca del límite de 10 días.`);
-    } else {
-      lines.push(`🛢️ Aceite del balde: van ${days} día(s) desde ${humanDate(startDate)}. Límite recomendado: 10 días.`);
-    }
+  if (days >= 10) {
+    lines.push(`🚨 BALDE 20 L: van ${days} días desde ${humanDate(startDate)}. Corresponde cambio de aceite.`);
+  } else if (days >= 8) {
+    lines.push(`⚠️ BALDE 20 L: van ${days} días desde ${humanDate(startDate)}. Faltan ${Math.max(0,10-days)} día(s) para el cambio.`);
+  } else {
+    lines.push(`🛢️ BALDE 20 L: día ${days || 1} de 10 desde ${humanDate(startDate)}.`);
   }
 
-  if (totalLiters > 0) {
-    if (remainingLiters <= 0) {
-      lines.push(`🚨 Aceite en botellas/litros: stock agotado o en negativo (${fmt(remainingLiters)} L).`);
-    } else if (remainingLiters <= 2) {
-      lines.push(`⚠️ Aceite en botellas/litros: queda poco (${fmt(remainingLiters)} L).`);
-    }
+  if (massBottles <= 0) {
+    lines.push(`🚨 Aceite MASS 3 L: sin botellas registradas en stock.`);
+  } else if (massBottles <= 1) {
+    lines.push(`⚠️ Aceite MASS 3 L: queda ${fmt(massBottles)} botella.`);
   }
 
-  box.innerHTML = lines.length ? `<div class="oil-alert">${lines.join("<br>")}</div>` : "";
+  box.innerHTML = `<div class="oil-alert">${lines.join("<br>")}</div>`;
+
+  const value = document.getElementById("oilDaysValue");
+  const bar = document.getElementById("oilProgressBar");
+  const txt = document.getElementById("oilProgressText");
+  if (value) value.textContent = `${days || 1} / 10 días`;
+  if (bar) bar.style.width = Math.min(100, Math.max(10, ((days || 1) / 10) * 100)) + "%";
+  if (txt) {
+    txt.textContent = days >= 10
+      ? "🚨 Cambio de aceite requerido."
+      : `Faltan ${Math.max(0,10-(days || 1))} día(s) para el cambio.`;
+  }
 }
 
 function renderMetrics(initial, purchases, used, meta, initialInfo){
@@ -1058,57 +1980,78 @@ function renderMetrics(initial, purchases, used, meta, initialInfo){
   const final = subtractEntries(available, used);
   lastFinalStock = final;
 
-  const restPapa = n(final.potatoBags);
-  const restCarnes = n(final.burgerMeat);
-  const restPanes = n(final.burgerBuns);
-  const restPresas = n(final.broasterPieces);
-  const restMayo = n(final.mayoSachets);
-  const restKetchup = n(final.ketchupSachets);
-
   const dateKey = document.getElementById("dateKey").value || todayKey();
   const oilDays = initialInfo.oilStartDate ? daysBetween(initialInfo.oilStartDate, dateKey) : 0;
-  const oilClass = oilDays >= 10 ? "warn" : (oilDays >= 8 ? "alert" : "");
+  const lowCount = ENTRY_FIELDS.filter(([k]) => n(final[k]) > 0 && n(final[k]) <= n(LOW_STOCK[k])).length;
+  const outCount = ENTRY_FIELDS.filter(([k]) => n(final[k]) <= 0).length;
 
   const cards = [
-    ["Pedidos acumulados", meta.ventas || 0, ""],
-    ["Venta acumulada leída", "S/ " + n(meta.total).toFixed(2), ""],
-    ["Papa restante", fmt(restPapa) + " bolsas", restPapa < 0 ? "warn" : "ok"],
-    ["Carnes burger restantes", fmt(restCarnes) + " und", restCarnes < 0 ? "warn" : "ok"],
-    ["Panes burger restantes", fmt(restPanes) + " und", restPanes < 0 ? "warn" : "ok"],
-    ["Presas broaster restantes", fmt(restPresas) + " presas", restPresas < 0 ? "warn" : "ok"],
-    ["Mayonesa restante", fmt(restMayo) + " sachets", restMayo < 0 ? "warn" : "ok"],
-    ["Ketchup restante", fmt(restKetchup) + " sachets", restKetchup < 0 ? "warn" : "ok"],
-    ["Alitas usadas", fmt(meta.used?.wingsPieces || 0) + " piezas", ""],
-    ["Kg alitas usados", fmt(meta.used?.wingsKg || 0) + " kg", ""],
-    ["Días del balde aceite", oilDays ? oilDays + " días" : "-", oilClass],
-    ["Comida contada", fmt(meta.foodItems || 0) + " platos/items", ""]
+    ["Papa restante", fmt(final.potatoBags) + " bolsas", n(final.potatoBags) <= 0 ? "warn" : (n(final.potatoBags)<=LOW_STOCK.potatoBags?"alert":"ok")],
+    ["Alitas restantes", fmt(final.wingsKg) + " kg", n(final.wingsKg) <= 0 ? "warn" : (n(final.wingsKg)<=LOW_STOCK.wingsKg?"alert":"ok")],
+    ["Carnes burger", fmt(final.burgerMeat) + " und", n(final.burgerMeat) <= 0 ? "warn" : (n(final.burgerMeat)<=LOW_STOCK.burgerMeat?"alert":"ok")],
+    ["Panes burger", fmt(final.burgerBuns) + " und", n(final.burgerBuns) <= 0 ? "warn" : (n(final.burgerBuns)<=LOW_STOCK.burgerBuns?"alert":"ok")],
+    ["Presas broaster", fmt(final.broasterPieces) + " presas", n(final.broasterPieces) <= 0 ? "warn" : (n(final.broasterPieces)<=LOW_STOCK.broasterPieces?"alert":"ok")],
+    ["Tapers", fmt(final.tapers) + " und", n(final.tapers) <= 0 ? "warn" : (n(final.tapers)<=LOW_STOCK.tapers?"alert":"ok")],
+    ["Stock bajo", lowCount + " producto(s)", lowCount ? "alert" : "ok"],
+    ["Agotados / negativos", outCount + " producto(s)", outCount ? "warn" : "ok"],
+    ["Balde aceite 20 L", oilDays ? `${oilDays}/10 días` : "-", oilDays >= 10 ? "warn" : (oilDays >= 8 ? "alert" : "ok")]
   ];
 
   document.getElementById("mainMetrics").innerHTML = cards
     .map(c => `<div class="metric ${c[2]}"><small>${c[0]}</small><b>${c[1]}</b></div>`)
     .join("");
+
+  renderStockAlerts(final);
+}
+
+function stockState(key, rest){
+  const threshold=n(LOW_STOCK[key]);
+  if(rest <= 0) return {label:"🔴 AGOTADO", cls:"state-out"};
+  if(threshold > 0 && rest <= threshold) return {label:"🟡 POCO", cls:"state-low"};
+  return {label:"🟢 BIEN", cls:"state-ok"};
+}
+
+function renderStockAlerts(final){
+  const alerts = ENTRY_FIELDS
+    .map(([k,label,unit]) => ({k,label,unit,rest:n(final[k]),state:stockState(k,n(final[k]))}))
+    .filter(x => x.state.cls !== "state-ok")
+    .sort((a,b)=>a.rest-b.rest);
+
+  const box=document.getElementById("stockAlerts");
+  if(!box) return;
+
+  if(!alerts.length){
+    box.innerHTML=`<div class="stock-alert okay"><b>✅ Inventario sin alertas</b>Todos los productos están por encima de sus mínimos configurados.</div>`;
+    return;
+  }
+
+  box.innerHTML=alerts.map(x=>`
+    <div class="stock-alert ${x.rest<=0?"out":"low"}">
+      <b>${x.label}</b>
+      ${x.state.label} · queda <strong>${fmt(x.rest)}</strong> ${x.unit}
+    </div>
+  `).join("");
 }
 
 function renderStock(initial, purchases, used){
   const available = addEntries(initial, purchases);
   const final = subtractEntries(available, used);
 
-  const keys = ENTRY_FIELDS.map(x => x[0]);
-
-  const rows = keys.map(k => {
+  const rows = ENTRY_FIELDS.map(([k,label,unit]) => {
     const ini = n(initial[k]);
     const buy = n(purchases[k]);
     const usedQty = n(used[k]);
     const rest = round2(ini + buy - usedQty);
+    const state = stockState(k,rest);
 
     return `
       <tr>
-        <td>${NAMES[k] || k}</td>
-        <td class="num">${fmt(ini)}</td>
-        <td class="num">${fmt(buy)}</td>
-        <td class="num">${fmt(ini + buy)}</td>
-        <td class="num">${fmt(usedQty)}</td>
-        <td class="num ${rest < 0 ? 'negative' : 'positive'}">${fmt(rest)}</td>
+        <td>${label}</td>
+        <td class="num">${fmt(rest)} ${unit}</td>
+        <td><span class="state-pill ${state.cls}">${state.label}</span></td>
+        <td class="num muted">${fmt(ini)}</td>
+        <td class="num muted">${fmt(buy)}</td>
+        <td class="num muted">${fmt(usedQty)}</td>
       </tr>
     `;
   }).join("");
@@ -1116,12 +2059,12 @@ function renderStock(initial, purchases, used){
   document.getElementById("stockTable").innerHTML = `
     <thead>
       <tr>
-        <th>Insumo</th>
-        <th>Stock inicial</th>
-        <th>Compras acumuladas</th>
-        <th>Disponible total</th>
-        <th>Usado / vendido</th>
-        <th>Stock actual estimado</th>
+        <th>Producto / insumo</th>
+        <th>Stock actual</th>
+        <th>Estado</th>
+        <th>Base</th>
+        <th>Ingresado</th>
+        <th>Consumido</th>
       </tr>
     </thead>
     <tbody>${rows}</tbody>
@@ -1185,6 +2128,176 @@ function renderOrders(orders){
   `;
 }
 
+
+function renderMovements(daily, calcDay, initialInfo, selectedDate, manualDay=null){
+  const rows=[];
+
+  const dailyEntries = normalizeEntries(daily?.entries || {});
+  ENTRY_FIELDS.forEach(([k,label,unit])=>{
+    const q=n(dailyEntries[k]);
+    if(q>0){
+      rows.push({
+        type:"INGRESO", cls:"movement-type-in", item:label, qty:q, unit,
+        detail:daily?.note || "Ingreso registrado"
+      });
+    }
+  });
+
+  const used=calcDay?.used || {};
+  ENTRY_FIELDS.forEach(([k,label,unit])=>{
+    const q=n(used[k]);
+    if(q>0){
+      rows.push({
+        type:"CONSUMO AUTO", cls:"movement-type-out", item:label, qty:-q, unit,
+        detail:"Calculado según platos/pedidos del sistema"
+      });
+    }
+  });
+
+
+  const manualEntries=normalizeEntries(manualDay?.entries || {});
+  MANUAL_USAGE_FIELDS.forEach(([k,label,unit])=>{
+    const q=n(manualEntries[k]);
+    if(q>0){
+      rows.push({
+        type:"CONSUMO MANUAL", cls:"movement-type-out", item:label, qty:-q, unit,
+        detail:manualDay?.note || "Registrado desde ventas en papel"
+      });
+    }
+  });
+
+  if(initialInfo?.baselineDate === selectedDate){
+    rows.unshift({
+      type:"CONTEO FÍSICO", cls:"movement-type-count", item:"Nueva base de inventario",
+      qty:"", unit:"", detail:initialInfo.note || "Conteo físico / ajuste"
+    });
+  }
+
+  const table=document.getElementById("movementsTable");
+  if(!table) return;
+  table.innerHTML=`
+    <thead><tr><th>Tipo</th><th>Insumo</th><th>Cantidad</th><th>Detalle</th></tr></thead>
+    <tbody>${
+      rows.length ? rows.map(r=>`
+        <tr>
+          <td class="${r.cls}">${r.type}</td>
+          <td>${r.item}</td>
+          <td class="num">${typeof r.qty==="number" ? fmt(r.qty)+" "+r.unit : "—"}</td>
+          <td class="small">${r.detail || "—"}</td>
+        </tr>
+      `).join("") : `<tr><td colspan="4" class="muted">Sin movimientos para esta fecha.</td></tr>`
+    }</tbody>
+  `;
+}
+
+async function savePhysicalCount(){
+  const dateKey=document.getElementById("dateKey").value || todayKey();
+  if(!lastFinalStock){
+    alert("Primero carga el inventario.");
+    return;
+  }
+
+  const physical=readInputs("physical");
+  const note=document.getElementById("physicalNote").value.trim() || "Conteo físico realizado al abrir.";
+  const currentInitial=await loadInitialStock();
+
+  const msg =
+    `¿Guardar el conteo físico del ${humanDate(dateKey)} como NUEVA BASE?\n\n` +
+    `Desde esta fecha el sistema volverá a sumar ingresos y descontar ventas.\n` +
+    `Hazlo idealmente antes de empezar las ventas del día.`;
+
+  if(!confirm(msg)) return;
+
+  const payload={
+    __type:"inventory_initial_stock",
+    entries:physical,
+    note,
+    oilStartDate:currentInitial.oilStartDate || todayKey(),
+    riceKgPerPortion:currentInitial.riceKgPerPortion || 0.125,
+    baselineDate:dateKey,
+    updatedAt:new Date().toISOString()
+  };
+
+  const st=document.getElementById("physicalStatus");
+  st.textContent="Guardando conteo físico...";
+
+  saveLocal(LOCAL_INITIAL_KEY,payload);
+
+  // Reinicia el ingreso de esa fecha a cero: el conteo ya incorpora todo lo que había físicamente.
+  const zeroDaily={
+    __type:"inventory_daily_entry",
+    dateKey,
+    entries:emptyEntries(),
+    note:"Reinicio por conteo físico",
+    updatedAt:new Date().toISOString()
+  };
+  saveLocal(localDailyKey(dateKey),zeroDaily);
+
+  try{
+    if(!supabaseClient) throw new Error("Supabase no cargó.");
+
+    const r1=await supabaseClient.from(ORDERS_TABLE).upsert({
+      order_id:INVENTORY_INITIAL_ID,
+      date_key:"0000-00-00",
+      boleta_number:"",
+      status:"DAY_SETUP",
+      updated_at:new Date().toISOString(),
+      data:payload
+    },{onConflict:"order_id"});
+    if(r1.error) throw r1.error;
+
+    const r2=await supabaseClient.from(ORDERS_TABLE).upsert({
+      order_id:INVENTORY_DAILY_PREFIX+dateKey,
+      date_key:dateKey,
+      boleta_number:"",
+      status:"DAY_SETUP",
+      updated_at:new Date().toISOString(),
+      data:zeroDaily
+    },{onConflict:"order_id"});
+    if(r2.error) throw r2.error;
+
+    st.textContent=`✅ Conteo físico guardado. Nueva base desde ${humanDate(dateKey)}.`;
+    await reloadAll();
+  }catch(err){
+    st.textContent="⚠️ No se pudo confirmar en nube: "+(err.message || String(err));
+  }
+}
+
+async function registerOilChange(){
+  const current=await loadInitialStock();
+  const dk=document.getElementById("dateKey").value || todayKey();
+
+  if(!confirm(`¿Registrar cambio del balde de aceite de 20 L con fecha ${humanDate(dk)}?\n\nEl contador volverá al día 1 de 10.`)) return;
+
+  const payload={
+    __type:"inventory_initial_stock",
+    entries:current.entries,
+    note:current.note || "",
+    oilStartDate:dk,
+    riceKgPerPortion:current.riceKgPerPortion || 0.125,
+    baselineDate:current.baselineDate || "0000-00-00",
+    updatedAt:new Date().toISOString()
+  };
+
+  saveLocal(LOCAL_INITIAL_KEY,payload);
+  try{
+    const {error}=await supabaseClient.from(ORDERS_TABLE).upsert({
+      order_id:INVENTORY_INITIAL_ID,
+      date_key:"0000-00-00",
+      boleta_number:"",
+      status:"DAY_SETUP",
+      updated_at:new Date().toISOString(),
+      data:payload
+    },{onConflict:"order_id"});
+    if(error) throw error;
+    alert("✅ Cambio de aceite registrado. Contador reiniciado.");
+    await reloadAll();
+  }catch(err){
+    alert("No se pudo guardar el cambio de aceite: "+(err.message || String(err)));
+  }
+}
+
+
 async function reloadAll(){
   const dateKey = document.getElementById("dateKey").value || todayKey();
   const st = document.getElementById("ordersStatus");
@@ -1195,6 +2308,9 @@ async function reloadAll(){
   document.getElementById("initialNote").value = initial.note || "";
   document.getElementById("oilStartDate").value = initial.oilStartDate || todayKey();
   document.getElementById("riceKgPerPortion").value = initial.riceKgPerPortion || 0.125;
+  document.getElementById("inventoryBaseDate").value =
+    initial.baselineDate && initial.baselineDate !== "0000-00-00" ? initial.baselineDate : "";
+  renderInputs("physicalGrid", "physical", lastFinalStock || initial.entries);
 
   const daily = await loadDailyEntry(dateKey);
   renderInputs("entriesGrid", "daily", daily.entries);
@@ -1203,11 +2319,15 @@ async function reloadAll(){
   let dailyEntries = [];
   let ordersUpTo = [];
   let ordersDay = [];
+  let manualUsageDay = null;
+  let manualUsageAccum = [];
 
   try {
-    dailyEntries = await loadDailyEntriesUpTo(dateKey);
-    ordersUpTo = await loadOrdersUpTo(dateKey);
+    dailyEntries = await loadDailyEntriesUpTo(dateKey, initial.baselineDate || "0000-00-00");
+    ordersUpTo = await loadOrdersUpTo(dateKey, initial.baselineDate || "0000-00-00");
     ordersDay = await loadOrdersOfDay(dateKey);
+    manualUsageDay = await loadManualUsage(dateKey);
+    manualUsageAccum = await loadManualUsageUpTo(dateKey, initial.baselineDate || "0000-00-00");
   } catch(err) {
     st.textContent = "⚠️ No pude leer pedidos/inventario: " + (err.message || String(err));
   }
@@ -1220,11 +2340,49 @@ async function reloadAll(){
 
   const calcAccum = calculateConsumption(ordersUpTo);
   calcAccum.used = calcAccum.used || {};
-  const calcDay = calculateConsumption(ordersDay);
+  const autoCalcDay = calculateConsumption(ordersDay);
+  autoCalcDay.used = autoCalcDay.used || {};
+  const calcDay = {
+    ...autoCalcDay,
+    used:{...autoCalcDay.used}
+  };
+
+  // Si una fecha tiene pedidos reales del sistema, ignoramos cualquier consumo manual
+  // de esa fecha para no descontar dos veces.
+  const autoDates=new Set(
+    (ordersUpTo||[]).map(o=>o.__rowDateKey || o.dateKey || o.activeDateKey || "").filter(Boolean)
+  );
+
+  const manualAccumEntries=emptyEntries();
+  (manualUsageAccum||[]).forEach(m=>{
+    if(autoDates.has(m.dateKey)) return;
+    const e=normalizeEntries(m.entries);
+    ENTRY_FIELDS.forEach(([k])=>addTo(manualAccumEntries,k,e[k]));
+  });
+  calcAccum.used=addEntries(calcAccum.used,manualAccumEntries);
+
+  if(!ordersDay.length && manualUsageDay){
+    calcDay.used=addEntries(calcDay.used,manualUsageDay.entries);
+  }
+
+  renderManualUsageInputs(manualUsageDay?.entries || emptyEntries());
+  document.getElementById("manualUsageNote").value=manualUsageDay?.note || "";
+
+  const manualStatus=document.getElementById("manualUsageStatus");
+  if(ordersDay.length){
+    manualStatus.textContent=`💻 Esta fecha tiene ${ordersDay.length} pedido(s) del sistema. El consumo es AUTOMÁTICO; no registres consumo manual.`;
+  }else if(manualUsageDay && hasPositiveEntries(manualUsageDay.entries,MANUAL_USAGE_FIELDS)){
+    manualStatus.textContent="✍️ Esta fecha tiene consumo MANUAL guardado porque se trabajó en papel.";
+  }else{
+    manualStatus.textContent="📝 Sin pedidos del sistema. Si se trabajó en papel, registra aquí el consumo manual.";
+  }
 
   renderOilAlert(initial.entries, purchasesAccum, calcAccum.used, dateKey, initial);
   renderMetrics(initial.entries, purchasesAccum, calcAccum.used, calcAccum, initial);
   renderStock(initial.entries, purchasesAccum, calcAccum.used);
+  renderInputs("physicalGrid", "physical", lastFinalStock || initial.entries);
+  renderMovements(daily, autoCalcDay, initial, dateKey, manualUsageDay);
+  await renderPaperOrdersHistory(dateKey);
 
   renderProduction(calcDay.product);
   renderDrinks(calcDay.drinks);
@@ -1240,33 +2398,63 @@ async function reloadAll(){
 
 document.getElementById("btnLoad").addEventListener("click", reloadAll);
 document.getElementById("btnRefresh").addEventListener("click", reloadAll);
-document.getElementById("btnSaveDaily").addEventListener("click", saveDailyEntry);
 document.getElementById("btnSaveInitial").addEventListener("click", saveInitialStock);
+document.getElementById("btnSaveDailyInline").addEventListener("click", saveDailyEntry);
 
-document.getElementById("btnCopyFinalToInitial").addEventListener("click", async () => {
-  if (!lastFinalStock) {
-    alert("Primero carga el inventario para calcular el stock actual.");
+document.getElementById("paperProduct").addEventListener("change",()=>{
+  const sel=document.getElementById("paperProduct");
+  const custom=sel.value==="CUSTOM";
+  document.getElementById("paperCustomBox").style.display=custom?"grid":"none";
+  if(custom){
+    document.getElementById("paperUnitPrice").value="0.00";
+    document.getElementById("paperCustomName").focus();
+  }else{
+    const p=PAPER_PRODUCT_MAP[String(sel.value)];
+    document.getElementById("paperUnitPrice").value=p?n(p.price).toFixed(2):"0.00";
+  }
+});
+document.getElementById("paperPaymentMethod").addEventListener("change",()=>{
+  document.getElementById("paperMixedBox").style.display=
+    document.getElementById("paperPaymentMethod").value==="mixto" ? "grid" : "none";
+});
+document.getElementById("paperTaperFee").addEventListener("input",calcPaperTotals);
+document.getElementById("paperDeliveryFee").addEventListener("input",calcPaperTotals);
+document.getElementById("btnPaperAddItem").addEventListener("click",addPaperItem);
+document.getElementById("btnSavePaperOrder").addEventListener("click",savePaperOrder);
+document.getElementById("btnClearPaperCart").addEventListener("click",()=>{
+  if(paperCart.length && !confirm("¿Limpiar los productos de esta comanda?")) return;
+  clearPaperOrderForm();
+  document.getElementById("paperOrderStatus").textContent="Comanda limpia.";
+});
+
+document.getElementById("btnSaveManualUsage").addEventListener("click", saveManualUsage);
+document.getElementById("btnDeleteManualUsage").addEventListener("click", deleteManualUsage);
+
+document.getElementById("btnSavePhysical").addEventListener("click", savePhysicalCount);
+document.getElementById("btnCopyCurrentToPhysical").addEventListener("click", () => {
+  if(!lastFinalStock){
+    alert("Primero carga el inventario.");
     return;
   }
-
-  if (!confirm("¿Usar el stock actual estimado como nuevo stock inicial? Esto sirve cuando haces conteo físico y quieres reiniciar la base.")) return;
-
-  renderInputs("initialGrid", "initial", lastFinalStock);
-  document.getElementById("initialNote").value = "Nuevo stock inicial tomado desde stock actual estimado el " + new Date().toLocaleString();
-  await saveInitialStock();
+  renderInputs("physicalGrid","physical",lastFinalStock);
+  document.getElementById("physicalStatus").textContent="Stock estimado copiado. Ahora corrige con lo que realmente contaste.";
+});
+document.getElementById("btnOilChange").addEventListener("click", registerOilChange);
+document.getElementById("btnGoExpenses").addEventListener("click", () => {
+  window.location.href="gastos_compras.html";
 });
 
-document.getElementById("btnClearLocal").addEventListener("click", async () => {
-  const dk = document.getElementById("dateKey").value;
-  if (confirm("¿Limpiar compras locales de este día? No borra Supabase.")) {
-    localStorage.removeItem(localDailyKey(dk));
-    await reloadAll();
-  }
-});
+
+
+
+
 
 (async () => {
   renderInputs("initialGrid", "initial", emptyEntries());
   renderInputs("entriesGrid", "daily", emptyEntries());
+  renderManualUsageInputs(emptyEntries());
+  renderInputs("physicalGrid", "physical", emptyEntries());
+  clearPaperOrderForm();
   await loadActiveDay();
   await reloadAll();
 })();
