@@ -58,7 +58,7 @@
     .metric .label{font-size:12px;color:#cbd5e1}.metric .value{font-size:26px;font-weight:900;color:var(--gold);margin-top:8px;word-break:break-word}.metric .hint{font-size:11px;color:var(--muted);margin-top:5px}
     .section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:18px 0 10px}
     .section-title h2{font-size:17px;color:var(--gold);margin:0}
-    .controls{display:grid;grid-template-columns:1fr 1fr auto auto auto;gap:10px;align-items:end}
+    .controls{display:grid;grid-template-columns:1fr 1fr auto auto;gap:10px;align-items:end}
     .status-pill{display:inline-flex;align-items:center;gap:7px;border:1px solid #334155;border-radius:999px;padding:7px 10px;background:#020617;color:#cbd5e1;font-size:12px}
     .dot{width:9px;height:9px;border-radius:50%;background:#22c55e;box-shadow:0 0 10px #22c55e}.dot.red{background:#ef4444;box-shadow:0 0 10px #ef4444}
     table{width:100%;border-collapse:collapse;font-size:13px}
@@ -93,6 +93,96 @@
     .modal-msg{min-height:18px;margin-top:8px;font-size:12px;font-weight:800;white-space:pre-line}
     @media(max-width:420px){.pay-options{grid-template-columns:1fr}.modal-actions{flex-direction:column}}
 
+
+    /* ===== ADMIN COMPACTO ===== */
+    .nav-actions{display:flex;gap:7px;flex-wrap:wrap}
+    .nav-actions .btn{padding:8px 10px;font-size:12px}
+    .metric-grid-compact{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+    .metric-compact{
+      background:linear-gradient(180deg,#0b1220,#020617);
+      border:1px solid #1e293b;border-radius:14px;padding:10px;min-height:78px
+    }
+    .metric-compact .label{font-size:11px;color:#cbd5e1}
+    .metric-compact .value{font-size:21px;font-weight:900;color:var(--gold);margin-top:5px}
+    .mini-summary{
+      display:flex;gap:7px;flex-wrap:wrap;margin-top:8px
+    }
+    .mini-stat{
+      display:inline-flex;gap:5px;align-items:center;padding:6px 9px;
+      border:1px solid #334155;border-radius:999px;background:#020617;
+      color:#cbd5e1;font-size:11px;font-weight:800
+    }
+    .day-control{
+      display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;
+      align-items:stretch
+    }
+    .day-control .box{
+      border:1px solid #334155;border-radius:13px;background:#020617;padding:10px
+    }
+    .day-control .box small{display:block;color:#94a3b8;font-size:10px}
+    .day-control .box b{display:block;margin-top:4px;font-size:18px;color:#fde68a}
+    .control-good{border-color:#166534!important;background:#052e16!important}
+    .control-warn{border-color:#a16207!important;background:#2b1b04!important}
+    .control-bad{border-color:#991b1b!important;background:#2a0b0b!important}
+    .origin-auto{color:#7dd3fc;font-weight:900}
+    .origin-manual{color:#fde68a;font-weight:900}
+    .origin-paper{color:#86efac;font-weight:900}
+    .origin-mixed{color:#c4b5fd;font-weight:900}
+
+    details.compact-section{
+      margin-top:12px;border:1px solid #1e293b;border-radius:15px;background:rgba(15,23,42,.92);overflow:hidden
+    }
+    details.compact-section>summary{
+      cursor:pointer;list-style:none;padding:10px 12px;font-size:14px;font-weight:900;
+      color:var(--gold);background:#0b1220;display:flex;justify-content:space-between;align-items:center
+    }
+    details.compact-section>summary::-webkit-details-marker{display:none}
+    details.compact-section>summary::after{content:"▼";font-size:10px;color:#94a3b8}
+    details.compact-section[open]>summary::after{content:"▲"}
+    details.compact-section>.inside{padding:10px 12px}
+
+    .order-tools{
+      display:grid;grid-template-columns:1fr 180px auto;gap:8px;align-items:end;margin-bottom:9px
+    }
+    .order-row{
+      background:#020617;border:1px solid #1e293b;border-radius:13px;margin-bottom:7px;overflow:hidden
+    }
+    .order-row.annulled{border-left:5px solid var(--red)}
+    .order-row>summary{
+      cursor:pointer;list-style:none;display:grid;
+      grid-template-columns:minmax(160px,1.3fr) .8fr .7fr .7fr auto;
+      gap:8px;align-items:center;padding:9px 10px
+    }
+    .order-row>summary::-webkit-details-marker{display:none}
+    .order-row .order-main{font-weight:900;color:#fde68a}
+    .order-row .order-pay,.order-row .order-total,.order-row .order-source{font-size:12px}
+    .order-row .order-total{font-weight:900;color:#fde68a}
+    .order-row .order-body{padding:0 10px 10px;border-top:1px dashed #1e293b}
+    .source-tag{
+      display:inline-flex;padding:3px 7px;border-radius:999px;border:1px solid #334155;
+      font-size:10px;font-weight:900;background:#0b1220
+    }
+    .source-moza{border-color:#0284c7;color:#7dd3fc}
+    .source-paper{border-color:#16a34a;color:#86efac}
+    .empty-compact{padding:12px;text-align:center;color:#94a3b8}
+
+    .products-compact{
+      display:grid;grid-template-columns:repeat(2,1fr);gap:0 16px
+    }
+    .products-compact .rowline{padding:5px 0;font-size:12px}
+
+    @media(max-width:1000px){
+      .metric-grid-compact{grid-template-columns:repeat(3,1fr)}
+      .day-control{grid-template-columns:repeat(2,1fr)}
+    }
+    @media(max-width:700px){
+      .metric-grid-compact{grid-template-columns:repeat(2,1fr)}
+      .day-control{grid-template-columns:1fr 1fr}
+      .order-tools{grid-template-columns:1fr}
+      .order-row>summary{grid-template-columns:1fr 1fr}
+      .products-compact{grid-template-columns:1fr}
+    }
+
     .summarybox{max-height:340px;overflow:auto}.rowline{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed #1e293b}.rowline b{color:var(--gold)}
     @media(max-width:850px){.grid-4,.grid-3,.grid-2{grid-template-columns:1fr}.controls{grid-template-columns:1fr}.topbar{position:relative;flex-direction:column;align-items:stretch}.brand{justify-content:center;text-align:center}.topbar .actions{justify-content:center}.metric .value{font-size:22px}}
     @media print{
@@ -117,11 +207,17 @@
           <img src="LOGO.jpg" class="logo" alt="Logo">
           <div>
             <h1>Panel Admin - El Patrón del Mal</h1>
-            <div class="sub">Ventas, caja y pedidos en vivo</div>
+            <div class="sub">Ventas · caja · comandas · control del día</div>
           </div>
         </div>
         <div class="actions">
           <span class="status-pill"><span id="liveDot" class="dot"></span><span id="liveStatus">Conectando...</span></span>
+          <div class="nav-actions">
+            <a class="btn btn-dark" href="resumen_semanal.html">📊 Resumen</a>
+            <a class="btn btn-dark" href="control-inventario.html">📦 Inventario</a>
+            <a class="btn btn-dark" href="gastos_compras.html">⚡ Compras</a>
+            <a class="btn btn-dark" href="carta_moza_cocina.html" target="_blank">🍽️ Carta</a>
+          </div>
           <button id="btnLogout" class="btn-red" type="button">Salir</button>
         </div>
       </div>
@@ -138,29 +234,45 @@
           </div>
           <button id="btnRefresh" class="btn-blue" type="button">Actualizar</button>
           <button id="btnPrint" class="btn-purple" type="button">Imprimir resumen</button>
-          <a class="btn btn-dark" href="carta_moza_cocina.html" target="_blank">Abrir carta moza</a>
+
         </div>
-        <div class="note">Este panel lee los pedidos que la moza registra desde <b>carta_moza_cocina.html</b>. También actualiza solo cada 5 segundos como respaldo.</div>
+        <div class="note">Lee pedidos de la moza, comandas de papel cargadas posteriormente y cierres manuales del Resumen semanal. Se actualiza en vivo.</div>
         <div class="note" id="activeCashStatus" style="border:1px dashed #334155;border-radius:12px;padding:10px;background:#020617">Cargando caja activa...</div>
       </div>
 
       <div class="section-title"><h2>📊 Resumen del día</h2></div>
-      <div class="grid grid-4" id="metricsGrid">
-        <div class="metric"><div class="label">Pedidos válidos</div><div class="value" id="mOrders">0</div><div class="hint">No incluye anulados</div></div>
-        <div class="metric"><div class="label">Venta total</div><div class="value" id="mSales">S/ 0.00</div><div class="hint">Efectivo + Yape + mixto</div></div>
-        <div class="metric"><div class="label">Efectivo</div><div class="value" id="mCash">S/ 0.00</div><div class="hint">Dinero físico cobrado</div></div>
-        <div class="metric"><div class="label">Yape</div><div class="value" id="mYape">S/ 0.00</div><div class="hint">Cobros digitales</div></div>
-        <div class="metric"><div class="label">Caja inicial</div><div class="value" id="mOpenCash">S/ 0.00</div><div class="hint">Sencillo aparte; no suma a venta</div></div>
-        <div class="metric"><div class="label">Efectivo a entregar</div><div class="value" id="mFinalCash">S/ 0.00</div><div class="hint">Solo efectivo vendido; sin caja inicial</div></div>
-        <div class="metric"><div class="label">Total venta final</div><div class="value" id="mFinalAll">S/ 0.00</div><div class="hint">Efectivo + Yape; sin caja inicial</div></div>
-        <div class="metric"><div class="label">Anulados</div><div class="value" id="mCanceled">0</div><div class="hint">Pedidos anulados</div></div>
-        <div class="metric"><div class="label">Pendientes cocina</div><div class="value" id="mPending">0</div><div class="hint">Por preparar / entregar</div></div>
-        <div class="metric"><div class="label">Entregados</div><div class="value" id="mDelivered">0</div><div class="hint">Marcados como entregados</div></div>
-        <div class="metric"><div class="label">Delivery cobrado</div><div class="value" id="mDelivery">S/ 0.00</div><div class="hint">Solo pedidos válidos</div></div>
-        <div class="metric"><div class="label">Tapers</div><div class="value" id="mTapers">S/ 0.00</div><div class="hint">Solo pedidos válidos</div></div>
+      <div class="metric-grid-compact" id="metricsGrid">
+        <div class="metric-compact"><div class="label">💰 Venta del día</div><div class="value" id="mSales">S/ 0.00</div></div>
+        <div class="metric-compact"><div class="label">💵 Efectivo</div><div class="value" id="mCash">S/ 0.00</div></div>
+        <div class="metric-compact"><div class="label">📱 Yape</div><div class="value" id="mYape">S/ 0.00</div></div>
+        <div class="metric-compact"><div class="label">🧾 Pedidos cargados</div><div class="value" id="mOrders">0</div></div>
+        <div class="metric-compact"><div class="label">⏳ Pendientes</div><div class="value" id="mPending">0</div></div>
+        <div class="metric-compact"><div class="label">❌ Anulados</div><div class="value" id="mCanceled">0</div></div>
       </div>
 
-      <div class="section-title"><h2>💵 Caja inicial / cambio sencillo</h2></div>
+      <div class="mini-summary">
+        <span class="mini-stat">Caja inicial: <b id="mOpenCash">S/ 0.00</b></span>
+        <span class="mini-stat">Entregados: <b id="mDelivered">0</b></span>
+        <span class="mini-stat">Delivery: <b id="mDelivery">S/ 0.00</b></span>
+        <span class="mini-stat">Tapers: <b id="mTapers">S/ 0.00</b></span>
+        <span class="hide" id="mFinalCash">S/ 0.00</span>
+        <span class="hide" id="mFinalAll">S/ 0.00</span>
+      </div>
+
+      <div class="section-title"><h2>🧮 Control del día</h2></div>
+      <div class="card">
+        <div class="day-control">
+          <div class="box"><small>Origen del día</small><b id="dayOrigin">--</b></div>
+          <div class="box"><small>Pedidos cargados</small><b id="loadedOrdersTotal">S/ 0.00</b></div>
+          <div class="box"><small>Cierre reportado</small><b id="closingReportedTotal">--</b></div>
+          <div class="box" id="differenceBox"><small>Diferencia</small><b id="dayDifference">--</b></div>
+        </div>
+        <div class="note" id="dayControlNote">Cargando control del día...</div>
+      </div>
+
+      <details class="compact-section">
+        <summary>⚙️ Caja inicial / moza / turno</summary>
+        <div class="inside">
       <div id="setupCard" class="card">
         <div class="grid grid-4">
           <div>
@@ -193,20 +305,50 @@
           La caja inicial es solo cambio sencillo aparte y <b>NO se suma a la venta</b>. El inventario/stock de bebidas se manejará después en un módulo separado.
         </div>
       </div>
+        </div>
+      </details>
 
-      <div class="grid grid-2" style="margin-top:14px">
-        <div id="productsCard" class="card summarybox">
+      <details class="compact-section">
+        <summary>📦 Productos vendidos</summary>
+        <div class="inside">
+          <div id="productSummary" class="products-compact"></div>
+          <div id="drinkSummary" class="hide"></div>
+        </div>
+      </details>
+
+      <div class="grid grid-2 hide" style="margin-top:14px">
+        <div id="productsCardOld" class="card summarybox">
           <div class="section-title" style="margin-top:0"><h2>🍗 Resumen por producto</h2></div>
-          <div id="productSummary"></div>
+          <div id="productSummaryOld"></div>
         </div>
         <div class="card summarybox">
           <div class="section-title" style="margin-top:0"><h2>🥤 Bebidas vendidas</h2></div>
-          <div id="drinkSummary"></div>
+          <div id="drinkSummaryOld"></div>
         </div>
       </div>
 
-      <div id="ordersCard" class="section-title"><h2>🧾 Pedidos registrados del día</h2><span class="tag" id="orderCountTag">0 pedidos</span></div>
-      <div class="orders" id="ordersList"></div>
+      <div id="ordersCard" class="section-title"><h2>🧾 Pedidos del día</h2><span class="tag" id="orderCountTag">0 pedidos</span></div>
+      <div class="card">
+        <div class="order-tools">
+          <div>
+            <label>🔎 Buscar pedido / cliente</label>
+            <input id="orderSearch" type="text" placeholder="Ej: Miguel, PAPEL-03, boleta...">
+          </div>
+          <div>
+            <label>Filtrar</label>
+            <select id="orderFilter">
+              <option value="all">Todos</option>
+              <option value="pending">Pendientes</option>
+              <option value="done">Entregados</option>
+              <option value="cancel">Anulados</option>
+              <option value="paper">Comandas de papel</option>
+              <option value="moza">Pedidos de moza</option>
+            </select>
+          </div>
+          <button id="btnClearOrderFilters" class="btn-dark" type="button">Limpiar filtro</button>
+        </div>
+        <div id="ordersList"></div>
+      </div>
     </div>
   </div>
 
@@ -254,7 +396,7 @@
     const ADMIN_PASSWORD = "181221";
     const ADMIN_SESSION_KEY = "pdm_admin_live_logged_v1";
     const SUPABASE_URL = "https://defdwzzewzfjuseozwkn.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
+    const SUPABASE_ANON_KEY = "sb_publishable_ybJZO45G37nMvSHwQYfIhA_qWi9UR0K";
     const ORDERS_TABLE = "orders_cloud";
     const DAY_SETUP_TABLE = "day_setup_cloud";
     const CASH_STATE_TABLE = "cash_register_state";
@@ -262,11 +404,12 @@
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth:{ persistSession:false } });
 
     const els = {};
-    const ids = ["loginBox","app","adminPass","btnLogin","btnLogout","loginError","adminDate","btnRefresh","btnPrint","btnSaveSetup","lastUpdate","liveStatus","liveDot","openCashInput","mozaInput","shiftInput","mOrders","mSales","mCash","mYape","mOpenCash","mFinalCash","mFinalAll","mCanceled","mPending","mDelivered","mDelivery","mTapers","productSummary","drinkSummary","ordersList","orderCountTag","activeCashStatus","paymentModal","btnClosePaymentModal","btnCancelPaymentEdit","btnSavePaymentEdit","editPaymentInfo","editMixedBox","editMixedYape","editMixedCash","editPaymentMsg"];
+    const ids = ["loginBox","app","adminPass","btnLogin","btnLogout","loginError","adminDate","btnRefresh","btnPrint","btnSaveSetup","lastUpdate","liveStatus","liveDot","openCashInput","mozaInput","shiftInput","mOrders","mSales","mCash","mYape","mOpenCash","mFinalCash","mFinalAll","mCanceled","mPending","mDelivered","mDelivery","mTapers","productSummary","drinkSummary","ordersList","orderCountTag","activeCashStatus","paymentModal","btnClosePaymentModal","btnCancelPaymentEdit","btnSavePaymentEdit","editPaymentInfo","editMixedBox","editMixedYape","editMixedCash","editPaymentMsg","dayOrigin","loadedOrdersTotal","closingReportedTotal","differenceBox","dayDifference","dayControlNote","orderSearch","orderFilter","btnClearOrderFilters"];
     ids.forEach(id => els[id] = document.getElementById(id));
 
     let currentOrders = [];
     let currentSetup = null;
+    let currentClosing = null;
     let logged = false;
     let realtimeReady = false;
     let activeDateKey = "";
@@ -333,7 +476,12 @@
 
     function getOrderFromRow(row){ return row && row.data ? row.data : {}; }
     function getStatus(row){ return String(row.status || getOrderFromRow(row).status || "PENDIENTE").toUpperCase(); }
-    function isTechnicalRow(row){ return getStatus(row) === "DAY_SETUP" || getOrderFromRow(row).__type === "day_setup"; }
+    function isTechnicalRow(row){
+      const o=getOrderFromRow(row);
+      const t=String(o.__type || "");
+      return getStatus(row) === "DAY_SETUP" ||
+        ["day_setup","inventory_initial_stock","inventory_daily_entry","inventory_entry","inventory_manual_usage"].includes(t);
+    }
     function isAnnulled(row){ return getStatus(row) === "ANULADO"; }
     function isDelivered(row){ return getStatus(row) === "ENTREGADO"; }
     function activeRows(rows){ return (rows || []).filter(r => !isTechnicalRow(r) && !isAnnulled(r)); }
@@ -383,6 +531,28 @@
       if (error) throw error;
       return data || [];
     }
+
+    async function loadClosing(dateKey){
+      const {data,error}=await supabaseClient.from(CLOSINGS_TABLE).select("*").eq("date_key",dateKey).maybeSingle();
+      if(error) throw error;
+      return data || null;
+    }
+    function isManualClosing(c){
+      return !!c && (
+        c?.data?.manual === true ||
+        String(c?.data?.closedBy || "").toUpperCase() === "MANUAL_PAPEL"
+      );
+    }
+    function closingHasTotals(c){
+      return !!c && (
+        safeNum(c.total_sales)>0 || safeNum(c.total_cash)>0 ||
+        safeNum(c.total_yape)>0 || safeNum(c.total_orders)>0
+      );
+    }
+    function sourceOfOrder(order){
+      return String(order?.source || "").toUpperCase() === "COMANDA_PAPEL" ? "PAPEL" : "MOZA";
+    }
+
     function newerSetup(a,b){
       if (!a) return b;
       if (!b) return a;
@@ -452,6 +622,7 @@
       return Array.from(map.entries()).sort((a,b) => b[1].qty - a[1].qty);
     }
     function renderDrinks(rows){
+      if(!els.drinkSummary) return;
       const sold = drinkSold(rows);
       const drinkRows = [
         ["Gaseosa 1L", sold.oneL],
@@ -469,37 +640,104 @@
       if (!list.length) { els.productSummary.innerHTML = `<div class="muted">Sin productos vendidos.</div>`; return; }
       els.productSummary.innerHTML = list.map(([name,v]) => `<div class="rowline"><span>${esc(name)} <span class="muted">x${v.qty}</span></span><b>${money(v.total)}</b></div>`).join("");
     }
-    function renderMetrics(setup, rows){
-      const s = normalizeSetup(setup);
-      const orders = allOrderRows(rows);
-      const active = activeRows(rows);
-      const annulled = orders.filter(isAnnulled);
-      const pending = active.filter(r => !isDelivered(r));
-      const delivered = active.filter(isDelivered);
-      let sales = 0, cash = 0, yape = 0, delivery = 0, tapers = 0;
-      active.forEach(row => {
-        const o = getOrderFromRow(row);
-        sales += safeNum(o.total);
-        cash += cashOf(o);
-        yape += yapeOf(o);
-        delivery += safeNum(o.deliveryFee);
-        tapers += safeNum(o.tapersFee);
+    function renderMetrics(setup, rows, closing=null){
+      const s=normalizeSetup(setup);
+      const orders=allOrderRows(rows);
+      const active=activeRows(rows);
+      const annulled=orders.filter(isAnnulled);
+      const pending=active.filter(r=>!isDelivered(r));
+      const delivered=active.filter(isDelivered);
+
+      let loadedSales=0,loadedCash=0,loadedYape=0,delivery=0,tapers=0;
+      active.forEach(row=>{
+        const o=getOrderFromRow(row);
+        loadedSales+=safeNum(o.total);
+        loadedCash+=cashOf(o);
+        loadedYape+=yapeOf(o);
+        delivery+=safeNum(o.deliveryFee);
+        tapers+=safeNum(o.tapersFee);
       });
-      sales = round2(sales); cash = round2(cash); yape = round2(yape);
-      els.mOrders.textContent = active.length;
-      els.mSales.textContent = money(sales);
-      els.mCash.textContent = money(cash);
-      els.mYape.textContent = money(yape);
-      els.mOpenCash.textContent = money(s.openCash);
-      els.mFinalCash.textContent = money(cash);
-      els.mFinalAll.textContent = money(sales);
-      els.mCanceled.textContent = annulled.length;
-      els.mPending.textContent = pending.length;
-      els.mDelivered.textContent = delivered.length;
-      els.mDelivery.textContent = money(delivery);
-      els.mTapers.textContent = money(tapers);
-      els.orderCountTag.textContent = orders.length + " pedidos";
+      loadedSales=round2(loadedSales);
+      loadedCash=round2(loadedCash);
+      loadedYape=round2(loadedYape);
+
+      const manual=isManualClosing(closing) && closingHasTotals(closing);
+      const officialSales=manual ? round2(safeNum(closing.total_sales)) : loadedSales;
+      const officialCash=manual ? round2(safeNum(closing.total_cash)) : loadedCash;
+      const officialYape=manual ? round2(safeNum(closing.total_yape)) : loadedYape;
+
+      els.mOrders.textContent=active.length;
+      els.mSales.textContent=money(officialSales);
+      els.mCash.textContent=money(officialCash);
+      els.mYape.textContent=money(officialYape);
+      els.mOpenCash.textContent=money(manual ? safeNum(closing.open_cash) : s.openCash);
+      els.mFinalCash.textContent=money(officialCash);
+      els.mFinalAll.textContent=money(officialSales);
+      els.mCanceled.textContent=annulled.length;
+      els.mPending.textContent=pending.length;
+      els.mDelivered.textContent=delivered.length;
+      els.mDelivery.textContent=money(delivery);
+      els.mTapers.textContent=money(tapers);
+      els.orderCountTag.textContent=orders.length+" pedidos";
+
+      renderDayControl(rows,closing,loadedSales);
     }
+
+    function renderDayControl(rows,closing,loadedSales){
+      const active=activeRows(rows);
+      const paperCount=active.filter(r=>sourceOfOrder(getOrderFromRow(r))==="PAPEL").length;
+      const mozaCount=active.length-paperCount;
+      const manual=isManualClosing(closing) && closingHasTotals(closing);
+
+      let origin="SIN VENTAS";
+      let originClass="";
+      if(manual && active.length){
+        origin="MANUAL + PEDIDOS";
+        originClass="origin-mixed";
+      }else if(manual){
+        origin="✍️ MANUAL / PAPEL";
+        originClass="origin-manual";
+      }else if(paperCount && mozaCount){
+        origin="MOZA + PAPEL";
+        originClass="origin-mixed";
+      }else if(paperCount){
+        origin="📝 COMANDAS PAPEL";
+        originClass="origin-paper";
+      }else if(mozaCount){
+        origin="💻 SISTEMA MOZA";
+        originClass="origin-auto";
+      }
+
+      els.dayOrigin.innerHTML=`<span class="${originClass}">${origin}</span>`;
+      els.loadedOrdersTotal.textContent=money(loadedSales);
+
+      if(!manual){
+        els.closingReportedTotal.textContent=closingHasTotals(closing) ? money(closing.total_sales) : "--";
+        els.dayDifference.textContent="--";
+        els.differenceBox.className="box";
+        els.dayControlNote.textContent=active.length
+          ? "El total mostrado sale de los pedidos cargados en el sistema."
+          : "No hay pedidos cargados ni cierre manual para esta fecha.";
+        return;
+      }
+
+      const reported=round2(safeNum(closing.total_sales));
+      const diff=round2(reported-loadedSales);
+      els.closingReportedTotal.textContent=money(reported);
+      els.dayDifference.textContent=(diff>=0?"+":"")+money(diff).replace("S/ ","S/ ");
+
+      if(Math.abs(diff)<=0.009){
+        els.differenceBox.className="box control-good";
+        els.dayControlNote.textContent="✅ CUADRA: las comandas/pedidos cargados suman lo mismo que el cierre manual.";
+      }else if(diff>0){
+        els.differenceBox.className="box control-warn";
+        els.dayControlNote.textContent=`⚠️ Faltan ${money(diff)} por cargar en comandas/pedidos para llegar al cierre manual.`;
+      }else{
+        els.differenceBox.className="box control-bad";
+        els.dayControlNote.textContent=`⚠️ Los pedidos cargados superan el cierre manual por ${money(Math.abs(diff))}. Revisa duplicados o el cierre.`;
+      }
+    }
+
     function statusTag(status){
       const s = String(status || "PENDIENTE").toUpperCase();
       if (s === "ENTREGADO") return `<span class="tag done">ENTREGADO</span>`;
@@ -516,37 +754,82 @@
         return `<div class="small">• <b>${safeNum(item.qty)}</b> x ${esc(item.name || "Producto")} ${parts.length ? `<br><span class="muted">${esc(parts.join(" | "))}</span>` : ""}</div>`;
       }).join("");
     }
+    function filteredOrderRows(rows){
+      const filter=String(els.orderFilter?.value || "all");
+      const q=String(els.orderSearch?.value || "").trim().toLowerCase();
+
+      return allOrderRows(rows)
+        .filter(row=>{
+          const o=getOrderFromRow(row);
+          const st=getStatus(row);
+          const src=sourceOfOrder(o);
+
+          if(filter==="pending" && st==="ENTREGADO") return false;
+          if(filter==="pending" && st==="ANULADO") return false;
+          if(filter==="done" && st!=="ENTREGADO") return false;
+          if(filter==="cancel" && st!=="ANULADO") return false;
+          if(filter==="paper" && src!=="PAPEL") return false;
+          if(filter==="moza" && src!=="MOZA") return false;
+
+          if(q){
+            const hay=[
+              row.order_id,o.dailyOrderNumber,o.boletaNumber,row.boleta_number,
+              o.customerName,o.customerDni,o.paymentMethod,o.source,
+              ...(o.items||[]).map(x=>x.name)
+            ].join(" ").toLowerCase();
+            if(!hay.includes(q)) return false;
+          }
+          return true;
+        })
+        .sort((a,b)=>new Date(b.updated_at || getOrderFromRow(b).updatedAt || 0)-new Date(a.updated_at || getOrderFromRow(a).updatedAt || 0));
+    }
+
     function renderOrders(rows){
-      const orders = allOrderRows(rows).sort((a,b) => new Date(b.updated_at || getOrderFromRow(b).updatedAt || 0) - new Date(a.updated_at || getOrderFromRow(a).updatedAt || 0));
-      if (!orders.length) {
-        els.ordersList.innerHTML = `<div class="card muted">Todavía no hay pedidos registrados para esta fecha.</div>`;
+      const orders=filteredOrderRows(rows);
+      const totalAll=allOrderRows(rows).length;
+      const filterActive=(els.orderFilter?.value||"all")!=="all" || !!String(els.orderSearch?.value||"").trim();
+
+      els.orderCountTag.textContent=filterActive
+        ? `${orders.length} de ${totalAll}`
+        : `${totalAll} pedidos`;
+
+      if(!orders.length){
+        els.ordersList.innerHTML=`<div class="empty-compact">No hay pedidos que coincidan con el filtro.</div>`;
         return;
       }
-      els.ordersList.innerHTML = orders.map(row => {
-        const order = getOrderFromRow(row);
-        const st = getStatus(row);
-        const ann = st === "ANULADO";
-        const title = order.dailyOrderNumber || ("Boleta " + (order.boletaNumber || row.boleta_number || "--"));
-        return `<div class="order ${ann ? "annulled" : ""}">
-          <div class="orderTop">
-            <div>
-              <div class="orderTitle">${esc(title)} ${statusTag(st)}</div>
-              <div class="small muted">${esc(order.dateTime || order.createdAt || row.updated_at || "")}</div>
-              <div class="small">Cliente: <b>${esc(order.customerName || "No indicado")}</b>${order.customerDni ? ` · DNI: ${esc(order.customerDni)}` : ""}</div>
-              <div class="small">Pago: <b>${esc(paymentLabel(order))}</b> · Total: <b class="warn">${money(order.total)}</b></div>
-              <div class="small">Tipo: ${esc(order.deliveryMode || "")}</div>
-              ${order.comment ? `<div class="small">Nota: <b>${esc(order.comment)}</b></div>` : ""}
+
+      els.ordersList.innerHTML=orders.map(row=>{
+        const order=getOrderFromRow(row);
+        const st=getStatus(row);
+        const ann=st==="ANULADO";
+        const src=sourceOfOrder(order);
+        const srcHtml=src==="PAPEL"
+          ? `<span class="source-tag source-paper">📝 PAPEL</span>`
+          : `<span class="source-tag source-moza">💻 MOZA</span>`;
+        const title=order.dailyOrderNumber || ("Boleta "+(order.boletaNumber || row.boleta_number || "--"));
+
+        return `<details class="order-row ${ann?"annulled":""}">
+          <summary>
+            <div class="order-main">${esc(title)}</div>
+            <div class="order-source">${srcHtml}</div>
+            <div class="order-pay">${esc(paymentLabel(order))}</div>
+            <div class="order-total">${money(order.total)}</div>
+            <div>${statusTag(st)}</div>
+          </summary>
+          <div class="order-body">
+            <div class="small muted" style="margin-top:8px">${esc(order.dateTime || order.createdAt || row.updated_at || "")}</div>
+            <div class="small">Cliente: <b>${esc(order.customerName || "No indicado")}</b>${order.customerDni?` · DNI: ${esc(order.customerDni)}`:""}</div>
+            <div class="small">Tipo: ${esc(order.deliveryMode || "")}</div>
+            ${order.comment?`<div class="small">Nota: <b>${esc(order.comment)}</b></div>`:""}
+            <div style="margin-top:7px">${orderItemsHtml(order)}</div>
+            <div class="actions">
+              <button class="btn-green" onclick="updateStatus('${esc(row.order_id)}','ENTREGADO')">Entregado</button>
+              <button class="btn-dark" onclick="updateStatus('${esc(row.order_id)}','PENDIENTE')">Pendiente</button>
+              <button class="edit-payment-btn" onclick="openPaymentEditor('${esc(row.order_id)}')">Editar pago</button>
+              <button class="btn-red" onclick="updateStatus('${esc(row.order_id)}','ANULADO')">Anular</button>
             </div>
-            <div class="small muted">ID: ${esc(row.order_id)}</div>
           </div>
-          <div style="margin-top:8px">${orderItemsHtml(order)}</div>
-          <div class="actions">
-            <button class="btn-green" onclick="updateStatus('${esc(row.order_id)}','ENTREGADO')">Marcar entregado</button>
-            <button class="btn-dark" onclick="updateStatus('${esc(row.order_id)}','PENDIENTE')">Volver pendiente</button>
-            <button class="edit-payment-btn" onclick="openPaymentEditor('${esc(row.order_id)}')">Editar pago</button>
-            <button class="btn-red" onclick="updateStatus('${esc(row.order_id)}','ANULADO')">Anular</button>
-          </div>
-        </div>`;
+        </details>`;
       }).join("");
     }
 
@@ -641,11 +924,12 @@ Total pedido = ${money(total)}`;
       const dateKey = els.adminDate.value || activeDateKey || getDateKeyLocal();
       els.adminDate.value = dateKey;
       try {
-        const [setup, rows] = await Promise.all([loadSetup(dateKey), loadOrders(dateKey)]);
+        const [setup, rows, closing] = await Promise.all([loadSetup(dateKey), loadOrders(dateKey), loadClosing(dateKey)]);
         currentSetup = setup;
         currentOrders = rows;
+        currentClosing = closing;
         if (forceForm || !isSetupInputActive()) fillSetupForm(setup);
-        renderMetrics(setup, rows);
+        renderMetrics(setup, rows, closing);
         renderDrinks(rows);
         renderProducts(rows);
         renderOrders(rows);
@@ -708,6 +992,10 @@ Total pedido = ${money(total)}`;
           <tr class="total"><td>Efectivo a entregar</td><td>${esc(els.mFinalCash.textContent)}</td></tr>
           <tr><td>Total venta final</td><td>${esc(els.mFinalAll.textContent)}</td></tr>
           <tr><td>Anulados</td><td>${esc(els.mCanceled.textContent)}</td></tr>
+          <tr><td>Origen del día</td><td>${els.dayOrigin.textContent}</td></tr>
+          <tr><td>Pedidos cargados</td><td>${esc(els.loadedOrdersTotal.textContent)}</td></tr>
+          <tr><td>Cierre reportado</td><td>${esc(els.closingReportedTotal.textContent)}</td></tr>
+          <tr><td>Diferencia</td><td>${esc(els.dayDifference.textContent)}</td></tr>
         </table>
         </body></html>`;
       const w = window.open("", "_blank", "width=380,height=700");
@@ -744,6 +1032,7 @@ Total pedido = ${money(total)}`;
           .on("postgres_changes", { event:"*", schema:"public", table:ORDERS_TABLE }, () => refreshData(false))
           .on("postgres_changes", { event:"*", schema:"public", table:DAY_SETUP_TABLE }, () => refreshData(false))
           .on("postgres_changes", { event:"*", schema:"public", table:CASH_STATE_TABLE }, () => { userChangedDate = false; refreshData(true); })
+          .on("postgres_changes", { event:"*", schema:"public", table:CLOSINGS_TABLE }, () => refreshData(false))
           .subscribe((status) => {
             realtimeReady = status === "SUBSCRIBED";
             setLive(realtimeReady, realtimeReady ? "En vivo" : "Actualizado");
@@ -760,6 +1049,14 @@ Total pedido = ${money(total)}`;
     els.adminDate.addEventListener("change", () => { userChangedDate = true; refreshData(true); });
     els.btnSaveSetup.addEventListener("click", handleSaveSetup);
     els.btnPrint.addEventListener("click", printSummary);
+    els.orderSearch.addEventListener("input",()=>renderOrders(currentOrders));
+    els.orderFilter.addEventListener("change",()=>renderOrders(currentOrders));
+    els.btnClearOrderFilters.addEventListener("click",()=>{
+      els.orderSearch.value="";
+      els.orderFilter.value="all";
+      renderOrders(currentOrders);
+    });
+
 
 
     document.querySelectorAll('input[name="editPaymentMethod"]').forEach(r => r.addEventListener("change", toggleEditMixedBox));
