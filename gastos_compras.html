@@ -131,6 +131,34 @@
       background:#111827;border:1px solid #263244;border-radius:13px;padding:10px;
       color:#cbd5e1;font-size:12px;line-height:1.45
     }
+
+    .scan-box{
+      border:1px solid rgba(56,189,248,.38);
+      background:linear-gradient(180deg,rgba(2,132,199,.10),rgba(2,6,23,.96));
+      border-radius:18px;padding:14px;margin-bottom:12px
+    }
+    .scan-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+    .photo-drop{
+      min-height:180px;border:1px dashed rgba(56,189,248,.65);border-radius:16px;
+      background:#020617;display:flex;align-items:center;justify-content:center;
+      overflow:hidden;padding:10px;text-align:center;color:#94a3b8
+    }
+    .photo-drop img{max-width:100%;max-height:330px;border-radius:12px;display:block}
+    .scan-progress{
+      margin-top:10px;height:10px;border-radius:999px;background:#111827;overflow:hidden;
+      border:1px solid #263244
+    }
+    .scan-progress > div{height:100%;width:0%;background:#38bdf8;transition:width .2s ease}
+    .ocr-text{min-height:180px;font-family:monospace;font-size:12px;line-height:1.35}
+    .scan-result{
+      margin-top:10px;padding:10px;border-radius:12px;background:#020617;border:1px solid #334155;
+      color:#cbd5e1;font-size:12px;line-height:1.45;white-space:pre-line
+    }
+    .scan-badge{
+      display:inline-flex;padding:5px 9px;border-radius:999px;background:rgba(56,189,248,.12);
+      color:#bae6fd;border:1px solid rgba(56,189,248,.35);font-size:11px;font-weight:900
+    }
+
     .hidden{display:none!important}
     @media(max-width:850px){
       .grid,.grid-3{grid-template-columns:1fr 1fr}
@@ -151,6 +179,7 @@
       .history-line .hproduct{grid-column:1/-1}
       .history-line .haction{grid-column:1/-1}
       .top-actions{width:100%}
+      .scan-grid{grid-template-columns:1fr}
       .top-actions .btn{flex:1}
     }
   </style>
@@ -174,6 +203,41 @@
     <div class="metric"><small>N.º de compras</small><b id="mPurchases">0</b></div>
     <div class="metric"><small>Productos / líneas</small><b id="mLines">0</b></div>
     <div class="metric green"><small>Último registro</small><b id="mLast" style="font-size:16px">—</b></div>
+  </div>
+
+
+  <div class="section-title">
+    <span>📷 Registrar desde foto</span>
+    <span class="scan-badge">Lectura automática en el navegador</span>
+  </div>
+
+  <div class="scan-box">
+    <div class="scan-grid">
+      <div>
+        <label>Foto de boleta, nota o lista de compra</label>
+        <input type="file" id="receiptPhoto" accept="image/*" capture="environment">
+        <div class="photo-drop" id="photoPreview">
+          <div>📸 Toma una foto o elige una imagen.<br><span class="muted">Procura que esté recta, iluminada y que se vea el total.</span></div>
+        </div>
+        <div class="actions">
+          <button class="btn-purple" id="btnReadPhoto" type="button">🤖 Leer foto</button>
+          <button class="btn-dark" id="btnClearPhoto" type="button">✕ Quitar foto</button>
+        </div>
+        <div class="scan-progress"><div id="scanProgressBar"></div></div>
+        <div class="scan-result" id="scanStatus">Todavía no se ha leído ninguna imagen.</div>
+      </div>
+
+      <div>
+        <label>Texto detectado (puedes corregirlo)</label>
+        <textarea id="ocrText" class="ocr-text" placeholder="Aquí aparecerá el texto leído de la foto..."></textarea>
+        <div class="actions">
+          <button class="btn-blue" id="btnApplyOcr" type="button">⬇️ Pasar al formulario</button>
+        </div>
+        <div class="note" style="margin-top:10px">
+          Primero revisa lo detectado. El sistema <b>no guarda nada solo</b>: después podrás corregir productos y costos antes de presionar <b>Guardar compra</b>.
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="section-title">
@@ -275,6 +339,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
 const SUPABASE_URL = "https://defdwzzewzfjuseozwkn.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
@@ -287,6 +352,8 @@ const supabaseClient = window.supabase.createClient(
 
 const $ = id => document.getElementById(id);
 let currentRows = [];
+let currentSource = "manual";
+let selectedReceiptFile = null;
 
 function localDateKey(d = new Date()) {
   const y = d.getFullYear();
@@ -369,6 +436,7 @@ function clearForm(keepDate=true) {
   addItem();
   if (keepDate) $("purchaseDate").value = date || localDateKey();
   updatePurchaseTotal();
+  currentSource = "manual";
   $("saveStatus").textContent = "Formulario limpio.";
 }
 
@@ -407,7 +475,7 @@ async function savePurchase() {
     payment_method: paymentMethod,
     purchase_group_id: groupId,
     receipt_image_url: null,
-    source: "manual",
+    source: currentSource || "manual",
     created_at: now
   }));
 
@@ -584,6 +652,258 @@ async function editLine(id) {
   if (error) return alert("No se pudo editar: " + error.message);
   await loadHistory();
 }
+
+
+function setPhotoPreview(file){
+  const box = $("photoPreview");
+  if (!file) {
+    box.innerHTML = `<div>📸 Toma una foto o elige una imagen.<br><span class="muted">Procura que esté recta, iluminada y que se vea el total.</span></div>`;
+    return;
+  }
+  const url = URL.createObjectURL(file);
+  box.innerHTML = `<img src="${url}" alt="Vista previa de comprobante">`;
+}
+
+function normalizeOcrNumber(s){
+  return n(String(s ?? "").replace(/\s/g,"").replace(",","."));
+}
+
+function cleanOcrDescription(s){
+  return String(s ?? "")
+    .replace(/^\s*[-•*]+\s*/,"")
+    .replace(/\s+/g," ")
+    .trim();
+}
+
+function detectUnit(raw){
+  const t = String(raw || "").toUpperCase();
+  if (/\bKG\b|KILO/.test(t)) return "kg";
+  if (/LITRO|\bLT\b/.test(t)) return "litro";
+  if (/CAJA/.test(t)) return "caja";
+  if (/PAQUETE|PAQ/.test(t)) return "paquete";
+  if (/BOLSA/.test(t)) return "bolsa";
+  if (/DOCENA/.test(t)) return "docena";
+  if (/CIENTO/.test(t)) return "ciento";
+  if (/UNID|UND|UNIDAD|CASILLERO/.test(t)) return "unidad";
+  return "unidad";
+}
+
+function parseReceiptText(text){
+  const rawLines = String(text || "")
+    .split(/\r?\n/)
+    .map(x => x.replace(/\s+/g," ").trim())
+    .filter(Boolean);
+
+  const joined = rawLines.join("\n");
+  let dateKey = "";
+  let receiptNumber = "";
+  let detectedTotal = 0;
+
+  const dm = joined.match(/\b(\d{1,2})[\/.\-](\d{1,2})[\/.\-](20\d{2})\b/);
+  if (dm) dateKey = `${dm[3]}-${String(dm[2]).padStart(2,"0")}-${String(dm[1]).padStart(2,"0")}`;
+
+  const rm = joined.match(/(?:NOTA(?:\s+DE)?\s+VENTA|BOLETA|TICKET|COMPROBANTE|N[°ºO])\s*(?:N[°ºO]?\s*)?[:#\-]?\s*(\d{3,})/i);
+  if (rm) receiptNumber = rm[1];
+
+  for (const line of rawLines) {
+    if (/TOTAL/i.test(line)) {
+      const nums = [...line.matchAll(/(\d{1,6}[.,]\d{2})/g)];
+      if (nums.length) detectedTotal = normalizeOcrNumber(nums[nums.length-1][1]);
+    }
+  }
+
+  const skip = /^(NOTA|BOLETA|TICKET|FECHA|CLIENTE|CANT|DESCRIP|IMPORTE|VENDEDOR|PERSONAL|ENTREGA|RUC|DNI|TOTAL\b|SON\b|GRACIAS\b)/i;
+  const priceOnly = /^\s*(\d{1,6}[.,]\d{2})\s*$/;
+  const trailingPrice = /^(.*?)(\d{1,6}[.,]\d{2})\s*$/;
+  const simpleColon = /^\s*(\d+(?:[.,]\d+)?)?\s*([^:]{2,}?)\s*[:\-]\s*(\d{1,6}[.,]\d{2})\s*$/;
+
+  const items = [];
+  let pending = "";
+
+  function pushItem(descRaw, priceRaw){
+    let desc = cleanOcrDescription(descRaw);
+    if (!desc || skip.test(desc)) return;
+
+    let qty = 1;
+    let unit = "unidad";
+
+    const bracketQty = desc.match(/^\[\s*(\d+(?:[.,]\d+)?)\s*\]\s*/);
+    if (bracketQty) {
+      qty = normalizeOcrNumber(bracketQty[1]) || 1;
+      desc = desc.slice(bracketQty[0].length);
+    } else {
+      const leadQty = desc.match(/^(\d+(?:[.,]\d+)?)\s+(?=[A-Za-zÁÉÍÓÚÑáéíóúñ])/);
+      if (leadQty && normalizeOcrNumber(leadQty[1]) <= 100) {
+        qty = normalizeOcrNumber(leadQty[1]) || 1;
+        desc = desc.slice(leadQty[0].length);
+      }
+    }
+
+    const bracketUnit = desc.match(/^\[\s*([^\]]{1,30})\s*\]\s*/);
+    if (bracketUnit) {
+      unit = detectUnit(bracketUnit[1]);
+      desc = desc.slice(bracketUnit[0].length);
+    } else {
+      unit = detectUnit(desc);
+    }
+
+    desc = cleanOcrDescription(desc)
+      .replace(/\bTOTAL\b.*$/i,"")
+      .trim();
+
+    const cost = normalizeOcrNumber(priceRaw);
+    if (!desc || cost <= 0) return;
+
+    // Evita duplicar la misma línea detectada dos veces.
+    const dup = items.some(x => x.product.toLowerCase() === desc.toLowerCase() && Math.abs(x.cost-cost) < 0.001);
+    if (!dup) items.push({product:desc, qty, unit, cost});
+  }
+
+  for (const line of rawLines) {
+    if (skip.test(line)) {
+      pending = "";
+      continue;
+    }
+
+    const colon = line.match(simpleColon);
+    if (colon) {
+      const qty = colon[1] ? normalizeOcrNumber(colon[1]) : 1;
+      const desc = cleanOcrDescription(colon[2]);
+      if (desc && !skip.test(desc)) {
+        items.push({product:desc, qty:qty || 1, unit:detectUnit(desc), cost:normalizeOcrNumber(colon[3])});
+      }
+      pending = "";
+      continue;
+    }
+
+    const only = line.match(priceOnly);
+    if (only && pending) {
+      pushItem(pending, only[1]);
+      pending = "";
+      continue;
+    }
+
+    const tail = line.match(trailingPrice);
+    if (tail) {
+      const left = cleanOcrDescription(tail[1]);
+      if (left && !/TOTAL/i.test(left)) {
+        pushItem((pending ? pending + " " : "") + left, tail[2]);
+      }
+      pending = "";
+      continue;
+    }
+
+    // Conserva posibles descripciones partidas en 2 líneas.
+    if (/[A-Za-zÁÉÍÓÚÑáéíóúñ]/.test(line) && line.length >= 3) {
+      pending = pending ? (pending + " " + line) : line;
+      if (pending.length > 120) pending = line;
+    }
+  }
+
+  // Si OCR no detectó TOTAL pero sí productos, usa su suma solo como referencia.
+  const itemSum = items.reduce((s,x)=>s+n(x.cost),0);
+  return {dateKey, receiptNumber, detectedTotal, itemSum, items};
+}
+
+function applyParsedReceipt(parsed){
+  if (parsed.dateKey) {
+    $("purchaseDate").value = parsed.dateKey;
+    $("historyDate").value = parsed.dateKey;
+  }
+  if (parsed.receiptNumber) $("receiptNumber").value = parsed.receiptNumber;
+
+  $("itemsBox").innerHTML = "";
+  if (parsed.items.length) {
+    parsed.items.forEach(item => addItem(item));
+  } else {
+    addItem();
+  }
+  currentSource = "ocr";
+  updatePurchaseTotal();
+
+  const diff = parsed.detectedTotal > 0 ? Math.abs(parsed.detectedTotal - parsed.itemSum) : 0;
+  let msg = `✅ Texto procesado.\nProductos detectados: ${parsed.items.length}\nSuma de líneas: ${money(parsed.itemSum)}`;
+  if (parsed.detectedTotal > 0) {
+    msg += `\nTotal leído de la foto: ${money(parsed.detectedTotal)}`;
+    if (diff > 0.02) msg += `\n⚠️ Revisa la foto: hay una diferencia de ${money(diff)} entre el total y las líneas detectadas.`;
+    else msg += `\n✅ La suma coincide con el total detectado.`;
+  }
+  if (!parsed.items.length) msg += "\n⚠️ No pude separar productos automáticamente. Corrige el texto o ingrésalos manualmente.";
+  $("scanStatus").textContent = msg;
+  $("saveStatus").textContent = "Revisa los datos que la foto pasó al formulario y luego presiona Guardar compra.";
+}
+
+async function readReceiptPhoto(){
+  if (!selectedReceiptFile) {
+    $("scanStatus").textContent = "⚠️ Primero toma una foto o selecciona una imagen.";
+    return;
+  }
+  if (!window.Tesseract) {
+    $("scanStatus").textContent = "❌ No cargó el lector de imágenes. Revisa tu conexión a internet y vuelve a abrir la página.";
+    return;
+  }
+
+  $("btnReadPhoto").disabled = true;
+  $("scanProgressBar").style.width = "2%";
+  $("scanStatus").textContent = "🤖 Preparando lector... La primera lectura puede tardar un poco.";
+
+  try {
+    const result = await Tesseract.recognize(selectedReceiptFile, "spa", {
+      logger: m => {
+        if (typeof m.progress === "number") {
+          const pct = Math.max(2, Math.round(m.progress * 100));
+          $("scanProgressBar").style.width = pct + "%";
+          const label = m.status ? String(m.status).replaceAll("_"," ") : "leyendo";
+          $("scanStatus").textContent = `🤖 ${label}... ${pct}%`;
+        }
+      }
+    });
+
+    const text = result?.data?.text || "";
+    $("ocrText").value = text.trim();
+    $("scanProgressBar").style.width = "100%";
+
+    const parsed = parseReceiptText(text);
+    applyParsedReceipt(parsed);
+  } catch(err) {
+    console.error(err);
+    $("scanStatus").textContent = "❌ No pude leer esta imagen: " + (err.message || String(err));
+  } finally {
+    $("btnReadPhoto").disabled = false;
+  }
+}
+
+$("receiptPhoto").addEventListener("change", e => {
+  selectedReceiptFile = e.target.files && e.target.files[0] ? e.target.files[0] : null;
+  setPhotoPreview(selectedReceiptFile);
+  $("ocrText").value = "";
+  $("scanProgressBar").style.width = "0%";
+  $("scanStatus").textContent = selectedReceiptFile
+    ? `Imagen lista: ${selectedReceiptFile.name || "foto"}. Presiona “Leer foto”.`
+    : "Todavía no se ha leído ninguna imagen.";
+});
+
+$("btnReadPhoto").addEventListener("click", readReceiptPhoto);
+
+$("btnApplyOcr").addEventListener("click", () => {
+  const text = $("ocrText").value.trim();
+  if (!text) {
+    $("scanStatus").textContent = "⚠️ No hay texto para procesar.";
+    return;
+  }
+  applyParsedReceipt(parseReceiptText(text));
+});
+
+$("btnClearPhoto").addEventListener("click", () => {
+  selectedReceiptFile = null;
+  $("receiptPhoto").value = "";
+  $("ocrText").value = "";
+  $("scanProgressBar").style.width = "0%";
+  setPhotoPreview(null);
+  $("scanStatus").textContent = "Foto retirada. Puedes registrar manualmente o elegir otra imagen.";
+  currentSource = "manual";
+});
+
 
 $("btnAddItem").addEventListener("click", () => addItem());
 $("btnSave").addEventListener("click", savePurchase);
