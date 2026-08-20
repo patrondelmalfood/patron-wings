@@ -452,7 +452,7 @@
     <div>
       <h1>📦 Control de Inventario y Producción</h1>
       <div class="sub">
-        Stock real + ingresos · consumo por moza, comandas de papel o ajuste manual.
+        Stock real desde un conteo físico · descuenta solo movimientos posteriores al punto de inicio.
       </div>
       <span class="badge">Inventario conectado · sistema + comandas de papel + consumo manual</span>
     </div>
@@ -734,17 +734,20 @@
   <div class="panel physical-box">
     <div class="note" style="margin-bottom:12px">
       Usa esta sección cuando cuentes físicamente el local y el stock no coincida con el sistema.
-      <b>Lo ideal es hacerlo antes de empezar las ventas del día.</b>
-      El conteo guardado se convierte en una nueva base y desde esa fecha el sistema vuelve a descontar los consumos.
+      Al guardar, el sistema toma <b>la fecha Y HORA exacta</b> como nuevo punto de inicio.
+      Todo pedido anterior a ese momento se conserva como venta histórica, pero <b>ya no descuenta este nuevo inventario</b>.
     </div>
     <div class="input-grid" id="physicalGrid"></div>
     <label style="margin-top:12px">Motivo / observación del conteo</label>
     <textarea id="physicalNote" placeholder="Ej: Conteo físico realizado al abrir el local."></textarea>
     <div class="actions" style="margin-top:12px">
       <button class="blue" id="btnCopyCurrentToPhysical">📋 Copiar stock estimado</button>
-      <button class="green" id="btnSavePhysical">✅ Guardar conteo físico como nueva base</button>
+      <button class="green" id="btnSavePhysical">🚀 Empezar inventario desde este conteo</button>
     </div>
-    <div class="status" id="physicalStatus">Primero carga el inventario. Luego corrige únicamente lo que hayas contado físicamente.</div>
+    <div class="status" id="physicalStatus">Escribe lo que tienes FÍSICAMENTE ahora. Al guardar, empieza un inventario nuevo desde ese instante.</div>
+    <div class="note" style="margin-top:10px">
+      <b>Punto de inicio actual:</b> <span id="baselineExactText">No configurado.</span>
+    </div>
   </div>
 
   <div class="section-title">🛢️ Control de aceite</div>
@@ -815,7 +818,8 @@
       <div class="grid2">
         <div>
           <label>Fecha base del inventario</label>
-          <input type="date" id="inventoryBaseDate">
+          <input type="date" id="inventoryBaseDate" readonly>
+          <div class="small">Se define automáticamente al guardar un conteo físico.</div>
         </div>
         <div>
           <label>Kg de arroz por porción de chaufa</label>
@@ -1037,6 +1041,26 @@ function dateFromKey(key){
   return new Date(y, (m || 1) - 1, d || 1);
 }
 
+function isoMs(v){
+  if(!v) return 0;
+  const ms=Date.parse(v);
+  return Number.isFinite(ms) ? ms : 0;
+}
+function orderMomentMs(o){
+  return isoMs(o?.createdAt) || isoMs(o?.capturedAt) || isoMs(o?.updatedAt) || 0;
+}
+function isAfterInventoryBaseline(o, baselineAt){
+  if(!baselineAt) return true;
+  const t=orderMomentMs(o);
+  // If an old record has no usable timestamp, compare its date as a safe fallback.
+  if(!t){
+    const dk=String(o?.__rowDateKey || o?.dateKey || "");
+    const baseDate=String(baselineAt).slice(0,10);
+    return dk > baseDate;
+  }
+  return t >= isoMs(baselineAt);
+}
+
 function daysBetween(startKey, endKey){
   if (!startKey || !endKey) return 0;
   const a = dateFromKey(startKey);
@@ -1256,9 +1280,10 @@ function calculateConsumption(orders){
 
 async function loadActiveDay(){
   const dateInput = document.getElementById("dateKey");
+  const today=todayKey();
 
   if (!supabaseClient) {
-    dateInput.value = todayKey();
+    dateInput.value = today;
     return;
   }
 
@@ -1271,15 +1296,33 @@ async function loadActiveDay(){
 
     if (error) throw error;
 
-    const dk = data?.is_open && data?.active_date_key ? data.active_date_key : todayKey();
-    dateInput.value = dk;
-    document.getElementById("activeDayText").textContent =
-      data?.is_open
-        ? `🟢 Caja activa: ${humanDate(dk)}`
-        : `🔴 Sin caja abierta. Usando fecha de hoy: ${humanDate(dk)}`;
+    const active=data?.is_open && data?.active_date_key ? data.active_date_key : "";
+    let use=today;
+    let msg=`📅 Inventario usando hoy: ${humanDate(today)}`;
+
+    if(active){
+      const diff=Math.abs(daysBetween(active,today)-1);
+      // Respect active cash only if it is today or yesterday; older dates are stale for inventory.
+      if(active===today){
+        use=active;
+        msg=`🟢 Caja activa hoy: ${humanDate(active)}`;
+      }else{
+        const ad=dateFromKey(active), td=dateFromKey(today);
+        const realDiff=Math.round((td-ad)/86400000);
+        if(realDiff===1){
+          use=active;
+          msg=`🟢 Caja activa reciente: ${humanDate(active)}`;
+        }else{
+          msg=`⚠️ Caja antigua ${humanDate(active)} ignorada aquí. Inventario usando hoy ${humanDate(today)}.`;
+        }
+      }
+    }
+
+    dateInput.value=use;
+    document.getElementById("activeDayText").textContent=msg;
   } catch(err) {
-    dateInput.value = todayKey();
-    document.getElementById("activeDayText").textContent = "No pude leer caja activa. Usando fecha de hoy.";
+    dateInput.value = today;
+    document.getElementById("activeDayText").textContent = "No pude leer caja activa. Inventario usando fecha de hoy.";
   }
 }
 
@@ -1309,18 +1352,21 @@ async function loadInitialStock(){
     oilStartDate: src.oilStartDate || todayKey(),
     riceKgPerPortion: n(src.riceKgPerPortion) || 0.125,
     baselineDate: src.baselineDate || "0000-00-00",
+    baselineAt: src.baselineAt || null,
     updatedAt: src.updatedAt || null
   };
 }
 
 async function saveInitialStock(){
+  const currentBase = await loadInitialStock();
   const payload = {
     __type:"inventory_initial_stock",
     entries: readInputs("initial"),
     note: document.getElementById("initialNote").value.trim(),
     oilStartDate: document.getElementById("oilStartDate").value || todayKey(),
     riceKgPerPortion: getRiceKgPerPortion(),
-    baselineDate: document.getElementById("inventoryBaseDate")?.value || "0000-00-00",
+    baselineDate: currentBase.baselineDate || document.getElementById("inventoryBaseDate")?.value || "0000-00-00",
+    baselineAt: currentBase.baselineAt || null,
     updatedAt: new Date().toISOString()
   };
 
@@ -1755,7 +1801,7 @@ async function loadManualUsage(dateKey){
   };
 }
 
-async function loadManualUsageUpTo(dateKey, baselineDate="0000-00-00"){
+async function loadManualUsageUpTo(dateKey, baselineDate="0000-00-00", baselineAt=null){
   if(!supabaseClient) return [];
   try{
     const {data,error}=await supabaseClient
@@ -1776,7 +1822,7 @@ async function loadManualUsageUpTo(dateKey, baselineDate="0000-00-00"){
         note:p.note || "",
         updatedAt:p.updatedAt || row.updated_at || null
       };
-    });
+    }).filter(x => !baselineAt || isoMs(x.updatedAt) >= isoMs(baselineAt));
   }catch(err){
     console.warn("No pude leer consumo manual acumulado:",err);
     return [];
@@ -1903,7 +1949,7 @@ async function loadDailyEntriesUpTo(dateKey, baselineDate="0000-00-00"){
   return entries;
 }
 
-async function loadOrdersUpTo(dateKey, baselineDate="0000-00-00"){
+async function loadOrdersUpTo(dateKey, baselineDate="0000-00-00", baselineAt=null){
   if (!supabaseClient) return [];
 
   const {data,error} = await supabaseClient
@@ -1917,11 +1963,12 @@ async function loadOrdersUpTo(dateKey, baselineDate="0000-00-00"){
   if (error) throw error;
 
   return (data || [])
-    .map(r => ({...(r.data || {}), __rowDateKey:r.date_key}))
-    .filter(isRealOrder);
+    .map(r => ({...(r.data || {}), __rowDateKey:r.date_key, __rowUpdatedAt:r.updated_at}))
+    .filter(isRealOrder)
+    .filter(o => isAfterInventoryBaseline(o, baselineAt));
 }
 
-async function loadOrdersOfDay(dateKey){
+async function loadOrdersOfDay(dateKey, baselineAt=null){
   if (!supabaseClient) return [];
 
   const {data,error} = await supabaseClient
@@ -1934,8 +1981,9 @@ async function loadOrdersOfDay(dateKey){
   if (error) throw error;
 
   return (data || [])
-    .map(r => ({...(r.data || {}), __rowDateKey:r.date_key}))
-    .filter(isRealOrder);
+    .map(r => ({...(r.data || {}), __rowDateKey:r.date_key, __rowUpdatedAt:r.updated_at}))
+    .filter(isRealOrder)
+    .filter(o => isAfterInventoryBaseline(o, baselineAt));
 }
 
 function renderOilAlert(initial, purchases, used, dateKey, initialInfo){
@@ -2192,19 +2240,38 @@ function renderMovements(daily, calcDay, initialInfo, selectedDate, manualDay=nu
 
 async function savePhysicalCount(){
   const dateKey=document.getElementById("dateKey").value || todayKey();
-  if(!lastFinalStock){
-    alert("Primero carga el inventario.");
-    return;
-  }
-
   const physical=readInputs("physical");
-  const note=document.getElementById("physicalNote").value.trim() || "Conteo físico realizado al abrir.";
+  const note=document.getElementById("physicalNote").value.trim() || "Conteo físico / reinicio de inventario";
   const currentInitial=await loadInitialStock();
 
+  const positives=ENTRY_FIELDS.filter(([k])=>n(physical[k])>0).length;
+  if(!positives){
+    if(!confirm(
+      "Todos los valores del conteo están en 0.\n\n"+
+      "¿Seguro que quieres iniciar el inventario con TODO en cero?"
+    )) return;
+  }
+
+  const now=new Date();
+  const baselineAt=now.toISOString();
+  const baselineDate=todayKey();
+
+  // Si el selector está en una fecha distinta, para un reinicio exacto usamos HOY.
+  if(dateKey !== baselineDate){
+    alert(
+      "Para iniciar un inventario nuevo con hora exacta, usaré la fecha de HOY: "+
+      humanDate(baselineDate)+".\n\n"+
+      "Las ventas antiguas seguirán guardadas, pero no afectarán el nuevo stock."
+    );
+    document.getElementById("dateKey").value=baselineDate;
+  }
+
   const msg =
-    `¿Guardar el conteo físico del ${humanDate(dateKey)} como NUEVA BASE?\n\n` +
-    `Desde esta fecha el sistema volverá a sumar ingresos y descontar ventas.\n` +
-    `Hazlo idealmente antes de empezar las ventas del día.`;
+    `¿INICIAR INVENTARIO NUEVO ahora?\n\n` +
+    `Punto de inicio: ${now.toLocaleString()}\n\n` +
+    `• Se conservarán todas tus ventas antiguas.\n` +
+    `• Los pedidos anteriores a esta hora NO descontarán el nuevo stock.\n` +
+    `• El stock que escribiste será la cantidad real desde este momento.`;
 
   if(!confirm(msg)) return;
 
@@ -2212,54 +2279,85 @@ async function savePhysicalCount(){
     __type:"inventory_initial_stock",
     entries:physical,
     note,
-    oilStartDate:currentInitial.oilStartDate || todayKey(),
+    oilStartDate:currentInitial.oilStartDate || baselineDate,
     riceKgPerPortion:currentInitial.riceKgPerPortion || 0.125,
-    baselineDate:dateKey,
-    updatedAt:new Date().toISOString()
+    baselineDate,
+    baselineAt,
+    updatedAt:baselineAt
   };
 
   const st=document.getElementById("physicalStatus");
-  st.textContent="Guardando conteo físico...";
+  st.textContent="Creando nuevo punto de inicio...";
+
+  // El navegador también debe olvidar bases técnicas antiguas.
+  try{
+    localStorage.removeItem(LOCAL_INITIAL_KEY);
+    Object.keys(localStorage).forEach(k=>{
+      if(k.startsWith(LOCAL_DAILY_PREFIX)) localStorage.removeItem(k);
+    });
+  }catch(e){}
 
   saveLocal(LOCAL_INITIAL_KEY,payload);
 
-  // Reinicia el ingreso de esa fecha a cero: el conteo ya incorpora todo lo que había físicamente.
   const zeroDaily={
     __type:"inventory_daily_entry",
-    dateKey,
+    dateKey:baselineDate,
     entries:emptyEntries(),
-    note:"Reinicio por conteo físico",
-    updatedAt:new Date().toISOString()
+    note:"Reinicio por conteo físico exacto",
+    updatedAt:baselineAt
   };
-  saveLocal(localDailyKey(dateKey),zeroDaily);
+  saveLocal(localDailyKey(baselineDate),zeroDaily);
 
   try{
     if(!supabaseClient) throw new Error("Supabase no cargó.");
+
+    // Borra SOLO registros técnicos viejos del inventario. No toca ventas/comandas.
+    const technicalTypes=[
+      "inventory_initial_stock",
+      "inventory_daily_entry",
+      "inventory_entry",
+      "inventory_manual_usage"
+    ];
+    const old=await supabaseClient
+      .from(ORDERS_TABLE)
+      .select("order_id,data")
+      .limit(5000);
+    if(old.error) throw old.error;
+
+    const idsToDelete=(old.data||[])
+      .filter(r=>technicalTypes.includes(String(r?.data?.__type||"")))
+      .map(r=>r.order_id);
+
+    if(idsToDelete.length){
+      const del=await supabaseClient.from(ORDERS_TABLE).delete().in("order_id",idsToDelete);
+      if(del.error) throw del.error;
+    }
 
     const r1=await supabaseClient.from(ORDERS_TABLE).upsert({
       order_id:INVENTORY_INITIAL_ID,
       date_key:"0000-00-00",
       boleta_number:"",
       status:"DAY_SETUP",
-      updated_at:new Date().toISOString(),
+      updated_at:baselineAt,
       data:payload
     },{onConflict:"order_id"});
     if(r1.error) throw r1.error;
 
     const r2=await supabaseClient.from(ORDERS_TABLE).upsert({
-      order_id:INVENTORY_DAILY_PREFIX+dateKey,
-      date_key:dateKey,
+      order_id:INVENTORY_DAILY_PREFIX+baselineDate,
+      date_key:baselineDate,
       boleta_number:"",
       status:"DAY_SETUP",
-      updated_at:new Date().toISOString(),
+      updated_at:baselineAt,
       data:zeroDaily
     },{onConflict:"order_id"});
     if(r2.error) throw r2.error;
 
-    st.textContent=`✅ Conteo físico guardado. Nueva base desde ${humanDate(dateKey)}.`;
+    st.textContent=`✅ Inventario nuevo iniciado el ${now.toLocaleString()}. Ventas anteriores quedaron intactas.`;
+    document.getElementById("physicalNote").value="";
     await reloadAll();
   }catch(err){
-    st.textContent="⚠️ No se pudo confirmar en nube: "+(err.message || String(err));
+    st.textContent="⚠️ No se pudo completar el reinicio en nube: "+(err.message || String(err));
   }
 }
 
@@ -2276,6 +2374,7 @@ async function registerOilChange(){
     oilStartDate:dk,
     riceKgPerPortion:current.riceKgPerPortion || 0.125,
     baselineDate:current.baselineDate || "0000-00-00",
+    baselineAt:current.baselineAt || null,
     updatedAt:new Date().toISOString()
   };
 
@@ -2310,7 +2409,12 @@ async function reloadAll(){
   document.getElementById("riceKgPerPortion").value = initial.riceKgPerPortion || 0.125;
   document.getElementById("inventoryBaseDate").value =
     initial.baselineDate && initial.baselineDate !== "0000-00-00" ? initial.baselineDate : "";
-  renderInputs("physicalGrid", "physical", lastFinalStock || initial.entries);
+  const baselineText=document.getElementById("baselineExactText");
+  if(baselineText){
+    baselineText.textContent=initial.baselineAt
+      ? new Date(initial.baselineAt).toLocaleString()
+      : "No configurado. Haz un conteo físico para iniciar.";
+  }
 
   const daily = await loadDailyEntry(dateKey);
   renderInputs("entriesGrid", "daily", daily.entries);
@@ -2324,10 +2428,13 @@ async function reloadAll(){
 
   try {
     dailyEntries = await loadDailyEntriesUpTo(dateKey, initial.baselineDate || "0000-00-00");
-    ordersUpTo = await loadOrdersUpTo(dateKey, initial.baselineDate || "0000-00-00");
-    ordersDay = await loadOrdersOfDay(dateKey);
+    ordersUpTo = await loadOrdersUpTo(dateKey, initial.baselineDate || "0000-00-00", initial.baselineAt || null);
+    ordersDay = await loadOrdersOfDay(dateKey, initial.baselineAt || null);
     manualUsageDay = await loadManualUsage(dateKey);
-    manualUsageAccum = await loadManualUsageUpTo(dateKey, initial.baselineDate || "0000-00-00");
+    if(initial.baselineAt && manualUsageDay?.updatedAt && isoMs(manualUsageDay.updatedAt) < isoMs(initial.baselineAt)){
+      manualUsageDay={dateKey,entries:emptyEntries(),note:"",updatedAt:null};
+    }
+    manualUsageAccum = await loadManualUsageUpTo(dateKey, initial.baselineDate || "0000-00-00", initial.baselineAt || null);
   } catch(err) {
     st.textContent = "⚠️ No pude leer pedidos/inventario: " + (err.message || String(err));
   }
@@ -2380,7 +2487,6 @@ async function reloadAll(){
   renderOilAlert(initial.entries, purchasesAccum, calcAccum.used, dateKey, initial);
   renderMetrics(initial.entries, purchasesAccum, calcAccum.used, calcAccum, initial);
   renderStock(initial.entries, purchasesAccum, calcAccum.used);
-  renderInputs("physicalGrid", "physical", lastFinalStock || initial.entries);
   renderMovements(daily, autoCalcDay, initial, dateKey, manualUsageDay);
   await renderPaperOrdersHistory(dateKey);
 
@@ -2436,8 +2542,9 @@ document.getElementById("btnCopyCurrentToPhysical").addEventListener("click", ()
     alert("Primero carga el inventario.");
     return;
   }
+  if(!confirm("El stock estimado puede estar mal si vienes de datos antiguos. ¿Quieres copiarlo de todas maneras para editarlo?")) return;
   renderInputs("physicalGrid","physical",lastFinalStock);
-  document.getElementById("physicalStatus").textContent="Stock estimado copiado. Ahora corrige con lo que realmente contaste.";
+  document.getElementById("physicalStatus").textContent="Stock estimado copiado. Corrige TODAS las cantidades con el conteo físico antes de guardar.";
 });
 document.getElementById("btnOilChange").addEventListener("click", registerOilChange);
 document.getElementById("btnGoExpenses").addEventListener("click", () => {
