@@ -41,7 +41,45 @@ table{width:100%;border-collapse:collapse;font-size:13px} th,td{border-bottom:1p
 .result-line small{color:#94a3b8} .result-line b{display:block;font-size:22px;margin-top:6px;color:#fde68a}
 .result-line.profit b{color:#86efac} .result-line.loss b{color:#fca5a5}
 .save-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px} .save-status{padding:10px;border-radius:12px;background:#020617;border:1px solid #334155;color:#cbd5e1;font-size:12px;min-height:38px;flex:1}
-@media(max-width:850px){.topbar{position:relative;flex-direction:column;align-items:stretch}.brand{justify-content:center;text-align:center}.controls,.grid-4,.grid-3,.grid-2,.expense-grid,.result-box{grid-template-columns:1fr}.btn{width:100%}.metric .value{font-size:22px}}
+
+.manual-sale-card{
+  background:linear-gradient(180deg,rgba(2,132,199,.08),rgba(15,23,42,.94));
+  border-color:rgba(56,189,248,.35)
+}
+.manual-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px
+}
+.manual-box{
+  background:#020617;
+  border:1px solid #263244;
+  border-radius:14px;
+  padding:10px
+}
+.manual-box strong{
+  display:block;
+  color:#bae6fd;
+  font-size:12px;
+  margin-bottom:6px
+}
+.manual-total{
+  font-size:22px!important;
+  font-weight:900!important;
+  color:#fde68a!important
+}
+.manual-help{
+  margin-top:10px;
+  padding:10px;
+  border:1px solid #334155;
+  border-radius:12px;
+  background:#020617;
+  color:#cbd5e1;
+  font-size:12px;
+  line-height:1.45
+}
+
+@media(max-width:850px){.topbar{position:relative;flex-direction:column;align-items:stretch}.brand{justify-content:center;text-align:center}.controls,.grid-4,.grid-3,.grid-2,.expense-grid,.result-box,.manual-grid{grid-template-columns:1fr}.btn{width:100%}.metric .value{font-size:22px}}
 @media print{body{background:#fff;color:#000}.topbar,#loginBox,#controlsCard,.no-print,.save-row{display:none!important}.wrap{max-width:none;padding:0}.card,.metric,.expense-card,.result-line{box-shadow:none;border:1px solid #ddd;background:#fff;color:#000}.metric .value,th,.expense-card strong,.result-line b{color:#000}td,th{border-bottom:1px dashed #000}}
 </style>
 </head>
@@ -59,7 +97,7 @@ table{width:100%;border-collapse:collapse;font-size:13px} th,td{border-bottom:1p
     <div class="topbar">
       <div class="brand">
         <img src="LOGO.jpg" class="logo" alt="Logo">
-        <div><h1>Resumen semanal</h1><div class="sub">Ventas EN VIVO + gastos de lunes a domingo + resultado económico semanal.</div></div>
+        <div><h1>Resumen semanal</h1><div class="sub">Ventas automáticas de la moza + ingreso manual cuando se trabaja en papel.</div></div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
         <span class="status-pill"><span id="liveDot" class="dot"></span><span id="liveStatus">Conectando...</span></span>
@@ -85,6 +123,57 @@ table{width:100%;border-collapse:collapse;font-size:13px} th,td{border-bottom:1p
       <div class="metric"><div class="label">Efectivo semana</div><div class="value" id="mWeekCash">S/ 0.00</div><div class="hint">Solo venta efectivo</div></div>
       <div class="metric"><div class="label">Yape semana</div><div class="value" id="mWeekYape">S/ 0.00</div><div class="hint">Cobros digitales</div></div>
       <div class="metric"><div class="label">Pedidos registrados</div><div class="value" id="mWeekOrders">0</div><div class="hint">Pedidos válidos en vivo</div></div>
+    </div>
+
+
+    <div class="section-title">✍️ Venta manual del día</div>
+    <div class="card manual-sale-card">
+      <div class="note" style="margin:0 0 12px">
+        Usa esta parte <b>solo cuando la venta se llevó en papel y no se registró en la carta de la moza</b>.
+        Si ese día ya tiene pedidos válidos en el sistema, se bloqueará el guardado manual para evitar duplicar ventas.
+      </div>
+
+      <div class="manual-grid">
+        <div class="manual-box">
+          <strong>📅 Fecha</strong>
+          <input id="manualDate" type="date">
+        </div>
+        <div class="manual-box">
+          <strong>💵 Caja inicial</strong>
+          <input id="manualOpenCash" type="number" min="0" step="0.01" placeholder="0.00">
+        </div>
+        <div class="manual-box">
+          <strong>💰 Efectivo vendido</strong>
+          <input id="manualCash" type="number" min="0" step="0.01" placeholder="0.00">
+        </div>
+        <div class="manual-box">
+          <strong>📱 Yape vendido</strong>
+          <input id="manualYape" type="number" min="0" step="0.01" placeholder="0.00">
+        </div>
+        <div class="manual-box">
+          <strong>🧾 Venta total</strong>
+          <input id="manualTotal" class="manual-total" type="number" readonly value="0.00">
+        </div>
+        <div class="manual-box">
+          <strong>🛎️ N.º pedidos (opcional)</strong>
+          <input id="manualOrders" type="number" min="0" step="1" placeholder="0">
+        </div>
+        <div class="manual-box" style="grid-column:span 2">
+          <strong>📝 Observación (opcional)</strong>
+          <input id="manualNote" type="text" placeholder="Ej: Venta anotada en papel">
+        </div>
+      </div>
+
+      <div class="save-row no-print">
+        <button id="btnSaveManualSale" class="btn-blue" type="button" style="width:auto">💾 Guardar / actualizar venta manual</button>
+        <button id="btnLoadManualSale" class="btn" type="button" style="width:auto">🔄 Cargar datos de la fecha</button>
+        <div class="save-status" id="manualSaleStatus">Selecciona una fecha de esta semana y completa efectivo/Yape.</div>
+      </div>
+
+      <div class="manual-help">
+        <b>Cómo funciona:</b> si la moza usa el sistema, no haces nada aquí. Si la venta fue en papel,
+        escribes caja inicial + efectivo + Yape y guardas. El total se calcula automáticamente.
+      </div>
     </div>
 
     <div class="section-title">💰 Cierre económico semanal</div>
@@ -176,7 +265,7 @@ const ORDERS_TABLE="orders_cloud";
 const PURCHASES_TABLE="daily_purchases";
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:false}});
 const $=id=>document.getElementById(id);
-const ids=["loginBox","app","pass","btnLogin","btnLogout","loginError","weekDate","btnPrev","btnToday","btnNext","btnPrint","weekLabel","mWeekTotal","mWeekCash","mWeekYape","mWeekOrders","weekRows","liveDot","liveStatus","expSupplies","expStaff","expRent","expLight","expGas","expInternet","expJuly","expOther","rSales","rExpenses","rProfit","rMargin","profitBox","btnSaveExpenses","expenseStatus","purchaseRows","purchaseNote"];
+const ids=["loginBox","app","pass","btnLogin","btnLogout","loginError","weekDate","btnPrev","btnToday","btnNext","btnPrint","weekLabel","mWeekTotal","mWeekCash","mWeekYape","mWeekOrders","weekRows","liveDot","liveStatus","expSupplies","expStaff","expRent","expLight","expGas","expInternet","expJuly","expOther","rSales","rExpenses","rProfit","rMargin","profitBox","btnSaveExpenses","expenseStatus","purchaseRows","purchaseNote","manualDate","manualOpenCash","manualCash","manualYape","manualTotal","manualOrders","manualNote","btnSaveManualSale","btnLoadManualSale","manualSaleStatus"];
 const els=ids.reduce((a,id)=>(a[id]=$(id),a),{});
 let logged=false,realtimeReady=false,expenseDirty=false,currentWeekSales=0,currentMondayKey="";
 const dayNames=["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
@@ -196,7 +285,7 @@ function mondayOf(d){const x=new Date(d);const day=x.getDay();x.setDate(x.getDat
 function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
 function weekRange(){const base=els.weekDate.value?dateFromKey(els.weekDate.value):new Date();const mon=mondayOf(base),sun=addDays(mon,6);return{mon,sun,start:dateKey(mon),end:dateKey(sun)}}
 function setLive(ok,text){els.liveDot.classList.toggle("red",!ok);els.liveStatus.textContent=text}
-function showApp(){logged=true;els.loginBox.classList.add("hide");els.app.classList.remove("hide");if(!els.weekDate.value)els.weekDate.value=dateKey(new Date());expenseDirty=false;refresh()}
+function showApp(){logged=true;els.loginBox.classList.add("hide");els.app.classList.remove("hide");if(!els.weekDate.value)els.weekDate.value=dateKey(new Date());expenseDirty=false;ensureManualDateInSelectedWeek();refresh()}
 function login(){if(String(els.pass.value||"")!==ADMIN_PASSWORD){els.loginError.textContent="Clave incorrecta.";return}localStorage.setItem(SESSION_KEY,"1");els.pass.value="";els.loginError.textContent="";showApp()}
 function logout(){localStorage.removeItem(SESSION_KEY);logged=false;els.app.classList.add("hide");els.loginBox.classList.remove("hide")}
 
@@ -375,6 +464,177 @@ function recalc(){
   els.rSales.textContent=money(currentWeekSales);els.rExpenses.textContent=money(expenses);els.rProfit.textContent=money(profit);els.rMargin.textContent=margin.toFixed(1)+"%";
   els.profitBox.classList.toggle("loss",profit<0);els.profitBox.classList.toggle("profit",profit>=0);
 }
+
+function calcManualSaleTotal(){
+  const total=round2(safeNum(els.manualCash.value)+safeNum(els.manualYape.value));
+  els.manualTotal.value=total.toFixed(2);
+  return total;
+}
+function resetManualSaleForm(keepDate=true){
+  const d=els.manualDate.value;
+  els.manualOpenCash.value="";
+  els.manualCash.value="";
+  els.manualYape.value="";
+  els.manualOrders.value="";
+  els.manualNote.value="";
+  els.manualTotal.value="0.00";
+  if(keepDate) els.manualDate.value=d;
+}
+function ensureManualDateInSelectedWeek(){
+  const {start,end}=weekRange();
+  let d=els.manualDate.value;
+  if(!d || d<start || d>end){
+    const today=dateKey(new Date());
+    els.manualDate.value=(today>=start && today<=end)?today:start;
+  }
+}
+async function loadManualSaleForDate(){
+  ensureManualDateInSelectedWeek();
+  const d=els.manualDate.value;
+  if(!d) return;
+
+  els.manualSaleStatus.textContent="Consultando venta de "+d+"...";
+  try{
+    const [{data:closing,error:ce},{data:orders,error:oe}]=await Promise.all([
+      sb.from(CLOSINGS_TABLE).select("*").eq("date_key",d).maybeSingle(),
+      sb.from(ORDERS_TABLE).select("*").eq("date_key",d).limit(5000)
+    ]);
+    if(ce) throw ce;
+    if(oe) throw oe;
+
+    const validOrders=(orders||[]).filter(isValidOrderRow);
+    const isManual=!!closing && (
+      closing?.data?.manual===true ||
+      String(closing?.data?.closedBy||"").toUpperCase()==="MANUAL_PAPEL"
+    );
+
+    if(isManual){
+      els.manualOpenCash.value=safeNum(closing.open_cash).toFixed(2);
+      els.manualCash.value=safeNum(closing.total_cash).toFixed(2);
+      els.manualYape.value=safeNum(closing.total_yape).toFixed(2);
+      els.manualOrders.value=safeInt(closing.total_orders)||"";
+      els.manualNote.value=String(closing?.data?.note||"");
+      calcManualSaleTotal();
+      els.manualSaleStatus.textContent=`✅ Venta manual existente cargada: ${money(closing.total_sales)}. Puedes corregirla y volver a guardar.`;
+      return;
+    }
+
+    resetManualSaleForm(true);
+
+    if(closing && !isManual){
+      els.manualSaleStatus.textContent="🔒 Esta fecha ya tiene un cierre AUTOMÁTICO del sistema. No uses venta manual aquí.";
+      return;
+    }
+
+    if(validOrders.length){
+      const liveTotal=validOrders.reduce((s,r)=>s+safeNum(getOrderFromRow(r)?.total),0);
+      els.manualSaleStatus.textContent=`🔒 Esta fecha ya tiene ${validOrders.length} pedido(s) registrados por el sistema (${money(liveTotal)}). Para evitar duplicados, no se debe cargar venta manual.`;
+      return;
+    }
+
+    els.manualSaleStatus.textContent="✅ Esta fecha no tiene pedidos del sistema. Puedes registrar la venta manual.";
+  }catch(e){
+    console.error(e);
+    els.manualSaleStatus.textContent="❌ No pude consultar la fecha: "+(e.message||String(e));
+  }
+}
+async function saveManualSale(){
+  ensureManualDateInSelectedWeek();
+  const d=els.manualDate.value;
+  const {start,end}=weekRange();
+
+  if(!d || d<start || d>end){
+    els.manualSaleStatus.textContent=`⚠️ La fecha debe estar entre ${start} y ${end}.`;
+    return;
+  }
+
+  const openCash=round2(safeNum(els.manualOpenCash.value));
+  const cash=round2(safeNum(els.manualCash.value));
+  const yape=round2(safeNum(els.manualYape.value));
+  const total=round2(cash+yape);
+  const ordersCount=Math.max(0,safeInt(els.manualOrders.value));
+  const note=String(els.manualNote.value||"").trim();
+
+  if(total<=0){
+    els.manualSaleStatus.textContent="⚠️ Ingresa efectivo y/o Yape. La venta total debe ser mayor a S/ 0.";
+    return;
+  }
+  calcManualSaleTotal();
+
+  els.btnSaveManualSale.disabled=true;
+  els.manualSaleStatus.textContent="Verificando que no existan ventas del sistema...";
+
+  try{
+    const [{data:existing,error:ce},{data:orderRows,error:oe}]=await Promise.all([
+      sb.from(CLOSINGS_TABLE).select("*").eq("date_key",d).maybeSingle(),
+      sb.from(ORDERS_TABLE).select("*").eq("date_key",d).limit(5000)
+    ]);
+    if(ce) throw ce;
+    if(oe) throw oe;
+
+    const validOrders=(orderRows||[]).filter(isValidOrderRow);
+    const existingManual=!!existing && (
+      existing?.data?.manual===true ||
+      String(existing?.data?.closedBy||"").toUpperCase()==="MANUAL_PAPEL"
+    );
+
+    if(validOrders.length && !existingManual){
+      const liveTotal=round2(validOrders.reduce((s,r)=>s+safeNum(getOrderFromRow(r)?.total),0));
+      els.manualSaleStatus.textContent=`🔒 NO guardado. Ese día ya tiene ${validOrders.length} pedido(s) en el sistema por ${money(liveTotal)}. Usa los datos automáticos.`;
+      return;
+    }
+
+    if(existing && !existingManual){
+      els.manualSaleStatus.textContent="🔒 NO guardado. Ese día ya tiene un cierre automático creado por la moza/sistema.";
+      return;
+    }
+
+    const wd=mondayOf(dateFromKey(d));
+    const ws=dateKey(wd), we=dateKey(addDays(wd,6));
+    const closedAt=new Date(d+"T23:59:00-05:00").toISOString();
+    const now=new Date().toISOString();
+
+    const row={
+      date_key:d,
+      week_start:ws,
+      week_end:we,
+      total_sales:total,
+      total_cash:cash,
+      total_yape:yape,
+      total_orders:ordersCount,
+      open_cash:openCash,
+      final_cash:cash,
+      closed_at:closedAt,
+      updated_at:now,
+      data:{
+        closedBy:"MANUAL_PAPEL",
+        manual:true,
+        activeDateKey:d,
+        totalSales:total,
+        totalCash:cash,
+        totalYape:yape,
+        totalOrders:ordersCount,
+        openCash:openCash,
+        finalCash:cash,
+        note:note||"Venta registrada manualmente desde resumen semanal",
+        cashMode:"Caja inicial solo referencia; NO se suma a la venta"
+      }
+    };
+
+    const {error}=await sb.from(CLOSINGS_TABLE).upsert(row,{onConflict:"date_key"});
+    if(error) throw error;
+
+    els.manualSaleStatus.textContent=`✅ Venta manual guardada: ${money(total)} (Efectivo ${money(cash)} + Yape ${money(yape)}).`;
+    await refresh(false);
+  }catch(e){
+    console.error(e);
+    els.manualSaleStatus.textContent="❌ No se pudo guardar la venta manual: "+(e.message||String(e));
+  }finally{
+    els.btnSaveManualSale.disabled=false;
+  }
+}
+
+
 async function saveWeeklyExpenses(){
   if(!currentMondayKey)return;
   els.btnSaveExpenses.disabled=true;els.expenseStatus.textContent="Guardando gastos semanales...";
@@ -407,6 +667,7 @@ async function refresh(forceExpenses=false){
     renderPurchases(purchases);
     loadManualExpensesFromRows(purchases,forceExpenses);
     recalc();
+    ensureManualDateInSelectedWeek();
     setLive(true,realtimeReady?"En vivo":"Actualizado");
   }catch(e){console.error(e);setLive(false,"Error");alert("No pude cargar el resumen semanal: "+(e.message||String(e)));}
 }
@@ -422,6 +683,12 @@ function initRealtime(){
 }
 
 document.querySelectorAll(".expense-input").forEach(el=>el.addEventListener("input",()=>{expenseDirty=true;recalc()}));
+
+[els.manualCash,els.manualYape].forEach(el=>el.addEventListener("input",calcManualSaleTotal));
+els.manualDate.addEventListener("change",loadManualSaleForDate);
+els.btnLoadManualSale.addEventListener("click",loadManualSaleForDate);
+els.btnSaveManualSale.addEventListener("click",saveManualSale);
+
 els.btnSaveExpenses.addEventListener("click",saveWeeklyExpenses);
 els.btnLogin.addEventListener("click",login);els.pass.addEventListener("keydown",e=>{if(e.key==="Enter")login()});
 els.btnLogout.addEventListener("click",logout);
