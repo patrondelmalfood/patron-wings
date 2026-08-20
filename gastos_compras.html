@@ -208,7 +208,7 @@
 
   <div class="section-title">
     <span>📷 Registrar desde foto</span>
-    <span class="scan-badge">Lectura automática en el navegador</span>
+    <span class="scan-badge">OCR mejorado · contraste + doble lectura</span>
   </div>
 
   <div class="scan-box">
@@ -220,7 +220,7 @@
           <div>📸 Toma una foto o elige una imagen.<br><span class="muted">Procura que esté recta, iluminada y que se vea el total.</span></div>
         </div>
         <div class="actions">
-          <button class="btn-purple" id="btnReadPhoto" type="button">🤖 Leer foto</button>
+          <button class="btn-purple" id="btnReadPhoto" type="button">🤖 Leer foto (mejorado)</button>
           <button class="btn-dark" id="btnClearPhoto" type="button">✕ Quitar foto</button>
         </div>
         <div class="scan-progress"><div id="scanProgressBar"></div></div>
@@ -388,7 +388,7 @@ function addItem(data={}) {
     <input class="product" data-f="product" placeholder="Ej: Lechuga, pollo, mayonesa" value="${esc(data.product||"")}">
     <input data-f="qty" type="number" min="0" step="0.01" placeholder="Cant." value="${data.qty ?? ""}">
     <select data-f="unit">
-      ${["unidad","kg","g","litro","ml","caja","paquete","bolsa","docena","ciento","otro"].map(u => `<option ${data.unit===u?"selected":""}>${u}</option>`).join("")}
+      ${["unidad","kg","g","litro","ml","caja","paquete","bolsa","casillero","docena","ciento","otro"].map(u => `<option ${data.unit===u?"selected":""}>${u}</option>`).join("")}
     </select>
     <input data-f="cost" type="number" min="0" step="0.01" placeholder="S/ 0.00" value="${data.cost ?? ""}">
     <button class="remove-item" type="button">✕ Quitar</button>
@@ -664,6 +664,134 @@ function setPhotoPreview(file){
   box.innerHTML = `<img src="${url}" alt="Vista previa de comprobante">`;
 }
 
+
+async function fileToImage(file){
+  const url = URL.createObjectURL(file);
+  try{
+    const img = await new Promise((resolve,reject)=>{
+      const el = new Image();
+      el.onload = ()=>resolve(el);
+      el.onerror = reject;
+      el.src = url;
+    });
+    return img;
+  } finally {
+    setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  }
+}
+
+function canvasToBlob(canvas, type="image/jpeg", quality=.96){
+  return new Promise(resolve => canvas.toBlob(resolve, type, quality));
+}
+
+async function preprocessReceipt(file, variant="strong"){
+  const img = await fileToImage(file);
+
+  // Upscale, but cap size so mobile browsers don't run out of memory.
+  const maxW = 2200;
+  const naturalW = img.naturalWidth || img.width;
+  const naturalH = img.naturalHeight || img.height;
+  const scale = Math.min(2.35, maxW / naturalW);
+  const w = Math.max(1, Math.round(naturalW * scale));
+  const h = Math.max(1, Math.round(naturalH * scale));
+
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d", {willReadFrequently:true});
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(img, 0, 0, w, h);
+
+  const imageData = ctx.getImageData(0,0,w,h);
+  const d = imageData.data;
+
+  // Grayscale + strong contrast. This is intentionally conservative:
+  // the receipt already has dark text over a light background.
+  let min = 255, max = 0;
+  const gray = new Uint8ClampedArray(w*h);
+  for(let i=0,p=0;i<d.length;i+=4,p++){
+    const g = Math.round(.299*d[i] + .587*d[i+1] + .114*d[i+2]);
+    gray[p]=g;
+    if(g<min) min=g;
+    if(g>max) max=g;
+  }
+  const range = Math.max(1,max-min);
+
+  for(let p=0,i=0;p<gray.length;p++,i+=4){
+    let g = (gray[p]-min)*255/range;
+
+    if(variant==="strong"){
+      // Contrast curve + threshold blend to reduce moiré from screen photos.
+      g = (g-128)*1.65 + 128;
+      g = Math.max(0,Math.min(255,g));
+      const th = g < 158 ? 0 : 255;
+      g = Math.round(g*.38 + th*.62);
+    } else {
+      g = (g-128)*1.30 + 128;
+      g = Math.max(0,Math.min(255,g));
+    }
+
+    d[i]=d[i+1]=d[i+2]=g;
+    d[i+3]=255;
+  }
+  ctx.putImageData(imageData,0,0);
+
+  // Small unsharp-mask-like pass using canvas redraw.
+  const out = document.createElement("canvas");
+  out.width=w; out.height=h;
+  const octx = out.getContext("2d");
+  octx.filter = variant==="strong" ? "contrast(125%) brightness(108%)" : "contrast(112%)";
+  octx.drawImage(canvas,0,0);
+
+  return await canvasToBlob(out, "image/jpeg", .97);
+}
+
+function normalizeOcrText(text){
+  return String(text||"")
+    .replace(/[|¦]/g,"I")
+    .replace(/[“”]/g,'"')
+    .replace(/[‘’]/g,"'")
+    .replace(/[‐‑–—]/g,"-")
+    .replace(/\u00A0/g," ")
+    .replace(/[ \t]+/g," ")
+    .replace(/\n{3,}/g,"\n\n")
+    .trim();
+}
+
+function ocrQuality(text, confidence=0){
+  const t = normalizeOcrText(text);
+  if(!t) return 0;
+  let score = Number(confidence)||0;
+  if(/FECHA/i.test(t)) score += 18;
+  if(/TOTAL/i.test(t)) score += 22;
+  if(/NOTA|BOLETA|VENTA/i.test(t)) score += 15;
+  score += Math.min(25, (t.match(/\d+[.,]\d{2}/g)||[]).length*4);
+  score += Math.min(20, (t.match(/[A-ZÁÉÍÓÚÑ]{4,}/g)||[]).length);
+  return score;
+}
+
+async function runOcrPass(imageLike, psm, labelBase, progressStart, progressSpan){
+  const result = await Tesseract.recognize(imageLike, "spa", {
+    logger: m => {
+      if(typeof m.progress === "number"){
+        const pct = Math.round(progressStart + m.progress*progressSpan);
+        $("scanProgressBar").style.width = Math.min(99, Math.max(2,pct)) + "%";
+        const label = m.status ? String(m.status).replaceAll("_"," ") : labelBase;
+        $("scanStatus").textContent = `🤖 ${labelBase}: ${label}... ${Math.min(99,Math.max(2,pct))}%`;
+      }
+    },
+    tessedit_pageseg_mode: String(psm),
+    preserve_interword_spaces: "1",
+    user_defined_dpi: "300"
+  });
+  return {
+    text: normalizeOcrText(result?.data?.text || ""),
+    confidence: Number(result?.data?.confidence || 0)
+  };
+}
+
+
 function normalizeOcrNumber(s){
   return n(String(s ?? "").replace(/\s/g,"").replace(",","."));
 }
@@ -689,7 +817,15 @@ function detectUnit(raw){
 }
 
 function parseReceiptText(text){
-  const rawLines = String(text || "")
+  let normalized = normalizeOcrText(text);
+
+  // Common OCR fixes for prices such as 14400 -> 144.00 when near TOTAL.
+  normalized = normalized.replace(
+    /(TOTAL[\s:S\/.-]*)(\d{2,4})00\b/ig,
+    (_,a,b) => a + b + ".00"
+  );
+
+  const rawLines = normalized
     .split(/\r?\n/)
     .map(x => x.replace(/\s+/g," ").trim())
     .filter(Boolean);
@@ -702,105 +838,119 @@ function parseReceiptText(text){
   const dm = joined.match(/\b(\d{1,2})[\/.\-](\d{1,2})[\/.\-](20\d{2})\b/);
   if (dm) dateKey = `${dm[3]}-${String(dm[2]).padStart(2,"0")}-${String(dm[1]).padStart(2,"0")}`;
 
-  const rm = joined.match(/(?:NOTA(?:\s+DE)?\s+VENTA|BOLETA|TICKET|COMPROBANTE|N[°ºO])\s*(?:N[°ºO]?\s*)?[:#\-]?\s*(\d{3,})/i);
+  // Receipt number: accept OCR variants such as NOTA VENTA N° 58815.
+  const rm = joined.match(/(?:NOTA(?:\s+DE)?\s+VENTA|BOLETA|TICKET|COMPROBANTE|VENTA)[^\d]{0,18}(\d{4,})/i);
   if (rm) receiptNumber = rm[1];
 
-  for (const line of rawLines) {
-    if (/TOTAL/i.test(line)) {
-      const nums = [...line.matchAll(/(\d{1,6}[.,]\d{2})/g)];
-      if (nums.length) detectedTotal = normalizeOcrNumber(nums[nums.length-1][1]);
+  // Total: accept 144.00 / 144,00 / 14400 after TOTAL.
+  const totalMatches = [...joined.matchAll(/TOTAL[\s\S]{0,22}?(\d{2,4}(?:[.,]\d{2})?)/ig)];
+  if (totalMatches.length) {
+    let raw = totalMatches[totalMatches.length-1][1];
+    if (!/[.,]/.test(raw) && raw.length >= 4) {
+      raw = raw.slice(0,-2) + "." + raw.slice(-2);
     }
+    detectedTotal = normalizeOcrNumber(raw);
   }
-
-  const skip = /^(NOTA|BOLETA|TICKET|FECHA|CLIENTE|CANT|DESCRIP|IMPORTE|VENDEDOR|PERSONAL|ENTREGA|RUC|DNI|TOTAL\b|SON\b|GRACIAS\b)/i;
-  const priceOnly = /^\s*(\d{1,6}[.,]\d{2})\s*$/;
-  const trailingPrice = /^(.*?)(\d{1,6}[.,]\d{2})\s*$/;
-  const simpleColon = /^\s*(\d+(?:[.,]\d+)?)?\s*([^:]{2,}?)\s*[:\-]\s*(\d{1,6}[.,]\d{2})\s*$/;
 
   const items = [];
-  let pending = "";
+  const skip = /^(NOTA|BOLETA|TICKET|FECHA|CLIENTE|CANT|UNID|DESCRIP|IMPORTE|VENDEDOR|PERSONAL|ENTREGA|RUC|DNI|TOTAL\b|SOLES\b|SON\b|GRACIAS\b|RUTA\b)/i;
+
+  const cleaned = rawLines
+    .map(x => x.replace(/[“”]/g,'"').trim())
+    .filter(x => !skip.test(x));
+
+  // Join description fragments until a price is found.
+  let buffer = "";
+  const priceEnd = /(\d{1,4}[.,]\d{2})\s*$/;
+  const priceLoose = /(?:^|\s)(\d{1,4}[.,]\d{2})(?:\s|$)/g;
+
+  function sanitizeDescription(s){
+    return cleanOcrDescription(s)
+      .replace(/^[\-\s_=~]+/,"")
+      .replace(/\bTOTAL\b.*$/i,"")
+      .replace(/\s{2,}/g," ")
+      .trim();
+  }
+
+  function extractQtyUnit(desc){
+    let qty = 1, unit = "unidad", product = desc;
+
+    // [1][CASILLERO]HUEVO...
+    const bracket = product.match(/^\s*\[\s*(\d+(?:[.,]\d+)?)\s*\]\s*\[\s*([^\]]+)\s*\]\s*(.*)$/i);
+    if (bracket) {
+      qty = normalizeOcrNumber(bracket[1]) || 1;
+      unit = detectUnit(bracket[2]);
+      product = bracket[3];
+      if(/CASILLERO/i.test(bracket[2])) unit = "casillero";
+      if(/CIENTO/i.test(bracket[2])) unit = "ciento";
+      return {qty,unit,product:sanitizeDescription(product)};
+    }
+
+    // OCR often loses brackets: "1 CAJA MAYONESA..."
+    const lead = product.match(/^\s*(\d+(?:[.,]\d+)?)\s*(CASILLERO|CAJA|PAQUETE|BOLSA|CIENTO|KG|KILO|UNIDAD|UND)?\s+(.*)$/i);
+    if (lead) {
+      const q = normalizeOcrNumber(lead[1]);
+      if(q>0 && q<=100){
+        qty=q;
+        if(lead[2]) {
+          unit=detectUnit(lead[2]);
+          if(/CASILLERO/i.test(lead[2])) unit="casillero";
+          if(/CIENTO/i.test(lead[2])) unit="ciento";
+        }
+        product=lead[3];
+      }
+    }
+    return {qty,unit,product:sanitizeDescription(product)};
+  }
 
   function pushItem(descRaw, priceRaw){
-    let desc = cleanOcrDescription(descRaw);
-    if (!desc || skip.test(desc)) return;
-
-    let qty = 1;
-    let unit = "unidad";
-
-    const bracketQty = desc.match(/^\[\s*(\d+(?:[.,]\d+)?)\s*\]\s*/);
-    if (bracketQty) {
-      qty = normalizeOcrNumber(bracketQty[1]) || 1;
-      desc = desc.slice(bracketQty[0].length);
-    } else {
-      const leadQty = desc.match(/^(\d+(?:[.,]\d+)?)\s+(?=[A-Za-zÁÉÍÓÚÑáéíóúñ])/);
-      if (leadQty && normalizeOcrNumber(leadQty[1]) <= 100) {
-        qty = normalizeOcrNumber(leadQty[1]) || 1;
-        desc = desc.slice(leadQty[0].length);
-      }
-    }
-
-    const bracketUnit = desc.match(/^\[\s*([^\]]{1,30})\s*\]\s*/);
-    if (bracketUnit) {
-      unit = detectUnit(bracketUnit[1]);
-      desc = desc.slice(bracketUnit[0].length);
-    } else {
-      unit = detectUnit(desc);
-    }
-
-    desc = cleanOcrDescription(desc)
-      .replace(/\bTOTAL\b.*$/i,"")
-      .trim();
-
     const cost = normalizeOcrNumber(priceRaw);
-    if (!desc || cost <= 0) return;
+    if(cost<=0 || cost>5000) return;
+    const parsed = extractQtyUnit(sanitizeDescription(descRaw));
+    if(!parsed.product || parsed.product.length < 2 || skip.test(parsed.product)) return;
 
-    // Evita duplicar la misma línea detectada dos veces.
-    const dup = items.some(x => x.product.toLowerCase() === desc.toLowerCase() && Math.abs(x.cost-cost) < 0.001);
-    if (!dup) items.push({product:desc, qty, unit, cost});
+    // Reject lines that are mostly garbage/punctuation.
+    const letters = (parsed.product.match(/[A-Za-zÁÉÍÓÚÑáéíóúñ]/g)||[]).length;
+    if(letters < 2) return;
+
+    const dup = items.some(x =>
+      x.product.toLowerCase() === parsed.product.toLowerCase() &&
+      Math.abs(x.cost-cost)<0.001
+    );
+    if(!dup) items.push({...parsed,cost});
   }
 
-  for (const line of rawLines) {
-    if (skip.test(line)) {
-      pending = "";
+  for(const line0 of cleaned){
+    const line = line0.replace(/\s+/g," ").trim();
+    if(!line) continue;
+
+    const endMatch = line.match(priceEnd);
+    if(endMatch){
+      const left = line.slice(0, endMatch.index).trim();
+      pushItem((buffer ? buffer+" " : "") + left, endMatch[1]);
+      buffer="";
       continue;
     }
 
-    const colon = line.match(simpleColon);
-    if (colon) {
-      const qty = colon[1] ? normalizeOcrNumber(colon[1]) : 1;
-      const desc = cleanOcrDescription(colon[2]);
-      if (desc && !skip.test(desc)) {
-        items.push({product:desc, qty:qty || 1, unit:detectUnit(desc), cost:normalizeOcrNumber(colon[3])});
-      }
-      pending = "";
+    // If price appears inside a line, use the last plausible monetary value.
+    const prices = [...line.matchAll(priceLoose)];
+    if(prices.length){
+      const pm = prices[prices.length-1];
+      const left = line.slice(0, pm.index).trim();
+      pushItem((buffer ? buffer+" " : "") + left, pm[1]);
+      buffer="";
       continue;
     }
 
-    const only = line.match(priceOnly);
-    if (only && pending) {
-      pushItem(pending, only[1]);
-      pending = "";
-      continue;
-    }
-
-    const tail = line.match(trailingPrice);
-    if (tail) {
-      const left = cleanOcrDescription(tail[1]);
-      if (left && !/TOTAL/i.test(left)) {
-        pushItem((pending ? pending + " " : "") + left, tail[2]);
-      }
-      pending = "";
-      continue;
-    }
-
-    // Conserva posibles descripciones partidas en 2 líneas.
-    if (/[A-Za-zÁÉÍÓÚÑáéíóúñ]/.test(line) && line.length >= 3) {
-      pending = pending ? (pending + " " + line) : line;
-      if (pending.length > 120) pending = line;
+    if(/[A-Za-zÁÉÍÓÚÑáéíóúñ]/.test(line)){
+      buffer = buffer ? buffer+" "+line : line;
+      if(buffer.length>150) buffer=line;
     }
   }
 
-  // Si OCR no detectó TOTAL pero sí productos, usa su suma solo como referencia.
+  // Known printed receipts sometimes OCR the right-column prices poorly.
+  // If we have a total and 3+ plausible products, keep the lines and warn
+  // instead of inventing missing costs.
   const itemSum = items.reduce((s,x)=>s+n(x.cost),0);
   return {dateKey, receiptNumber, detectedTotal, itemSum, items};
 }
@@ -845,26 +995,43 @@ async function readReceiptPhoto(){
 
   $("btnReadPhoto").disabled = true;
   $("scanProgressBar").style.width = "2%";
-  $("scanStatus").textContent = "🤖 Preparando lector... La primera lectura puede tardar un poco.";
+  $("scanStatus").textContent = "🤖 Mejorando contraste de la boleta...";
 
   try {
-    const result = await Tesseract.recognize(selectedReceiptFile, "spa", {
-      logger: m => {
-        if (typeof m.progress === "number") {
-          const pct = Math.max(2, Math.round(m.progress * 100));
-          $("scanProgressBar").style.width = pct + "%";
-          const label = m.status ? String(m.status).replaceAll("_"," ") : "leyendo";
-          $("scanStatus").textContent = `🤖 ${label}... ${pct}%`;
-        }
-      }
+    // Pass 1: enhanced B/W, optimized for receipt blocks.
+    const enhanced = await preprocessReceipt(selectedReceiptFile, "strong");
+    const pass1 = await runOcrPass(enhanced, 6, "Lectura 1/2", 3, 47);
+
+    // Pass 2: softer processing; useful when thresholding loses thin digits.
+    $("scanStatus").textContent = "🤖 Segunda lectura para recuperar precios y números...";
+    const soft = await preprocessReceipt(selectedReceiptFile, "soft");
+    const pass2 = await runOcrPass(soft, 11, "Lectura 2/2", 50, 47);
+
+    // Pick best overall text, but merge unique lines from both passes.
+    const best = ocrQuality(pass1.text, pass1.confidence) >= ocrQuality(pass2.text, pass2.confidence) ? pass1 : pass2;
+    const other = best === pass1 ? pass2 : pass1;
+
+    const bestLines = best.text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+    const seen = new Set(bestLines.map(x=>x.toLowerCase()));
+    const merged = [...bestLines];
+    other.text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).forEach(line=>{
+      const k=line.toLowerCase();
+      if(!seen.has(k)){ seen.add(k); merged.push(line); }
     });
 
-    const text = result?.data?.text || "";
-    $("ocrText").value = text.trim();
+    const text = merged.join("\n");
+    $("ocrText").value = text;
     $("scanProgressBar").style.width = "100%";
 
     const parsed = parseReceiptText(text);
     applyParsedReceipt(parsed);
+
+    const q1 = Math.round(pass1.confidence||0);
+    const q2 = Math.round(pass2.confidence||0);
+    $("scanStatus").textContent += `\nCalidad OCR: ${q1}% / ${q2}%.`;
+    if(Math.max(q1,q2) < 55){
+      $("scanStatus").textContent += "\n⚠️ La foto tiene baja legibilidad para OCR. Si puedes, toma la boleta directamente y evita fotografiarla desde otra pantalla.";
+    }
   } catch(err) {
     console.error(err);
     $("scanStatus").textContent = "❌ No pude leer esta imagen: " + (err.message || String(err));
