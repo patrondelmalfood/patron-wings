@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gastos y Compras - El Patrón del Mal</title>
+  <style>
+    :root {
+      --bg:#020617;
+      --card:#0b1220;
+      --card2:#111827;
+      --line:#263244;
+      --gold:#facc15;
+      --gold2:#ff9f1c;
+      --text:#f8fafc;
+      --muted:#94a3b8;
+      --green:#22c55e;
+      --red:#ef4444;
+      --blue:#38bdf8;
+      --purple:#a855f7;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial,Helvetica,sans-serif;
+      min-height:100vh;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top,rgba(250,204,21,.12),transparent 30%),
+        radial-gradient(circle at 10% 80%,rgba(255,159,28,.08),transparent 25%),
+        #000;
+      padding:12px;
+    }
+    .wrap{max-width:1180px;margin:0 auto}
+    .header{
+      display:flex;align-items:center;gap:12px;
+      padding:14px;border:1px solid rgba(250,204,21,.35);
+      border-radius:22px;background:rgba(2,6,23,.94);
+      box-shadow:0 14px 40px rgba(0,0,0,.35);
+      margin-bottom:12px;
+    }
+    .logo{width:64px;height:64px;border-radius:50%;object-fit:contain;background:#fff;border:2px solid var(--gold)}
+    h1{margin:0;color:#fde68a;font-size:24px}
+    .sub{color:#cbd5e1;font-size:13px;margin-top:4px;line-height:1.4}
+    .top-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+    .panel{
+      background:rgba(11,18,32,.94);border:1px solid rgba(148,163,184,.22);
+      border-radius:18px;padding:14px;margin-bottom:12px;
+    }
+    .section-title{
+      margin:18px 0 10px;color:#fde68a;font-size:18px;font-weight:900;
+      display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap
+    }
+    .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+    label{display:block;font-size:12px;font-weight:900;color:#cbd5e1;margin-bottom:5px}
+    input,select,textarea{
+      width:100%;padding:11px;border-radius:12px;border:1px solid #334155;
+      background:#020617;color:#fff;font-size:14px;outline:none;
+    }
+    input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(250,204,21,.10)}
+    textarea{min-height:70px;resize:vertical}
+    button,.btn{
+      border:0;border-radius:12px;padding:11px 13px;font-weight:900;cursor:pointer;
+      display:inline-flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;
+    }
+    button:hover,.btn:hover{opacity:.93;transform:translateY(-1px)}
+    .btn-gold{background:var(--gold);color:#111827}
+    .btn-blue{background:#0284c7;color:#fff}
+    .btn-green{background:#16a34a;color:#fff}
+    .btn-red{background:#dc2626;color:#fff}
+    .btn-dark{background:#1f2937;color:#fff;border:1px solid #334155}
+    .btn-purple{background:#7c3aed;color:#fff}
+    .metric{
+      background:#020617;border:1px solid #263244;border-radius:16px;padding:13px;
+      min-height:90px
+    }
+    .metric small{color:#94a3b8;font-weight:800}
+    .metric b{display:block;font-size:25px;color:#fde68a;margin-top:8px}
+    .metric.green b{color:#86efac}
+    .metric.red b{color:#fca5a5}
+    .items-head{
+      display:grid;grid-template-columns:2fr .7fr .9fr 1fr auto;
+      gap:8px;color:#fde68a;font-size:11px;font-weight:900;padding:0 4px 6px
+    }
+    .item-row{
+      display:grid;grid-template-columns:2fr .7fr .9fr 1fr auto;
+      gap:8px;align-items:center;margin-bottom:8px
+    }
+    .remove-item{background:#7f1d1d;color:#fecaca;padding:10px 12px}
+    .purchase-total{
+      margin-top:12px;padding:12px;border-radius:14px;background:#020617;
+      border:1px solid rgba(250,204,21,.35);display:flex;justify-content:space-between;gap:10px;
+      font-weight:900
+    }
+    .purchase-total b{color:#fde68a;font-size:22px}
+    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .status{
+      margin-top:10px;padding:10px;border-radius:12px;background:#020617;border:1px solid #334155;
+      color:#cbd5e1;font-size:13px;white-space:pre-line;min-height:42px
+    }
+    .table-wrap{overflow:auto;border:1px solid #263244;border-radius:14px}
+    table{width:100%;border-collapse:collapse;min-width:900px;background:#020617}
+    th,td{padding:9px;border-bottom:1px dashed #263244;text-align:left;font-size:12px;vertical-align:top}
+    th{color:#fde68a;background:#111827;position:sticky;top:0}
+    td.num{text-align:right;font-weight:900}
+    .tag{
+      display:inline-flex;padding:4px 7px;border-radius:999px;border:1px solid #334155;
+      background:#111827;font-size:10px;font-weight:900;color:#e5e7eb
+    }
+    .history-group{
+      border:1px solid #263244;border-radius:16px;background:#020617;margin-bottom:10px;overflow:hidden
+    }
+    .history-head{
+      padding:11px;display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap;
+      background:#111827
+    }
+    .history-title{font-weight:900;color:#fde68a}
+    .history-meta{font-size:11px;color:#94a3b8;line-height:1.45}
+    .history-total{font-size:20px;font-weight:900;color:#86efac}
+    .history-items{padding:0 10px}
+    .history-line{
+      display:grid;grid-template-columns:2fr .8fr 1fr 1fr auto;
+      gap:8px;align-items:center;padding:9px 0;border-bottom:1px dashed #263244;font-size:12px
+    }
+    .history-line:last-child{border-bottom:0}
+    .mini-btn{padding:6px 8px;border-radius:9px;font-size:10px}
+    .muted{color:#94a3b8}
+    .empty{padding:18px;text-align:center;color:#94a3b8}
+    .note{
+      background:#111827;border:1px solid #263244;border-radius:13px;padding:10px;
+      color:#cbd5e1;font-size:12px;line-height:1.45
+    }
+    .hidden{display:none!important}
+    @media(max-width:850px){
+      .grid,.grid-3{grid-template-columns:1fr 1fr}
+      .header{align-items:flex-start}
+      .top-actions{margin-left:0}
+    }
+    @media(max-width:600px){
+      body{padding:8px}
+      .header{flex-wrap:wrap}
+      h1{font-size:20px}
+      .logo{width:54px;height:54px}
+      .grid,.grid-3{grid-template-columns:1fr}
+      .items-head{display:none}
+      .item-row{grid-template-columns:1fr 1fr}
+      .item-row .product{grid-column:1/-1}
+      .item-row .remove-item{grid-column:1/-1}
+      .history-line{grid-template-columns:1fr 1fr}
+      .history-line .hproduct{grid-column:1/-1}
+      .history-line .haction{grid-column:1/-1}
+      .top-actions{width:100%}
+      .top-actions .btn{flex:1}
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <img src="LOGO.jpg" class="logo" alt="El Patrón del Mal">
+    <div>
+      <h1>💸 Gastos y Compras</h1>
+      <div class="sub">Registra verduras, pollo, carne, bebidas, insumos, empaques, limpieza y otros gastos.</div>
+    </div>
+    <div class="top-actions">
+      <a class="btn btn-dark" href="accesos_internos.html">← Accesos</a>
+      <a class="btn btn-blue" href="admin.html">📊 Admin</a>
+    </div>
+  </div>
+
+  <div class="grid" id="metrics">
+    <div class="metric"><small>Gasto del día</small><b id="mDay">S/ 0.00</b></div>
+    <div class="metric"><small>N.º de compras</small><b id="mPurchases">0</b></div>
+    <div class="metric"><small>Productos / líneas</small><b id="mLines">0</b></div>
+    <div class="metric green"><small>Último registro</small><b id="mLast" style="font-size:16px">—</b></div>
+  </div>
+
+  <div class="section-title">
+    <span>➕ Registrar compra</span>
+    <span class="tag">Ingreso manual</span>
+  </div>
+
+  <div class="panel">
+    <div class="grid">
+      <div>
+        <label>Fecha</label>
+        <input type="date" id="purchaseDate">
+      </div>
+      <div>
+        <label>Categoría</label>
+        <select id="category">
+          <option>Verduras</option>
+          <option>Pollo</option>
+          <option>Carne</option>
+          <option>Bebidas</option>
+          <option>Insumos</option>
+          <option>Empaques</option>
+          <option>Limpieza</option>
+          <option>Gas / Servicios</option>
+          <option>Movilidad</option>
+          <option>Otros</option>
+        </select>
+      </div>
+      <div>
+        <label>Proveedor / lugar de compra</label>
+        <input id="supplier" placeholder="Ej: Distribuidora, Mercado Santa">
+      </div>
+      <div>
+        <label>N.º boleta / nota</label>
+        <input id="receiptNumber" placeholder="Ej: 58815 (opcional)">
+      </div>
+    </div>
+
+    <div class="grid-3" style="margin-top:10px">
+      <div>
+        <label>Forma de pago</label>
+        <select id="paymentMethod">
+          <option>Efectivo</option>
+          <option>Yape</option>
+          <option>Plin</option>
+          <option>Transferencia</option>
+          <option>Otro</option>
+        </select>
+      </div>
+      <div style="grid-column:span 2">
+        <label>Observación general</label>
+        <input id="generalNote" placeholder="Ej: Compra semanal / reposición para cocina">
+      </div>
+    </div>
+
+    <div class="section-title" style="margin-top:16px">
+      <span>Productos de esta compra</span>
+      <button class="btn-blue" id="btnAddItem" type="button">＋ Agregar producto</button>
+    </div>
+
+    <div class="items-head">
+      <div>Producto</div><div>Cant.</div><div>Unidad</div><div>Costo total</div><div></div>
+    </div>
+    <div id="itemsBox"></div>
+
+    <div class="purchase-total">
+      <span>Total de esta compra</span>
+      <b id="purchaseTotal">S/ 0.00</b>
+    </div>
+
+    <div class="actions">
+      <button class="btn-green" id="btnSave" type="button">💾 Guardar compra</button>
+      <button class="btn-dark" id="btnClear" type="button">🧹 Limpiar formulario</button>
+    </div>
+    <div class="status" id="saveStatus">Completa la compra y presiona Guardar.</div>
+  </div>
+
+  <div class="section-title">
+    <span>📚 Historial del día</span>
+    <div style="display:flex;gap:8px;align-items:end;flex-wrap:wrap">
+      <div>
+        <label style="margin-bottom:3px">Ver fecha</label>
+        <input type="date" id="historyDate" style="min-width:155px">
+      </div>
+      <button class="btn-blue" id="btnReload" type="button">🔄 Actualizar</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div id="categorySummary" class="note" style="margin-bottom:10px">Sin datos.</div>
+    <div id="historyBox"><div class="empty">Cargando...</div></div>
+  </div>
+
+  <div class="note">
+    <b>Importante:</b> en <b>Costo total</b> coloca lo que realmente pagaste por esa línea. 
+    Ejemplo: 2 lechugas = S/ 4.00 → cantidad 2, unidad "unidad", costo total S/ 4.00.
+    La lectura automática de boletas se agregará después; esta versión deja primero el registro manual funcionando.
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://defdwzzewzfjuseozwkn.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
+const TABLE = "daily_purchases";
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY,
+  {auth:{persistSession:false}}
+);
+
+const $ = id => document.getElementById(id);
+let currentRows = [];
+
+function localDateKey(d = new Date()) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,"0");
+  const day = String(d.getDate()).padStart(2,"0");
+  return `${y}-${m}-${day}`;
+}
+function n(v) {
+  const x = Number(v);
+  return Number.isFinite(x) ? x : 0;
+}
+function money(v) {
+  return "S/ " + n(v).toFixed(2);
+}
+function esc(v) {
+  return String(v ?? "")
+    .replaceAll("&","&amp;").replaceAll("<","&lt;")
+    .replaceAll(">","&gt;").replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+function makeId(prefix="PUR") {
+  return prefix + "_" + Date.now() + "_" + Math.floor(Math.random()*100000);
+}
+function makeGroupId() {
+  return "COMPRA_" + localDateKey().replaceAll("-","") + "_" + Date.now();
+}
+
+function addItem(data={}) {
+  const row = document.createElement("div");
+  row.className = "item-row";
+  row.innerHTML = `
+    <input class="product" data-f="product" placeholder="Ej: Lechuga, pollo, mayonesa" value="${esc(data.product||"")}">
+    <input data-f="qty" type="number" min="0" step="0.01" placeholder="Cant." value="${data.qty ?? ""}">
+    <select data-f="unit">
+      ${["unidad","kg","g","litro","ml","caja","paquete","bolsa","docena","ciento","otro"].map(u => `<option ${data.unit===u?"selected":""}>${u}</option>`).join("")}
+    </select>
+    <input data-f="cost" type="number" min="0" step="0.01" placeholder="S/ 0.00" value="${data.cost ?? ""}">
+    <button class="remove-item" type="button">✕ Quitar</button>
+  `;
+  row.querySelector(".remove-item").addEventListener("click", () => {
+    const rows = [...document.querySelectorAll(".item-row")];
+    if (rows.length <= 1) {
+      row.querySelectorAll("input").forEach(i => i.value = "");
+      row.querySelector('[data-f="unit"]').value = "unidad";
+    } else {
+      row.remove();
+    }
+    updatePurchaseTotal();
+  });
+  row.querySelectorAll("input,select").forEach(el => el.addEventListener("input", updatePurchaseTotal));
+  $("itemsBox").appendChild(row);
+  updatePurchaseTotal();
+}
+
+function readItems() {
+  return [...document.querySelectorAll(".item-row")].map(row => {
+    const get = f => row.querySelector(`[data-f="${f}"]`);
+    return {
+      product: get("product").value.trim(),
+      qty: n(get("qty").value),
+      unit: get("unit").value,
+      cost: n(get("cost").value)
+    };
+  }).filter(x => x.product || x.qty || x.cost);
+}
+
+function updatePurchaseTotal() {
+  const total = readItems().reduce((s,x)=>s+n(x.cost),0);
+  $("purchaseTotal").textContent = money(total);
+}
+
+function clearForm(keepDate=true) {
+  const date = $("purchaseDate").value;
+  $("category").value = "Verduras";
+  $("supplier").value = "";
+  $("receiptNumber").value = "";
+  $("paymentMethod").value = "Efectivo";
+  $("generalNote").value = "";
+  $("itemsBox").innerHTML = "";
+  addItem();
+  if (keepDate) $("purchaseDate").value = date || localDateKey();
+  updatePurchaseTotal();
+  $("saveStatus").textContent = "Formulario limpio.";
+}
+
+async function savePurchase() {
+  const dateKey = $("purchaseDate").value || localDateKey();
+  const category = $("category").value;
+  const supplier = $("supplier").value.trim();
+  const receiptNumber = $("receiptNumber").value.trim();
+  const paymentMethod = $("paymentMethod").value;
+  const generalNote = $("generalNote").value.trim();
+  const items = readItems();
+
+  if (!items.length) {
+    $("saveStatus").textContent = "⚠️ Agrega por lo menos un producto.";
+    return;
+  }
+  const invalid = items.find(x => !x.product || x.cost <= 0);
+  if (invalid) {
+    $("saveStatus").textContent = "⚠️ Cada producto debe tener nombre y costo mayor a S/ 0.";
+    return;
+  }
+
+  const groupId = makeGroupId();
+  const now = new Date().toISOString();
+  const rows = items.map(item => ({
+    id: makeId(),
+    date_key: dateKey,
+    product: item.product,
+    qty: item.qty,
+    unit: item.unit,
+    cost: item.cost,
+    note: generalNote || null,
+    category,
+    supplier: supplier || null,
+    receipt_number: receiptNumber || null,
+    payment_method: paymentMethod,
+    purchase_group_id: groupId,
+    receipt_image_url: null,
+    source: "manual",
+    created_at: now
+  }));
+
+  const total = rows.reduce((s,x)=>s+n(x.cost),0);
+  if (!confirm(`¿Guardar esta compra por ${money(total)}?`)) return;
+
+  $("btnSave").disabled = true;
+  $("saveStatus").textContent = "Guardando compra...";
+
+  try {
+    const {error} = await supabaseClient.from(TABLE).insert(rows);
+    if (error) throw error;
+    $("saveStatus").textContent = `✅ Compra guardada correctamente. Total: ${money(total)}`;
+    $("historyDate").value = dateKey;
+    clearForm(true);
+    await loadHistory();
+  } catch(err) {
+    console.error(err);
+    $("saveStatus").textContent = "❌ No se pudo guardar: " + (err.message || String(err));
+  } finally {
+    $("btnSave").disabled = false;
+  }
+}
+
+function groupRows(rows) {
+  const map = new Map();
+  rows.forEach(r => {
+    const key = r.purchase_group_id || ("LEGACY_" + r.id);
+    if (!map.has(key)) map.set(key, []);
+    map.get(key).push(r);
+  });
+  return [...map.entries()].map(([groupId,items]) => ({
+    groupId,
+    items,
+    total: items.reduce((s,x)=>s+n(x.cost),0),
+    first: items[0]
+  })).sort((a,b) => String(b.first.created_at||"").localeCompare(String(a.first.created_at||"")));
+}
+
+function renderHistory(rows) {
+  currentRows = rows;
+  const groups = groupRows(rows);
+  $("mDay").textContent = money(rows.reduce((s,x)=>s+n(x.cost),0));
+  $("mPurchases").textContent = String(groups.length);
+  $("mLines").textContent = String(rows.length);
+
+  const last = rows.slice().sort((a,b)=>String(b.created_at||"").localeCompare(String(a.created_at||"")))[0];
+  $("mLast").textContent = last ? (last.product + " · " + money(last.cost)) : "—";
+
+  const cats = {};
+  rows.forEach(r => {
+    const c = r.category || "Sin categoría";
+    cats[c] = (cats[c] || 0) + n(r.cost);
+  });
+  const catHtml = Object.entries(cats)
+    .sort((a,b)=>b[1]-a[1])
+    .map(([c,v])=>`<span class="tag" style="margin:2px">${esc(c)}: ${money(v)}</span>`)
+    .join("");
+  $("categorySummary").innerHTML = catHtml || "Sin gastos registrados para esta fecha.";
+
+  if (!groups.length) {
+    $("historyBox").innerHTML = `<div class="empty">No hay gastos registrados para esta fecha.</div>`;
+    return;
+  }
+
+  $("historyBox").innerHTML = groups.map(g => {
+    const f = g.first;
+    const legacy = !f.purchase_group_id;
+    const supplier = f.supplier || "Sin proveedor";
+    const receipt = f.receipt_number ? " · Doc. " + esc(f.receipt_number) : "";
+    const pay = f.payment_method || "Sin forma de pago";
+    const category = f.category || "Sin categoría";
+    return `
+      <div class="history-group">
+        <div class="history-head">
+          <div>
+            <div class="history-title">${esc(category)} · ${esc(supplier)}</div>
+            <div class="history-meta">${esc(f.date_key || "")}${receipt} · ${esc(pay)}${legacy ? " · Registro antiguo" : ""}</div>
+            ${f.note ? `<div class="history-meta">Nota: ${esc(f.note)}</div>` : ""}
+          </div>
+          <div style="text-align:right">
+            <div class="history-total">${money(g.total)}</div>
+            <button class="mini-btn btn-red" onclick="deleteGroup('${esc(g.groupId)}')" type="button">Eliminar compra</button>
+          </div>
+        </div>
+        <div class="history-items">
+          ${g.items.map(r => `
+            <div class="history-line">
+              <div class="hproduct"><b>${esc(r.product)}</b></div>
+              <div>${n(r.qty)} ${esc(r.unit || "")}</div>
+              <div class="muted">${esc(r.category || "")}</div>
+              <div><b>${money(r.cost)}</b></div>
+              <div class="haction">
+                <button class="mini-btn btn-blue" onclick="editLine('${esc(r.id)}')" type="button">Editar</button>
+                <button class="mini-btn btn-red" onclick="deleteLine('${esc(r.id)}')" type="button">Borrar</button>
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+async function loadHistory() {
+  const dateKey = $("historyDate").value || localDateKey();
+  $("historyBox").innerHTML = `<div class="empty">Cargando...</div>`;
+  try {
+    const {data,error} = await supabaseClient
+      .from(TABLE)
+      .select("*")
+      .eq("date_key", dateKey)
+      .order("created_at", {ascending:false});
+    if (error) throw error;
+    renderHistory(data || []);
+  } catch(err) {
+    console.error(err);
+    $("historyBox").innerHTML = `<div class="empty">❌ Error: ${esc(err.message || String(err))}</div>`;
+  }
+}
+
+async function deleteLine(id) {
+  const row = currentRows.find(x => String(x.id) === String(id));
+  if (!row) return;
+  if (!confirm(`¿Borrar "${row.product}" por ${money(row.cost)}?`)) return;
+  const {error} = await supabaseClient.from(TABLE).delete().eq("id", id);
+  if (error) return alert("No se pudo borrar: " + error.message);
+  await loadHistory();
+}
+
+async function deleteGroup(groupId) {
+  const rows = currentRows.filter(r => (r.purchase_group_id || ("LEGACY_" + r.id)) === groupId);
+  if (!rows.length) return;
+  const total = rows.reduce((s,x)=>s+n(x.cost),0);
+  if (!confirm(`¿Eliminar la compra completa por ${money(total)}?\nSe borrarán ${rows.length} línea(s).`)) return;
+
+  let error = null;
+  if (groupId.startsWith("LEGACY_")) {
+    const id = groupId.replace("LEGACY_","");
+    ({error} = await supabaseClient.from(TABLE).delete().eq("id", id));
+  } else {
+    ({error} = await supabaseClient.from(TABLE).delete().eq("purchase_group_id", groupId));
+  }
+  if (error) return alert("No se pudo eliminar: " + error.message);
+  await loadHistory();
+}
+
+async function editLine(id) {
+  const r = currentRows.find(x => String(x.id) === String(id));
+  if (!r) return;
+
+  const product = prompt("Producto:", r.product ?? "");
+  if (product === null) return;
+  const qty = prompt("Cantidad:", r.qty ?? 0);
+  if (qty === null) return;
+  const unit = prompt("Unidad (kg, unidad, caja, paquete...):", r.unit ?? "unidad");
+  if (unit === null) return;
+  const cost = prompt("Costo TOTAL de esta línea:", r.cost ?? 0);
+  if (cost === null) return;
+  const category = prompt("Categoría:", r.category ?? "Insumos");
+  if (category === null) return;
+
+  const newCost = n(cost);
+  if (!product.trim() || newCost <= 0) return alert("Producto y costo son obligatorios.");
+
+  const {error} = await supabaseClient.from(TABLE).update({
+    product: product.trim(),
+    qty: n(qty),
+    unit: String(unit||"").trim(),
+    cost: newCost,
+    category: String(category||"").trim()
+  }).eq("id", id);
+
+  if (error) return alert("No se pudo editar: " + error.message);
+  await loadHistory();
+}
+
+$("btnAddItem").addEventListener("click", () => addItem());
+$("btnSave").addEventListener("click", savePurchase);
+$("btnClear").addEventListener("click", () => clearForm(true));
+$("btnReload").addEventListener("click", loadHistory);
+$("historyDate").addEventListener("change", loadHistory);
+
+window.deleteLine = deleteLine;
+window.deleteGroup = deleteGroup;
+window.editLine = editLine;
+
+(function init(){
+  const today = localDateKey();
+  $("purchaseDate").value = today;
+  $("historyDate").value = today;
+  addItem();
+  loadHistory();
+})();
+</script>
+</body>
+</html>
