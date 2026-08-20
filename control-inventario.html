@@ -483,6 +483,16 @@
   <div class="section-title">📊 Stock actual estimado</div>
   <div class="table-wrap"><table id="stockTable"></table></div>
 
+  <div class="note" style="margin-top:12px">
+    <b>📌 Insumos agregados según tus boletas:</b> queso suizo, mayonesa base Macbel, mostaza,
+    Leche Gloria, maizena, harina, sal, ajinomoto, pimienta, ajo en polvo, paprika, orégano,
+    vinagre, salsa de ostión, aceite de ajonjolí, laurel y hongos, azúcar rubia, galleta soda,
+    bolsas 16×19, servilletas, papel toalla, detergente, Clorox/lejía y Poett.
+    <br><br>
+    <b>Importante:</b> los insumos nuevos que todavía no tienen una receta exacta por plato se controlan
+    mediante <b>ingresos + conteo físico + consumo manual</b>. No inventé cantidades automáticas por receta.
+  </div>
+
   <div class="section-title">
     <span>📥 Registrar ingreso de mercadería</span>
     <span class="mini-pill">Se suma al stock</span>
@@ -860,6 +870,7 @@
     Platos del Cartel descuentan papa y presas broaster según su regla; El Capo además descuenta arroz/chaufa.<br><br>
     <b>Mayonesa y ketchup:</b> cada producto de comida descuenta 1 sachet de cada uno, excepto bebidas y extras excluidos.<br>
     <b>Tres formas:</b> 1) moza usa sistema → automático; 2) conservas comandas de papel → ingrésalas como pedidos y el consumo vuelve a ser automático; 3) no tienes detalle de comandas → usa consumo manual. No mezcles comanda y consumo manual en una misma fecha.<br>
+    <b>Insumos de receta nuevos:</b> queso, mayonesa base, mostaza, leche, maizena, harina, condimentos y limpieza quedan disponibles para stock/ingresos/conteo/consumo manual. Solo se descuentan automáticamente cuando ya existe una equivalencia definida en las reglas del plato; no se asumieron gramajes nuevos.<br>
     <b>Aceite:</b> balde de 20 L con cambio a los 10 días y aviso desde el día 8. Aceite adicional: MASS de 3 L por botella.
   </div>
 </div>
@@ -885,6 +896,7 @@ const supabaseClient = window.supabase
   : null;
 
 const ENTRY_FIELDS = [
+  // PRINCIPALES / PRODUCCIÓN
   ["potatoBags","🍟 Bolsas de papa 180g","bolsas"],
   ["burgerMeat","🥩 Carnes de burger","unidades"],
   ["burgerBuns","🍞 Pan de hamburguesa","unidades"],
@@ -895,14 +907,48 @@ const ENTRY_FIELDS = [
   ["hotdog","🌭 Hot dog","unidades"],
   ["chorizo","🌭 Chorizo","unidades"],
   ["tocino","🥓 Tocino","porciones"],
+  ["swissCheeseKg","🧀 Queso suizo","kg"],
+
+  // BASES / CONDIMENTOS / RECETAS
+  ["mayoBaseKg","🥫 Mayonesa base Macbel","kg"],
+  ["mustardKg","🟡 Mostaza Alpesa","kg"],
+  ["gloriaMilk390","🥛 Leche Gloria lata 390 g","latas"],
+  ["cornstarchKg","🌽 Maizena","kg"],
+  ["flourKg","🌾 Harina","kg"],
+  ["saltKg","🧂 Sal","kg"],
+  ["ajinomotoKg","🧂 Ajinomoto","kg"],
+  ["pepperGr","🌶️ Pimienta molida","gramos"],
+  ["garlicPowderGr","🧄 Ajo en polvo","gramos"],
+  ["paprikaGr","🌶️ Paprika en polvo","gramos"],
+  ["oreganoSachets","🌿 Orégano en polvo","sachets"],
+  ["whiteVinegarL","🍶 Vinagre blanco","litros"],
+  ["oysterSauceBottles","🥢 Salsa de ostión","botellas"],
+  ["sesameOilBottles","🥢 Aceite de ajonjolí","botellas"],
+  ["laurelMushroomPacks","🌿 Laurel y hongos","paquetes"],
+  ["brownSugarKg","🍚 Azúcar rubia","kg"],
+  ["sodaCrackerPacks","🍘 Galleta soda","paquetes"],
+
+  // BEBIDAS
   ["sodaOneL","🥤 Gaseosa 1L","unidades"],
   ["sodaGlass","🥤 Gaseosa vidrio mediana","unidades"],
   ["sodaHalfPlastic","🥤 Gaseosa 600ml plástico","unidades"],
   ["water","💧 Agua mineral","unidades"],
   ["maracuyaOneL","🟡 Maracuyá 1L","unidades"],
-  ["tapers","🥡 Tapers","unidades"],
+
+  // EMPAQUES / CREMAS
+  ["tapers","🥡 Tapers / CT5 Pamolsa","unidades"],
+  ["bag16x19Packs","🛍️ Bolsa 16×19","paquetes"],
+  ["napkinPacks","🧻 Servilletas","paquetes"],
+  ["paperTowelPacks","🧻 Papel toalla","paquetes"],
   ["mayoSachets","🧴 Mayonesa sachets","sachets"],
   ["ketchupSachets","🍅 Ketchup sachets","sachets"],
+
+  // LIMPIEZA
+  ["detergentKg","🧴 Detergente","kg"],
+  ["bleachUnits","🧼 Lejía / Clorox","unidades"],
+  ["poettUnits","🧼 Poett","unidades"],
+
+  // ACEITES
   ["oilBucket20L","🛢️ Balde aceite 20 L","baldes"],
   ["massOil3L","🧴 Aceite MASS 3 L","botellas"]
 ];
@@ -929,14 +975,43 @@ const LOW_STOCK = {
   hotdog:6,
   chorizo:6,
   tocino:6,
+  swissCheeseKg:0.5,
+
+  mayoBaseKg:1,
+  mustardKg:0.5,
+  gloriaMilk390:2,
+  cornstarchKg:0.5,
+  flourKg:2,
+  saltKg:0.5,
+  ajinomotoKg:0.25,
+  pepperGr:100,
+  garlicPowderGr:100,
+  paprikaGr:100,
+  oreganoSachets:2,
+  whiteVinegarL:1,
+  oysterSauceBottles:1,
+  sesameOilBottles:1,
+  laurelMushroomPacks:1,
+  brownSugarKg:1,
+  sodaCrackerPacks:1,
+
   sodaOneL:4,
   sodaGlass:6,
   sodaHalfPlastic:6,
   water:6,
   maracuyaOneL:3,
+
   tapers:20,
+  bag16x19Packs:1,
+  napkinPacks:1,
+  paperTowelPacks:1,
   mayoSachets:20,
   ketchupSachets:20,
+
+  detergentKg:1,
+  bleachUnits:1,
+  poettUnits:1,
+
   oilBucket20L:1,
   massOil3L:1
 };
