@@ -1,1094 +1,297 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gastos y Compras - El Patrón del Mal</title>
-  <style>
-    :root {
-      --bg:#020617;
-      --card:#0b1220;
-      --card2:#111827;
-      --line:#263244;
-      --gold:#facc15;
-      --gold2:#ff9f1c;
-      --text:#f8fafc;
-      --muted:#94a3b8;
-      --green:#22c55e;
-      --red:#ef4444;
-      --blue:#38bdf8;
-      --purple:#a855f7;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:Arial,Helvetica,sans-serif;
-      min-height:100vh;
-      color:var(--text);
-      background:
-        radial-gradient(circle at top,rgba(250,204,21,.12),transparent 30%),
-        radial-gradient(circle at 10% 80%,rgba(255,159,28,.08),transparent 25%),
-        #000;
-      padding:12px;
-    }
-    .wrap{max-width:1180px;margin:0 auto}
-    .header{
-      display:flex;align-items:center;gap:12px;
-      padding:14px;border:1px solid rgba(250,204,21,.35);
-      border-radius:22px;background:rgba(2,6,23,.94);
-      box-shadow:0 14px 40px rgba(0,0,0,.35);
-      margin-bottom:12px;
-    }
-    .logo{width:64px;height:64px;border-radius:50%;object-fit:contain;background:#fff;border:2px solid var(--gold)}
-    h1{margin:0;color:#fde68a;font-size:24px}
-    .sub{color:#cbd5e1;font-size:13px;margin-top:4px;line-height:1.4}
-    .top-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
-    .panel{
-      background:rgba(11,18,32,.94);border:1px solid rgba(148,163,184,.22);
-      border-radius:18px;padding:14px;margin-bottom:12px;
-    }
-    .section-title{
-      margin:18px 0 10px;color:#fde68a;font-size:18px;font-weight:900;
-      display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap
-    }
-    .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-    .grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-    label{display:block;font-size:12px;font-weight:900;color:#cbd5e1;margin-bottom:5px}
-    input,select,textarea{
-      width:100%;padding:11px;border-radius:12px;border:1px solid #334155;
-      background:#020617;color:#fff;font-size:14px;outline:none;
-    }
-    input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(250,204,21,.10)}
-    textarea{min-height:70px;resize:vertical}
-    button,.btn{
-      border:0;border-radius:12px;padding:11px 13px;font-weight:900;cursor:pointer;
-      display:inline-flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;
-    }
-    button:hover,.btn:hover{opacity:.93;transform:translateY(-1px)}
-    .btn-gold{background:var(--gold);color:#111827}
-    .btn-blue{background:#0284c7;color:#fff}
-    .btn-green{background:#16a34a;color:#fff}
-    .btn-red{background:#dc2626;color:#fff}
-    .btn-dark{background:#1f2937;color:#fff;border:1px solid #334155}
-    .btn-purple{background:#7c3aed;color:#fff}
-    .metric{
-      background:#020617;border:1px solid #263244;border-radius:16px;padding:13px;
-      min-height:90px
-    }
-    .metric small{color:#94a3b8;font-weight:800}
-    .metric b{display:block;font-size:25px;color:#fde68a;margin-top:8px}
-    .metric.green b{color:#86efac}
-    .metric.red b{color:#fca5a5}
-    .items-head{
-      display:grid;grid-template-columns:2fr .7fr .9fr 1fr auto;
-      gap:8px;color:#fde68a;font-size:11px;font-weight:900;padding:0 4px 6px
-    }
-    .item-row{
-      display:grid;grid-template-columns:2fr .7fr .9fr 1fr auto;
-      gap:8px;align-items:center;margin-bottom:8px
-    }
-    .remove-item{background:#7f1d1d;color:#fecaca;padding:10px 12px}
-    .purchase-total{
-      margin-top:12px;padding:12px;border-radius:14px;background:#020617;
-      border:1px solid rgba(250,204,21,.35);display:flex;justify-content:space-between;gap:10px;
-      font-weight:900
-    }
-    .purchase-total b{color:#fde68a;font-size:22px}
-    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-    .status{
-      margin-top:10px;padding:10px;border-radius:12px;background:#020617;border:1px solid #334155;
-      color:#cbd5e1;font-size:13px;white-space:pre-line;min-height:42px
-    }
-    .table-wrap{overflow:auto;border:1px solid #263244;border-radius:14px}
-    table{width:100%;border-collapse:collapse;min-width:900px;background:#020617}
-    th,td{padding:9px;border-bottom:1px dashed #263244;text-align:left;font-size:12px;vertical-align:top}
-    th{color:#fde68a;background:#111827;position:sticky;top:0}
-    td.num{text-align:right;font-weight:900}
-    .tag{
-      display:inline-flex;padding:4px 7px;border-radius:999px;border:1px solid #334155;
-      background:#111827;font-size:10px;font-weight:900;color:#e5e7eb
-    }
-    .history-group{
-      border:1px solid #263244;border-radius:16px;background:#020617;margin-bottom:10px;overflow:hidden
-    }
-    .history-head{
-      padding:11px;display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap;
-      background:#111827
-    }
-    .history-title{font-weight:900;color:#fde68a}
-    .history-meta{font-size:11px;color:#94a3b8;line-height:1.45}
-    .history-total{font-size:20px;font-weight:900;color:#86efac}
-    .history-items{padding:0 10px}
-    .history-line{
-      display:grid;grid-template-columns:2fr .8fr 1fr 1fr auto;
-      gap:8px;align-items:center;padding:9px 0;border-bottom:1px dashed #263244;font-size:12px
-    }
-    .history-line:last-child{border-bottom:0}
-    .mini-btn{padding:6px 8px;border-radius:9px;font-size:10px}
-    .muted{color:#94a3b8}
-    .empty{padding:18px;text-align:center;color:#94a3b8}
-    .note{
-      background:#111827;border:1px solid #263244;border-radius:13px;padding:10px;
-      color:#cbd5e1;font-size:12px;line-height:1.45
-    }
-
-    .scan-box{
-      border:1px solid rgba(56,189,248,.38);
-      background:linear-gradient(180deg,rgba(2,132,199,.10),rgba(2,6,23,.96));
-      border-radius:18px;padding:14px;margin-bottom:12px
-    }
-    .scan-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
-    .photo-drop{
-      min-height:180px;border:1px dashed rgba(56,189,248,.65);border-radius:16px;
-      background:#020617;display:flex;align-items:center;justify-content:center;
-      overflow:hidden;padding:10px;text-align:center;color:#94a3b8
-    }
-    .photo-drop img{max-width:100%;max-height:330px;border-radius:12px;display:block}
-    .scan-progress{
-      margin-top:10px;height:10px;border-radius:999px;background:#111827;overflow:hidden;
-      border:1px solid #263244
-    }
-    .scan-progress > div{height:100%;width:0%;background:#38bdf8;transition:width .2s ease}
-    .ocr-text{min-height:180px;font-family:monospace;font-size:12px;line-height:1.35}
-    .scan-result{
-      margin-top:10px;padding:10px;border-radius:12px;background:#020617;border:1px solid #334155;
-      color:#cbd5e1;font-size:12px;line-height:1.45;white-space:pre-line
-    }
-    .scan-badge{
-      display:inline-flex;padding:5px 9px;border-radius:999px;background:rgba(56,189,248,.12);
-      color:#bae6fd;border:1px solid rgba(56,189,248,.35);font-size:11px;font-weight:900
-    }
-
-    .hidden{display:none!important}
-    @media(max-width:850px){
-      .grid,.grid-3{grid-template-columns:1fr 1fr}
-      .header{align-items:flex-start}
-      .top-actions{margin-left:0}
-    }
-    @media(max-width:600px){
-      body{padding:8px}
-      .header{flex-wrap:wrap}
-      h1{font-size:20px}
-      .logo{width:54px;height:54px}
-      .grid,.grid-3{grid-template-columns:1fr}
-      .items-head{display:none}
-      .item-row{grid-template-columns:1fr 1fr}
-      .item-row .product{grid-column:1/-1}
-      .item-row .remove-item{grid-column:1/-1}
-      .history-line{grid-template-columns:1fr 1fr}
-      .history-line .hproduct{grid-column:1/-1}
-      .history-line .haction{grid-column:1/-1}
-      .top-actions{width:100%}
-      .scan-grid{grid-template-columns:1fr}
-      .top-actions .btn{flex:1}
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compras rápidas - El Patrón del Mal</title>
+<style>
+:root{--bg:#020617;--card:#0b1220;--line:#263244;--gold:#facc15;--gold2:#ff9f1c;--text:#f8fafc;--muted:#94a3b8;--green:#22c55e;--red:#ef4444;--blue:#38bdf8;--purple:#a855f7}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at top,rgba(250,204,21,.12),transparent 30%),#000;color:var(--text);min-height:100vh;padding:10px}
+.wrap{max-width:1000px;margin:0 auto}
+.header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:rgba(2,6,23,.94);border:1px solid rgba(250,204,21,.35);border-radius:20px;padding:13px;margin-bottom:12px}
+.logo{width:58px;height:58px;border-radius:50%;background:#fff;border:2px solid var(--gold);object-fit:contain}
+.header h1{font-size:22px;margin:0;color:#fde68a} .sub{font-size:12px;color:#cbd5e1;margin-top:4px;line-height:1.35}
+.top-actions{margin-left:auto;display:flex;gap:7px;flex-wrap:wrap}
+.card{background:rgba(11,18,32,.95);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.metric{background:#020617;border:1px solid var(--line);border-radius:16px;padding:12px;min-height:82px}
+.metric small{color:var(--muted);font-weight:800} .metric b{display:block;margin-top:7px;font-size:23px;color:#fde68a}
+label{display:block;font-size:12px;color:#cbd5e1;font-weight:900;margin-bottom:5px}
+input,select,textarea{width:100%;padding:11px;border-radius:12px;border:1px solid #334155;background:#020617;color:#fff;font-size:14px}
+textarea{min-height:66px;resize:vertical}
+button,.btn{border:0;border-radius:12px;padding:10px 12px;font-weight:900;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn-gold{background:var(--gold);color:#111827} .btn-blue{background:#0284c7;color:#fff} .btn-green{background:#16a34a;color:#fff} .btn-red{background:#dc2626;color:#fff} .btn-dark{background:#1f2937;color:#fff;border:1px solid #334155} .btn-purple{background:#7c3aed;color:#fff}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.title{font-size:17px;color:#fde68a;font-weight:900;margin:6px 0 10px}
+.note{padding:10px;border-radius:12px;background:#111827;border:1px solid var(--line);color:#cbd5e1;font-size:12px;line-height:1.45}
+.status{margin-top:10px;padding:10px;border-radius:12px;background:#020617;border:1px solid #334155;color:#cbd5e1;font-size:12px;white-space:pre-line}
+.photo-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.preview{min-height:150px;border:1px dashed #475569;border-radius:14px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#020617;color:#94a3b8;text-align:center;padding:10px}
+.preview img{max-width:100%;max-height:280px;border-radius:10px}
+table{width:100%;border-collapse:collapse;min-width:720px;background:#020617}
+th,td{padding:9px;border-bottom:1px dashed var(--line);font-size:12px;text-align:left} th{color:#fde68a;background:#111827} td.num{text-align:right;font-weight:900}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}
+.tag{display:inline-flex;padding:4px 7px;border:1px solid #334155;border-radius:999px;background:#111827;font-size:10px;font-weight:900}
+@media(max-width:750px){.grid,.grid2,.photo-grid{grid-template-columns:1fr}.top-actions{width:100%;margin-left:0}.top-actions .btn{flex:1}}
+</style>
 </head>
 <body>
 <div class="wrap">
   <div class="header">
-    <img src="LOGO.jpg" class="logo" alt="El Patrón del Mal">
+    <img src="LOGO.jpg" class="logo" alt="Logo">
     <div>
-      <h1>💸 Gastos y Compras</h1>
-      <div class="sub">Registra verduras, pollo, carne, bebidas, insumos, empaques, limpieza y otros gastos.</div>
+      <h1>⚡ Compras rápidas</h1>
+      <div class="sub">Registra solo lo necesario: fecha, categoría, proveedor, boleta y monto total.</div>
     </div>
     <div class="top-actions">
       <a class="btn btn-dark" href="accesos_internos.html">← Accesos</a>
-      <a class="btn btn-blue" href="admin.html">📊 Admin</a>
+      <a class="btn btn-blue" href="resumen_semanal.html">📅 Resumen semanal</a>
     </div>
   </div>
 
-  <div class="grid" id="metrics">
+  <div class="grid" style="margin-bottom:12px">
     <div class="metric"><small>Gasto del día</small><b id="mDay">S/ 0.00</b></div>
-    <div class="metric"><small>N.º de compras</small><b id="mPurchases">0</b></div>
-    <div class="metric"><small>Productos / líneas</small><b id="mLines">0</b></div>
-    <div class="metric green"><small>Último registro</small><b id="mLast" style="font-size:16px">—</b></div>
+    <div class="metric"><small>Gasto de esta semana</small><b id="mWeek">S/ 0.00</b></div>
+    <div class="metric"><small>Registros del día</small><b id="mCount">0</b></div>
+    <div class="metric"><small>Último gasto</small><b id="mLast" style="font-size:15px">—</b></div>
   </div>
 
-
-  <div class="section-title">
-    <span>📷 Registrar desde foto</span>
-    <span class="scan-badge">OCR mejorado · contraste + doble lectura</span>
-  </div>
-
-  <div class="scan-box">
-    <div class="scan-grid">
-      <div>
-        <label>Foto de boleta, nota o lista de compra</label>
-        <input type="file" id="receiptPhoto" accept="image/*" capture="environment">
-        <div class="photo-drop" id="photoPreview">
-          <div>📸 Toma una foto o elige una imagen.<br><span class="muted">Procura que esté recta, iluminada y que se vea el total.</span></div>
-        </div>
-        <div class="actions">
-          <button class="btn-purple" id="btnReadPhoto" type="button">🤖 Leer foto (mejorado)</button>
-          <button class="btn-dark" id="btnClearPhoto" type="button">✕ Quitar foto</button>
-        </div>
-        <div class="scan-progress"><div id="scanProgressBar"></div></div>
-        <div class="scan-result" id="scanStatus">Todavía no se ha leído ninguna imagen.</div>
-      </div>
-
-      <div>
-        <label>Texto detectado (puedes corregirlo)</label>
-        <textarea id="ocrText" class="ocr-text" placeholder="Aquí aparecerá el texto leído de la foto..."></textarea>
-        <div class="actions">
-          <button class="btn-blue" id="btnApplyOcr" type="button">⬇️ Pasar al formulario</button>
-        </div>
-        <div class="note" style="margin-top:10px">
-          Primero revisa lo detectado. El sistema <b>no guarda nada solo</b>: después podrás corregir productos y costos antes de presionar <b>Guardar compra</b>.
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="section-title">
-    <span>➕ Registrar compra</span>
-    <span class="tag">Ingreso manual</span>
-  </div>
-
-  <div class="panel">
+  <div class="card">
+    <div class="title">🧾 Registrar gasto rápido</div>
     <div class="grid">
-      <div>
-        <label>Fecha</label>
-        <input type="date" id="purchaseDate">
-      </div>
+      <div><label>Fecha</label><input id="dateKey" type="date"></div>
       <div>
         <label>Categoría</label>
         <select id="category">
-          <option>Verduras</option>
-          <option>Pollo</option>
-          <option>Carne</option>
-          <option>Bebidas</option>
-          <option>Insumos</option>
-          <option>Empaques</option>
-          <option>Limpieza</option>
-          <option>Gas / Servicios</option>
-          <option>Movilidad</option>
-          <option>Otros</option>
+          <option>Verduras</option><option>Pollo</option><option>Carne</option><option>Bebidas</option>
+          <option>Insumos</option><option>Empaques</option><option>Limpieza</option><option>Otros insumos</option>
         </select>
       </div>
-      <div>
-        <label>Proveedor / lugar de compra</label>
-        <input id="supplier" placeholder="Ej: Distribuidora, Mercado Santa">
-      </div>
-      <div>
-        <label>N.º boleta / nota</label>
-        <input id="receiptNumber" placeholder="Ej: 58815 (opcional)">
-      </div>
+      <div><label>Proveedor / lugar</label><input id="supplier" placeholder="Ej: Distribuidora / Mercado"></div>
+      <div><label>N.º boleta / nota (opcional)</label><input id="receipt" placeholder="Ej: 58815"></div>
     </div>
 
-    <div class="grid-3" style="margin-top:10px">
+    <div class="grid2" style="margin-top:10px">
+      <div>
+        <label>Monto TOTAL pagado S/</label>
+        <input id="total" type="number" min="0" step="0.01" placeholder="0.00" style="font-size:22px;font-weight:900">
+      </div>
       <div>
         <label>Forma de pago</label>
-        <select id="paymentMethod">
-          <option>Efectivo</option>
-          <option>Yape</option>
-          <option>Plin</option>
-          <option>Transferencia</option>
-          <option>Otro</option>
-        </select>
-      </div>
-      <div style="grid-column:span 2">
-        <label>Observación general</label>
-        <input id="generalNote" placeholder="Ej: Compra semanal / reposición para cocina">
+        <select id="payment"><option>Efectivo</option><option>Yape</option><option>Plin</option><option>Transferencia</option><option>Otro</option></select>
       </div>
     </div>
-
-    <div class="section-title" style="margin-top:16px">
-      <span>Productos de esta compra</span>
-      <button class="btn-blue" id="btnAddItem" type="button">＋ Agregar producto</button>
-    </div>
-
-    <div class="items-head">
-      <div>Producto</div><div>Cant.</div><div>Unidad</div><div>Costo total</div><div></div>
-    </div>
-    <div id="itemsBox"></div>
-
-    <div class="purchase-total">
-      <span>Total de esta compra</span>
-      <b id="purchaseTotal">S/ 0.00</b>
-    </div>
+    <label style="margin-top:10px">Observación (opcional)</label>
+    <textarea id="note" placeholder="Ej: Compra de insumos de la semana"></textarea>
 
     <div class="actions">
-      <button class="btn-green" id="btnSave" type="button">💾 Guardar compra</button>
-      <button class="btn-dark" id="btnClear" type="button">🧹 Limpiar formulario</button>
+      <button class="btn-green" id="btnSave" type="button">✅ Guardar gasto</button>
+      <button class="btn-dark" id="btnClear" type="button">Limpiar</button>
     </div>
-    <div class="status" id="saveStatus">Completa la compra y presiona Guardar.</div>
+    <div class="status" id="saveStatus">Completa el monto total y guarda. No necesitas detallar cada producto.</div>
   </div>
 
-  <div class="section-title">
-    <span>📚 Historial del día</span>
-    <div style="display:flex;gap:8px;align-items:end;flex-wrap:wrap">
+  <div class="card">
+    <div class="title">📷 Foto opcional para leer fecha + N.º + total</div>
+    <div class="note" style="margin-bottom:10px"><b>No necesitas pasar la boleta por otra IA.</b> Si quieres, toma la foto aquí y el sistema intentará completar solo fecha, número y total. Si falla, corriges esos 3 datos manualmente. <b>La foto se usa solo para leer y no se guarda.</b></div>
+    <div class="photo-grid">
       <div>
-        <label style="margin-bottom:3px">Ver fecha</label>
-        <input type="date" id="historyDate" style="min-width:155px">
+        <input id="photo" type="file" accept="image/*" capture="environment">
+        <div id="preview" class="preview" style="margin-top:8px">📸 Sin foto</div>
       </div>
-      <button class="btn-blue" id="btnReload" type="button">🔄 Actualizar</button>
+      <div>
+        <button class="btn-purple" id="btnRead" type="button" style="width:100%">🤖 Leer fecha / boleta / total</button>
+        <div id="ocrStatus" class="status">Opcional.</div>
+      </div>
     </div>
   </div>
 
-  <div class="panel">
-    <div id="categorySummary" class="note" style="margin-bottom:10px">Sin datos.</div>
-    <div id="historyBox"><div class="empty">Cargando...</div></div>
-  </div>
-
-  <div class="note">
-    <b>Importante:</b> en <b>Costo total</b> coloca lo que realmente pagaste por esa línea. 
-    Ejemplo: 2 lechugas = S/ 4.00 → cantidad 2, unidad "unidad", costo total S/ 4.00.
-    La lectura automática de boletas se agregará después; esta versión deja primero el registro manual funcionando.
+  <div class="card">
+    <div class="title">📚 Gastos registrados del día</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Hora</th><th>Categoría</th><th>Proveedor</th><th>Boleta</th><th>Pago</th><th>Total</th><th></th></tr></thead>
+        <tbody id="history"></tbody>
+      </table>
+    </div>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
-const SUPABASE_URL = "https://defdwzzewzfjuseozwkn.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
-const TABLE = "daily_purchases";
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY,
-  {auth:{persistSession:false}}
-);
+const SUPABASE_URL="https://defdwzzewzfjuseozwkn.supabase.co";
+const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
+const TABLE="daily_purchases";
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:false}});
+const $=id=>document.getElementById(id);
+let selectedFile=null, currentRows=[];
 
-const $ = id => document.getElementById(id);
-let currentRows = [];
-let currentSource = "manual";
-let selectedReceiptFile = null;
+function num(v){const n=Number(v);return Number.isFinite(n)?n:0}
+function money(v){return "S/ "+num(v).toFixed(2)}
+function pad2(n){return String(n).padStart(2,"0")}
+function keyOf(d=new Date()){return d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate())}
+function dateFromKey(k){const [y,m,d]=String(k).split("-").map(Number);return new Date(y,(m||1)-1,d||1)}
+function mondayOf(d){const x=new Date(d);const day=x.getDay();x.setDate(x.getDate()+(day===0?-6:1-day));x.setHours(0,0,0,0);return x}
+function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
+function esc(s){return String(s??"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;"}[c]))}
+function makeId(){return "PUR_"+Date.now()+"_"+Math.floor(Math.random()*100000)}
 
-function localDateKey(d = new Date()) {
-  const y = d.getFullYear();
-  const m = String(d.getMonth()+1).padStart(2,"0");
-  const day = String(d.getDate()).padStart(2,"0");
-  return `${y}-${m}-${day}`;
-}
-function n(v) {
-  const x = Number(v);
-  return Number.isFinite(x) ? x : 0;
-}
-function money(v) {
-  return "S/ " + n(v).toFixed(2);
-}
-function esc(v) {
-  return String(v ?? "")
-    .replaceAll("&","&amp;").replaceAll("<","&lt;")
-    .replaceAll(">","&gt;").replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
-function makeId(prefix="PUR") {
-  return prefix + "_" + Date.now() + "_" + Math.floor(Math.random()*100000);
-}
-function makeGroupId() {
-  return "COMPRA_" + localDateKey().replaceAll("-","") + "_" + Date.now();
+function resetForm(){
+  $("supplier").value=""; $("receipt").value=""; $("total").value=""; $("note").value="";
+  $("payment").value="Efectivo"; $("category").value="Verduras";
+  $("saveStatus").textContent="Formulario limpio.";
 }
 
-function addItem(data={}) {
-  const row = document.createElement("div");
-  row.className = "item-row";
-  row.innerHTML = `
-    <input class="product" data-f="product" placeholder="Ej: Lechuga, pollo, mayonesa" value="${esc(data.product||"")}">
-    <input data-f="qty" type="number" min="0" step="0.01" placeholder="Cant." value="${data.qty ?? ""}">
-    <select data-f="unit">
-      ${["unidad","kg","g","litro","ml","caja","paquete","bolsa","casillero","docena","ciento","otro"].map(u => `<option ${data.unit===u?"selected":""}>${u}</option>`).join("")}
-    </select>
-    <input data-f="cost" type="number" min="0" step="0.01" placeholder="S/ 0.00" value="${data.cost ?? ""}">
-    <button class="remove-item" type="button">✕ Quitar</button>
-  `;
-  row.querySelector(".remove-item").addEventListener("click", () => {
-    const rows = [...document.querySelectorAll(".item-row")];
-    if (rows.length <= 1) {
-      row.querySelectorAll("input").forEach(i => i.value = "");
-      row.querySelector('[data-f="unit"]').value = "unidad";
-    } else {
-      row.remove();
-    }
-    updatePurchaseTotal();
-  });
-  row.querySelectorAll("input,select").forEach(el => el.addEventListener("input", updatePurchaseTotal));
-  $("itemsBox").appendChild(row);
-  updatePurchaseTotal();
-}
+async function saveExpense(){
+  const dateKey=$("dateKey").value||keyOf();
+  const total=num($("total").value);
+  if(total<=0){$("saveStatus").textContent="⚠️ Ingresa un monto mayor a S/ 0."; $("total").focus(); return;}
+  const category=$("category").value;
+  const supplier=$("supplier").value.trim();
+  const receipt=$("receipt").value.trim();
+  const note=$("note").value.trim();
+  const payment=$("payment").value;
+  const id=makeId();
 
-function readItems() {
-  return [...document.querySelectorAll(".item-row")].map(row => {
-    const get = f => row.querySelector(`[data-f="${f}"]`);
-    return {
-      product: get("product").value.trim(),
-      qty: n(get("qty").value),
-      unit: get("unit").value,
-      cost: n(get("cost").value)
-    };
-  }).filter(x => x.product || x.qty || x.cost);
-}
-
-function updatePurchaseTotal() {
-  const total = readItems().reduce((s,x)=>s+n(x.cost),0);
-  $("purchaseTotal").textContent = money(total);
-}
-
-function clearForm(keepDate=true) {
-  const date = $("purchaseDate").value;
-  $("category").value = "Verduras";
-  $("supplier").value = "";
-  $("receiptNumber").value = "";
-  $("paymentMethod").value = "Efectivo";
-  $("generalNote").value = "";
-  $("itemsBox").innerHTML = "";
-  addItem();
-  if (keepDate) $("purchaseDate").value = date || localDateKey();
-  updatePurchaseTotal();
-  currentSource = "manual";
-  $("saveStatus").textContent = "Formulario limpio.";
-}
-
-async function savePurchase() {
-  const dateKey = $("purchaseDate").value || localDateKey();
-  const category = $("category").value;
-  const supplier = $("supplier").value.trim();
-  const receiptNumber = $("receiptNumber").value.trim();
-  const paymentMethod = $("paymentMethod").value;
-  const generalNote = $("generalNote").value.trim();
-  const items = readItems();
-
-  if (!items.length) {
-    $("saveStatus").textContent = "⚠️ Agrega por lo menos un producto.";
-    return;
-  }
-  const invalid = items.find(x => !x.product || x.cost <= 0);
-  if (invalid) {
-    $("saveStatus").textContent = "⚠️ Cada producto debe tener nombre y costo mayor a S/ 0.";
-    return;
-  }
-
-  const groupId = makeGroupId();
-  const now = new Date().toISOString();
-  const rows = items.map(item => ({
-    id: makeId(),
-    date_key: dateKey,
-    product: item.product,
-    qty: item.qty,
-    unit: item.unit,
-    cost: item.cost,
-    note: generalNote || null,
+  const row={
+    id,
+    date_key:dateKey,
+    product:supplier ? `${category} - ${supplier}` : category,
+    qty:1,
+    unit:"compra",
+    cost:total,
+    note:note||null,
     category,
-    supplier: supplier || null,
-    receipt_number: receiptNumber || null,
-    payment_method: paymentMethod,
-    purchase_group_id: groupId,
-    receipt_image_url: null,
-    source: currentSource || "manual",
-    created_at: now
-  }));
-
-  const total = rows.reduce((s,x)=>s+n(x.cost),0);
-  if (!confirm(`¿Guardar esta compra por ${money(total)}?`)) return;
-
-  $("btnSave").disabled = true;
-  $("saveStatus").textContent = "Guardando compra...";
-
-  try {
-    const {error} = await supabaseClient.from(TABLE).insert(rows);
-    if (error) throw error;
-    $("saveStatus").textContent = `✅ Compra guardada correctamente. Total: ${money(total)}`;
-    $("historyDate").value = dateKey;
-    clearForm(true);
-    await loadHistory();
-  } catch(err) {
-    console.error(err);
-    $("saveStatus").textContent = "❌ No se pudo guardar: " + (err.message || String(err));
-  } finally {
-    $("btnSave").disabled = false;
-  }
-}
-
-function groupRows(rows) {
-  const map = new Map();
-  rows.forEach(r => {
-    const key = r.purchase_group_id || ("LEGACY_" + r.id);
-    if (!map.has(key)) map.set(key, []);
-    map.get(key).push(r);
-  });
-  return [...map.entries()].map(([groupId,items]) => ({
-    groupId,
-    items,
-    total: items.reduce((s,x)=>s+n(x.cost),0),
-    first: items[0]
-  })).sort((a,b) => String(b.first.created_at||"").localeCompare(String(a.first.created_at||"")));
-}
-
-function renderHistory(rows) {
-  currentRows = rows;
-  const groups = groupRows(rows);
-  $("mDay").textContent = money(rows.reduce((s,x)=>s+n(x.cost),0));
-  $("mPurchases").textContent = String(groups.length);
-  $("mLines").textContent = String(rows.length);
-
-  const last = rows.slice().sort((a,b)=>String(b.created_at||"").localeCompare(String(a.created_at||"")))[0];
-  $("mLast").textContent = last ? (last.product + " · " + money(last.cost)) : "—";
-
-  const cats = {};
-  rows.forEach(r => {
-    const c = r.category || "Sin categoría";
-    cats[c] = (cats[c] || 0) + n(r.cost);
-  });
-  const catHtml = Object.entries(cats)
-    .sort((a,b)=>b[1]-a[1])
-    .map(([c,v])=>`<span class="tag" style="margin:2px">${esc(c)}: ${money(v)}</span>`)
-    .join("");
-  $("categorySummary").innerHTML = catHtml || "Sin gastos registrados para esta fecha.";
-
-  if (!groups.length) {
-    $("historyBox").innerHTML = `<div class="empty">No hay gastos registrados para esta fecha.</div>`;
-    return;
-  }
-
-  $("historyBox").innerHTML = groups.map(g => {
-    const f = g.first;
-    const legacy = !f.purchase_group_id;
-    const supplier = f.supplier || "Sin proveedor";
-    const receipt = f.receipt_number ? " · Doc. " + esc(f.receipt_number) : "";
-    const pay = f.payment_method || "Sin forma de pago";
-    const category = f.category || "Sin categoría";
-    return `
-      <div class="history-group">
-        <div class="history-head">
-          <div>
-            <div class="history-title">${esc(category)} · ${esc(supplier)}</div>
-            <div class="history-meta">${esc(f.date_key || "")}${receipt} · ${esc(pay)}${legacy ? " · Registro antiguo" : ""}</div>
-            ${f.note ? `<div class="history-meta">Nota: ${esc(f.note)}</div>` : ""}
-          </div>
-          <div style="text-align:right">
-            <div class="history-total">${money(g.total)}</div>
-            <button class="mini-btn btn-red" onclick="deleteGroup('${esc(g.groupId)}')" type="button">Eliminar compra</button>
-          </div>
-        </div>
-        <div class="history-items">
-          ${g.items.map(r => `
-            <div class="history-line">
-              <div class="hproduct"><b>${esc(r.product)}</b></div>
-              <div>${n(r.qty)} ${esc(r.unit || "")}</div>
-              <div class="muted">${esc(r.category || "")}</div>
-              <div><b>${money(r.cost)}</b></div>
-              <div class="haction">
-                <button class="mini-btn btn-blue" onclick="editLine('${esc(r.id)}')" type="button">Editar</button>
-                <button class="mini-btn btn-red" onclick="deleteLine('${esc(r.id)}')" type="button">Borrar</button>
-              </div>
-            </div>
-          `).join("")}
-        </div>
-      </div>
-    `;
-  }).join("");
-}
-
-async function loadHistory() {
-  const dateKey = $("historyDate").value || localDateKey();
-  $("historyBox").innerHTML = `<div class="empty">Cargando...</div>`;
-  try {
-    const {data,error} = await supabaseClient
-      .from(TABLE)
-      .select("*")
-      .eq("date_key", dateKey)
-      .order("created_at", {ascending:false});
-    if (error) throw error;
-    renderHistory(data || []);
-  } catch(err) {
-    console.error(err);
-    $("historyBox").innerHTML = `<div class="empty">❌ Error: ${esc(err.message || String(err))}</div>`;
-  }
-}
-
-async function deleteLine(id) {
-  const row = currentRows.find(x => String(x.id) === String(id));
-  if (!row) return;
-  if (!confirm(`¿Borrar "${row.product}" por ${money(row.cost)}?`)) return;
-  const {error} = await supabaseClient.from(TABLE).delete().eq("id", id);
-  if (error) return alert("No se pudo borrar: " + error.message);
-  await loadHistory();
-}
-
-async function deleteGroup(groupId) {
-  const rows = currentRows.filter(r => (r.purchase_group_id || ("LEGACY_" + r.id)) === groupId);
-  if (!rows.length) return;
-  const total = rows.reduce((s,x)=>s+n(x.cost),0);
-  if (!confirm(`¿Eliminar la compra completa por ${money(total)}?\nSe borrarán ${rows.length} línea(s).`)) return;
-
-  let error = null;
-  if (groupId.startsWith("LEGACY_")) {
-    const id = groupId.replace("LEGACY_","");
-    ({error} = await supabaseClient.from(TABLE).delete().eq("id", id));
-  } else {
-    ({error} = await supabaseClient.from(TABLE).delete().eq("purchase_group_id", groupId));
-  }
-  if (error) return alert("No se pudo eliminar: " + error.message);
-  await loadHistory();
-}
-
-async function editLine(id) {
-  const r = currentRows.find(x => String(x.id) === String(id));
-  if (!r) return;
-
-  const product = prompt("Producto:", r.product ?? "");
-  if (product === null) return;
-  const qty = prompt("Cantidad:", r.qty ?? 0);
-  if (qty === null) return;
-  const unit = prompt("Unidad (kg, unidad, caja, paquete...):", r.unit ?? "unidad");
-  if (unit === null) return;
-  const cost = prompt("Costo TOTAL de esta línea:", r.cost ?? 0);
-  if (cost === null) return;
-  const category = prompt("Categoría:", r.category ?? "Insumos");
-  if (category === null) return;
-
-  const newCost = n(cost);
-  if (!product.trim() || newCost <= 0) return alert("Producto y costo son obligatorios.");
-
-  const {error} = await supabaseClient.from(TABLE).update({
-    product: product.trim(),
-    qty: n(qty),
-    unit: String(unit||"").trim(),
-    cost: newCost,
-    category: String(category||"").trim()
-  }).eq("id", id);
-
-  if (error) return alert("No se pudo editar: " + error.message);
-  await loadHistory();
-}
-
-
-function setPhotoPreview(file){
-  const box = $("photoPreview");
-  if (!file) {
-    box.innerHTML = `<div>📸 Toma una foto o elige una imagen.<br><span class="muted">Procura que esté recta, iluminada y que se vea el total.</span></div>`;
-    return;
-  }
-  const url = URL.createObjectURL(file);
-  box.innerHTML = `<img src="${url}" alt="Vista previa de comprobante">`;
-}
-
-
-async function fileToImage(file){
-  const url = URL.createObjectURL(file);
-  try{
-    const img = await new Promise((resolve,reject)=>{
-      const el = new Image();
-      el.onload = ()=>resolve(el);
-      el.onerror = reject;
-      el.src = url;
-    });
-    return img;
-  } finally {
-    setTimeout(()=>URL.revokeObjectURL(url), 1000);
-  }
-}
-
-function canvasToBlob(canvas, type="image/jpeg", quality=.96){
-  return new Promise(resolve => canvas.toBlob(resolve, type, quality));
-}
-
-async function preprocessReceipt(file, variant="strong"){
-  const img = await fileToImage(file);
-
-  // Upscale, but cap size so mobile browsers don't run out of memory.
-  const maxW = 2200;
-  const naturalW = img.naturalWidth || img.width;
-  const naturalH = img.naturalHeight || img.height;
-  const scale = Math.min(2.35, maxW / naturalW);
-  const w = Math.max(1, Math.round(naturalW * scale));
-  const h = Math.max(1, Math.round(naturalH * scale));
-
-  const canvas = document.createElement("canvas");
-  canvas.width = w;
-  canvas.height = h;
-  const ctx = canvas.getContext("2d", {willReadFrequently:true});
-  ctx.imageSmoothingEnabled = true;
-  ctx.imageSmoothingQuality = "high";
-  ctx.drawImage(img, 0, 0, w, h);
-
-  const imageData = ctx.getImageData(0,0,w,h);
-  const d = imageData.data;
-
-  // Grayscale + strong contrast. This is intentionally conservative:
-  // the receipt already has dark text over a light background.
-  let min = 255, max = 0;
-  const gray = new Uint8ClampedArray(w*h);
-  for(let i=0,p=0;i<d.length;i+=4,p++){
-    const g = Math.round(.299*d[i] + .587*d[i+1] + .114*d[i+2]);
-    gray[p]=g;
-    if(g<min) min=g;
-    if(g>max) max=g;
-  }
-  const range = Math.max(1,max-min);
-
-  for(let p=0,i=0;p<gray.length;p++,i+=4){
-    let g = (gray[p]-min)*255/range;
-
-    if(variant==="strong"){
-      // Contrast curve + threshold blend to reduce moiré from screen photos.
-      g = (g-128)*1.65 + 128;
-      g = Math.max(0,Math.min(255,g));
-      const th = g < 158 ? 0 : 255;
-      g = Math.round(g*.38 + th*.62);
-    } else {
-      g = (g-128)*1.30 + 128;
-      g = Math.max(0,Math.min(255,g));
-    }
-
-    d[i]=d[i+1]=d[i+2]=g;
-    d[i+3]=255;
-  }
-  ctx.putImageData(imageData,0,0);
-
-  // Small unsharp-mask-like pass using canvas redraw.
-  const out = document.createElement("canvas");
-  out.width=w; out.height=h;
-  const octx = out.getContext("2d");
-  octx.filter = variant==="strong" ? "contrast(125%) brightness(108%)" : "contrast(112%)";
-  octx.drawImage(canvas,0,0);
-
-  return await canvasToBlob(out, "image/jpeg", .97);
-}
-
-function normalizeOcrText(text){
-  return String(text||"")
-    .replace(/[|¦]/g,"I")
-    .replace(/[“”]/g,'"')
-    .replace(/[‘’]/g,"'")
-    .replace(/[‐‑–—]/g,"-")
-    .replace(/\u00A0/g," ")
-    .replace(/[ \t]+/g," ")
-    .replace(/\n{3,}/g,"\n\n")
-    .trim();
-}
-
-function ocrQuality(text, confidence=0){
-  const t = normalizeOcrText(text);
-  if(!t) return 0;
-  let score = Number(confidence)||0;
-  if(/FECHA/i.test(t)) score += 18;
-  if(/TOTAL/i.test(t)) score += 22;
-  if(/NOTA|BOLETA|VENTA/i.test(t)) score += 15;
-  score += Math.min(25, (t.match(/\d+[.,]\d{2}/g)||[]).length*4);
-  score += Math.min(20, (t.match(/[A-ZÁÉÍÓÚÑ]{4,}/g)||[]).length);
-  return score;
-}
-
-async function runOcrPass(imageLike, psm, labelBase, progressStart, progressSpan){
-  const result = await Tesseract.recognize(imageLike, "spa", {
-    logger: m => {
-      if(typeof m.progress === "number"){
-        const pct = Math.round(progressStart + m.progress*progressSpan);
-        $("scanProgressBar").style.width = Math.min(99, Math.max(2,pct)) + "%";
-        const label = m.status ? String(m.status).replaceAll("_"," ") : labelBase;
-        $("scanStatus").textContent = `🤖 ${labelBase}: ${label}... ${Math.min(99,Math.max(2,pct))}%`;
-      }
-    },
-    tessedit_pageseg_mode: String(psm),
-    preserve_interword_spaces: "1",
-    user_defined_dpi: "300"
-  });
-  return {
-    text: normalizeOcrText(result?.data?.text || ""),
-    confidence: Number(result?.data?.confidence || 0)
+    supplier:supplier||null,
+    receipt_number:receipt||null,
+    payment_method:payment,
+    purchase_group_id:id,
+    receipt_image_url:null,
+    source:"quick_expense",
+    created_at:new Date().toISOString()
   };
+
+  if(!confirm(`¿Guardar gasto de ${money(total)}?`)) return;
+  $("btnSave").disabled=true; $("saveStatus").textContent="Guardando...";
+  try{
+    const {error}=await sb.from(TABLE).insert(row);
+    if(error) throw error;
+    $("saveStatus").textContent=`✅ Gasto guardado: ${money(total)}`;
+    resetForm();
+    await refresh();
+  }catch(e){
+    console.error(e); $("saveStatus").textContent="❌ No se pudo guardar: "+(e.message||String(e));
+  }finally{$("btnSave").disabled=false}
 }
 
-
-function normalizeOcrNumber(s){
-  return n(String(s ?? "").replace(/\s/g,"").replace(",","."));
+async function loadExpenses(start,end){
+  const {data,error}=await sb.from(TABLE).select("*").gte("date_key",start).lte("date_key",end).neq("source","weekly_expense").order("created_at",{ascending:false});
+  if(error){
+    // Los registros antiguos pueden tener source NULL; neq no los devuelve. Hacemos consulta completa y filtramos localmente.
+    const r2=await sb.from(TABLE).select("*").gte("date_key",start).lte("date_key",end).order("created_at",{ascending:false});
+    if(r2.error) throw r2.error;
+    return (r2.data||[]).filter(r=>String(r.source||"")!=="weekly_expense");
+  }
+  // Complementar NULL source.
+  const rnull=await sb.from(TABLE).select("*").gte("date_key",start).lte("date_key",end).is("source",null).order("created_at",{ascending:false});
+  const all=[...(data||[]),...((rnull.data||[]).filter(x=>!(data||[]).some(y=>String(y.id)===String(x.id))))];
+  return all;
 }
 
-function cleanOcrDescription(s){
-  return String(s ?? "")
-    .replace(/^\s*[-•*]+\s*/,"")
-    .replace(/\s+/g," ")
-    .trim();
+function renderDay(rows,dateKey){
+  currentRows=rows.filter(r=>r.date_key===dateKey);
+  const dayTotal=currentRows.reduce((s,r)=>s+num(r.cost),0);
+  $("mDay").textContent=money(dayTotal);
+  $("mCount").textContent=String(currentRows.length);
+  $("mLast").textContent=currentRows[0]?`${currentRows[0].category||"Compra"} · ${money(currentRows[0].cost)}`:"—";
+  $("history").innerHTML=currentRows.length?currentRows.map(r=>{
+    const t=r.created_at?new Date(r.created_at).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}):"--";
+    return `<tr>
+      <td>${esc(t)}</td><td>${esc(r.category||"Insumos")}</td><td>${esc(r.supplier||"—")}</td>
+      <td>${esc(r.receipt_number||"—")}</td><td>${esc(r.payment_method||"—")}</td>
+      <td class="num">${money(r.cost)}</td>
+      <td><button class="btn-red" style="padding:6px 8px" onclick="deleteExpense('${esc(r.id)}')">Borrar</button></td>
+    </tr>`;
+  }).join(""):`<tr><td colspan="7" style="text-align:center;color:#94a3b8">Sin gastos en esta fecha.</td></tr>`;
 }
 
-function detectUnit(raw){
-  const t = String(raw || "").toUpperCase();
-  if (/\bKG\b|KILO/.test(t)) return "kg";
-  if (/LITRO|\bLT\b/.test(t)) return "litro";
-  if (/CAJA/.test(t)) return "caja";
-  if (/PAQUETE|PAQ/.test(t)) return "paquete";
-  if (/BOLSA/.test(t)) return "bolsa";
-  if (/DOCENA/.test(t)) return "docena";
-  if (/CIENTO/.test(t)) return "ciento";
-  if (/UNID|UND|UNIDAD|CASILLERO/.test(t)) return "unidad";
-  return "unidad";
+async function refresh(){
+  const dk=$("dateKey").value||keyOf();
+  const mon=mondayOf(dateFromKey(dk)), sun=addDays(mon,6);
+  try{
+    const rows=await loadExpenses(keyOf(mon),keyOf(sun));
+    const weekTotal=rows.reduce((s,r)=>s+num(r.cost),0);
+    $("mWeek").textContent=money(weekTotal);
+    renderDay(rows,dk);
+  }catch(e){console.error(e);$("saveStatus").textContent="❌ Error leyendo gastos: "+(e.message||String(e));}
 }
 
-function parseReceiptText(text){
-  let normalized = normalizeOcrText(text);
+async function deleteExpense(id){
+  const r=currentRows.find(x=>String(x.id)===String(id)); if(!r)return;
+  if(!confirm(`¿Borrar gasto de ${money(r.cost)}?`))return;
+  const {error}=await sb.from(TABLE).delete().eq("id",id);
+  if(error) return alert("No se pudo borrar: "+error.message);
+  await refresh();
+}
+window.deleteExpense=deleteExpense;
 
-  // Common OCR fixes for prices such as 14400 -> 144.00 when near TOTAL.
-  normalized = normalized.replace(
-    /(TOTAL[\s:S\/.-]*)(\d{2,4})00\b/ig,
-    (_,a,b) => a + b + ".00"
-  );
-
-  const rawLines = normalized
-    .split(/\r?\n/)
-    .map(x => x.replace(/\s+/g," ").trim())
-    .filter(Boolean);
-
-  const joined = rawLines.join("\n");
-  let dateKey = "";
-  let receiptNumber = "";
-  let detectedTotal = 0;
-
-  const dm = joined.match(/\b(\d{1,2})[\/.\-](\d{1,2})[\/.\-](20\d{2})\b/);
-  if (dm) dateKey = `${dm[3]}-${String(dm[2]).padStart(2,"0")}-${String(dm[1]).padStart(2,"0")}`;
-
-  // Receipt number: accept OCR variants such as NOTA VENTA N° 58815.
-  const rm = joined.match(/(?:NOTA(?:\s+DE)?\s+VENTA|BOLETA|TICKET|COMPROBANTE|VENTA)[^\d]{0,18}(\d{4,})/i);
-  if (rm) receiptNumber = rm[1];
-
-  // Total: accept 144.00 / 144,00 / 14400 after TOTAL.
-  const totalMatches = [...joined.matchAll(/TOTAL[\s\S]{0,22}?(\d{2,4}(?:[.,]\d{2})?)/ig)];
-  if (totalMatches.length) {
-    let raw = totalMatches[totalMatches.length-1][1];
-    if (!/[.,]/.test(raw) && raw.length >= 4) {
-      raw = raw.slice(0,-2) + "." + raw.slice(-2);
-    }
-    detectedTotal = normalizeOcrNumber(raw);
+function normalizeText(t){return String(t||"").replace(/[|¦]/g,"I").replace(/[‐‑–—]/g,"-").replace(/\s+/g," ").trim()}
+function parseDate(t){const m=String(t).match(/\b(\d{1,2})[\/.\-](\d{1,2})[\/.\-](20\d{2})\b/);return m?`${m[3]}-${pad2(m[2])}-${pad2(m[1])}`:""}
+function parseReceipt(t){
+  const x=String(t);let m=x.match(/(?:NOTA(?:\s+DE)?\s+VENTA|BOLETA|TICKET|N[°ºO])[^0-9]{0,25}(\d{4,8})/i);
+  return m?m[1]:"";
+}
+function parseTotal(t){
+  const x=String(t).toUpperCase();
+  let m=x.match(/TOTAL[^0-9]{0,20}(\d{1,5}(?:[.,]\d{2})?)/i);
+  if(m){
+    let raw=m[1]; if(!/[.,]/.test(raw)&&raw.length>=4) raw=raw.slice(0,-2)+"."+raw.slice(-2);
+    return num(raw.replace(",","."));
   }
-
-  const items = [];
-  const skip = /^(NOTA|BOLETA|TICKET|FECHA|CLIENTE|CANT|UNID|DESCRIP|IMPORTE|VENDEDOR|PERSONAL|ENTREGA|RUC|DNI|TOTAL\b|SOLES\b|SON\b|GRACIAS\b|RUTA\b)/i;
-
-  const cleaned = rawLines
-    .map(x => x.replace(/[“”]/g,'"').trim())
-    .filter(x => !skip.test(x));
-
-  // Join description fragments until a price is found.
-  let buffer = "";
-  const priceEnd = /(\d{1,4}[.,]\d{2})\s*$/;
-  const priceLoose = /(?:^|\s)(\d{1,4}[.,]\d{2})(?:\s|$)/g;
-
-  function sanitizeDescription(s){
-    return cleanOcrDescription(s)
-      .replace(/^[\-\s_=~]+/,"")
-      .replace(/\bTOTAL\b.*$/i,"")
-      .replace(/\s{2,}/g," ")
-      .trim();
-  }
-
-  function extractQtyUnit(desc){
-    let qty = 1, unit = "unidad", product = desc;
-
-    // [1][CASILLERO]HUEVO...
-    const bracket = product.match(/^\s*\[\s*(\d+(?:[.,]\d+)?)\s*\]\s*\[\s*([^\]]+)\s*\]\s*(.*)$/i);
-    if (bracket) {
-      qty = normalizeOcrNumber(bracket[1]) || 1;
-      unit = detectUnit(bracket[2]);
-      product = bracket[3];
-      if(/CASILLERO/i.test(bracket[2])) unit = "casillero";
-      if(/CIENTO/i.test(bracket[2])) unit = "ciento";
-      return {qty,unit,product:sanitizeDescription(product)};
-    }
-
-    // OCR often loses brackets: "1 CAJA MAYONESA..."
-    const lead = product.match(/^\s*(\d+(?:[.,]\d+)?)\s*(CASILLERO|CAJA|PAQUETE|BOLSA|CIENTO|KG|KILO|UNIDAD|UND)?\s+(.*)$/i);
-    if (lead) {
-      const q = normalizeOcrNumber(lead[1]);
-      if(q>0 && q<=100){
-        qty=q;
-        if(lead[2]) {
-          unit=detectUnit(lead[2]);
-          if(/CASILLERO/i.test(lead[2])) unit="casillero";
-          if(/CIENTO/i.test(lead[2])) unit="ciento";
-        }
-        product=lead[3];
-      }
-    }
-    return {qty,unit,product:sanitizeDescription(product)};
-  }
-
-  function pushItem(descRaw, priceRaw){
-    const cost = normalizeOcrNumber(priceRaw);
-    if(cost<=0 || cost>5000) return;
-    const parsed = extractQtyUnit(sanitizeDescription(descRaw));
-    if(!parsed.product || parsed.product.length < 2 || skip.test(parsed.product)) return;
-
-    // Reject lines that are mostly garbage/punctuation.
-    const letters = (parsed.product.match(/[A-Za-zÁÉÍÓÚÑáéíóúñ]/g)||[]).length;
-    if(letters < 2) return;
-
-    const dup = items.some(x =>
-      x.product.toLowerCase() === parsed.product.toLowerCase() &&
-      Math.abs(x.cost-cost)<0.001
-    );
-    if(!dup) items.push({...parsed,cost});
-  }
-
-  for(const line0 of cleaned){
-    const line = line0.replace(/\s+/g," ").trim();
-    if(!line) continue;
-
-    const endMatch = line.match(priceEnd);
-    if(endMatch){
-      const left = line.slice(0, endMatch.index).trim();
-      pushItem((buffer ? buffer+" " : "") + left, endMatch[1]);
-      buffer="";
-      continue;
-    }
-
-    // If price appears inside a line, use the last plausible monetary value.
-    const prices = [...line.matchAll(priceLoose)];
-    if(prices.length){
-      const pm = prices[prices.length-1];
-      const left = line.slice(0, pm.index).trim();
-      pushItem((buffer ? buffer+" " : "") + left, pm[1]);
-      buffer="";
-      continue;
-    }
-
-    if(/[A-Za-zÁÉÍÓÚÑáéíóúñ]/.test(line)){
-      buffer = buffer ? buffer+" "+line : line;
-      if(buffer.length>150) buffer=line;
-    }
-  }
-
-  // Known printed receipts sometimes OCR the right-column prices poorly.
-  // If we have a total and 3+ plausible products, keep the lines and warn
-  // instead of inventing missing costs.
-  const itemSum = items.reduce((s,x)=>s+n(x.cost),0);
-  return {dateKey, receiptNumber, detectedTotal, itemSum, items};
+  const vals=[...x.matchAll(/\b(\d{1,4}[.,]\d{2})\b/g)].map(a=>num(a[1].replace(",","."))).filter(v=>v>0&&v<10000);
+  return vals.length?Math.max(...vals):0;
+}
+async function preprocess(file){
+  const url=URL.createObjectURL(file);
+  const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=url});
+  URL.revokeObjectURL(url);
+  const maxW=1900, scale=Math.min(2,maxW/(img.naturalWidth||img.width));
+  const w=Math.round((img.naturalWidth||img.width)*scale), h=Math.round((img.naturalHeight||img.height)*scale);
+  const c=document.createElement("canvas");c.width=w;c.height=h;const ctx=c.getContext("2d",{willReadFrequently:true});
+  ctx.drawImage(img,0,0,w,h);const im=ctx.getImageData(0,0,w,h),d=im.data;
+  for(let i=0;i<d.length;i+=4){let g=.299*d[i]+.587*d[i+1]+.114*d[i+2];g=Math.max(0,Math.min(255,(g-128)*1.35+128));d[i]=d[i+1]=d[i+2]=g;}
+  ctx.putImageData(im,0,0);return c;
+}
+async function readPhoto(){
+  if(!selectedFile){$("ocrStatus").textContent="⚠️ Primero elige o toma una foto.";return}
+  if(!window.Tesseract){$("ocrStatus").textContent="❌ No cargó el lector OCR.";return}
+  $("btnRead").disabled=true;$("ocrStatus").textContent="🤖 Leyendo...";
+  try{
+    const c=await preprocess(selectedFile);
+    const r=await Tesseract.recognize(c,"spa",{logger:m=>{if(typeof m.progress==="number")$("ocrStatus").textContent=`🤖 Leyendo... ${Math.round(m.progress*100)}%`}});
+    const text=normalizeText(r?.data?.text||"");
+    const d=parseDate(text), nbo=parseReceipt(text), total=parseTotal(text);
+    if(d)$("dateKey").value=d;if(nbo)$("receipt").value=nbo;if(total>0)$("total").value=total.toFixed(2);
+    $("ocrStatus").textContent=`✅ Lectura terminada.\nFecha: ${d||"no detectada"}\nBoleta: ${nbo||"no detectada"}\nTotal: ${total>0?money(total):"no detectado"}\nRevisa y corrige si hace falta.`;
+    await refresh();
+  }catch(e){console.error(e);$("ocrStatus").textContent="❌ No pude leer la foto: "+(e.message||String(e));}
+  finally{$("btnRead").disabled=false}
 }
 
-function applyParsedReceipt(parsed){
-  if (parsed.dateKey) {
-    $("purchaseDate").value = parsed.dateKey;
-    $("historyDate").value = parsed.dateKey;
-  }
-  if (parsed.receiptNumber) $("receiptNumber").value = parsed.receiptNumber;
-
-  $("itemsBox").innerHTML = "";
-  if (parsed.items.length) {
-    parsed.items.forEach(item => addItem(item));
-  } else {
-    addItem();
-  }
-  currentSource = "ocr";
-  updatePurchaseTotal();
-
-  const diff = parsed.detectedTotal > 0 ? Math.abs(parsed.detectedTotal - parsed.itemSum) : 0;
-  let msg = `✅ Texto procesado.\nProductos detectados: ${parsed.items.length}\nSuma de líneas: ${money(parsed.itemSum)}`;
-  if (parsed.detectedTotal > 0) {
-    msg += `\nTotal leído de la foto: ${money(parsed.detectedTotal)}`;
-    if (diff > 0.02) msg += `\n⚠️ Revisa la foto: hay una diferencia de ${money(diff)} entre el total y las líneas detectadas.`;
-    else msg += `\n✅ La suma coincide con el total detectado.`;
-  }
-  if (!parsed.items.length) msg += "\n⚠️ No pude separar productos automáticamente. Corrige el texto o ingrésalos manualmente.";
-  $("scanStatus").textContent = msg;
-  $("saveStatus").textContent = "Revisa los datos que la foto pasó al formulario y luego presiona Guardar compra.";
-}
-
-async function readReceiptPhoto(){
-  if (!selectedReceiptFile) {
-    $("scanStatus").textContent = "⚠️ Primero toma una foto o selecciona una imagen.";
-    return;
-  }
-  if (!window.Tesseract) {
-    $("scanStatus").textContent = "❌ No cargó el lector de imágenes. Revisa tu conexión a internet y vuelve a abrir la página.";
-    return;
-  }
-
-  $("btnReadPhoto").disabled = true;
-  $("scanProgressBar").style.width = "2%";
-  $("scanStatus").textContent = "🤖 Mejorando contraste de la boleta...";
-
-  try {
-    // Pass 1: enhanced B/W, optimized for receipt blocks.
-    const enhanced = await preprocessReceipt(selectedReceiptFile, "strong");
-    const pass1 = await runOcrPass(enhanced, 6, "Lectura 1/2", 3, 47);
-
-    // Pass 2: softer processing; useful when thresholding loses thin digits.
-    $("scanStatus").textContent = "🤖 Segunda lectura para recuperar precios y números...";
-    const soft = await preprocessReceipt(selectedReceiptFile, "soft");
-    const pass2 = await runOcrPass(soft, 11, "Lectura 2/2", 50, 47);
-
-    // Pick best overall text, but merge unique lines from both passes.
-    const best = ocrQuality(pass1.text, pass1.confidence) >= ocrQuality(pass2.text, pass2.confidence) ? pass1 : pass2;
-    const other = best === pass1 ? pass2 : pass1;
-
-    const bestLines = best.text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
-    const seen = new Set(bestLines.map(x=>x.toLowerCase()));
-    const merged = [...bestLines];
-    other.text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).forEach(line=>{
-      const k=line.toLowerCase();
-      if(!seen.has(k)){ seen.add(k); merged.push(line); }
-    });
-
-    const text = merged.join("\n");
-    $("ocrText").value = text;
-    $("scanProgressBar").style.width = "100%";
-
-    const parsed = parseReceiptText(text);
-    applyParsedReceipt(parsed);
-
-    const q1 = Math.round(pass1.confidence||0);
-    const q2 = Math.round(pass2.confidence||0);
-    $("scanStatus").textContent += `\nCalidad OCR: ${q1}% / ${q2}%.`;
-    if(Math.max(q1,q2) < 55){
-      $("scanStatus").textContent += "\n⚠️ La foto tiene baja legibilidad para OCR. Si puedes, toma la boleta directamente y evita fotografiarla desde otra pantalla.";
-    }
-  } catch(err) {
-    console.error(err);
-    $("scanStatus").textContent = "❌ No pude leer esta imagen: " + (err.message || String(err));
-  } finally {
-    $("btnReadPhoto").disabled = false;
-  }
-}
-
-$("receiptPhoto").addEventListener("change", e => {
-  selectedReceiptFile = e.target.files && e.target.files[0] ? e.target.files[0] : null;
-  setPhotoPreview(selectedReceiptFile);
-  $("ocrText").value = "";
-  $("scanProgressBar").style.width = "0%";
-  $("scanStatus").textContent = selectedReceiptFile
-    ? `Imagen lista: ${selectedReceiptFile.name || "foto"}. Presiona “Leer foto”.`
-    : "Todavía no se ha leído ninguna imagen.";
+$("photo").addEventListener("change",e=>{
+  selectedFile=e.target.files?.[0]||null;
+  if(!selectedFile){$("preview").innerHTML="📸 Sin foto";return}
+  const u=URL.createObjectURL(selectedFile);$("preview").innerHTML=`<img src="${u}" alt="Boleta">`;
 });
-
-$("btnReadPhoto").addEventListener("click", readReceiptPhoto);
-
-$("btnApplyOcr").addEventListener("click", () => {
-  const text = $("ocrText").value.trim();
-  if (!text) {
-    $("scanStatus").textContent = "⚠️ No hay texto para procesar.";
-    return;
-  }
-  applyParsedReceipt(parseReceiptText(text));
-});
-
-$("btnClearPhoto").addEventListener("click", () => {
-  selectedReceiptFile = null;
-  $("receiptPhoto").value = "";
-  $("ocrText").value = "";
-  $("scanProgressBar").style.width = "0%";
-  setPhotoPreview(null);
-  $("scanStatus").textContent = "Foto retirada. Puedes registrar manualmente o elegir otra imagen.";
-  currentSource = "manual";
-});
-
-
-$("btnAddItem").addEventListener("click", () => addItem());
-$("btnSave").addEventListener("click", savePurchase);
-$("btnClear").addEventListener("click", () => clearForm(true));
-$("btnReload").addEventListener("click", loadHistory);
-$("historyDate").addEventListener("change", loadHistory);
-
-window.deleteLine = deleteLine;
-window.deleteGroup = deleteGroup;
-window.editLine = editLine;
-
-(function init(){
-  const today = localDateKey();
-  $("purchaseDate").value = today;
-  $("historyDate").value = today;
-  addItem();
-  loadHistory();
-})();
+$("btnRead").addEventListener("click",readPhoto);
+$("btnSave").addEventListener("click",saveExpense);
+$("btnClear").addEventListener("click",resetForm);
+$("dateKey").addEventListener("change",refresh);
+$("dateKey").value=keyOf();
+refresh();
 </script>
 </body>
 </html>
