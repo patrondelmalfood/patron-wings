@@ -79,7 +79,32 @@ table{width:100%;border-collapse:collapse;font-size:13px} th,td{border-bottom:1p
   line-height:1.45
 }
 
-@media(max-width:850px){.topbar{position:relative;flex-direction:column;align-items:stretch}.brand{justify-content:center;text-align:center}.controls,.grid-4,.grid-3,.grid-2,.expense-grid,.result-box,.manual-grid{grid-template-columns:1fr}.btn{width:100%}.metric .value{font-size:22px}}
+
+.rest-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.btn-rest{background:#334155;color:#fff;border:1px solid #64748b}
+.btn-orange{background:#f97316;color:#fff;border:0}
+.btn-gray{background:#475569;color:#fff;border:0}
+.history-table-wrap,.compare-wrap{overflow:auto;border:1px solid #263244;border-radius:14px}
+.history-table-wrap table,.compare-wrap table{min-width:820px}
+.week-close-box{
+  background:linear-gradient(180deg,rgba(124,58,237,.10),rgba(15,23,42,.96));
+  border-color:rgba(168,85,247,.40)
+}
+.week-close-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.week-close-status{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.big-status{
+  display:inline-flex;padding:7px 11px;border-radius:999px;border:1px solid #475569;
+  background:#020617;color:#cbd5e1;font-size:12px;font-weight:900
+}
+.big-status.closed{border-color:#22c55e;color:#86efac}
+.big-status.open{border-color:#facc15;color:#fde68a}
+.month-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.month-breakdown{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.month-item{background:#020617;border:1px solid #263244;border-radius:12px;padding:10px}
+.month-item small{display:block;color:#94a3b8}.month-item b{display:block;margin-top:5px;color:#fde68a;font-size:17px}
+.origin-auto{color:#7dd3fc;font-weight:900}.origin-manual{color:#fde68a;font-weight:900}.origin-rest{color:#cbd5e1;font-weight:900}
+
+@media(max-width:850px){.topbar{position:relative;flex-direction:column;align-items:stretch}.brand{justify-content:center;text-align:center}.controls,.grid-4,.grid-3,.grid-2,.expense-grid,.result-box,.manual-grid,.month-grid,.month-breakdown{grid-template-columns:1fr}.btn{width:100%}.metric .value{font-size:22px}}
 @media print{body{background:#fff;color:#000}.topbar,#loginBox,#controlsCard,.no-print,.save-row{display:none!important}.wrap{max-width:none;padding:0}.card,.metric,.expense-card,.result-line{box-shadow:none;border:1px solid #ddd;background:#fff;color:#000}.metric .value,th,.expense-card strong,.result-line b{color:#000}td,th{border-bottom:1px dashed #000}}
 </style>
 </head>
@@ -174,6 +199,26 @@ table{width:100%;border-collapse:collapse;font-size:13px} th,td{border-bottom:1p
         <b>Cómo funciona:</b> si la moza usa el sistema, no haces nada aquí. Si la venta fue en papel,
         escribes caja inicial + efectivo + Yape y guardas. El total se calcula automáticamente.
       </div>
+      <div class="rest-row no-print">
+        <button id="btnMarkRest" class="btn-rest" type="button">😴 Marcar fecha como DESCANSO</button>
+        <button id="btnDeleteManual" class="btn-red" type="button" style="width:auto">🗑️ Eliminar manual / descanso</button>
+      </div>
+    </div>
+
+
+    <div class="section-title">📋 Control de ventas de la semana</div>
+    <div class="card">
+      <div class="note" style="margin:0 0 10px">
+        Aquí ves qué días fueron registrados por <b>sistema</b>, cuáles fueron <b>manuales</b>, descansos y días todavía pendientes.
+      </div>
+      <div class="history-table-wrap">
+        <table>
+          <thead>
+            <tr><th>Día</th><th>Fecha</th><th>Origen</th><th>Caja inicial</th><th>Efectivo</th><th>Yape</th><th>Total</th><th>Acción</th></tr>
+          </thead>
+          <tbody id="manualHistoryRows"></tbody>
+        </table>
+      </div>
     </div>
 
     <div class="section-title">💰 Cierre económico semanal</div>
@@ -241,6 +286,65 @@ table{width:100%;border-collapse:collapse;font-size:13px} th,td{border-bottom:1p
       <div class="note" id="purchaseNote">—</div>
     </div>
 
+
+    <div class="section-title">🔒 Cerrar semana</div>
+    <div class="card week-close-box">
+      <div class="week-close-head">
+        <div>
+          <div style="font-size:17px;font-weight:900;color:#e9d5ff">Guardar fotografía económica de la semana</div>
+          <div class="note">Al cerrar, se guarda una copia de ventas, gastos, resultado y margen. Las correcciones posteriores no cambian ese cierre a menos que tú pulses “Actualizar cierre”.</div>
+        </div>
+        <div class="week-close-status">
+          <span id="weekSnapshotBadge" class="big-status open">SEMANA ABIERTA</span>
+        </div>
+      </div>
+      <div class="save-row no-print">
+        <button id="btnCloseWeek" class="btn-purple" type="button" style="width:auto">🔒 Cerrar semana</button>
+        <div class="save-status" id="weekCloseStatus">Cuando termines la semana, guarda el cierre.</div>
+      </div>
+    </div>
+
+    <div class="section-title">📈 Comparación de semanas</div>
+    <div class="card">
+      <div class="compare-wrap">
+        <table>
+          <thead><tr><th>Semana</th><th>Estado</th><th>Ventas</th><th>Gastos</th><th>Resultado</th><th>Margen</th></tr></thead>
+          <tbody id="weeklyCompareRows"></tbody>
+        </table>
+      </div>
+      <div class="note">Las semanas cerradas quedan guardadas como histórico. La semana que estás viendo puede aparecer “EN CURSO” si todavía no la cerraste.</div>
+    </div>
+
+    <div class="section-title">🗓️ Resumen mensual</div>
+    <div class="card">
+      <div style="display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin-bottom:12px">
+        <div>
+          <label>Mes a revisar</label>
+          <input id="monthPicker" type="month" style="min-width:190px">
+        </div>
+        <button id="btnLoadMonth" class="btn-blue no-print" type="button" style="width:auto">📊 Ver mes</button>
+      </div>
+
+      <div class="month-grid">
+        <div class="metric"><div class="label">Ventas del mes</div><div class="value" id="monthSales">S/ 0.00</div></div>
+        <div class="metric"><div class="label">Gastos del mes</div><div class="value" id="monthExpenses">S/ 0.00</div></div>
+        <div class="metric goodbox" id="monthProfitBox"><div class="label">Resultado del mes</div><div class="value" id="monthProfit">S/ 0.00</div></div>
+        <div class="metric"><div class="label">Margen del mes</div><div class="value" id="monthMargin">0.0%</div></div>
+      </div>
+
+      <div class="month-breakdown">
+        <div class="month-item"><small>🛒 Insumos</small><b id="monthSupplies">S/ 0.00</b></div>
+        <div class="month-item"><small>👥 Personal</small><b id="monthStaff">S/ 0.00</b></div>
+        <div class="month-item"><small>🏠 Alquiler</small><b id="monthRent">S/ 0.00</b></div>
+        <div class="month-item"><small>💡 Luz</small><b id="monthLight">S/ 0.00</b></div>
+        <div class="month-item"><small>🔥 Gas</small><b id="monthGas">S/ 0.00</b></div>
+        <div class="month-item"><small>📡 Internet</small><b id="monthInternet">S/ 0.00</b></div>
+        <div class="month-item"><small>👩 Mini Socia July</small><b id="monthJuly">S/ 0.00</b></div>
+        <div class="month-item"><small>🧾 Otros</small><b id="monthOther">S/ 0.00</b></div>
+      </div>
+      <div class="note" id="monthNote">Los gastos semanales se contabilizan en el mes donde cae el lunes de esa semana.</div>
+    </div>
+
     <div class="section-title">📅 Ventas de lunes a domingo</div>
     <div class="card">
       <div style="overflow:auto">
@@ -263,11 +367,14 @@ const SUPABASE_ANON_KEY="sb_publishable_ybJZO45G37nMvSHwQYfIhA_qWi9UR0K";
 const CLOSINGS_TABLE="daily_closings";
 const ORDERS_TABLE="orders_cloud";
 const PURCHASES_TABLE="daily_purchases";
+const WEEKLY_SUMMARIES_TABLE="weekly_summaries";
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:false}});
 const $=id=>document.getElementById(id);
-const ids=["loginBox","app","pass","btnLogin","btnLogout","loginError","weekDate","btnPrev","btnToday","btnNext","btnPrint","weekLabel","mWeekTotal","mWeekCash","mWeekYape","mWeekOrders","weekRows","liveDot","liveStatus","expSupplies","expStaff","expRent","expLight","expGas","expInternet","expJuly","expOther","rSales","rExpenses","rProfit","rMargin","profitBox","btnSaveExpenses","expenseStatus","purchaseRows","purchaseNote","manualDate","manualOpenCash","manualCash","manualYape","manualTotal","manualOrders","manualNote","btnSaveManualSale","btnLoadManualSale","manualSaleStatus"];
+const ids=["loginBox","app","pass","btnLogin","btnLogout","loginError","weekDate","btnPrev","btnToday","btnNext","btnPrint","weekLabel","mWeekTotal","mWeekCash","mWeekYape","mWeekOrders","weekRows","liveDot","liveStatus","expSupplies","expStaff","expRent","expLight","expGas","expInternet","expJuly","expOther","rSales","rExpenses","rProfit","rMargin","profitBox","btnSaveExpenses","expenseStatus","purchaseRows","purchaseNote","manualDate","manualOpenCash","manualCash","manualYape","manualTotal","manualOrders","manualNote","btnSaveManualSale","btnLoadManualSale","manualSaleStatus","btnMarkRest","btnDeleteManual","manualHistoryRows","weekSnapshotBadge","btnCloseWeek","weekCloseStatus","weeklyCompareRows","monthPicker","btnLoadMonth","monthSales","monthExpenses","monthProfit","monthMargin","monthProfitBox","monthSupplies","monthStaff","monthRent","monthLight","monthGas","monthInternet","monthJuly","monthOther","monthNote"];
 const els=ids.reduce((a,id)=>(a[id]=$(id),a),{});
-let logged=false,realtimeReady=false,expenseDirty=false,currentWeekSales=0,currentMondayKey="";
+let logged=false,realtimeReady=false,expenseDirty=false,currentWeekSales=0,currentWeekCash=0,currentWeekYape=0,currentWeekOrders=0,currentMondayKey="";
+let currentWeekExpenses=0,currentWeekProfit=0,currentWeekMargin=0,currentSupplies=0;
+let currentWeekClosings=[],currentWeekOrdersRows=[],currentWeekPurchases=[],currentWeekSnapshot=null;
 const dayNames=["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
 const expenseMap=[
   ["staff","Personal","expStaff"],["rent","Alquiler","expRent"],["light","Luz","expLight"],
@@ -342,6 +449,59 @@ async function fetchPurchases(start,end){
   if(error)throw error;return data||[];
 }
 
+async function fetchWeekSnapshot(weekStart){
+  const {data,error}=await sb.from(WEEKLY_SUMMARIES_TABLE).select("*").eq("week_start",weekStart).maybeSingle();
+  if(error){
+    if(String(error.message||"").toLowerCase().includes("weekly_summaries")) return null;
+    throw error;
+  }
+  return data||null;
+}
+function isManualClosing(c){
+  return !!c && (c?.data?.manual===true || String(c?.data?.closedBy||"").toUpperCase()==="MANUAL_PAPEL");
+}
+function isRestClosing(c){
+  return !!c && (c?.data?.descanso===true || String(c?.data?.closedBy||"").toUpperCase()==="MANUAL_DESCANSO");
+}
+function closingHasTotals(c){
+  return !!c && (
+    safeNum(c.total_sales)>0 || safeNum(c.total_cash)>0 || safeNum(c.total_yape)>0 || safeNum(c.total_orders)>0
+  );
+}
+function totalForDay(dateK, ordersRows, closingsRows){
+  const closing=(closingsRows||[]).find(c=>String(c.date_key)===String(dateK))||null;
+  const dayRows=(ordersRows||[]).filter(r=>String(r.date_key||getOrderFromRow(r)?.dateKey||"")===String(dateK)).filter(isValidOrderRow);
+
+  let liveTotal=0,liveCash=0,liveYape=0;
+  dayRows.forEach(r=>{
+    const o=getOrderFromRow(r);
+    liveTotal+=safeNum(o.total);
+    liveCash+=cashOfOrder(o);
+    liveYape+=yapeOfOrder(o);
+  });
+  liveTotal=round2(liveTotal);liveCash=round2(liveCash);liveYape=round2(liveYape);
+
+  if(isRestClosing(closing)){
+    return {total:0,cash:0,yape:0,orders:0,closing,dayRows,origin:"DESCANSO"};
+  }
+
+  const useClosing=closingHasTotals(closing);
+  return {
+    total:useClosing?round2(safeNum(closing.total_sales)):liveTotal,
+    cash:useClosing?round2(safeNum(closing.total_cash)):liveCash,
+    yape:useClosing?round2(safeNum(closing.total_yape)):liveYape,
+    orders:useClosing?safeInt(closing.total_orders):dayRows.length,
+    closing,dayRows,
+    origin:isManualClosing(closing)?"MANUAL":(dayRows.length||closing?"SISTEMA":"PENDIENTE")
+  };
+}
+function monthRange(monthValue){
+  const [y,m]=String(monthValue||"").split("-").map(Number);
+  const start=new Date(y,m-1,1);
+  const end=new Date(y,m,0);
+  return {start:dateKey(start),end:dateKey(end),startDate:start,endDate:end};
+}
+
 function renderSales(ordersRows,closingRows){
   const {mon,sun}=weekRange();
   els.weekLabel.textContent=`Semana del ${pad2(mon.getDate())}/${pad2(mon.getMonth()+1)}/${mon.getFullYear()} al ${pad2(sun.getDate())}/${pad2(sun.getMonth()+1)}/${sun.getFullYear()}`;
@@ -380,17 +540,13 @@ function renderSales(ordersRows,closingRows){
 
     // Si existe un cierre/manual en daily_closings, sus montos mandan.
     // Si no existe, usamos los pedidos en vivo de orders_cloud.
-    const hasClosingTotals = !!closing && (
-      safeNum(closing.total_sales) > 0 ||
-      safeNum(closing.total_cash) > 0 ||
-      safeNum(closing.total_yape) > 0 ||
-      safeNum(closing.total_orders) > 0
-    );
+    const hasClosingTotals = closingHasTotals(closing);
+    const isRest = isRestClosing(closing);
 
-    const total = hasClosingTotals ? round2(safeNum(closing.total_sales)) : liveTotal;
-    const cash  = hasClosingTotals ? round2(safeNum(closing.total_cash))  : liveCash;
-    const yape  = hasClosingTotals ? round2(safeNum(closing.total_yape))  : liveYape;
-    const orders = hasClosingTotals ? safeInt(closing.total_orders) : dayRows.length;
+    const total = isRest ? 0 : (hasClosingTotals ? round2(safeNum(closing.total_sales)) : liveTotal);
+    const cash  = isRest ? 0 : (hasClosingTotals ? round2(safeNum(closing.total_cash))  : liveCash);
+    const yape  = isRest ? 0 : (hasClosingTotals ? round2(safeNum(closing.total_yape))  : liveYape);
+    const orders = isRest ? 0 : (hasClosingTotals ? safeInt(closing.total_orders) : dayRows.length);
 
     weekTotal+=total;
     weekCash+=cash;
@@ -398,7 +554,9 @@ function renderSales(ordersRows,closingRows){
     weekOrders+=orders;
 
     let statusHtml="";
-    if(closing && dayRows.length===0 && (
+    if(isRest){
+      statusHtml='<span class="tag" style="border-color:#64748b;color:#cbd5e1">😴 DESCANSO</span>';
+    }else if(closing && dayRows.length===0 && (
       safeNum(closing.total_sales)>0 || safeNum(closing.total_cash)>0 || safeNum(closing.total_yape)>0
     )){
       statusHtml='<span class="tag ok">MANUAL</span>';
@@ -429,6 +587,9 @@ function renderSales(ordersRows,closingRows){
   }
 
   currentWeekSales=round2(weekTotal);
+  currentWeekCash=round2(weekCash);
+  currentWeekYape=round2(weekYape);
+  currentWeekOrders=weekOrders;
   els.weekRows.innerHTML=trs.join("");
   els.mWeekTotal.textContent=money(currentWeekSales);
   els.mWeekCash.textContent=money(round2(weekCash));
@@ -438,6 +599,7 @@ function renderSales(ordersRows,closingRows){
 function renderPurchases(rows){
   const normal=(rows||[]).filter(r=>String(r.source||"")!=="weekly_expense");
   const supplies=round2(normal.reduce((s,r)=>s+safeNum(r.cost),0));
+  currentSupplies=supplies;
   els.expSupplies.value=supplies.toFixed(2);
   els.purchaseRows.innerHTML=normal.length?normal.map(r=>`<tr><td>${esc(r.date_key||"")}</td><td>${esc(r.category||"Insumos")}</td><td>${esc(r.supplier||"—")}</td><td>${esc(r.receipt_number||"—")}</td><td class="warn"><b>${money(r.cost)}</b></td></tr>`).join(""):`<tr><td colspan="5" class="muted" style="text-align:center">No hay compras registradas esta semana.</td></tr>`;
   els.purchaseNote.textContent=`${normal.length} registro(s) · Total automático de insumos y mercadería: ${money(supplies)}`;
@@ -461,6 +623,9 @@ function recalc(){
   const manual=expenseMap.reduce((s,[k,l,id])=>s+safeNum($(id).value),0);
   const expenses=round2(supplies+manual),profit=round2(currentWeekSales-expenses);
   const margin=currentWeekSales>0?(profit/currentWeekSales*100):0;
+  currentWeekExpenses=expenses;
+  currentWeekProfit=profit;
+  currentWeekMargin=margin;
   els.rSales.textContent=money(currentWeekSales);els.rExpenses.textContent=money(expenses);els.rProfit.textContent=money(profit);els.rMargin.textContent=margin.toFixed(1)+"%";
   els.profitBox.classList.toggle("loss",profit<0);els.profitBox.classList.toggle("profit",profit>=0);
 }
@@ -503,10 +668,15 @@ async function loadManualSaleForDate(){
     if(oe) throw oe;
 
     const validOrders=(orders||[]).filter(isValidOrderRow);
-    const isManual=!!closing && (
-      closing?.data?.manual===true ||
-      String(closing?.data?.closedBy||"").toUpperCase()==="MANUAL_PAPEL"
-    );
+    const isManual=isManualClosing(closing);
+    const isRest=isRestClosing(closing);
+
+    if(isRest){
+      resetManualSaleForm(true);
+      els.manualNote.value="Día de descanso";
+      els.manualSaleStatus.textContent="😴 Esta fecha está marcada como DESCANSO. Puedes eliminarla con el botón rojo si fue un error.";
+      return;
+    }
 
     if(isManual){
       els.manualOpenCash.value=safeNum(closing.open_cash).toFixed(2);
@@ -573,18 +743,18 @@ async function saveManualSale(){
     if(oe) throw oe;
 
     const validOrders=(orderRows||[]).filter(isValidOrderRow);
-    const existingManual=!!existing && (
-      existing?.data?.manual===true ||
-      String(existing?.data?.closedBy||"").toUpperCase()==="MANUAL_PAPEL"
-    );
+    const existingManual=isManualClosing(existing);
+    const existingRest=isRestClosing(existing);
 
-    if(validOrders.length && !existingManual){
+    if(existingRest && !confirm("Ese día está marcado como DESCANSO. ¿Quieres reemplazarlo por una venta manual?")) return;
+
+    if(validOrders.length && !existingManual && !existingRest){
       const liveTotal=round2(validOrders.reduce((s,r)=>s+safeNum(getOrderFromRow(r)?.total),0));
       els.manualSaleStatus.textContent=`🔒 NO guardado. Ese día ya tiene ${validOrders.length} pedido(s) en el sistema por ${money(liveTotal)}. Usa los datos automáticos.`;
       return;
     }
 
-    if(existing && !existingManual){
+    if(existing && !existingManual && !existingRest){
       els.manualSaleStatus.textContent="🔒 NO guardado. Ese día ya tiene un cierre automático creado por la moza/sistema.";
       return;
     }
@@ -635,6 +805,257 @@ async function saveManualSale(){
 }
 
 
+
+async function markRestDay(){
+  ensureManualDateInSelectedWeek();
+  const d=els.manualDate.value;
+  const {start,end}=weekRange();
+  if(!d || d<start || d>end){
+    els.manualSaleStatus.textContent=`⚠️ La fecha debe estar entre ${start} y ${end}.`;
+    return;
+  }
+  try{
+    const [{data:existing,error:ce},{data:orderRows,error:oe}]=await Promise.all([
+      sb.from(CLOSINGS_TABLE).select("*").eq("date_key",d).maybeSingle(),
+      sb.from(ORDERS_TABLE).select("*").eq("date_key",d).limit(5000)
+    ]);
+    if(ce) throw ce;if(oe) throw oe;
+
+    const valid=(orderRows||[]).filter(isValidOrderRow);
+    if(valid.length){
+      els.manualSaleStatus.textContent=`🔒 No se puede marcar descanso: ese día tiene ${valid.length} pedido(s) del sistema.`;
+      return;
+    }
+    if(existing && !isManualClosing(existing) && !isRestClosing(existing)){
+      els.manualSaleStatus.textContent="🔒 Ese día tiene un cierre automático del sistema. No se puede marcar descanso.";
+      return;
+    }
+    if(existing && isManualClosing(existing) && !confirm("Ese día tiene una venta manual. ¿Quieres reemplazarla por DESCANSO?")) return;
+
+    const wd=mondayOf(dateFromKey(d)),ws=dateKey(wd),we=dateKey(addDays(wd,6));
+    const row={
+      date_key:d,week_start:ws,week_end:we,total_sales:0,total_cash:0,total_yape:0,total_orders:0,
+      open_cash:0,final_cash:0,closed_at:new Date(d+"T23:59:00-05:00").toISOString(),updated_at:new Date().toISOString(),
+      data:{closedBy:"MANUAL_DESCANSO",manual:true,descanso:true,activeDateKey:d,note:"Día de descanso"}
+    };
+    const {error}=await sb.from(CLOSINGS_TABLE).upsert(row,{onConflict:"date_key"});
+    if(error) throw error;
+    resetManualSaleForm(true);
+    els.manualSaleStatus.textContent="😴 Día marcado como DESCANSO.";
+    await refresh(false);
+  }catch(e){
+    console.error(e);
+    els.manualSaleStatus.textContent="❌ No se pudo marcar descanso: "+(e.message||String(e));
+  }
+}
+
+async function deleteManualOrRest(){
+  ensureManualDateInSelectedWeek();
+  const d=els.manualDate.value;
+  if(!d) return;
+  try{
+    const {data:existing,error}=await sb.from(CLOSINGS_TABLE).select("*").eq("date_key",d).maybeSingle();
+    if(error) throw error;
+    if(!existing){
+      els.manualSaleStatus.textContent="No existe registro manual/descanso en esa fecha.";
+      return;
+    }
+    if(!isManualClosing(existing) && !isRestClosing(existing)){
+      els.manualSaleStatus.textContent="🔒 Ese registro fue creado por el sistema y no se eliminará desde aquí.";
+      return;
+    }
+    if(!confirm(`¿Eliminar el registro manual/descanso del ${d}?`)) return;
+    const r=await sb.from(CLOSINGS_TABLE).delete().eq("date_key",d);
+    if(r.error) throw r.error;
+    resetManualSaleForm(true);
+    els.manualSaleStatus.textContent="✅ Registro manual/descanso eliminado.";
+    await refresh(false);
+  }catch(e){
+    els.manualSaleStatus.textContent="❌ No se pudo eliminar: "+(e.message||String(e));
+  }
+}
+
+function renderManualHistory(ordersRows,closingsRows){
+  const {mon}=weekRange();
+  const rows=[];
+  for(let i=0;i<7;i++){
+    const d=addDays(mon,i),k=dateKey(d);
+    const info=totalForDay(k,ordersRows,closingsRows);
+    let origin=info.origin;
+    let originHtml="";
+    if(origin==="DESCANSO") originHtml='<span class="origin-rest">😴 DESCANSO</span>';
+    else if(origin==="MANUAL") originHtml='<span class="origin-manual">✍️ MANUAL</span>';
+    else if(origin==="SISTEMA") originHtml='<span class="origin-auto">💻 SISTEMA</span>';
+    else originHtml='<span class="muted">PENDIENTE</span>';
+
+    const editable=origin==="MANUAL" || origin==="DESCANSO";
+    rows.push(`<tr>
+      <td><b>${dayNames[d.getDay()]}</b></td>
+      <td>${k}</td>
+      <td>${originHtml}</td>
+      <td>${info.closing?money(info.closing.open_cash):"--"}</td>
+      <td>${money(info.cash)}</td>
+      <td>${money(info.yape)}</td>
+      <td class="warn"><b>${money(info.total)}</b></td>
+      <td>${editable?`<button class="btn" style="padding:6px 9px" onclick="editManualDay('${k}')">✏️ Editar</button>`:"—"}</td>
+    </tr>`);
+  }
+  els.manualHistoryRows.innerHTML=rows.join("");
+}
+window.editManualDay=async function(k){
+  els.manualDate.value=k;
+  await loadManualSaleForDate();
+  els.manualDate.scrollIntoView({behavior:"smooth",block:"center"});
+};
+
+async function saveWeekSnapshot(){
+  const {start,end,sun}=weekRange();
+  const today=new Date();today.setHours(0,0,0,0);
+  const weekEnded=today>=sun;
+  const already=currentWeekSnapshot;
+
+  if(!weekEnded && !already){
+    if(!confirm(`La semana ${start} al ${end} todavía no termina.\n\n¿Deseas cerrarla de todas maneras?`)) return;
+  }
+  const action=already?"ACTUALIZAR":"CERRAR";
+  if(!confirm(`${action} la semana ${start} al ${end} con estos valores?\n\nVentas: ${money(currentWeekSales)}\nGastos: ${money(currentWeekExpenses)}\nResultado: ${money(currentWeekProfit)}`)) return;
+
+  els.btnCloseWeek.disabled=true;
+  els.weekCloseStatus.textContent=already?"Actualizando cierre...":"Cerrando semana...";
+  try{
+    const row={
+      week_start:start,week_end:end,
+      total_sales:round2(currentWeekSales),total_cash:round2(currentWeekCash),total_yape:round2(currentWeekYape),total_orders:safeInt(currentWeekOrders),
+      supplies:round2(currentSupplies),
+      staff:round2(safeNum(els.expStaff.value)),rent:round2(safeNum(els.expRent.value)),light:round2(safeNum(els.expLight.value)),
+      gas:round2(safeNum(els.expGas.value)),internet:round2(safeNum(els.expInternet.value)),july:round2(safeNum(els.expJuly.value)),other:round2(safeNum(els.expOther.value)),
+      total_expenses:round2(currentWeekExpenses),profit:round2(currentWeekProfit),margin:round2(currentWeekMargin),
+      status:"CLOSED",closed_at:new Date().toISOString(),updated_at:new Date().toISOString(),
+      data:{source:"RESUMEN_SEMANAL",note:"Snapshot económico semanal"}
+    };
+    const {error}=await sb.from(WEEKLY_SUMMARIES_TABLE).upsert(row,{onConflict:"week_start"});
+    if(error) throw error;
+    els.weekCloseStatus.textContent="✅ Semana guardada en el histórico.";
+    await loadWeekSnapshotStatus();
+    await loadWeeklyComparison();
+  }catch(e){
+    console.error(e);
+    els.weekCloseStatus.textContent="❌ No se pudo cerrar la semana. Si dice que weekly_summaries no existe, ejecuta primero el SQL que te entregué.";
+  }finally{
+    els.btnCloseWeek.disabled=false;
+  }
+}
+
+async function loadWeekSnapshotStatus(){
+  const {start}=weekRange();
+  try{
+    currentWeekSnapshot=await fetchWeekSnapshot(start);
+    if(currentWeekSnapshot){
+      els.weekSnapshotBadge.textContent="✅ SEMANA CERRADA";
+      els.weekSnapshotBadge.className="big-status closed";
+      els.btnCloseWeek.textContent="🔄 Actualizar cierre";
+      const dt=currentWeekSnapshot.closed_at?new Date(currentWeekSnapshot.closed_at).toLocaleString():"";
+      els.weekCloseStatus.textContent=`Cierre guardado${dt?" · "+dt:""}.`;
+    }else{
+      els.weekSnapshotBadge.textContent="SEMANA ABIERTA";
+      els.weekSnapshotBadge.className="big-status open";
+      els.btnCloseWeek.textContent="🔒 Cerrar semana";
+      els.weekCloseStatus.textContent="Cuando termines la semana, guarda el cierre.";
+    }
+  }catch(e){
+    currentWeekSnapshot=null;
+    els.weekSnapshotBadge.textContent="FALTA CONFIGURAR";
+    els.weekSnapshotBadge.className="big-status open";
+    els.weekCloseStatus.textContent="Ejecuta el SQL de weekly_summaries en Supabase.";
+  }
+}
+
+async function loadWeeklyComparison(){
+  try{
+    const {data,error}=await sb.from(WEEKLY_SUMMARIES_TABLE).select("*").order("week_start",{ascending:false}).limit(12);
+    if(error) throw error;
+    const saved=data||[];
+    const {start,end}=weekRange();
+    const hasCurrent=saved.some(r=>String(r.week_start)===start);
+    const rows=[];
+    if(!hasCurrent){
+      rows.push(`<tr>
+        <td>${start} → ${end}</td><td><span class="tag pending">EN CURSO</span></td>
+        <td class="warn"><b>${money(currentWeekSales)}</b></td><td>${money(currentWeekExpenses)}</td>
+        <td class="${currentWeekProfit>=0?"good":"bad"}">${money(currentWeekProfit)}</td><td>${currentWeekMargin.toFixed(1)}%</td>
+      </tr>`);
+    }
+    saved.forEach(r=>{
+      rows.push(`<tr>
+        <td>${esc(r.week_start)} → ${esc(r.week_end)}</td><td><span class="tag ok">CERRADA</span></td>
+        <td class="warn"><b>${money(r.total_sales)}</b></td><td>${money(r.total_expenses)}</td>
+        <td class="${safeNum(r.profit)>=0?"good":"bad"}">${money(r.profit)}</td><td>${safeNum(r.margin).toFixed(1)}%</td>
+      </tr>`);
+    });
+    els.weeklyCompareRows.innerHTML=rows.length?rows.join(""):`<tr><td colspan="6" class="muted" style="text-align:center">Todavía no hay semanas cerradas.</td></tr>`;
+  }catch(e){
+    els.weeklyCompareRows.innerHTML=`<tr><td colspan="6" class="muted" style="text-align:center">Ejecuta primero el SQL de weekly_summaries.</td></tr>`;
+  }
+}
+
+async function loadMonthlySummary(){
+  const mv=els.monthPicker.value;
+  if(!mv) return;
+  const {start,end}=monthRange(mv);
+  els.monthNote.textContent="Calculando mes...";
+  try{
+    const [closings,orders,purchases]=await Promise.all([
+      fetchClosings(start,end),fetchOrders(start,end),fetchPurchases(start,end)
+    ]);
+
+    let sales=0,cash=0,yape=0,ordersCount=0;
+    const first=dateFromKey(start),last=dateFromKey(end);
+    for(let d=new Date(first);d<=last;d=addDays(d,1)){
+      const info=totalForDay(dateKey(d),orders,closings);
+      sales+=info.total;cash+=info.cash;yape+=info.yape;ordersCount+=info.orders;
+    }
+    sales=round2(sales);
+
+    const regular=purchases.filter(r=>String(r.source||"")!=="weekly_expense" && String(r.source||"")!=="weekly_snapshot");
+    const weekly=purchases.filter(r=>String(r.source||"")==="weekly_expense");
+    const supplies=round2(regular.reduce((s,r)=>s+safeNum(r.cost),0));
+
+    const sums={staff:0,rent:0,light:0,gas:0,internet:0,july:0,other:0};
+    weekly.forEach(r=>{
+      const key=String(r.receipt_number||"");
+      if(Object.prototype.hasOwnProperty.call(sums,key)) sums[key]+=safeNum(r.cost);
+    });
+    Object.keys(sums).forEach(k=>sums[k]=round2(sums[k]));
+
+    const manualExpenses=Object.values(sums).reduce((a,b)=>a+b,0);
+    const expenses=round2(supplies+manualExpenses);
+    const profit=round2(sales-expenses);
+    const margin=sales>0?(profit/sales*100):0;
+
+    els.monthSales.textContent=money(sales);
+    els.monthExpenses.textContent=money(expenses);
+    els.monthProfit.textContent=money(profit);
+    els.monthMargin.textContent=margin.toFixed(1)+"%";
+    els.monthProfitBox.classList.toggle("badbox",profit<0);
+    els.monthProfitBox.classList.toggle("goodbox",profit>=0);
+
+    els.monthSupplies.textContent=money(supplies);
+    els.monthStaff.textContent=money(sums.staff);
+    els.monthRent.textContent=money(sums.rent);
+    els.monthLight.textContent=money(sums.light);
+    els.monthGas.textContent=money(sums.gas);
+    els.monthInternet.textContent=money(sums.internet);
+    els.monthJuly.textContent=money(sums.july);
+    els.monthOther.textContent=money(sums.other);
+
+    els.monthNote.textContent=`${mv}: ventas ${money(sales)} · gastos ${money(expenses)} · resultado ${money(profit)} · ${ordersCount} pedido(s) registrados cuando el dato estuvo disponible. Los gastos semanales se imputan al mes donde cae el lunes de la semana.`;
+  }catch(e){
+    console.error(e);
+    els.monthNote.textContent="❌ No se pudo calcular el mes: "+(e.message||String(e));
+  }
+}
+
+
 async function saveWeeklyExpenses(){
   if(!currentMondayKey)return;
   els.btnSaveExpenses.disabled=true;els.expenseStatus.textContent="Guardando gastos semanales...";
@@ -663,11 +1084,17 @@ async function refresh(forceExpenses=false){
       fetchOrders(start,end),
       fetchPurchases(start,end)
     ]);
+    currentWeekClosings=closings||[];
+    currentWeekOrdersRows=orders||[];
+    currentWeekPurchases=purchases||[];
     renderSales(orders,closings);
     renderPurchases(purchases);
     loadManualExpensesFromRows(purchases,forceExpenses);
     recalc();
     ensureManualDateInSelectedWeek();
+    renderManualHistory(orders,closings);
+    await loadWeekSnapshotStatus();
+    await loadWeeklyComparison();
     setLive(true,realtimeReady?"En vivo":"Actualizado");
   }catch(e){console.error(e);setLive(false,"Error");alert("No pude cargar el resumen semanal: "+(e.message||String(e)));}
 }
@@ -678,6 +1105,7 @@ function initRealtime(){
       .on("postgres_changes",{event:"*",schema:"public",table:CLOSINGS_TABLE},()=>refresh(false))
       .on("postgres_changes",{event:"*",schema:"public",table:ORDERS_TABLE},()=>refresh(false))
       .on("postgres_changes",{event:"*",schema:"public",table:PURCHASES_TABLE},()=>refresh(false))
+      .on("postgres_changes",{event:"*",schema:"public",table:WEEKLY_SUMMARIES_TABLE},()=>{loadWeekSnapshotStatus();loadWeeklyComparison()})
       .subscribe(status=>{realtimeReady=status==="SUBSCRIBED";setLive(realtimeReady,realtimeReady?"En vivo":"Actualizado")});
   }catch(e){realtimeReady=false}
 }
@@ -688,6 +1116,12 @@ document.querySelectorAll(".expense-input").forEach(el=>el.addEventListener("inp
 els.manualDate.addEventListener("change",loadManualSaleForDate);
 els.btnLoadManualSale.addEventListener("click",loadManualSaleForDate);
 els.btnSaveManualSale.addEventListener("click",saveManualSale);
+els.btnMarkRest.addEventListener("click",markRestDay);
+els.btnDeleteManual.addEventListener("click",deleteManualOrRest);
+els.btnCloseWeek.addEventListener("click",saveWeekSnapshot);
+els.btnLoadMonth.addEventListener("click",loadMonthlySummary);
+els.monthPicker.addEventListener("change",loadMonthlySummary);
+
 
 els.btnSaveExpenses.addEventListener("click",saveWeeklyExpenses);
 els.btnLogin.addEventListener("click",login);els.pass.addEventListener("keydown",e=>{if(e.key==="Enter")login()});
@@ -696,6 +1130,11 @@ els.weekDate.addEventListener("change",()=>{expenseDirty=false;refresh(true)});
 els.btnPrev.addEventListener("click",()=>moveWeek(-1));els.btnNext.addEventListener("click",()=>moveWeek(1));
 els.btnToday.addEventListener("click",()=>{els.weekDate.value=dateKey(new Date());expenseDirty=false;refresh(true)});
 els.btnPrint.addEventListener("click",()=>window.print());
+if(!els.monthPicker.value){
+  const now=new Date();
+  els.monthPicker.value=now.getFullYear()+"-"+pad2(now.getMonth()+1);
+}
+loadMonthlySummary();
 initRealtime();
 if(localStorage.getItem(SESSION_KEY)==="1")showApp();
 </script>
