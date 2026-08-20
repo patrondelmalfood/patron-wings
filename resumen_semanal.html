@@ -59,7 +59,7 @@ table{width:100%;border-collapse:collapse;font-size:13px} th,td{border-bottom:1p
     <div class="topbar">
       <div class="brand">
         <img src="LOGO.jpg" class="logo" alt="Logo">
-        <div><h1>Resumen semanal</h1><div class="sub">Ventas + gastos de lunes a domingo + resultado económico semanal.</div></div>
+        <div><h1>Resumen semanal</h1><div class="sub">Ventas EN VIVO + gastos de lunes a domingo + resultado económico semanal.</div></div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
         <span class="status-pill"><span id="liveDot" class="dot"></span><span id="liveStatus">Conectando...</span></span>
@@ -84,7 +84,7 @@ table{width:100%;border-collapse:collapse;font-size:13px} th,td{border-bottom:1p
       <div class="metric"><div class="label">Ventas semana</div><div class="value" id="mWeekTotal">S/ 0.00</div><div class="hint">Efectivo + Yape</div></div>
       <div class="metric"><div class="label">Efectivo semana</div><div class="value" id="mWeekCash">S/ 0.00</div><div class="hint">Solo venta efectivo</div></div>
       <div class="metric"><div class="label">Yape semana</div><div class="value" id="mWeekYape">S/ 0.00</div><div class="hint">Cobros digitales</div></div>
-      <div class="metric"><div class="label">Pedidos registrados</div><div class="value" id="mWeekOrders">0</div><div class="hint">Según cierres guardados</div></div>
+      <div class="metric"><div class="label">Pedidos registrados</div><div class="value" id="mWeekOrders">0</div><div class="hint">Pedidos válidos en vivo</div></div>
     </div>
 
     <div class="section-title">💰 Cierre económico semanal</div>
@@ -160,7 +160,7 @@ table{width:100%;border-collapse:collapse;font-size:13px} th,td{border-bottom:1p
           <tbody id="weekRows"></tbody>
         </table>
       </div>
-      <div class="note">La caja inicial se muestra como referencia y no se suma a las ventas.</div>
+      <div class="note">Las ventas se leen de orders_cloud cuando existen pedidos. Si una fecha tiene montos cargados manualmente en daily_closings, esos montos tienen prioridad. Así puedes completar semanas en las que la moza trabajó en papel.</div>
     </div>
   </div>
 </div>
@@ -172,6 +172,7 @@ const SESSION_KEY="pdm_week_summary_logged_v1";
 const SUPABASE_URL="https://defdwzzewzfjuseozwkn.supabase.co";
 const SUPABASE_ANON_KEY="sb_publishable_ybJZO45G37nMvSHwQYfIhA_qWi9UR0K";
 const CLOSINGS_TABLE="daily_closings";
+const ORDERS_TABLE="orders_cloud";
 const PURCHASES_TABLE="daily_purchases";
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:false}});
 const $=id=>document.getElementById(id);
@@ -203,28 +204,148 @@ async function fetchClosings(start,end){
   const {data,error}=await sb.from(CLOSINGS_TABLE).select("*").gte("date_key",start).lte("date_key",end).order("date_key",{ascending:true});
   if(error)throw error;return data||[];
 }
+
+async function fetchOrders(start,end){
+  const {data,error}=await sb.from(ORDERS_TABLE)
+    .select("*")
+    .gte("date_key",start)
+    .lte("date_key",end)
+    .order("date_key",{ascending:true})
+    .limit(5000);
+  if(error)throw error;
+  return data||[];
+}
+function getOrderFromRow(row){ return row && row.data ? row.data : {}; }
+function orderStatus(row){
+  return String(row?.status || getOrderFromRow(row)?.status || "PENDIENTE").toUpperCase();
+}
+function isTechnicalOrderRow(row){
+  const o=getOrderFromRow(row);
+  const st=orderStatus(row);
+  return st==="DAY_SETUP" ||
+         o?.__type==="day_setup" ||
+         o?.__type==="inventory_daily_entry" ||
+         o?.__type==="inventory_entry" ||
+         String(row?.order_id||"").startsWith("INVENTORY_") ||
+         String(row?.order_id||"").startsWith("INVENTORY_DAILY_") ||
+         String(row?.order_id||"").startsWith("DAY_SETUP_");
+}
+function isValidOrderRow(row){
+  if(isTechnicalOrderRow(row)) return false;
+  if(orderStatus(row)==="ANULADO") return false;
+  const o=getOrderFromRow(row);
+  return Array.isArray(o?.items) || safeNum(o?.total)>0;
+}
+function cashOfOrder(order){
+  const method=String(order?.paymentMethod||"efectivo").toLowerCase();
+  if(method==="mixto") return safeNum(order?.mixedCash);
+  if(method==="yape") return 0;
+  return safeNum(order?.total);
+}
+function yapeOfOrder(order){
+  const method=String(order?.paymentMethod||"efectivo").toLowerCase();
+  if(method==="mixto") return safeNum(order?.mixedYape);
+  if(method==="yape") return safeNum(order?.total);
+  return 0;
+}
 async function fetchPurchases(start,end){
   const {data,error}=await sb.from(PURCHASES_TABLE).select("*").gte("date_key",start).lte("date_key",end).order("date_key",{ascending:true});
   if(error)throw error;return data||[];
 }
 
-function renderSales(rows){
+function renderSales(ordersRows,closingRows){
   const {mon,sun}=weekRange();
   els.weekLabel.textContent=`Semana del ${pad2(mon.getDate())}/${pad2(mon.getMonth()+1)}/${mon.getFullYear()} al ${pad2(sun.getDate())}/${pad2(sun.getMonth()+1)}/${sun.getFullYear()}`;
-  const map=new Map((rows||[]).map(r=>[String(r.date_key),r]));
-  let weekTotal=0,weekCash=0,weekYape=0,weekOrders=0;const trs=[];
+
+  const closeMap=new Map((closingRows||[]).map(r=>[String(r.date_key),r]));
+  const valid=(ordersRows||[]).filter(isValidOrderRow);
+
+  const byDate=new Map();
+  valid.forEach(row=>{
+    const k=String(row.date_key||getOrderFromRow(row)?.dateKey||"");
+    if(!k) return;
+    if(!byDate.has(k)) byDate.set(k,[]);
+    byDate.get(k).push(row);
+  });
+
+  let weekTotal=0,weekCash=0,weekYape=0,weekOrders=0;
+  const trs=[];
+  const today=dateKey(new Date());
+
   for(let i=0;i<7;i++){
-    const d=addDays(mon,i),k=dateKey(d),r=map.get(k),closed=!!r;
-    const total=safeNum(r?.total_sales),cash=safeNum(r?.total_cash),yape=safeNum(r?.total_yape),orders=safeInt(r?.total_orders);
-    weekTotal+=total;weekCash+=cash;weekYape+=yape;weekOrders+=orders;
-    const closedAt=r?.closed_at?new Date(r.closed_at).toLocaleString():"--";
-    trs.push(`<tr><td><b>${dayNames[d.getDay()]}</b></td><td>${k}</td><td>${closed?'<span class="tag ok">CERRADO</span>':'<span class="tag pending">PENDIENTE</span>'}</td><td class="warn"><b>${money(total)}</b></td><td>${money(cash)}</td><td>${money(yape)}</td><td>${closed?money(r.open_cash):"--"}</td><td>${orders}</td><td class="small">${esc(closedAt)}</td></tr>`);
+    const d=addDays(mon,i),k=dateKey(d);
+    const dayRows=byDate.get(k)||[];
+    const closing=closeMap.get(k)||null;
+
+    let liveTotal=0,liveCash=0,liveYape=0;
+    dayRows.forEach(row=>{
+      const o=getOrderFromRow(row);
+      liveTotal+=safeNum(o.total);
+      liveCash+=cashOfOrder(o);
+      liveYape+=yapeOfOrder(o);
+    });
+
+    liveTotal=round2(liveTotal);
+    liveCash=round2(liveCash);
+    liveYape=round2(liveYape);
+
+    // Si existe un cierre/manual en daily_closings, sus montos mandan.
+    // Si no existe, usamos los pedidos en vivo de orders_cloud.
+    const hasClosingTotals = !!closing && (
+      safeNum(closing.total_sales) > 0 ||
+      safeNum(closing.total_cash) > 0 ||
+      safeNum(closing.total_yape) > 0 ||
+      safeNum(closing.total_orders) > 0
+    );
+
+    const total = hasClosingTotals ? round2(safeNum(closing.total_sales)) : liveTotal;
+    const cash  = hasClosingTotals ? round2(safeNum(closing.total_cash))  : liveCash;
+    const yape  = hasClosingTotals ? round2(safeNum(closing.total_yape))  : liveYape;
+    const orders = hasClosingTotals ? safeInt(closing.total_orders) : dayRows.length;
+
+    weekTotal+=total;
+    weekCash+=cash;
+    weekYape+=yape;
+    weekOrders+=orders;
+
+    let statusHtml="";
+    if(closing && dayRows.length===0 && (
+      safeNum(closing.total_sales)>0 || safeNum(closing.total_cash)>0 || safeNum(closing.total_yape)>0
+    )){
+      statusHtml='<span class="tag ok">MANUAL</span>';
+    }else if(closing){
+      statusHtml='<span class="tag ok">CERRADO</span>';
+    }else if(orders>0){
+      statusHtml='<span class="tag" style="border-color:#38bdf8;color:#7dd3fc">EN CURSO</span>';
+    }else if(k>today){
+      statusHtml='<span class="tag">PRÓXIMO</span>';
+    }else{
+      statusHtml='<span class="tag pending">SIN CIERRE</span>';
+    }
+
+    const closedAt=closing?.closed_at ? new Date(closing.closed_at).toLocaleString() : "--";
+    const openCash=closing ? money(closing.open_cash) : "--";
+
+    trs.push(`<tr>
+      <td><b>${dayNames[d.getDay()]}</b></td>
+      <td>${k}</td>
+      <td>${statusHtml}</td>
+      <td class="warn"><b>${money(total)}</b></td>
+      <td>${money(cash)}</td>
+      <td>${money(yape)}</td>
+      <td>${openCash}</td>
+      <td>${orders}</td>
+      <td class="small">${esc(closedAt)}</td>
+    </tr>`);
   }
+
   currentWeekSales=round2(weekTotal);
   els.weekRows.innerHTML=trs.join("");
-  els.mWeekTotal.textContent=money(currentWeekSales);els.mWeekCash.textContent=money(round2(weekCash));els.mWeekYape.textContent=money(round2(weekYape));els.mWeekOrders.textContent=String(weekOrders);
+  els.mWeekTotal.textContent=money(currentWeekSales);
+  els.mWeekCash.textContent=money(round2(weekCash));
+  els.mWeekYape.textContent=money(round2(weekYape));
+  els.mWeekOrders.textContent=String(weekOrders);
 }
-
 function renderPurchases(rows){
   const normal=(rows||[]).filter(r=>String(r.source||"")!=="weekly_expense");
   const supplies=round2(normal.reduce((s,r)=>s+safeNum(r.cost),0));
@@ -277,16 +398,24 @@ async function refresh(forceExpenses=false){
   if(!logged)return;setLive(false,"Actualizando...");
   try{
     const {start,end}=weekRange();currentMondayKey=start;
-    const [closings,purchases]=await Promise.all([fetchClosings(start,end),fetchPurchases(start,end)]);
-    renderSales(closings);renderPurchases(purchases);loadManualExpensesFromRows(purchases,forceExpenses);recalc();
+    const [closings,orders,purchases]=await Promise.all([
+      fetchClosings(start,end),
+      fetchOrders(start,end),
+      fetchPurchases(start,end)
+    ]);
+    renderSales(orders,closings);
+    renderPurchases(purchases);
+    loadManualExpensesFromRows(purchases,forceExpenses);
+    recalc();
     setLive(true,realtimeReady?"En vivo":"Actualizado");
   }catch(e){console.error(e);setLive(false,"Error");alert("No pude cargar el resumen semanal: "+(e.message||String(e)));}
 }
 function moveWeek(n){const base=els.weekDate.value?dateFromKey(els.weekDate.value):new Date();els.weekDate.value=dateKey(addDays(base,n*7));expenseDirty=false;refresh(true)}
 function initRealtime(){
   try{
-    sb.channel("pdm-week-summary-live-v2")
+    sb.channel("pdm-week-summary-live-v3")
       .on("postgres_changes",{event:"*",schema:"public",table:CLOSINGS_TABLE},()=>refresh(false))
+      .on("postgres_changes",{event:"*",schema:"public",table:ORDERS_TABLE},()=>refresh(false))
       .on("postgres_changes",{event:"*",schema:"public",table:PURCHASES_TABLE},()=>refresh(false))
       .subscribe(status=>{realtimeReady=status==="SUBSCRIBED";setLive(realtimeReady,realtimeReady?"En vivo":"Actualizado")});
   }catch(e){realtimeReady=false}
