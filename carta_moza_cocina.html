@@ -1299,6 +1299,92 @@ body{
   background:#f9fafb !important;
 }
 
+
+
+/* ===== MEJORA OPERATIVA MOZA 2026: interfaz compacta + boleta visual cliente ===== */
+.cash-day-panel.compact-cash{padding:10px 12px !important;}
+.cash-compact-head{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.cash-compact-head h3{margin:0 !important;font-size:14px !important;}
+.cash-settings{margin-top:8px;}
+.cash-settings summary{cursor:pointer;color:#fde68a;font-weight:900;font-size:12px;list-style:none;text-align:right;}
+.cash-settings summary::-webkit-details-marker{display:none;}
+.cash-settings[open] summary{margin-bottom:10px;}
+
+.dni-toggle-row{margin-top:8px;}
+#btn-toggle-dni{background:#111827;color:#fde68a;border:1px solid rgba(250,204,21,.35);border-radius:10px;padding:7px 10px;font-size:12px;}
+.dni-field-hidden{display:none !important;}
+
+.delivery-choice-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;}
+.delivery-choice-grid .delivery-option{grid-template-columns:28px 1fr 20px !important;padding:9px 7px !important;margin:0 !important;min-height:58px;}
+.delivery-choice-grid .delivery-option small{display:none;}
+.delivery-choice-grid .delivery-option b{font-size:12px;}
+
+.carrito-actions{display:block !important;}
+.primary-order-actions{display:grid;grid-template-columns:1fr;gap:10px;}
+.primary-order-actions button{width:100%;border-radius:14px;padding:14px 10px;font-size:14px;font-weight:900;}
+#btn-register-sale{background:#facc15 !important;color:#111827 !important;}
+#btn-share-ticket{background:#22c55e !important;color:#052e16 !important;}
+#btn-clear{background:#ef4444 !important;color:#fff !important;}
+.secondary-actions{margin-top:10px;border:1px solid #334155;border-radius:12px;background:#020617;padding:8px 10px;}
+.secondary-actions summary{cursor:pointer;color:#cbd5e1;font-weight:800;font-size:12px;text-align:center;}
+.secondary-actions-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:9px;}
+.secondary-actions-grid > *{width:100%;box-sizing:border-box;text-align:center;border-radius:10px;padding:9px 8px;font-size:12px;}
+#btn-whatsapp{grid-column:1 / -1 !important;background:#374151 !important;color:#fff !important;box-shadow:none !important;text-transform:none !important;}
+
+/* Boleta visual para compartir: NO se usa para impresión térmica */
+#client-ticket-capture-host{
+  position:fixed;left:-10000px;top:0;width:760px;z-index:-1;pointer-events:none;
+}
+.client-share-ticket{
+  width:720px;box-sizing:border-box;background:#fff;color:#161616;
+  border:3px solid #c9972d;border-radius:30px;padding:34px 34px 0;
+  font-family:Arial,Helvetica,sans-serif;overflow:hidden;
+  box-shadow:0 18px 55px rgba(0,0,0,.18);
+}
+.client-share-ticket *{box-sizing:border-box;}
+.cst-brand{text-align:center;padding:2px 8px 18px;}
+.cst-crown{font-size:25px;color:#b88619;line-height:1;}
+.cst-brand-name{font-family:Georgia,'Times New Roman',serif;font-weight:900;font-size:46px;letter-spacing:2px;line-height:1;color:#111;}
+.cst-brand-sub{font-family:Georgia,'Times New Roman',serif;font-weight:900;font-size:30px;letter-spacing:6px;color:#b88619;margin-top:3px;}
+.cst-fast{display:inline-block;margin-top:10px;background:#111;color:#e5b84b;border-radius:999px;padding:7px 34px;font-weight:900;letter-spacing:5px;font-size:15px;}
+.cst-confirmed{font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:28px;text-align:center;margin:8px 0 22px;color:#111;}
+.cst-meta{display:grid;grid-template-columns:1fr 1.2fr 1.25fr;border:1.5px solid #c9972d;border-radius:18px;overflow:hidden;margin-bottom:18px;}
+.cst-meta-item{padding:13px 14px;border-right:1px solid #d9c08b;}
+.cst-meta-item:last-child{border-right:0;}
+.cst-label{display:block;font-size:12px;font-weight:900;color:#6b5a33;letter-spacing:.5px;text-transform:uppercase;}
+.cst-value{display:block;font-size:21px;font-weight:900;margin-top:4px;color:#111;}
+.cst-section-title{margin:0 auto 10px;width:max-content;min-width:330px;text-align:center;background:#111;color:#e4b64a;border-radius:999px;padding:8px 24px;font-weight:900;letter-spacing:2px;font-size:14px;}
+.cst-items{border:1.5px solid #c9972d;border-radius:18px;padding:8px 18px 2px;margin-bottom:10px;}
+.cst-item{display:grid;grid-template-columns:58px 1fr 120px;gap:10px;align-items:start;padding:13px 2px;border-bottom:1px dashed #c9a75a;}
+.cst-item:last-child{border-bottom:0;}
+.cst-qty{font-size:20px;font-weight:900;text-align:center;}
+.cst-item-name{font-size:18px;font-weight:900;line-height:1.2;}
+.cst-item-detail{font-size:13px;color:#555;margin-top:4px;line-height:1.3;}
+.cst-item-price{text-align:right;font-size:18px;font-weight:900;white-space:nowrap;}
+.cst-totals{border:1.5px solid #c9972d;border-radius:18px;padding:13px 18px 0;margin-top:10px;overflow:hidden;}
+.cst-total-row{display:flex;justify-content:space-between;gap:15px;font-size:16px;padding:4px 0;}
+.cst-total-row strong{font-size:17px;}
+.cst-grand-total{margin:12px -18px 0;background:#111;color:#e4b64a;padding:15px 18px;display:flex;justify-content:space-between;align-items:center;font-weight:900;font-size:21px;}
+.cst-grand-total span:last-child{font-size:34px;}
+.cst-info{display:grid;grid-template-columns:1fr 1fr;border:1.5px solid #c9972d;border-radius:18px;margin-top:10px;overflow:hidden;}
+.cst-info-item{padding:12px 16px;border-bottom:1px solid #dfd2b6;}
+.cst-info-item:nth-child(odd){border-right:1px solid #dfd2b6;}
+.cst-info-item:nth-last-child(-n+2){border-bottom:0;}
+.cst-info-item b{display:block;font-size:12px;color:#7b6023;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;}
+.cst-info-item span{font-size:16px;font-weight:700;line-height:1.25;word-break:break-word;}
+.cst-footer{margin:22px -34px 0;background:#111;color:#fff;padding:22px 25px 24px;text-align:center;border-top:3px solid #c9972d;}
+.cst-thanks{font-family:Georgia,'Times New Roman',serif;font-style:italic;color:#e4b64a;font-size:27px;}
+.cst-return{font-size:14px;letter-spacing:4px;margin-top:6px;}
+.cst-phone{display:inline-block;margin-top:12px;border:1px solid #c9972d;border-radius:12px;padding:8px 16px;color:#e4b64a;font-size:16px;font-weight:900;letter-spacing:1px;}
+
+@media(max-width:700px){
+  .delivery-choice-grid{grid-template-columns:repeat(3,1fr);gap:6px;}
+  .delivery-choice-grid .delivery-option{grid-template-columns:24px 1fr 18px !important;padding:8px 5px !important;}
+  .delivery-choice-grid .delivery-option span{font-size:18px;}
+  .delivery-choice-grid .delivery-option b{font-size:10px;}
+  .secondary-actions-grid{grid-template-columns:1fr 1fr;}
+}
+
 </style>
 </head>
 
@@ -1412,20 +1498,23 @@ body{
       <div id="cart-items"></div>
       <p id="cart-empty">Aún no has añadido platos.</p>
 
-      <div class="cash-day-panel">
-        <h3>🗓️ Día operativo / caja activa</h3>
+      <div class="cash-day-panel compact-cash">
+        <div class="cash-compact-head">
+          <h3>🗓️ Caja / día operativo</h3>
+        </div>
         <div id="cash-day-status" class="cash-day-status closed">Cargando caja activa...</div>
-        <div class="cash-day-actions">
-          <label>Fecha de caja
-            <input type="date" id="cash-day-input">
-          </label>
-          <button id="btn-open-day" type="button">🟢 Abrir día</button>
-          <button id="btn-close-day" type="button">🔒 Cerrar día</button>
-          <button id="btn-refresh-cash-day" type="button">Actualizar</button>
-        </div>
-        <div class="cash-day-mini">
-          Si venden hasta la 1:00am, no importa: mientras la caja siga abierta, las ventas se guardan en la fecha de caja activa. Al terminar el turno, presiona <b>Cerrar día</b>.
-        </div>
+        <details class="cash-settings">
+          <summary>⚙️ Opciones de caja</summary>
+          <div class="cash-day-actions">
+            <label>Fecha de caja
+              <input type="date" id="cash-day-input">
+            </label>
+            <button id="btn-open-day" type="button">🟢 Abrir día</button>
+            <button id="btn-close-day" type="button">🔒 Cerrar día</button>
+            <button id="btn-refresh-cash-day" type="button">Actualizar</button>
+          </div>
+          <div class="cash-day-mini">Mientras la caja siga abierta, las ventas se guardan en esa fecha. Al terminar el turno, presiona <b>Cerrar día</b>.</div>
+        </details>
       </div>
 
       <div class="cliente-datos staff-card">
@@ -1437,15 +1526,16 @@ body{
           </div>
         </div>
 
-        <div class="staff-fields-grid">
+        <div class="staff-fields-grid" style="grid-template-columns:1fr;">
           <label for="customer-name">Nombre del cliente
             <input type="text" id="customer-name" placeholder="Ej: Juan Pérez">
           </label>
 
-          <label for="customer-dni">DNI opcional
+          <label for="customer-dni" id="dni-field-wrap" class="dni-field-hidden">DNI opcional
             <input type="text" id="customer-dni" inputmode="numeric" maxlength="8" placeholder="Ej: 12345678">
           </label>
         </div>
+        <div class="dni-toggle-row"><button id="btn-toggle-dni" type="button">+ Agregar DNI</button></div>
 
         <label for="order-comment" class="staff-note-label">Nota de cocina / pedido especial</label>
         <textarea id="order-comment" placeholder="Ej: sin cebolla / alitas: 6 acevichada y 2 BBQ / cliente apurado"></textarea>
@@ -1490,9 +1580,11 @@ body{
             <p>Define si cobra delivery y si corresponde empaque.</p>
           </div>
         </div>
-        <label class="delivery-option"><input type="checkbox" id="chk-delivery" checked><span>🛵</span><b>Delivery</b><small>S/ 3 antes de 10pm · S/ 4 desde 10pm · gratis &gt; S/ 100</small></label>
-        <label class="delivery-option"><input type="checkbox" id="chk-pickup"><span>🛍️</span><b>Recojo en local</b><small>Pedido para llevar</small></label>
-        <label class="delivery-option"><input type="checkbox" id="chk-eatin"><span>🍽️</span><b>Comer en el local</b><small>No se cobra taper</small></label>
+        <div class="delivery-choice-grid">
+          <label class="delivery-option"><input type="checkbox" id="chk-delivery" checked><span>🛵</span><b>Delivery</b><small>S/ 3 antes de 10pm · S/ 4 desde 10pm · gratis &gt; S/ 100</small></label>
+          <label class="delivery-option"><input type="checkbox" id="chk-pickup"><span>🛍️</span><b>Recojo</b><small>Pedido para llevar</small></label>
+          <label class="delivery-option"><input type="checkbox" id="chk-eatin"><span>🍽️</span><b>Local</b><small>No se cobra taper</small></label>
+        </div>
         <p class="nota-taper">🥡 Empaque / taper automático para delivery o para llevar. No aplica a bebidas ni cremas extra.</p>
       </div>
 
@@ -1501,13 +1593,22 @@ body{
 
       <div id="boleta-virtual"></div>
       <div id="comanda-cocina"></div>
+      <div id="client-ticket-capture-host"><div id="boleta-cliente-visual"></div></div>
 
       <div class="carrito-actions">
-        <button id="btn-clear">Vaciar pedido</button>
-        <button id="btn-print-kitchen" type="button">👨‍🍳 Imprimir comanda</button>
-        <button id="btn-print-client" type="button">🧾 Imprimir boleta</button>
-        <button id="btn-register-sale" type="button">✅ Registrar venta / Enviar cocina</button>
-        <a id="btn-whatsapp" href="#" target="_blank" class="btn disabled">Enviar pedido por WhatsApp</a>
+        <div class="primary-order-actions">
+          <button id="btn-register-sale" type="button">✅ Registrar venta / Enviar cocina</button>
+          <button id="btn-share-ticket" type="button">📲 Compartir boleta con cliente</button>
+          <button id="btn-clear" type="button">🔴 Nuevo pedido</button>
+        </div>
+        <details class="secondary-actions">
+          <summary>🛠️ Impresión y otras opciones</summary>
+          <div class="secondary-actions-grid">
+            <button id="btn-print-kitchen" type="button">👨‍🍳 Imprimir comanda</button>
+            <button id="btn-print-client" type="button">🧾 Imprimir boleta</button>
+            <a id="btn-whatsapp" href="#" target="_blank" class="btn disabled">WhatsApp texto (interno)</a>
+          </div>
+        </details>
       </div>
 
       <p id="error-msg" class="error-msg"></p>
@@ -1522,6 +1623,7 @@ body{
 
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <script>
 const WHATSAPP_NUMBER = "51944275861";
@@ -1884,6 +1986,10 @@ const comandaEl = document.getElementById("comanda-cocina");
 const btnPrintKitchen = document.getElementById("btn-print-kitchen");
 const btnPrintClient = document.getElementById("btn-print-client");
 const btnRegisterSale = document.getElementById("btn-register-sale");
+const btnShareTicket = document.getElementById("btn-share-ticket");
+const clientTicketVisual = document.getElementById("boleta-cliente-visual");
+const btnToggleDni = document.getElementById("btn-toggle-dni");
+const dniFieldWrap = document.getElementById("dni-field-wrap");
 const orderSaveStatus = document.getElementById("order-save-status");
 const cashDayStatus = document.getElementById("cash-day-status");
 const cashDayInput = document.getElementById("cash-day-input");
@@ -2573,6 +2679,117 @@ async function registerSale(source="MOZA_COCINA"){
   return result.ok;
 }
 
+
+function escapeHtmlClient(value){
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+function clientPaymentText(ctx){
+  if (ctx.paymentMethod === "efectivo") return "Efectivo";
+  if (ctx.paymentMethod === "yape") return "Yape";
+  return `Mixto · Yape S/ ${ctx.mixedYape.toFixed(2)} + Efectivo S/ ${ctx.mixedCash.toFixed(2)}`;
+}
+function clientDeliveryText(ctx){
+  if (chkDelivery?.checked && !chkEatIn?.checked) return "Delivery";
+  if (chkPickup?.checked) return "Recojo en local";
+  return "Consumo en local";
+}
+function buildClientVisualTicket(ctx){
+  const items = cart.map(e => {
+    const details = [
+      e.noSauce ? "Sin salsa" : "",
+      e.sauces?.length ? "Salsas: " + shortSauces(e.sauces) : "",
+      e.sauceApart ? "Salsas aparte" : "",
+      e.brand ? "Marca: " + e.brand : ""
+    ].filter(Boolean).join(" · ");
+    return `<div class="cst-item">
+      <div class="cst-qty">${escapeHtmlClient(e.qty)}</div>
+      <div><div class="cst-item-name">${escapeHtmlClient(cleanName(e.item.name))}</div>${details ? `<div class="cst-item-detail">${escapeHtmlClient(details)}</div>` : ""}</div>
+      <div class="cst-item-price">${escapeHtmlClient(money(e.item.price*e.qty))}</div>
+    </div>`;
+  }).join("");
+
+  const dt = formatDateTime();
+  return `<div class="client-share-ticket" id="client-share-ticket">
+    <div class="cst-brand">
+      <div class="cst-crown">♛</div>
+      <div class="cst-brand-name">EL PATRÓN</div>
+      <div class="cst-brand-sub">DEL MAL</div>
+      <div class="cst-fast">FAST FOOD</div>
+    </div>
+    <div class="cst-confirmed">Pedido confirmado</div>
+    <div class="cst-meta">
+      <div class="cst-meta-item"><span class="cst-label">Pedido N.º</span><span class="cst-value">${escapeHtmlClient(dailyOrderNumber())}</span></div>
+      <div class="cst-meta-item"><span class="cst-label">Boleta virtual</span><span class="cst-value">${escapeHtmlClient(CURRENT_BOLETA || "------")}</span></div>
+      <div class="cst-meta-item"><span class="cst-label">Fecha y hora</span><span class="cst-value" style="font-size:16px;">${escapeHtmlClient(dt)}</span></div>
+    </div>
+    <div class="cst-section-title">DETALLE DE TU PEDIDO</div>
+    <div class="cst-items">${items}</div>
+    <div class="cst-totals">
+      <div class="cst-total-row"><span>Subtotal</span><strong>${escapeHtmlClient(money(ctx.subtotal))}</strong></div>
+      <div class="cst-total-row"><span>Empaque</span><strong>${escapeHtmlClient(money(ctx.taperFee))}</strong></div>
+      <div class="cst-total-row"><span>Delivery</span><strong>${escapeHtmlClient(money(ctx.deliveryFee))}</strong></div>
+      <div class="cst-grand-total"><span>TOTAL A PAGAR</span><span>${escapeHtmlClient(money(ctx.total))}</span></div>
+    </div>
+    <div class="cst-info">
+      <div class="cst-info-item"><b>Pago</b><span>${escapeHtmlClient(clientPaymentText(ctx))}</span></div>
+      <div class="cst-info-item"><b>Entrega</b><span>${escapeHtmlClient(clientDeliveryText(ctx))}</span></div>
+      <div class="cst-info-item"><b>Cliente</b><span>${escapeHtmlClient(ctx.name || "No indicado")}</span></div>
+      <div class="cst-info-item"><b>Comentario</b><span>${escapeHtmlClient(ctx.comment || "Sin comentarios")}</span></div>
+    </div>
+    <div class="cst-footer">
+      <div class="cst-thanks">¡Gracias por tu compra!</div>
+      <div class="cst-return">VUELVE PRONTO</div>
+      <div class="cst-phone">WhatsApp: 944 275 861</div>
+    </div>
+  </div>`;
+}
+async function shareClientTicket(){
+  if (!cart.length) return alert("No hay pedido para compartir.");
+  ensureBoletaCreated();
+  const ctx = getCtx();
+  const errors = getErrors(ctx);
+  if (errors.length) return alert(errors.join("\n"));
+  if (!clientTicketVisual) return alert("No se encontró la boleta visual del cliente.");
+  clientTicketVisual.innerHTML = buildClientVisualTicket(ctx);
+  const target = clientTicketVisual.querySelector("#client-share-ticket");
+  if (!target) return alert("No pude preparar la boleta visual.");
+  if (typeof html2canvas !== "function") return alert("No cargó el generador de imagen. Revisa tu conexión a internet e inténtalo nuevamente.");
+
+  const originalText = btnShareTicket?.textContent || "📲 Compartir boleta con cliente";
+  try {
+    if (btnShareTicket) { btnShareTicket.disabled = true; btnShareTicket.textContent = "Generando imagen..."; }
+    const canvas = await html2canvas(target, {backgroundColor:"#ffffff", scale:2, useCORS:true, logging:false});
+    const blob = await new Promise(resolve => canvas.toBlob(resolve,"image/png",1));
+    if (!blob) throw new Error("No se pudo crear el PNG");
+    const fileName = `Pedido-${dailyOrderNumber()}-El-Patron-del-Mal.png`;
+    const file = new File([blob], fileName, {type:"image/png"});
+
+    if (navigator.share && (!navigator.canShare || navigator.canShare({files:[file]}))) {
+      await navigator.share({
+        title:"Pedido - El Patrón del Mal",
+        text:`Pedido ${dailyOrderNumber()} · Total ${money(ctx.total)}`,
+        files:[file]
+      });
+    } else {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = fileName; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),1500);
+      alert("✅ Boleta guardada como imagen PNG. Puedes enviarla por WhatsApp.");
+    }
+  } catch(err) {
+    if (err && err.name === "AbortError") return;
+    alert("No pude compartir la boleta: " + (err?.message || String(err)));
+  } finally {
+    if (btnShareTicket) { btnShareTicket.disabled = false; btnShareTicket.textContent = originalText; }
+  }
+}
+
 function buildWhatsapp(ctx){
   const lines=[];
   lines.push("🍗🔥 *NUEVO PEDIDO - EL PATRÓN DEL MAL* 🔥🍗");
@@ -2609,6 +2826,7 @@ function renderCart(){
     cartTotalEl.innerHTML = "Total: S/ 0.00";
     if (boletaEl) boletaEl.innerHTML = "";
     if (comandaEl) comandaEl.innerHTML = "";
+    if (clientTicketVisual) clientTicketVisual.innerHTML = "";
     if (orderSaveStatus) orderSaveStatus.textContent = "";
     if (bottomBar) bottomBar.classList.add("hidden");
     if (bottomTotal) bottomTotal.textContent = "Total: S/ 0.00";
@@ -2633,6 +2851,7 @@ function renderCart(){
   if (bottomTotal) bottomTotal.textContent = `Total: ${money(ctx.total)}`;
   if (boletaEl) boletaEl.innerHTML = buildTicket(ctx);
   if (comandaEl) comandaEl.innerHTML = buildKitchenTicket(ctx);
+  if (clientTicketVisual) clientTicketVisual.innerHTML = buildClientVisualTicket(ctx);
   const errors = getErrors(ctx);
   if (errors.length) { btnWhatsapp.href="#"; btnWhatsapp.classList.add("disabled"); if (errorMsg) errorMsg.textContent=errors.join("\n"); }
   else { btnWhatsapp.href=buildWhatsapp(ctx); btnWhatsapp.classList.remove("disabled"); if (errorMsg) errorMsg.textContent=""; }
@@ -2659,6 +2878,11 @@ if (btnClear) btnClear.addEventListener("click", clearCart);
 if (bottomVerPedido) bottomVerPedido.addEventListener("click", () => scrollToWithOffset(document.getElementById("carrito")));
 if (inputName) inputName.addEventListener("input", renderCart);
 if (inputDni) inputDni.addEventListener("input", () => { inputDni.value = sanitizeDniInput(inputDni.value); renderCart(); });
+if (btnToggleDni && dniFieldWrap) btnToggleDni.addEventListener("click", () => {
+  const hidden = dniFieldWrap.classList.toggle("dni-field-hidden");
+  btnToggleDni.textContent = hidden ? "+ Agregar DNI" : "− Ocultar DNI";
+  if (!hidden) inputDni?.focus();
+});
 if (inputComment) inputComment.addEventListener("input", renderCart);
 paymentRadios.forEach(r => r.addEventListener("change", renderCart));
 if (mixedYapeInput) mixedYapeInput.addEventListener("input", renderCart);
@@ -2683,6 +2907,7 @@ if (btnPrintClient) btnPrintClient.addEventListener("click", () => {
   printHTML(buildTicket(ctx), "Boleta cliente");
 });
 if (btnRegisterSale) btnRegisterSale.addEventListener("click", () => registerSale("MOZA_COCINA"));
+if (btnShareTicket) btnShareTicket.addEventListener("click", shareClientTicket);
 if (btnOpenDay) btnOpenDay.addEventListener("click", async () => {
   // Guardamos la fecha elegida ANTES de consultar Supabase para que no se cambie por zona horaria ni por un valor anterior.
   const selectedDateKey = cashDayInput?.value || operationalDefaultDateKey();
