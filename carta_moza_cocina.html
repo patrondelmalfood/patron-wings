@@ -100,6 +100,14 @@ height:65px;
       z-index:1;
     }
     .page-content{ position:relative; z-index:2; }
+    .gif-dinero{
+      position:fixed; bottom:80px; left:8px;
+      width:140px;
+      pointer-events:none;
+      z-index:3;
+    }
+    .gif-dinero img{ width:100%; height:auto; display:block; }
+
     h1,h2,h3{ color:#ff9f1c; margin:10px 0; }
     p{ margin:4px 0; }
 
@@ -360,30 +368,6 @@ height:65px;
       }
     }
 
-
-    /* AJUSTE BEBIDAS: fotos completas y claras */
-    #bebidas + .menu-grid .item-card.has-card-img .card-photo{
-      width:100%;
-      height:150px;
-      object-fit:contain;
-      object-position:center center;
-      background:#111;
-      padding:6px;
-      box-sizing:border-box;
-      display:block;
-    }
-
-    @media (max-width:600px){
-      #bebidas + .menu-grid .item-card.has-card-img .card-photo{
-        height:125px;
-        object-fit:contain;
-        object-position:center center;
-        background:#111;
-        padding:5px;
-        box-sizing:border-box;
-      }
-    }
-
     .item-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
     .item-name{ font-weight:bold; font-size:15px; }
     .item-price{ font-weight:bold; color:#ffe066; animation: goldPulse 1.4s infinite alternate; }
@@ -586,6 +570,7 @@ height:65px;
 
     @media (max-width:600px){
       body{ padding:10px; }
+      .gif-dinero{ bottom:70px; left:4px; width:100px; }
       .bottom-bar-mobile{ display:flex; }
       .carrito-actions{ gap:8px; }
       .carrito-actions > *{ flex:1 1 46%; text-align:center; }
@@ -894,7 +879,7 @@ body{
 }
 .app-category-list{
   display:grid;
-  grid-template-columns:repeat(7,1fr);
+  grid-template-columns:repeat(5,1fr);
   gap:8px;
   margin:12px 0 18px;
 }
@@ -1178,211 +1163,265 @@ body{
 }
 
 
-/* ===== BOLETA TERMICA MEJORADA (solo vista/impresion de boleta) ===== */
-.thermal-ticket{
-  margin:0;
-  padding:0;
-  background:#fff;
-  color:#000;
-  font-family:"Courier New", monospace;
-  font-size:12px;
-  line-height:1.35;
-  white-space:pre-wrap;
-}
-.thermal-ticket .thermal-title{
-  display:block;
-  text-align:center;
-  font-size:20px;
-  font-weight:900;
-  letter-spacing:1px;
-  line-height:1.05;
-}
-.thermal-ticket .thermal-subtitle{
-  display:block;
-  text-align:center;
-  font-size:14px;
-  font-weight:900;
-  margin-top:2px;
-}
-.thermal-ticket .thermal-total{
-  font-size:16px;
-  font-weight:900;
-}
+/* =========================================================
+   AJUSTE 20/08/2026 - BOLETA CLIENTE + FORMULARIO COMPACTO
+   ========================================================= */
+.staff-fields-grid{grid-template-columns:1fr !important;}
 
-
-/* Ajuste Moza: fotos completas para Combos y Torres */
-#combos + .menu-grid .item-card.has-card-img .card-photo,
-#torres + .menu-grid .item-card.has-card-img .card-photo{
-  width:100%;
-  height:185px;
-  object-fit:contain;
-  object-position:center center;
-  background:#111;
-  padding:6px;
-  box-sizing:border-box;
-  display:block;
+.pago-datos.staff-card,
+.extras.staff-card.delivery-card{
+  padding:10px 12px !important;
+  border-radius:14px !important;
 }
-@media (max-width:600px){
-  #combos + .menu-grid .item-card.has-card-img .card-photo,
-  #torres + .menu-grid .item-card.has-card-img .card-photo{
-    height:155px;
-    object-fit:contain;
-    object-position:center center;
-    background:#111;
-    padding:5px;
-    box-sizing:border-box;
-  }
+.pago-datos .staff-card-head,
+.entrega-app-card .staff-card-head,
+.delivery-card .staff-card-head{
+  margin-bottom:7px !important;
+  gap:8px !important;
 }
-
-
-/* ===== FILTRO POR SECCIONES PARA MOZA ===== */
-.menu-section-block.section-hidden{
-  display:none !important;
+.pago-datos .staff-icon,
+.delivery-card .staff-icon{
+  width:31px !important;
+  height:31px !important;
+  min-width:31px !important;
+  font-size:16px !important;
+  border-radius:9px !important;
 }
-.app-category-card.active-category{
-  border-color:#ffd60a !important;
-  background:linear-gradient(180deg, rgba(255,214,10,.20), rgba(0,0,0,.92)) !important;
-  box-shadow:0 0 16px rgba(255,214,10,.30) !important;
-}
-
-
-/* ===== MEJORA VISUAL BOLETA MOZA - SOLO VISTA, NO TOCA RAWBT/IMPRESION ===== */
-#boleta-virtual{
-  background:linear-gradient(180deg,#ffffff,#f3f4f6) !important;
-  border:1px solid rgba(250,204,21,.45) !important;
-  box-shadow:0 0 18px rgba(250,204,21,.18), 0 8px 24px rgba(0,0,0,.35) !important;
-  border-radius:20px !important;
-  padding:16px 12px !important;
-  max-width:470px !important;
-  margin:16px auto 8px !important;
-}
-
-#boleta-virtual .thermal-ticket{
-  max-width:330px !important;
-  margin:0 auto !important;
-  padding:14px 16px 16px !important;
-  border-radius:16px !important;
-  border:1px solid #d4d4d8 !important;
-  box-shadow:0 6px 18px rgba(0,0,0,.18) !important;
-  background:#fff !important;
-  color:#000 !important;
-  font-size:12px !important;
-  line-height:1.32 !important;
-}
-
-#boleta-virtual .thermal-ticket .thermal-title{
-  display:block !important;
-  text-align:center !important;
-  background:#111 !important;
-  color:#fff !important;
-  border-radius:10px 10px 0 0 !important;
-  padding:8px 6px 6px !important;
-  font-size:17px !important;
-  font-weight:900 !important;
-  letter-spacing:1.6px !important;
-  line-height:1.1 !important;
+.pago-datos .staff-card-head h3,
+.delivery-card .staff-card-head h3{
+  font-size:14px !important;
   margin:0 !important;
 }
-
-#boleta-virtual .thermal-ticket .thermal-subtitle{
-  display:block !important;
-  text-align:center !important;
-  border:1px solid #111 !important;
-  border-top:0 !important;
-  border-radius:0 0 10px 10px !important;
-  padding:5px 6px !important;
-  margin:0 0 9px !important;
-  font-size:11px !important;
-  font-weight:900 !important;
-  letter-spacing:2px !important;
-  color:#111 !important;
-  background:#f9fafb !important;
+.pago-datos .staff-card-head p,
+.delivery-card .staff-card-head p{
+  font-size:10px !important;
+  margin:2px 0 0 !important;
+  line-height:1.15 !important;
 }
-
-
-
-/* ===== MEJORA OPERATIVA MOZA 2026: interfaz compacta + boleta visual cliente ===== */
-.cash-day-panel.compact-cash{padding:10px 12px !important;}
-.cash-compact-head{display:flex;align-items:center;justify-content:space-between;gap:10px;}
-.cash-compact-head h3{margin:0 !important;font-size:14px !important;}
-.cash-settings{margin-top:8px;}
-.cash-settings summary{cursor:pointer;color:#fde68a;font-weight:900;font-size:12px;list-style:none;text-align:right;}
-.cash-settings summary::-webkit-details-marker{display:none;}
-.cash-settings[open] summary{margin-bottom:10px;}
-
-.dni-toggle-row{margin-top:8px;}
-#btn-toggle-dni{background:#111827;color:#fde68a;border:1px solid rgba(250,204,21,.35);border-radius:10px;padding:7px 10px;font-size:12px;}
-.dni-field-hidden{display:none !important;}
-
-.delivery-choice-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;}
-.delivery-choice-grid .delivery-option{grid-template-columns:28px 1fr 20px !important;padding:9px 7px !important;margin:0 !important;min-height:58px;}
-.delivery-choice-grid .delivery-option small{display:none;}
-.delivery-choice-grid .delivery-option b{font-size:12px;}
-
-.carrito-actions{display:block !important;}
-.primary-order-actions{display:grid;grid-template-columns:1fr;gap:10px;}
-.primary-order-actions button{width:100%;border-radius:14px;padding:14px 10px;font-size:14px;font-weight:900;}
-#btn-register-sale{background:#facc15 !important;color:#111827 !important;}
-#btn-share-ticket{background:#22c55e !important;color:#052e16 !important;}
-#btn-clear{background:#ef4444 !important;color:#fff !important;}
-.secondary-actions{margin-top:10px;border:1px solid #334155;border-radius:12px;background:#020617;padding:8px 10px;}
-.secondary-actions summary{cursor:pointer;color:#cbd5e1;font-weight:800;font-size:12px;text-align:center;}
-.secondary-actions-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:9px;}
-.secondary-actions-grid > *{width:100%;box-sizing:border-box;text-align:center;border-radius:10px;padding:9px 8px;font-size:12px;}
-#btn-whatsapp{grid-column:1 / -1 !important;background:#374151 !important;color:#fff !important;box-shadow:none !important;text-transform:none !important;}
-
-/* Boleta visual para compartir: NO se usa para impresión térmica */
-#client-ticket-capture-host{
-  position:fixed;left:-10000px;top:0;width:760px;z-index:-1;pointer-events:none;
+.payment-choice-grid{
+  gap:6px !important;
 }
-.client-share-ticket{
-  width:720px;box-sizing:border-box;background:#fff;color:#161616;
-  border:3px solid #c9972d;border-radius:30px;padding:34px 34px 0;
-  font-family:Arial,Helvetica,sans-serif;overflow:hidden;
-  box-shadow:0 18px 55px rgba(0,0,0,.18);
+.pay-choice{
+  min-height:46px !important;
+  padding:6px 5px !important;
+  border-radius:11px !important;
 }
-.client-share-ticket *{box-sizing:border-box;}
-.cst-brand{text-align:center;padding:2px 8px 18px;}
-.cst-crown{font-size:25px;color:#b88619;line-height:1;}
-.cst-brand-name{font-family:Georgia,'Times New Roman',serif;font-weight:900;font-size:46px;letter-spacing:2px;line-height:1;color:#111;}
-.cst-brand-sub{font-family:Georgia,'Times New Roman',serif;font-weight:900;font-size:30px;letter-spacing:6px;color:#b88619;margin-top:3px;}
-.cst-fast{display:inline-block;margin-top:10px;background:#111;color:#e5b84b;border-radius:999px;padding:7px 34px;font-weight:900;letter-spacing:5px;font-size:15px;}
-.cst-confirmed{font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:28px;text-align:center;margin:8px 0 22px;color:#111;}
-.cst-meta{display:grid;grid-template-columns:1fr 1.2fr 1.25fr;border:1.5px solid #c9972d;border-radius:18px;overflow:hidden;margin-bottom:18px;}
-.cst-meta-item{padding:13px 14px;border-right:1px solid #d9c08b;}
-.cst-meta-item:last-child{border-right:0;}
-.cst-label{display:block;font-size:12px;font-weight:900;color:#6b5a33;letter-spacing:.5px;text-transform:uppercase;}
-.cst-value{display:block;font-size:21px;font-weight:900;margin-top:4px;color:#111;}
-.cst-section-title{margin:0 auto 10px;width:max-content;min-width:330px;text-align:center;background:#111;color:#e4b64a;border-radius:999px;padding:8px 24px;font-weight:900;letter-spacing:2px;font-size:14px;}
-.cst-items{border:1.5px solid #c9972d;border-radius:18px;padding:8px 18px 2px;margin-bottom:10px;}
-.cst-item{display:grid;grid-template-columns:58px 1fr 120px;gap:10px;align-items:start;padding:13px 2px;border-bottom:1px dashed #c9a75a;}
-.cst-item:last-child{border-bottom:0;}
-.cst-qty{font-size:20px;font-weight:900;text-align:center;}
-.cst-item-name{font-size:18px;font-weight:900;line-height:1.2;}
-.cst-item-detail{font-size:13px;color:#555;margin-top:4px;line-height:1.3;}
-.cst-item-price{text-align:right;font-size:18px;font-weight:900;white-space:nowrap;}
-.cst-totals{border:1.5px solid #c9972d;border-radius:18px;padding:13px 18px 0;margin-top:10px;overflow:hidden;}
-.cst-total-row{display:flex;justify-content:space-between;gap:15px;font-size:16px;padding:4px 0;}
-.cst-total-row strong{font-size:17px;}
-.cst-grand-total{margin:12px -18px 0;background:#111;color:#e4b64a;padding:15px 18px;display:flex;justify-content:space-between;align-items:center;font-weight:900;font-size:21px;}
-.cst-grand-total span:last-child{font-size:34px;}
-.cst-info{display:grid;grid-template-columns:1fr 1fr;border:1.5px solid #c9972d;border-radius:18px;margin-top:10px;overflow:hidden;}
-.cst-info-item{padding:12px 16px;border-bottom:1px solid #dfd2b6;}
-.cst-info-item:nth-child(odd){border-right:1px solid #dfd2b6;}
-.cst-info-item:nth-last-child(-n+2){border-bottom:0;}
-.cst-info-item b{display:block;font-size:12px;color:#7b6023;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;}
-.cst-info-item span{font-size:16px;font-weight:700;line-height:1.25;word-break:break-word;}
-.cst-footer{margin:22px -34px 0;background:#111;color:#fff;padding:22px 25px 24px;text-align:center;border-top:3px solid #c9972d;}
-.cst-thanks{font-family:Georgia,'Times New Roman',serif;font-style:italic;color:#e4b64a;font-size:27px;}
-.cst-return{font-size:14px;letter-spacing:4px;margin-top:6px;}
-.cst-phone{display:inline-block;margin-top:12px;border:1px solid #c9972d;border-radius:12px;padding:8px 16px;color:#e4b64a;font-size:16px;font-weight:900;letter-spacing:1px;}
-
-@media(max-width:700px){
-  .delivery-choice-grid{grid-template-columns:repeat(3,1fr);gap:6px;}
-  .delivery-choice-grid .delivery-option{grid-template-columns:24px 1fr 18px !important;padding:8px 5px !important;}
-  .delivery-choice-grid .delivery-option span{font-size:18px;}
-  .delivery-choice-grid .delivery-option b{font-size:10px;}
-  .secondary-actions-grid{grid-template-columns:1fr 1fr;}
+.pay-choice span{font-size:17px !important;}
+.pay-choice b{font-size:10.5px !important;}
+.nota-pago-yape,
+.nota-taper{
+  font-size:9.5px !important;
+  line-height:1.2 !important;
+  margin:6px 0 0 !important;
+}
+.delivery-option{
+  grid-template-columns:27px 1fr 20px !important;
+  padding:7px 8px !important;
+  border-radius:11px !important;
+  margin:5px 0 !important;
+  gap:0 7px !important;
+}
+.delivery-option span{font-size:17px !important;}
+.delivery-option b{font-size:11.5px !important;}
+.delivery-option small{font-size:9.5px !important;line-height:1.1 !important;}
+.delivery-option input{
+  width:17px !important;
+  height:17px !important;
+}
+#btn-whatsapp{
+  background:#16a34a !important;
+  color:#fff !important;
+}
+.customer-share-stage{
+  position:fixed;
+  left:-10000px;
+  top:0;
+  width:620px;
+  background:#f7f2e8;
+  padding:22px;
+  z-index:-1;
+}
+.customer-receipt{
+  width:576px;
+  background:#fff;
+  color:#171717;
+  border:2px solid #d6ad35;
+  border-radius:22px;
+  overflow:hidden;
+  box-shadow:0 10px 28px rgba(0,0,0,.10);
+  font-family:Arial,Helvetica,sans-serif;
+}
+.customer-receipt .cr-head{
+  padding:22px 24px 13px;
+  text-align:center;
+  background:
+    radial-gradient(circle at 12% 10%,rgba(202,164,70,.11) 0 2px,transparent 3px),
+    radial-gradient(circle at 86% 22%,rgba(202,164,70,.08) 0 2px,transparent 3px),
+    #fff;
+}
+.customer-receipt .cr-brand{
+  font-family:Georgia,"Times New Roman",serif;
+  font-weight:900;
+  font-size:30px;
+  letter-spacing:1px;
+  line-height:1;
+}
+.customer-receipt .cr-subbrand{
+  color:#b98500;
+  font-weight:900;
+  letter-spacing:6px;
+  font-size:13px;
+  margin-top:5px;
+}
+.customer-receipt .cr-fast{
+  display:inline-block;
+  margin-top:7px;
+  background:#111;
+  color:#e7bf48;
+  border-radius:999px;
+  padding:4px 15px;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:3px;
+}
+.customer-receipt .cr-confirm{
+  margin-top:12px;
+  font-family:Georgia,"Times New Roman",serif;
+  font-style:italic;
+  font-size:15px;
+  color:#4b3a22;
+}
+.customer-receipt .cr-body{padding:0 24px 18px;}
+.customer-receipt .cr-meta{
+  display:grid;
+  grid-template-columns:1.05fr .9fr 1.25fr;
+  border:1px solid #d6ad35;
+  border-radius:12px;
+  overflow:hidden;
+  margin-bottom:10px;
+}
+.customer-receipt .cr-meta>div{
+  padding:7px 8px;
+  border-right:1px solid #ead7a0;
+  min-width:0;
+}
+.customer-receipt .cr-meta>div:last-child{border-right:0;}
+.customer-receipt .cr-label{
+  display:block;
+  font-size:7px;
+  font-weight:900;
+  color:#8b6510;
+  text-transform:uppercase;
+  margin-bottom:2px;
+}
+.customer-receipt .cr-value{
+  display:block;
+  font-size:10px;
+  font-weight:900;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.customer-receipt .cr-titlebar{
+  width:70%;
+  margin:0 auto 8px;
+  background:#111;
+  color:#e7bf48;
+  text-align:center;
+  border-radius:999px;
+  padding:4px 8px;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+.customer-receipt .cr-items{
+  border:1px solid #d6ad35;
+  border-radius:12px;
+  overflow:hidden;
+}
+.customer-receipt .cr-item{
+  display:grid;
+  grid-template-columns:26px 1fr 72px;
+  gap:7px;
+  padding:8px 9px;
+  border-bottom:1px solid #eee2c1;
+  align-items:start;
+}
+.customer-receipt .cr-item:last-child{border-bottom:0;}
+.customer-receipt .cr-item .qty{font-weight:900;font-size:11px;}
+.customer-receipt .cr-item .name{font-weight:900;font-size:11px;}
+.customer-receipt .cr-item .details{font-size:7.5px;color:#777;margin-top:2px;line-height:1.25;}
+.customer-receipt .cr-item .price{text-align:right;font-size:11px;font-weight:900;}
+.customer-receipt .cr-totals{
+  margin-top:9px;
+  border:1px solid #d6ad35;
+  border-radius:12px;
+  overflow:hidden;
+}
+.customer-receipt .cr-total-row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:5px 10px;
+  font-size:9px;
+  border-bottom:1px solid #eee2c1;
+}
+.customer-receipt .cr-total-row:last-child{border-bottom:0;}
+.customer-receipt .cr-total-main{
+  background:#111;
+  color:#e7bf48;
+  padding:8px 11px;
+  font-size:11px;
+  font-weight:900;
+}
+.customer-receipt .cr-total-main b{font-size:20px;}
+.customer-receipt .cr-info{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  border:1px solid #d6ad35;
+  border-radius:12px;
+  margin-top:9px;
+  overflow:hidden;
+}
+.customer-receipt .cr-info>div{
+  padding:6px 8px;
+  min-height:38px;
+  border-right:1px solid #eee2c1;
+  border-bottom:1px solid #eee2c1;
+}
+.customer-receipt .cr-info>div:nth-child(2n){border-right:0;}
+.customer-receipt .cr-info>div:nth-last-child(-n+2){border-bottom:0;}
+.customer-receipt .cr-info .cr-label{font-size:6.5px;margin-bottom:2px;}
+.customer-receipt .cr-info .cr-value{
+  font-size:9px;
+  white-space:normal;
+  line-height:1.15;
+}
+.customer-receipt .cr-footer{
+  background:#111;
+  color:#e7bf48;
+  text-align:center;
+  padding:13px 18px 15px;
+}
+.customer-receipt .cr-footer .thanks{
+  font-family:Georgia,"Times New Roman",serif;
+  font-style:italic;
+  font-size:15px;
+}
+.customer-receipt .cr-footer .return{
+  color:#eee;
+  font-size:7px;
+  letter-spacing:3px;
+  margin-top:3px;
+}
+.customer-receipt .cr-footer .wa{
+  display:inline-block;
+  margin-top:8px;
+  border:1px solid #9f7a16;
+  color:#f0cc5c;
+  border-radius:5px;
+  padding:4px 8px;
+  font-size:7.5px;
 }
 
 </style>
@@ -1391,6 +1430,7 @@ body{
 <body>
   <div class="bg-rayos"></div>
   <div class="bg-estrellas"></div>
+  <div class="gif-dinero"><img src="dinero.gif" alt="Dinero cayendo"></div>
 
   <div class="page-content">
     <div class="header">
@@ -1443,45 +1483,33 @@ body{
 </div>
     <section class="app-category-list">
 
-  <a href="#combos" class="app-category-card">
-    <img src="cat-combos.png" alt="Combos y Promociones">
-    <span>Combos y Promociones 🔥</span>
-    <b>›</b>
-  </a>
-
   <a href="#alitas" class="app-category-card">
-    <img src="cat-alitas.png" alt="Alitas - Patitas Broster">
-    <span>Alitas - Patitas Broster 🍗</span>
-    <b>›</b>
-  </a>
+  <img src="cat-alitas.png">
+  <span>Alitas 🔥</span>
+  <b>›</b>
+</a>
 
   <a href="#hamburguesas" class="app-category-card">
-    <img src="cat-hamburguesa.png" alt="Burger - Wrap">
-    <span>Burger - Wrap 🍔🌯</span>
+    <img src="cat-hamburguesa.png">
+    <span>Hamburguesas 🍔</span>
     <b>›</b>
   </a>
 
   <a href="#cartel" class="app-category-card">
-    <img src="cat-cartel.png" alt="Mostritos y Broaster">
-    <span>Mostritos y Broaster 🍗</span>
+    <img src="cat-cartel.png">
+    <span>Platos del cartel 🔥</span>
     <b>›</b>
   </a>
 
-  <a href="#torres" class="app-category-card">
-    <img src="cat-torres.png" alt="Torres del Cartel">
-    <span>Torres del Cartel 🗼</span>
-    <b>›</b>
-  </a>
-
-  <a href="#extras" class="app-category-card">
-    <img src="cat-extras.png" alt="Papas, cremas y extras">
-    <span>Papas, cremas y extras ➕</span>
+  <a href="#cremas" class="app-category-card">
+    <img src="cat-cremas.jpg">
+    <span>Cremas extras 🧂</span>
     <b>›</b>
   </a>
 
   <a href="#bebidas" class="app-category-card">
-    <img src="cat-bebidas.png" alt="Bebidas, Tragos y Frappés">
-    <span>Bebidas, Tragos y Frappés 🥤</span>
+    <img src="cat-bebidas.png">
+    <span>Bebidas 🥤</span>
     <b>›</b>
   </a>
 
@@ -1498,23 +1526,20 @@ body{
       <div id="cart-items"></div>
       <p id="cart-empty">Aún no has añadido platos.</p>
 
-      <div class="cash-day-panel compact-cash">
-        <div class="cash-compact-head">
-          <h3>🗓️ Caja / día operativo</h3>
-        </div>
+      <div class="cash-day-panel">
+        <h3>🗓️ Día operativo / caja activa</h3>
         <div id="cash-day-status" class="cash-day-status closed">Cargando caja activa...</div>
-        <details class="cash-settings">
-          <summary>⚙️ Opciones de caja</summary>
-          <div class="cash-day-actions">
-            <label>Fecha de caja
-              <input type="date" id="cash-day-input">
-            </label>
-            <button id="btn-open-day" type="button">🟢 Abrir día</button>
-            <button id="btn-close-day" type="button">🔒 Cerrar día</button>
-            <button id="btn-refresh-cash-day" type="button">Actualizar</button>
-          </div>
-          <div class="cash-day-mini">Mientras la caja siga abierta, las ventas se guardan en esa fecha. Al terminar el turno, presiona <b>Cerrar día</b>.</div>
-        </details>
+        <div class="cash-day-actions">
+          <label>Fecha de caja
+            <input type="date" id="cash-day-input">
+          </label>
+          <button id="btn-open-day" type="button">🟢 Abrir día</button>
+          <button id="btn-close-day" type="button">🔒 Cerrar día</button>
+          <button id="btn-refresh-cash-day" type="button">Actualizar</button>
+        </div>
+        <div class="cash-day-mini">
+          Si venden hasta la 1:00am, no importa: mientras la caja siga abierta, las ventas se guardan en la fecha de caja activa. Al terminar el turno, presiona <b>Cerrar día</b>.
+        </div>
       </div>
 
       <div class="cliente-datos staff-card">
@@ -1522,20 +1547,15 @@ body{
           <div class="staff-icon">👤</div>
           <div>
             <h3>Datos para boleta / comanda</h3>
-            <p>Nombre, DNI si lo piden y nota interna de cocina.</p>
+            <p>Nombre del cliente y nota interna de cocina.</p>
           </div>
         </div>
 
-        <div class="staff-fields-grid" style="grid-template-columns:1fr;">
+        <div class="staff-fields-grid">
           <label for="customer-name">Nombre del cliente
             <input type="text" id="customer-name" placeholder="Ej: Juan Pérez">
           </label>
-
-          <label for="customer-dni" id="dni-field-wrap" class="dni-field-hidden">DNI opcional
-            <input type="text" id="customer-dni" inputmode="numeric" maxlength="8" placeholder="Ej: 12345678">
-          </label>
         </div>
-        <div class="dni-toggle-row"><button id="btn-toggle-dni" type="button">+ Agregar DNI</button></div>
 
         <label for="order-comment" class="staff-note-label">Nota de cocina / pedido especial</label>
         <textarea id="order-comment" placeholder="Ej: sin cebolla / alitas: 6 acevichada y 2 BBQ / cliente apurado"></textarea>
@@ -1546,7 +1566,7 @@ body{
         <div class="staff-card-head">
           <div class="staff-icon">💳</div>
           <div>
-            <h3>¿Cómo pagó el cliente?</h3>
+            <h3>Forma de pago</h3>
             <p>Elige cómo pagó el cliente antes de registrar la venta.</p>
           </div>
         </div>
@@ -1576,16 +1596,14 @@ body{
         <div class="staff-card-head">
           <div class="staff-icon">🛵</div>
           <div>
-            <h3>¿Cómo se entrega el pedido?</h3>
-            <p>Define si cobra delivery y si corresponde empaque.</p>
+            <h3>Tipo de entrega</h3>
+            <p>Define si cobra delivery y si corresponde taper.</p>
           </div>
         </div>
-        <div class="delivery-choice-grid">
-          <label class="delivery-option"><input type="checkbox" id="chk-delivery" checked><span>🛵</span><b>Delivery</b><small>S/ 3 antes de 10pm · S/ 4 desde 10pm · gratis &gt; S/ 100</small></label>
-          <label class="delivery-option"><input type="checkbox" id="chk-pickup"><span>🛍️</span><b>Recojo</b><small>Pedido para llevar</small></label>
-          <label class="delivery-option"><input type="checkbox" id="chk-eatin"><span>🍽️</span><b>Local</b><small>No se cobra taper</small></label>
-        </div>
-        <p class="nota-taper">🥡 Empaque / taper automático para delivery o para llevar. No aplica a bebidas ni cremas extra.</p>
+        <label class="delivery-option"><input type="checkbox" id="chk-delivery" checked><span>🛵</span><b>Delivery</b><small>S/ 3 antes de 10pm · S/ 4 desde 10pm · gratis &gt; S/ 100</small></label>
+        <label class="delivery-option"><input type="checkbox" id="chk-pickup"><span>🛍️</span><b>Recojo en local</b><small>Pedido para llevar</small></label>
+        <label class="delivery-option"><input type="checkbox" id="chk-eatin"><span>🍽️</span><b>Comer en el local</b><small>No se cobra taper</small></label>
+        <p class="nota-taper">🥡 Tapers automáticos para delivery o para llevar. No aplica a bebidas ni cremas extra.</p>
       </div>
 
       <p id="cart-total">Total: S/ 0.00</p>
@@ -1593,22 +1611,13 @@ body{
 
       <div id="boleta-virtual"></div>
       <div id="comanda-cocina"></div>
-      <div id="client-ticket-capture-host"><div id="boleta-cliente-visual"></div></div>
 
       <div class="carrito-actions">
-        <div class="primary-order-actions">
-          <button id="btn-register-sale" type="button">✅ Registrar venta / Enviar cocina</button>
-          <button id="btn-share-ticket" type="button">📲 Compartir boleta con cliente</button>
-          <button id="btn-clear" type="button">🔴 Nuevo pedido</button>
-        </div>
-        <details class="secondary-actions">
-          <summary>🛠️ Impresión y otras opciones</summary>
-          <div class="secondary-actions-grid">
-            <button id="btn-print-kitchen" type="button">👨‍🍳 Imprimir comanda</button>
-            <button id="btn-print-client" type="button">🧾 Imprimir boleta</button>
-            <a id="btn-whatsapp" href="#" target="_blank" class="btn disabled">WhatsApp texto (interno)</a>
-          </div>
-        </details>
+        <button id="btn-clear">Vaciar pedido</button>
+        <button id="btn-print-kitchen" type="button">👨‍🍳 Imprimir comanda</button>
+        <button id="btn-print-client" type="button">🧾 Imprimir boleta</button>
+        <button id="btn-register-sale" type="button">✅ Registrar venta / Enviar cocina</button>
+        <a id="btn-whatsapp" href="#" class="btn disabled">📲 Compartir boleta con cliente</a>
       </div>
 
       <p id="error-msg" class="error-msg"></p>
@@ -1628,7 +1637,7 @@ body{
 <script>
 const WHATSAPP_NUMBER = "51944275861";
 const SUPABASE_URL = "https://defdwzzewzfjuseozwkn.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
+const SUPABASE_ANON_KEY = "sb_publishable_ybJZO45G37nMvSHwQYfIhA_qWi9UR0K";
 const ORDERS_TABLE = "orders_cloud";
 const DAY_SETUP_TABLE = "day_setup_cloud";
 const CASH_STATE_TABLE = "cash_register_state";
@@ -1641,7 +1650,7 @@ const LOCATION_TEXT_FOR_OWNER = "📍 Ubicación: (cliente enviará su ubicació
 const OPEN_HOUR = 17, OPEN_MIN = 30, CLOSE_HOUR = 24, CLOSE_MIN = 0;
 const STICKY_OFFSET = 105;
 const SAUCES = ["BBQ", "Acevichada", "Buffalo", "Maracuyá"].map(x => `Salsa ${x}`);
-const DRINK_IDS = [29,30,31,32,35,37,38,42,44,45,80,81,82,83,84,85,86,87,88,89,90];
+const DRINK_IDS = [29,30,31,32,35,37,38,42,44,45];
 const SAUCE_EXTRA_IDS = [39,40,41];
 const EXTRA_WING_ID = 64;
 const ALITAS_IMG_DEFAULT = "alitas-bbq.JPG";
@@ -1650,7 +1659,6 @@ function pad2(n){ return String(n).padStart(2,"0"); }
 function safeNum(n){ return Number.isFinite(Number(n)) ? Number(n) : 0; }
 function round2(n){ return Number((safeNum(n)).toFixed(2)); }
 function money(n){ return `S/ ${safeNum(n).toFixed(2)}`; }
-function sanitizeDniInput(v){ return String(v || "").replace(/\D/g, "").slice(0,8); }
 function cleanName(n){ return String(n || "").replace(/🔫|💣|👑|🕶|🔥|🍔|🧂|🥤|➕/g, "").trim(); }
 function shortSauces(arr){ return (arr || []).map(s => s.replace("Salsa ", "")).join(", "); }
 function isNoSauceValue(v){ return String(v || "").toUpperCase() === "SIN_SALSA"; }
@@ -1682,12 +1690,6 @@ function renderOpenStatus(){
 renderOpenStatus(); setInterval(renderOpenStatus, 30000);
 
 function getSauceMaxForItemName(name){
-  if (name.includes("Jueves de Patas")) return 1;
-  if (name.includes("Combo Familiar")) return 3;
-  if (name.includes("Combo Broaster")) return 1;
-  if (name.includes("Torre Medellín")) return 2;
-  if (name.includes("Torre Nápoles")) return 2;
-  if (name.includes("Torre Cali")) return 1;
   if (name.startsWith("4 Alitas")) return 1;
   if (name.startsWith("5 Alitas")) return 1;
   if (name.startsWith("6 Alitas")) return 2;
@@ -1711,22 +1713,6 @@ function isItemCountsForTaper(id){ return !DRINK_IDS.includes(Number(id)) && !SA
 function getTaperPerUnit(id){
   id = Number(id);
   if (id === EXTRA_WING_ID) return 0;
-
-  // Combos y promociones: empaques para delivery / recojo en local.
-  if (id === 68) return 2; // Miércoles de Burger
-  if (id === 69) return 2; // Jueves de Patas
-  if (id === 70) return 2; // Combo Pareja Burger
-  if (id === 71) return 5; // Combo Familiar
-  if (id === 72) return 3; // Combo Broaster Martes y Jueves
-
-  // Torres del Cartel: empaques estimados para delivery / recojo.
-  if (id === 73) return 3; // Torre Medellín
-  if (id === 74) return 4; // Torre Nápoles
-  if (id === 75) return 3; // Torre Cali
-
-  // Patitas Broster: 1 taper por plato en delivery o recojo.
-  if ([76,77,78].includes(id)) return 1;
-
   if (id === 21 || id === 3) return 2;
   if (id === 4) return 3;
   if (id === 5) return 4;
@@ -1783,22 +1769,8 @@ function actualizarImagenAlitasCard(card){
 
 const SECTIONS = [
       {
-        anchorId: "combos",
-        name: "🔥 Combos y Promociones",
-        image: "cat-combos.png",
-        sauceMode: "none",
-        footerText: "Promos sujetas a disponibilidad del día. Si una promo incluye alitas o broaster, elige la salsa antes de agregar.",
-        items: [
-          { id: 68, name: "Miércoles de Burger", price: 18.00, desc: "2 burgers + papas + cremas", cardImg: "promo-miercoles-burger.png" },
-          { id: 69, name: "Jueves de Patas", price: 25.00, desc: "1 Burger Clásica + canastilla de papa + 5 alitas + ensalada + cremas", cardImg: "promo-jueves-patas.png", sauceMode: "multi" },
-          { id: 70, name: "Combo Pareja Burger", price: 27.00, desc: "2 burgers + gaseosa 1L", cardImg: "promo-pareja-burger.png" },
-          { id: 71, name: "Combo Familiar", price: 119.00, desc: "30 alitas + papa familiar + 2 burgers clásicas + gaseosa 1L + jarra de maracuyá 1L", cardImg: "promo-combo-familiar.png", sauceMode: "multi" },
-          { id: 72, name: "Combo Broaster Martes y Jueves", price: 29.90, desc: "6 piezas de broaster + canastilla de papa + ensalada + cremas", cardImg: "promo-broaster-martes-jueves.png", sauceMode: "single" }
-        ]
-      },
-      {
         anchorId: "alitas",
-        name: "🍗 Alitas - Patitas Broster",
+        name: "🔥 Alitas – El Patrón del Mal",
         image: "FESTIVAL DE ALITAS.jpg",
         sauceMode: "multi",
         items: [
@@ -1817,20 +1789,6 @@ const SECTIONS = [
       },
       {
         anchorId: null,
-        name: "🐔 Patitas Broster",
-        image: "cat-alitas.png",
-        sauceMode: "single",
-        allowNoSauce: false,
-        sauces: ["Salsa Acevichada", "Salsa BBQ", "Salsa Picante", "Salsa Maracuyá"],
-        footerText: "Salsas a escoger: Acevichada, BBQ, Picante o Maracuyá. Cada plato suma 1 taper únicamente para delivery o recojo en local.",
-        items: [
-          { id: 76, name: "4 Patitas Broster", price: 12.00, desc: "4 patitas + porción de papas + ensalada fresca + salsa a escoger", cardImg: "patitas-broaster-4.png" },
-          { id: 77, name: "6 Patitas Broster", price: 15.00, desc: "6 patitas + porción de papas + ensalada fresca + salsa a escoger", cardImg: "patitas-broaster-6.png" },
-          { id: 78, name: "Dúo del Patrón", price: 17.00, desc: "3 patitas + 3 alitas + porción de papas + ensalada fresca + salsa a escoger", cardImg: "duo-del-patron.png" }
-        ]
-      },
-      {
-        anchorId: null,
         name: "➕ Agregado de alitas",
         image: null,
         sauceMode: "single",
@@ -1845,39 +1803,34 @@ const SECTIONS = [
         image: null,
         sauceMode: "none",
         items: [
-          { id: 10, name: "Tequeños (6 und, jamón y queso)",   price: 12, desc: "", cardImg: "Tequeños.png" },
-          { id: 11, name: "Porción de Nuggets",                price: 13, desc: "", cardImg: "Porción de Nuggets.png" }
+          { id: 10, name: "Tequeños (6 und, jamón y queso)",   price: 13, desc: "", cardImg: "Tequeños.png" },
+          { id: 11, name: "Porción de Nuggets",                price: 11, desc: "", cardImg: "Porción de Nuggets.png" }
         ]
       },
       {
         anchorId: "hamburguesas",
-        name: "🍔 Burger - Wrap",
+        name: "🍔 Hamburguesas artesanales",
         image: "BURGER 2.jpg",
         sauceMode: "none",
         items: [
-          { id: 12, name: "Burger Clásica Ochoa",              price: 10, desc: "Carne 200 g + queso + papas + ensalada + cremas", cardImg: "Burger Clásica Ochoa.png" },
-          { id: 13, name: "Burger Royal Gaviria",              price: 12, desc: "Carne 200 g + queso + huevo + papas + ensalada + cremas", cardImg: "Burger Royal Gaviria.png" },
-          { id: 14, name: "Burger Premium Ulloa",              price: 14, desc: "Carne 200 g + queso + chorizo + tocino + papas + ensalada + cremas", cardImg: "Burger Premium Ulloa.png" },
-          { id: 15, name: "Burger Pablo Escobar",              price: 20, desc: "2 carnes + queso + jamón + huevo + tocino + papas + ensalada + cremas", cardImg: "Burger Pablo Escobar.png" },
-          { id: 16, name: "Burger Crispy Motoa",               price: 12, desc: "Pollo crispy + queso + jamón + papas + ensalada + cremas", cardImg: "Burger Crispy Motoa.png" },
-          { id: 17, name: "Wrap Crispy de Pollo",              price: 13.90, desc: "Pollo crispy + verduras frescas + salsa de queso + papas + 3 cremas", cardImg: "wrap-crispy-pollo.png" },
-          { id: 18, name: "Wrap BBQ Chicken",                  price: 14.90, desc: "Pollo crispy + salsa BBQ + verduras frescas + queso + papas + 3 cremas", cardImg: "wrap-bbq-chicken.png" },
-          { id: 19, name: "Wrap Carne Búfalo",                 price: 15.90, desc: "Carne sazonada + salsa búfalo picante + verduras frescas + queso + papas + 3 cremas", cardImg: "wrap-carne-bufalo.png" }
+          { id: 12, name: "Burger Clásica Ochoa",              price: 11, desc: "Carne 200 g + queso + papas + ensalada + cremas", cardImg: "Burger Clásica Ochoa.png" },
+          { id: 13, name: "Burger Royal Gaviria",              price: 13, desc: "Carne 200 g + queso + huevo + papas + ensalada + cremas", cardImg: "Burger Royal Gaviria.png" },
+          { id: 14, name: "Burger Premium Ulloa",              price: 15, desc: "Carne 200 g + queso + chorizo + tocino + papas + ensalada + cremas", cardImg: "Burger Premium Ulloa.png" },
+          { id: 15, name: "Burger Pablo Escobar",              price: 21, desc: "2 carnes + queso + jamón + huevo + tocino + papas + ensalada + cremas", cardImg: "Burger Pablo Escobar.png" },
+          { id: 16, name: "Burger Crispy Motoa",               price: 14, desc: "Pollo crispy + queso + jamón + papas + ensalada + cremas", cardImg: "Burger Crispy Motoa.png" }
         ]
       },
       {
         anchorId: "cartel",
-        name: "🍗 Mostritos y Broaster",
+        name: "🔥 PLATOS DEL CARTEL 🔥",
         image: "MOSTRITO BROSTER.jpg",
         sauceMode: "single",
         footerText: "Salsas: BBQ, Acevichada, Buffalo, Maracuyá, o SIN SALSA.",
         items: [
-          { id: 60, name: "🔫 El Sicario",      price: 17.90, desc: "2 piezas broaster + papas + ensalada + cremas → 1 salsa", cardImg: "El Sicario.png" },
-          { id: 61, name: "💣 Plata o Plomo",  price: 21.90, desc: "3 piezas broaster + papas + ensalada + cremas → 1 salsa", cardImg: "Plata o Plomo.png" },
-          { id: 62, name: "👑 El Capo",        price: 22.90, desc: "2 piezas broaster + papas + ensalada + chaufa → 1 salsa", cardImg: "El Capo.png" },
-          { id: 63, name: "🕶 El Informante",  price: 16.90, desc: "Pechuga plancha + papas + ensalada + cremas → 1 salsa", cardImg: "El Informante.png" },
-          { id: 66, name: "Chaufa Medellín",  price: 13.00, desc: "Chaufa especial + papas + ensalada + cremas → 1 salsa", cardImg: "Chaufa-Medellin.png" },
-          { id: 67, name: "Chaufi Lomo Saltado Ochoa", price: 15.00, desc: "Chaufa + lomo saltado + papas + ensalada + cremas → 1 salsa", cardImg: "Chaufi-Lomo-Saltado-Ochoa.png" }
+          { id: 60, name: "🔫 El Sicario",      price: 18.90, desc: "2 piezas broaster + papas + ensalada + cremas → 1 salsa", cardImg: "El Sicario.png" },
+          { id: 61, name: "💣 Plata o Plomo",  price: 22.90, desc: "3 piezas broaster + papas + ensalada + cremas → 1 salsa", cardImg: "Plata o Plomo.png" },
+          { id: 62, name: "👑 El Capo",        price: 23.90, desc: "2 piezas broaster + papas + ensalada + chaufa → 1 salsa", cardImg: "El Capo.png" },
+          { id: 63, name: "🕶 El Informante",  price: 17.90, desc: "Pechuga plancha + papas + ensalada + cremas → 1 salsa", cardImg: "El Informante.png" }
         ]
       },
       {
@@ -1891,32 +1844,25 @@ const SECTIONS = [
         ]
       },
       {
-        anchorId: "torres",
-        name: "🗼 Torres del Cartel",
-        image: "cat-torres.png",
-        sauceMode: "multi",
-        footerText: "Torres para compartir. Elige tus salsas antes de agregar al pedido.",
-        items: [
-          { id: 73, name: "Torre Medellín", price: 42.90, desc: "7 alitas + porción de tequeños + porción de papa familiar + salsas + cremas + ensalada", cardImg: "torre-medellin.png" },
-          { id: 74, name: "Torre Nápoles",  price: 59.90, desc: "10 piezas de alitas + trocitos de pollo broaster + porción de tequeños + porción de papas + salsas + cremas + ensalada", cardImg: "torre-napoles.png" },
-          { id: 75, name: "Torre Cali",     price: 44.90, desc: "5 piezas broaster + porción de tequeños + porción de papa + salsas + cremas + ensalada", cardImg: "torre-cali.png" }
-        ]
-      },
-      {
         anchorId: "extras",
-        name: "🍟 Papas, cremas y extras",
-        image: "cat-extras.png",
+        name: "Adicionales o extras",
+        image: null,
         sauceMode: "none",
         items: [
-          { id: 10, name: "Tequeños (6 und, jamón y queso)",   price: 12, desc: "", cardImg: "Tequeños.png" },
-          { id: 11, name: "Porción de Nuggets",                price: 13, desc: "", cardImg: "Porción de Nuggets.png" },
           { id: 23, name: "Porción de chaufa",                 price: 6,  desc: "", cardImg: "Porción de chaufa.png" },
-          { id: 24, name: "Porción de papas",                  price: 8,  desc: "Equivale a 2 porciones de 170g", cardImg: "Porción de papas.png" },
-          { id: 91, name: "Porción de Chifle",                 price: 5,  desc: "Chifle crocante + salsa acevichada", cardImg: "porcion-chifle.png" },
+          { id: 24, name: "Porción de papas",                  price: 6,  desc: "Equivale a 2 porciones de 170g", cardImg: "Porción de papas.png" },
           { id: 25, name: "Porción de ensalada",               price: 4,  desc: "", cardImg: "Porción de ensalada.png" },
           { id: 26, name: "Porción de chorizo",                price: 5,  desc: "", cardImg: "Porción de chorizo.png" },
           { id: 27, name: "Porción de hotdog",                 price: 4,  desc: "", cardImg: "Porción de hotdog.png" },
-          { id: 28, name: "Huevo extra",                       price: 3,  desc: "", cardImg: "Huevo extra.png" },
+          { id: 28, name: "Huevo extra",                       price: 3,  desc: "", cardImg: "Huevo extra.png" }
+        ]
+      },
+      {
+        anchorId: "cremas",
+        name: "🧂 Cremas extras",
+        image: null,
+        sauceMode: "none",
+        items: [
           { id: 39, name: "Ají adicional",                     price: 1,  desc: "" },
           { id: 40, name: "Mayonesa adicional",                price: 1,  desc: "" },
           { id: 41, name: "Ketchup adicional",                 price: 1,  desc: "" }
@@ -1924,31 +1870,20 @@ const SECTIONS = [
       },
       {
         anchorId: "bebidas",
-        name: "🥤 Bebidas, Tragos y Frappés",
+        name: "🥤 Bebidas",
         image: null,
         sauceMode: "none",
         items: [
-          { id: 37, name: "Gaseosa 1L Coca Cola / Inca Kola",           price: 9.0, desc: "", cardImg: "bebida-gaseosa-1l.png" },
-          { id: 35, name: "Gaseosa 600ml Coca Cola / Inca Kola",        price: 4.5, desc: "", cardImg: "bebida-gaseosa-600ml.png" },
-          { id: 42, name: "Gaseosa vidrio 296ml Coca Cola / Inca Kola", price: 2.5, desc: "", cardImg: "bebida-gaseosa-vidrio-296ml.png" },
-          { id: 31, name: "Jarra de chicha 1L",                        price: 10,  desc: "", cardImg: "Jarra de chicha 1L.png" },
-          { id: 30, name: "Jarra de maracuyá 1L",                      price: 10,  desc: "", cardImg: "Jarra de maracuyá 1L.png" },
-          { id: 45, name: "Vaso de chicha",                            price: 3.0, desc: "", cardImg: "Vaso de chicha.png" },
-          { id: 38, name: "Vaso de hielo",                             price: 3.0, desc: "", cardImg: "Vaso de hielo.png" },
-          { id: 44, name: "Vaso de maracuyá",                          price: 3.0, desc: "", cardImg: "Vaso de maracuyá.png" },
-          { id: 29, name: "Limonada frozen 1L",                        price: 10,  desc: "", cardImg: "Limonada frozen 1L.jpg" },
-          { id: 32, name: "Agua mineral",                              price: 3.0, desc: "", cardImg: "bebida-agua-mineral.png" },
-          { id: 80, name: "Caramel Coffee Frappé",                     price: 11.0, desc: "Frappé de café con caramelo y chantilly", cardImg: "frappe-caramelo.png" },
-          { id: 81, name: "Strawberry Dream Frappé",                   price: 12.0, desc: "Frappé de fresa con chantilly", cardImg: "frappe-fresa.png" },
-          { id: 82, name: "Oreo Cookies & Cream Frappé",               price: 13.0, desc: "Frappé de Oreo con chantilly", cardImg: "frappe-oreo.png" },
-          { id: 83, name: "Mojito",                                    price: 13.0, desc: "Trago refrescante con limón y hierbabuena", cardImg: "mojito.png" },
-          { id: 84, name: "Caipiroska de Fresa",                       price: 14.0, desc: "Trago frozen de fresa", cardImg: "caipiroska-fresa.png" },
-          { id: 85, name: "Lemon Whisky",                              price: 12.0, desc: "Trago refrescante de whisky con limón", cardImg: "lemon-whisky.png" },
-          { id: 86, name: "Laguna Azul",                               price: 13.0, desc: "Trago azul refrescante", cardImg: "laguna-azul.png" },
-          { id: 87, name: "Tinto de Verano",                           price: 12.0, desc: "Trago refrescante estilo verano", cardImg: "tinto-verano.png" },
-          { id: 88, name: "Promo 2 Frappés Caramelo",                  price: 22.0, desc: "2 frappés de caramelo con chantilly", cardImg: "promo-2-frappes.png" },
-          { id: 89, name: "Promo 2 Mojitos",                           price: 25.0, desc: "2 mojitos para compartir", cardImg: "promo-2-mojitos.png" },
-          { id: 90, name: "Promo 2 Lemon Whisky o Tinto de Verano",     price: 24.0, desc: "2 tragos: Lemon Whisky o Tinto de Verano", cardImg: "promo-2-lemon-tinto.png" }
+          { id: 29, name: "Limonada Frozen 1 L",               price: 10, desc: "" },
+          { id: 30, name: "Maracuyá 1 L",                      price: 10, desc: "" },
+          { id: 31, name: "Chicha Morada 1 L",                 price: 10, desc: "" },
+          { id: 32, name: "Agua mineral 750 ml",                price: 3.00, desc: "" },
+          { id: 45, name: "Vaso de chicha",                    price: 3.0, desc: "" },
+          { id: 44, name: "Vaso de maracuyá",                  price: 3.0, desc: "" },
+          { id: 42, name: "Gaseosa vidrio mediana (Coca o Inka)", price: 2.5, desc: "" },
+          { id: 35, name: "Gaseosa 600 ml (Coca o Inka)",        price: 4.50, desc: "" },
+          { id: 37, name: "Gaseosa 1 L (Inka o Coca)",          price: 9.0, desc: "" },
+          { id: 38, name: "Vaso de hielo",                     price: 3.0, desc: "" }
         ]
       }
 ];
@@ -1974,7 +1909,6 @@ const bottomBar = document.getElementById("bottom-bar");
 const bottomTotal = document.getElementById("bottom-total");
 const bottomVerPedido = document.getElementById("bottom-ver-pedido");
 const inputName = document.getElementById("customer-name");
-const inputDni = document.getElementById("customer-dni");
 const inputComment = document.getElementById("order-comment");
 const paymentRadios = document.querySelectorAll('input[name="payment-method"]');
 const mixedPaymentBox = document.getElementById("mixed-payment-box");
@@ -1986,10 +1920,6 @@ const comandaEl = document.getElementById("comanda-cocina");
 const btnPrintKitchen = document.getElementById("btn-print-kitchen");
 const btnPrintClient = document.getElementById("btn-print-client");
 const btnRegisterSale = document.getElementById("btn-register-sale");
-const btnShareTicket = document.getElementById("btn-share-ticket");
-const clientTicketVisual = document.getElementById("boleta-cliente-visual");
-const btnToggleDni = document.getElementById("btn-toggle-dni");
-const dniFieldWrap = document.getElementById("dni-field-wrap");
 const orderSaveStatus = document.getElementById("order-save-status");
 const cashDayStatus = document.getElementById("cash-day-status");
 const cashDayInput = document.getElementById("cash-day-input");
@@ -2000,13 +1930,7 @@ const btnRefreshCashDay = document.getElementById("btn-refresh-cash-day");
 function renderMenu(){
   if (!menuContainer) return;
   menuContainer.innerHTML = "";
-  let currentFilterGroup = "";
   SECTIONS.forEach(section => {
-    if (section.anchorId) currentFilterGroup = section.anchorId;
-    const sectionBlock = document.createElement("div");
-    sectionBlock.className = "menu-section-block";
-    sectionBlock.dataset.group = currentFilterGroup || (section.anchorId || "");
-
     const titleRow = document.createElement("div");
     titleRow.className = "menu-section-title";
     if (section.anchorId) titleRow.id = section.anchorId;
@@ -2016,7 +1940,7 @@ function renderMenu(){
       const img = document.createElement("img"); img.src = section.image; img.alt = section.name;
       w.appendChild(img); titleRow.appendChild(w);
     }
-    sectionBlock.appendChild(titleRow);
+    menuContainer.appendChild(titleRow);
     const grid = document.createElement("div"); grid.className = "menu-grid";
     section.items.forEach(item => {
       const card = document.createElement("div"); card.className = "item-card";
@@ -2025,7 +1949,6 @@ function renderMenu(){
       if (section.anchorId === "alitas" || item.cardImg) {
         card.classList.add("has-real-img","has-card-img");
         const pic = document.createElement("img"); pic.className = "card-photo"; pic.alt = item.name; pic.src = item.cardImg || item.fixedAlitasImg || ALITAS_IMG_DEFAULT;
-        pic.onerror = () => { pic.onerror = null; pic.src = section.image || "cat-alitas.png"; };
         card.appendChild(pic);
       }
       const header = document.createElement("div"); header.className = "item-header";
@@ -2033,9 +1956,7 @@ function renderMenu(){
       card.appendChild(header);
       if (item.desc) { const desc = document.createElement("div"); desc.className = "item-desc"; desc.textContent = item.desc; card.appendChild(desc); }
 
-      const effectiveSauceMode = item.sauceMode || section.sauceMode;
-
-      if (effectiveSauceMode === "multi") {
+      if (section.sauceMode === "multi") {
         const max = getSauceMaxForItemName(item.name);
         const saucesDiv = document.createElement("div"); saucesDiv.className = "salsas-item";
         saucesDiv.innerHTML = `<p>Salsas (máx. ${max}):</p>`;
@@ -2051,26 +1972,11 @@ function renderMenu(){
         saucesDiv.addEventListener("change", () => actualizarImagenAlitasCard(card));
       }
 
-      if (effectiveSauceMode === "single") {
+      if (section.sauceMode === "single") {
         const wrap = document.createElement("div"); wrap.className = "salsa-select-wrap";
         const sel = document.createElement("select"); sel.className = "salsa-select"; sel.name = `salsa-select-${item.id}`;
-        sel.innerHTML = `<option value="">Selecciona una opción</option>`;
-
-        const allowNoSauce = item.allowNoSauce ?? section.allowNoSauce ?? true;
-        if (allowNoSauce) {
-          const oSin = document.createElement("option");
-          oSin.value = "SIN_SALSA";
-          oSin.textContent = "Sin salsa";
-          sel.appendChild(oSin);
-        }
-
-        const sauceOptions = item.sauces || section.sauces || SAUCES;
-        sauceOptions.forEach(s => {
-          const o = document.createElement("option");
-          o.value = s;
-          o.textContent = s.replace("Salsa ","");
-          sel.appendChild(o);
-        });
+        sel.innerHTML = `<option value="">Selecciona una opción</option><option value="SIN_SALSA">Sin salsa</option>`;
+        SAUCES.forEach(s => { const o = document.createElement("option"); o.value = s; o.textContent = s.replace("Salsa ",""); sel.appendChild(o); });
         wrap.innerHTML = `<div class="salsa-select-title">Elige salsa</div>`; wrap.appendChild(sel); card.appendChild(wrap);
       }
 
@@ -2086,47 +1992,15 @@ function renderMenu(){
       btn.addEventListener("click", () => handleAdd(section, item, card, qty, btn));
       actions.appendChild(qty); actions.appendChild(btn); card.appendChild(actions); grid.appendChild(card);
     });
-    sectionBlock.appendChild(grid);
-    if (section.footerText) { const note=document.createElement("div"); note.style.cssText="margin-top:8px;font-size:12px;color:#ccc"; note.textContent=section.footerText; sectionBlock.appendChild(note); }
-    menuContainer.appendChild(sectionBlock);
-  });
-}
-
-function showOnlyCategory(anchorId, shouldScroll = true){
-  const group = String(anchorId || "").replace("#", "");
-  const blocks = Array.from(document.querySelectorAll(".menu-section-block"));
-  if (!blocks.length || !group) return;
-
-  blocks.forEach(block => {
-    block.classList.toggle("section-hidden", block.dataset.group !== group);
-  });
-
-  document.querySelectorAll(".app-category-card").forEach(card => {
-    const hrefGroup = (card.getAttribute("href") || "").replace("#", "");
-    card.classList.toggle("active-category", hrefGroup === group);
-  });
-
-  if (shouldScroll) {
-    const firstVisible = blocks.find(block => block.dataset.group === group);
-    scrollToWithOffset(firstVisible || menuContainer, 85);
-  }
-}
-
-function setupCategoryFiltering(){
-  document.querySelectorAll('.app-category-card[href^="#"]').forEach(card => {
-    card.addEventListener("click", (e) => {
-      e.preventDefault();
-      const group = (card.getAttribute("href") || "").replace("#", "");
-      showOnlyCategory(group, true);
-    });
+    menuContainer.appendChild(grid);
+    if (section.footerText) { const note=document.createElement("div"); note.style.cssText="margin-top:8px;font-size:12px;color:#ccc"; note.textContent=section.footerText; menuContainer.appendChild(note); }
   });
 }
 
 function handleAdd(section, item, card, qtyInput, btn){
   const qty = Math.max(1, Number(qtyInput.value) || 1);
   let sauces = [], sauceApart = false, brand = null, noSauce = false;
-  const effectiveSauceMode = item.sauceMode || section.sauceMode;
-  if (effectiveSauceMode === "multi") {
+  if (section.sauceMode === "multi") {
     noSauce = !!card.querySelector(`input[name="salsa-none-${item.id}"]`)?.checked;
     sauces = Array.from(card.querySelectorAll(`input[name="salsa-${item.id}"]:checked`)).map(x=>x.value);
     const max = getSauceMaxForItemName(item.name);
@@ -2136,7 +2010,7 @@ function handleAdd(section, item, card, qtyInput, btn){
     sauceApart = !!card.querySelector(`input[name="salsa-aparte-${item.id}"]`)?.checked;
     if (noSauce) sauceApart = false;
   }
-  if (effectiveSauceMode === "single") {
+  if (section.sauceMode === "single") {
     const sel = card.querySelector(`select[name="salsa-select-${item.id}"]`);
     if (!sel || !sel.value) return alert(`Elige una opción de salsa para "${item.name}".`);
     if (isNoSauceValue(sel.value)) noSauce = true; else sauces = [sel.value];
@@ -2211,11 +2085,10 @@ function getCtx(){
   } else if (isPickup) { deliveryTextPrint="Recojo en local"; deliveryTextWA="🚶 Recojo en local (para llevar)"; }
   else if (isEatIn) { deliveryTextPrint="Consumo en local"; deliveryTextWA="🍽️ Comeré en el local"; }
   const total = round2(subtotal + taperFee + deliveryFee);
-  return { subtotal, taperCount, taperFee:round2(taperFee), deliveryFee:round2(deliveryFee), total, taperTextPrint:(isDelivery || isPickup) ? `${taperCount} und (S/ ${taperFee.toFixed(2)})` : "0 und (S/ 0.00)", deliveryTextPrint, deliveryTextWA, name:(inputName?.value||"").trim(), dni:sanitizeDniInput(inputDni?.value||""), comment:(inputComment?.value||"").trim(), paymentMethod:getPaymentMethod(), mixedYape:getPaymentMethod()==="mixto" ? safeNum(mixedYapeInput?.value) : 0, mixedCash:getPaymentMethod()==="mixto" ? safeNum(mixedCashInput?.value) : 0 };
+  return { subtotal, taperCount, taperFee:round2(taperFee), deliveryFee:round2(deliveryFee), total, taperTextPrint:(isDelivery || isPickup) ? `${taperCount} und (S/ ${taperFee.toFixed(2)})` : "0 und (S/ 0.00)", deliveryTextPrint, deliveryTextWA, isDelivery:!!isDelivery, isPickup:!!isPickup, isEatIn:!!isEatIn, name:(inputName?.value||"").trim(), comment:(inputComment?.value||"").trim(), paymentMethod:getPaymentMethod(), mixedYape:getPaymentMethod()==="mixto" ? safeNum(mixedYapeInput?.value) : 0, mixedCash:getPaymentMethod()==="mixto" ? safeNum(mixedCashInput?.value) : 0 };
 }
 function getErrors(ctx){
   const errors=[];
-  if (ctx.dni && ctx.dni.length !== 8) errors.push("⚠️ DNI debe tener 8 dígitos o dejarse vacío.");
   if (ctx.paymentMethod === "mixto") {
     const sum = round2(ctx.mixedYape + ctx.mixedCash);
     if (Math.abs(sum - ctx.total) > 0.009) errors.push(`⚠️ Pago mixto no cuadra. Total: S/ ${ctx.total.toFixed(2)} | Yape + efectivo: S/ ${sum.toFixed(2)}.`);
@@ -2223,63 +2096,17 @@ function getErrors(ctx){
   return errors;
 }
 function buildTicket(ctx){
-  const WIDTH = 32;
-  const sep = "--------------------------------";
-  const eq = "================================";
-  const cleanLine = (txt) => String(txt || "").replace(/\s+/g," ").trim();
-  const center = (txt) => {
-    txt = cleanLine(txt);
-    if (txt.length >= WIDTH) return txt;
-    const left = Math.floor((WIDTH - txt.length) / 2);
-    return " ".repeat(left) + txt;
-  };
-  const lr = (left, right) => {
-    left = cleanLine(left);
-    right = cleanLine(right);
-    const space = Math.max(1, WIDTH - left.length - right.length);
-    return left + " ".repeat(space) + right;
-  };
-
-  const lines = [];
-  lines.push(center("EL PATRON DEL MAL"));
-  lines.push(center("FAST FOOD"));
-  lines.push(sep);
-  lines.push(`Pedido N° ${dailyOrderNumber()}`);
-  lines.push(`Boleta virtual N° ${CURRENT_BOLETA || "------"}`);
-  lines.push(formatDateTime());
-  lines.push(sep);
-
-  cart.forEach(e => {
-    lines.push(`${e.qty} x ${cleanName(e.item.name)}`);
-    if (e.noSauce) lines.push("Salsa: Sin salsa");
-    if (e.sauces?.length) lines.push(`Salsas: ${shortSauces(e.sauces)}`);
-    if (e.sauceApart) lines.push("Salsas aparte");
-    if (e.brand) lines.push(`Marca: ${e.brand}`);
-    lines.push(lr("", money(e.item.price * e.qty)));
-  });
-
-  lines.push(sep);
-  lines.push(lr("Subtotal", money(ctx.subtotal)));
-  lines.push(lr("Empaque", money(ctx.taperFee)));
-  lines.push(lr("Delivery", money(ctx.deliveryFee)));
-  lines.push(eq);
-  lines.push(lr("TOTAL", money(ctx.total)));
-  lines.push(eq);
-  lines.push(`Pago: ${paymentText(ctx)}`);
-  lines.push(`Cliente: ${ctx.name || "No indicado"}`);
-  if (ctx.dni) lines.push(`DNI: ${ctx.dni}`);
-  lines.push(`Tipo: ${ctx.deliveryTextPrint}`);
-  if (ctx.comment) lines.push(`Comentario: ${ctx.comment}`);
-  lines.push(sep);
-  lines.push(center("Gracias por su preferencia"));
-  lines.push(center("Vuelva pronto"));
-  lines.push(center("WhatsApp: 944 275 861"));
-
-  return `<pre class="thermal-ticket"><span class="thermal-title">EL PATRON DEL MAL</span>
-<span class="thermal-subtitle">FAST FOOD</span>
-${lines.slice(2).join("\n")}</pre>`;
+  const rows = cart.map(e => {
+    const details = [e.noSauce ? "Sin salsa" : "", e.sauces?.length ? "Salsa: " + shortSauces(e.sauces) : "", e.sauceApart ? "Salsas aparte" : "", e.brand ? "Marca: " + e.brand : ""].filter(Boolean).join(" | ");
+    return `<div style="display:flex;justify-content:space-between;gap:8px;margin:3px 0"><div>${e.qty} x ${cleanName(e.item.name)}${details ? `<br><small>${details}</small>` : ""}</div><b>${money(e.item.price*e.qty)}</b></div>`;
+  }).join("");
+  const info = `
+    <div style="border:1px solid #bbb;border-radius:5px;padding:4px 6px;margin-top:5px;font-size:10px;line-height:1.25">
+      <div><b>Pago:</b> ${paymentText(ctx)} &nbsp;|&nbsp; <b>Entrega:</b> ${ctx.deliveryTextPrint}</div>
+      <div><b>Cliente:</b> ${ctx.name || "No indicado"}${ctx.comment ? ` &nbsp;|&nbsp; <b>Nota:</b> ${ctx.comment}` : ""}</div>
+    </div>`;
+  return `<div style="text-align:center;font-weight:900">EL PATRÓN DEL MAL<br><small>Pedido N° ${dailyOrderNumber()}</small><br><small>Boleta virtual N° ${CURRENT_BOLETA || "------"}</small><br><small>${formatDateTime()}</small></div><hr>${rows}<hr><div style="display:flex;justify-content:space-between"><span>Subtotal</span><b>${money(ctx.subtotal)}</b></div><div style="display:flex;justify-content:space-between"><span>Tapers</span><b>${money(ctx.taperFee)}</b></div><div style="display:flex;justify-content:space-between"><span>Delivery</span><b>${money(ctx.deliveryFee)}</b></div><hr><div style="display:flex;justify-content:space-between;font-size:13px"><b>TOTAL</b><b>${money(ctx.total)}</b></div>${info}`;
 }
-
 function buildKitchenTicket(ctx){
   const rows = cart.map((e,i) => {
     const details = [
@@ -2290,57 +2117,17 @@ function buildKitchenTicket(ctx){
     ].filter(Boolean).join(" | ");
     return `<div style="margin:7px 0;border-bottom:1px dashed #000;padding-bottom:5px;"><b>${i+1}) ${e.qty} x ${cleanName(e.item.name)}</b>${details ? `<br><small>${details}</small>` : ""}</div>`;
   }).join("");
-  return `<div style="text-align:center;font-weight:900;font-size:15px;">COMANDA COCINA<br><small>EL PATRÓN DEL MAL</small><br><small>Pedido N° ${dailyOrderNumber()}</small><br><small>Boleta virtual N° ${CURRENT_BOLETA || "------"}</small><br><small>${formatDateTime()}</small></div><hr>${rows}<hr><small><b>Tipo:</b> ${ctx.deliveryTextPrint}<br><b>Cliente:</b> ${ctx.name || "No indicado"}${ctx.dni ? `<br><b>DNI:</b> ${ctx.dni}` : ""}${ctx.comment ? `<br><b>Comentario:</b> ${ctx.comment}` : ""}<br><b>Pago:</b> ${paymentText(ctx)}</small>`;
-}
-function rawBtCleanText(text){
-  return String(text || "")
-    .replace(/[🔥👨‍🍳🧾✅🟢🔒🗓️📍🥡🛵🛍️🍽️💳💵📲👤]/g, "")
-    .replace(/[\u{1F300}-\u{1FAFF}]/gu, "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/\r/g, "")
-    .replace(/[ \t]+\n/g, "\n")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
-}
-function htmlToRawBtText(html){
-  let x = String(html || "");
-  x = x.replace(/<\s*hr\s*\/?>/gi, "\n--------------------------------\n");
-  x = x.replace(/<\s*br\s*\/?>/gi, "\n");
-  x = x.replace(/<\/\s*(div|p|section|article|h1|h2|h3|tr)\s*>/gi, "\n");
-  x = x.replace(/<\/\s*(small|b|strong|span)\s*>/gi, " ");
-  const tmp = document.createElement("div");
-  tmp.innerHTML = x;
-  let text = tmp.textContent || tmp.innerText || "";
-  text = text.replace(/\u00a0/g, " ");
-  text = text.replace(/[ \t]{2,}/g, " ");
-  text = text.split("\n").map(line => line.trim()).filter(Boolean).join("\n");
-  return rawBtCleanText(text + "\n\n\n");
-}
-function sendTextToRawBT(text, title="Imprimir"){
-  const clean = rawBtCleanText(text + "\n\n\n");
-  if (!clean) return alert("No hay contenido para imprimir.");
-
-  try {
-    const encoded = encodeURIComponent(clean);
-    const isAndroid = /Android/i.test(navigator.userAgent || "");
-
-    // RawBT recibe texto directo usando el esquema rawbt:. En Android Chrome se fuerza el paquete de RawBT.
-    if (isAndroid) {
-      window.location.href = `intent:${encoded}#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;`;
-    } else {
-      window.location.href = `rawbt:${encoded}`;
-    }
-  } catch(err) {
-    alert("No pude abrir RawBT: " + (err.message || String(err)));
-  }
+  return `<div style="text-align:center;font-weight:900;font-size:15px;">COMANDA COCINA<br><small>EL PATRÓN DEL MAL</small><br><small>Pedido N° ${dailyOrderNumber()}</small><br><small>Boleta virtual N° ${CURRENT_BOLETA || "------"}</small><br><small>${formatDateTime()}</small></div><hr>${rows}<hr><small><b>Tipo:</b> ${ctx.deliveryTextPrint}<br><b>Cliente:</b> ${ctx.name || "No indicado"}${ctx.comment ? `<br><b>Comentario:</b> ${ctx.comment}` : ""}<br><b>Pago:</b> ${paymentText(ctx)}</small>`;
 }
 function printHTML(html, title="Imprimir"){
-  // Antes abría una ventana del navegador y mandaba a PDF. Ahora manda el texto directo a RawBT.
-  const rawText = htmlToRawBtText(html);
-  sendTextToRawBT(rawText, title);
+  const win = window.open("", "_blank", "width=420,height=650");
+  if (!win) {
+    alert("No se pudo abrir la ventana de impresión. Permite ventanas emergentes en el navegador.");
+    return;
+  }
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${title}</title><style>@page{size:80mm auto;margin:4mm;}body{font-family:Arial,sans-serif;font-size:12px;color:#000;background:#fff;margin:0;padding:0;width:72mm;}hr{border:none;border-top:1px dashed #000;margin:6px 0;}small{font-size:10px;}b{font-weight:900;}</style></head><body>${html}<script>setTimeout(function(){window.focus();window.print();},350);<\/script></body></html>`);
+  win.document.close();
 }
-
 function dateKeyLocal(d = new Date()){
   return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
 }
@@ -2593,7 +2380,6 @@ function buildOrderRecord(ctx, source="MOZA_COCINA"){
     source,
     status: "PENDIENTE",
     customerName: ctx.name || "",
-    customerDni: ctx.dni || "",
     comment: ctx.comment || "",
     paymentMethod: ctx.paymentMethod,
     mixedYape: Number(ctx.mixedYape.toFixed(2)),
@@ -2679,144 +2465,188 @@ async function registerSale(source="MOZA_COCINA"){
   return result.ok;
 }
 
-
-function escapeHtmlClient(value){
-  return String(value ?? "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-}
-function clientPaymentText(ctx){
-  if (ctx.paymentMethod === "efectivo") return "Efectivo";
-  if (ctx.paymentMethod === "yape") return "Yape";
-  return `Mixto · Yape S/ ${ctx.mixedYape.toFixed(2)} + Efectivo S/ ${ctx.mixedCash.toFixed(2)}`;
-}
-function clientDeliveryText(ctx){
-  if (chkDelivery?.checked && !chkEatIn?.checked) return "Delivery";
-  if (chkPickup?.checked) return "Recojo en local";
-  return "Consumo en local";
-}
-function buildClientVisualTicket(ctx){
-  const items = cart.map(e => {
-    const details = [
-      e.noSauce ? "Sin salsa" : "",
-      e.sauces?.length ? "Salsas: " + shortSauces(e.sauces) : "",
-      e.sauceApart ? "Salsas aparte" : "",
-      e.brand ? "Marca: " + e.brand : ""
-    ].filter(Boolean).join(" · ");
-    return `<div class="cst-item">
-      <div class="cst-qty">${escapeHtmlClient(e.qty)}</div>
-      <div><div class="cst-item-name">${escapeHtmlClient(cleanName(e.item.name))}</div>${details ? `<div class="cst-item-detail">${escapeHtmlClient(details)}</div>` : ""}</div>
-      <div class="cst-item-price">${escapeHtmlClient(money(e.item.price*e.qty))}</div>
-    </div>`;
-  }).join("");
-
-  const dt = formatDateTime();
-  return `<div class="client-share-ticket" id="client-share-ticket">
-    <div class="cst-brand">
-      <div class="cst-crown">♛</div>
-      <div class="cst-brand-name">EL PATRÓN</div>
-      <div class="cst-brand-sub">DEL MAL</div>
-      <div class="cst-fast">FAST FOOD</div>
-    </div>
-    <div class="cst-confirmed">Pedido confirmado</div>
-    <div class="cst-meta">
-      <div class="cst-meta-item"><span class="cst-label">Pedido N.º</span><span class="cst-value">${escapeHtmlClient(dailyOrderNumber())}</span></div>
-      <div class="cst-meta-item"><span class="cst-label">Boleta virtual</span><span class="cst-value">${escapeHtmlClient(CURRENT_BOLETA || "------")}</span></div>
-      <div class="cst-meta-item"><span class="cst-label">Fecha y hora</span><span class="cst-value" style="font-size:16px;">${escapeHtmlClient(dt)}</span></div>
-    </div>
-    <div class="cst-section-title">DETALLE DE TU PEDIDO</div>
-    <div class="cst-items">${items}</div>
-    <div class="cst-totals">
-      <div class="cst-total-row"><span>Subtotal</span><strong>${escapeHtmlClient(money(ctx.subtotal))}</strong></div>
-      <div class="cst-total-row"><span>Empaque</span><strong>${escapeHtmlClient(money(ctx.taperFee))}</strong></div>
-      <div class="cst-total-row"><span>Delivery</span><strong>${escapeHtmlClient(money(ctx.deliveryFee))}</strong></div>
-      <div class="cst-grand-total"><span>TOTAL A PAGAR</span><span>${escapeHtmlClient(money(ctx.total))}</span></div>
-    </div>
-    <div class="cst-info">
-      <div class="cst-info-item"><b>Pago</b><span>${escapeHtmlClient(clientPaymentText(ctx))}</span></div>
-      <div class="cst-info-item"><b>Entrega</b><span>${escapeHtmlClient(clientDeliveryText(ctx))}</span></div>
-      <div class="cst-info-item"><b>Cliente</b><span>${escapeHtmlClient(ctx.name || "No indicado")}</span></div>
-      <div class="cst-info-item"><b>Comentario</b><span>${escapeHtmlClient(ctx.comment || "Sin comentarios")}</span></div>
-    </div>
-    <div class="cst-footer">
-      <div class="cst-thanks">¡Gracias por tu compra!</div>
-      <div class="cst-return">VUELVE PRONTO</div>
-      <div class="cst-phone">WhatsApp: 944 275 861</div>
-    </div>
-  </div>`;
-}
-async function shareClientTicket(){
-  if (!cart.length) return alert("No hay pedido para compartir.");
-  ensureBoletaCreated();
-  const ctx = getCtx();
-  const errors = getErrors(ctx);
-  if (errors.length) return alert(errors.join("\n"));
-  if (!clientTicketVisual) return alert("No se encontró la boleta visual del cliente.");
-  clientTicketVisual.innerHTML = buildClientVisualTicket(ctx);
-  const target = clientTicketVisual.querySelector("#client-share-ticket");
-  if (!target) return alert("No pude preparar la boleta visual.");
-  if (typeof html2canvas !== "function") return alert("No cargó el generador de imagen. Revisa tu conexión a internet e inténtalo nuevamente.");
-
-  const originalText = btnShareTicket?.textContent || "📲 Compartir boleta con cliente";
-  try {
-    if (btnShareTicket) { btnShareTicket.disabled = true; btnShareTicket.textContent = "Generando imagen..."; }
-    const canvas = await html2canvas(target, {backgroundColor:"#ffffff", scale:2, useCORS:true, logging:false});
-    const blob = await new Promise(resolve => canvas.toBlob(resolve,"image/png",1));
-    if (!blob) throw new Error("No se pudo crear el PNG");
-    const fileName = `Pedido-${dailyOrderNumber()}-El-Patron-del-Mal.png`;
-    const file = new File([blob], fileName, {type:"image/png"});
-
-    if (navigator.share && (!navigator.canShare || navigator.canShare({files:[file]}))) {
-      await navigator.share({
-        title:"Pedido - El Patrón del Mal",
-        text:`Pedido ${dailyOrderNumber()} · Total ${money(ctx.total)}`,
-        files:[file]
-      });
-    } else {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url; a.download = fileName; document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(()=>URL.revokeObjectURL(url),1500);
-      alert("✅ Boleta guardada como imagen PNG. Puedes enviarla por WhatsApp.");
-    }
-  } catch(err) {
-    if (err && err.name === "AbortError") return;
-    alert("No pude compartir la boleta: " + (err?.message || String(err)));
-  } finally {
-    if (btnShareTicket) { btnShareTicket.disabled = false; btnShareTicket.textContent = originalText; }
-  }
+function buildCustomerCaption(ctx){
+  const lines = [];
+  lines.push("✅ *ENVIAR CAPTURA DEL PAGO PARA REALIZAR SU PEDIDO*");
+  if (ctx.isDelivery) lines.push("📍 *COMPARTIR UBICACIÓN ACTUAL*");
+  if (!ctx.name) lines.push("👤 *ENVIAR NOMBRE*");
+  return lines.join("\n");
 }
 
 function buildWhatsapp(ctx){
-  const lines=[];
-  lines.push("🍗🔥 *NUEVO PEDIDO - EL PATRÓN DEL MAL* 🔥🍗");
-  lines.push(`📌 *Pedido:* *${dailyOrderNumber()}*`);
-  lines.push(`🧾 *Boleta virtual:* *${CURRENT_BOLETA}*`);
-  lines.push(`🕒 *Fecha/Hora:* ${formatDateTime()}`);
-  lines.push("━━━━━━━━━━━━━━━━━━━━", "");
-  cart.forEach((e,i)=>{
-    lines.push(`${i+1}) ✅ ${e.qty} x ${e.item.name} — *${money(e.item.price*e.qty)}*`);
-    if (e.noSauce) lines.push("   🌶️ Salsa: Sin salsa");
-    if (e.sauces?.length) lines.push(`   🌶️ Salsa: ${shortSauces(e.sauces)}`);
-    if (e.sauceApart) lines.push("   🥡 Salsas aparte");
-    if (e.brand) lines.push(`   🥤 Marca: ${e.brand}`);
-    lines.push("");
-  });
-  lines.push("━━━━━━━━━━━━━━━━━━━━");
-  lines.push(`🥡 *Empaque / taper:* ${ctx.taperTextPrint}`);
-  lines.push(`🚚 *Delivery / Consumo:* ${ctx.deliveryTextWA}`);
-  lines.push(`💰 *TOTAL A PAGAR:* *${money(ctx.total)}*`);
-  lines.push(`💳 *Pago:* ${paymentTextWA(ctx)}`);
-  lines.push("━━━━━━━━━━━━━━━━━━━━");
-  lines.push(`👤 *Cliente:* ${ctx.name || "No indicado"}`);
-  if (ctx.dni) lines.push(`🪪 *DNI:* ${ctx.dni}`);
-  if (ctx.comment) lines.push(`📝 *Comentario:* ${ctx.comment}`);
-  lines.push(LOCATION_TEXT_FOR_OWNER, "", "🙏 ¡Gracias por tu pedido! 🙌");
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join("\n"))}`;
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(buildCustomerCaption(ctx))}`;
 }
+
+function customerPaymentShort(ctx){
+  if (ctx.paymentMethod === "yape") return "Yape";
+  if (ctx.paymentMethod === "mixto") return `Mixto: Yape ${money(ctx.mixedYape)} + Efec. ${money(ctx.mixedCash)}`;
+  return "Efectivo";
+}
+
+function customerDeliveryShort(ctx){
+  if (ctx.isPickup) return "Recojo en local";
+  if (ctx.isEatIn) return "Comer en el local";
+  if (ctx.deliveryFee <= 0) return "Delivery GRATIS";
+  return `Delivery ${money(ctx.deliveryFee)}`;
+}
+
+function buildCustomerReceiptHtml(ctx){
+  const rows = cart.map(e => {
+    const details = [
+      e.noSauce ? "Sin salsa" : "",
+      e.sauces?.length ? "Salsa: " + shortSauces(e.sauces) : "",
+      e.sauceApart ? "Salsas aparte" : "",
+      e.brand ? "Marca: " + e.brand : ""
+    ].filter(Boolean).join(" · ");
+    return `
+      <div class="cr-item">
+        <div class="qty">${e.qty}</div>
+        <div>
+          <div class="name">${cleanName(e.item.name)}</div>
+          ${details ? `<div class="details">${details}</div>` : ""}
+        </div>
+        <div class="price">${money(e.item.price*e.qty)}</div>
+      </div>`;
+  }).join("");
+
+  return `
+    <div class="customer-receipt">
+      <div class="cr-head">
+        <div class="cr-brand">EL PATRÓN</div>
+        <div class="cr-subbrand">DEL MAL</div>
+        <div class="cr-fast">FAST FOOD</div>
+        <div class="cr-confirm">Pedido confirmado</div>
+      </div>
+
+      <div class="cr-body">
+        <div class="cr-meta">
+          <div><span class="cr-label">Pedido N.°</span><span class="cr-value">${dailyOrderNumber()}</span></div>
+          <div><span class="cr-label">Boleta virtual</span><span class="cr-value">${CURRENT_BOLETA || "------"}</span></div>
+          <div><span class="cr-label">Fecha y hora</span><span class="cr-value">${formatDateTime()}</span></div>
+        </div>
+
+        <div class="cr-titlebar">DETALLE DE TU PEDIDO</div>
+        <div class="cr-items">${rows}</div>
+
+        <div class="cr-totals">
+          <div class="cr-total-row"><span>Subtotal</span><b>${money(ctx.subtotal)}</b></div>
+          <div class="cr-total-row"><span>Empaque</span><b>${money(ctx.taperFee)}</b></div>
+          <div class="cr-total-row"><span>Delivery</span><b>${money(ctx.deliveryFee)}</b></div>
+          <div class="cr-total-row cr-total-main"><span>TOTAL A PAGAR</span><b>${money(ctx.total)}</b></div>
+        </div>
+
+        <div class="cr-info">
+          <div>
+            <span class="cr-label">💳 Pago</span>
+            <span class="cr-value">${customerPaymentShort(ctx)}</span>
+          </div>
+          <div>
+            <span class="cr-label">🚚 Entrega</span>
+            <span class="cr-value">${customerDeliveryShort(ctx)}</span>
+          </div>
+          <div>
+            <span class="cr-label">👤 Cliente</span>
+            <span class="cr-value">${ctx.name || "No indicado"}</span>
+          </div>
+          <div>
+            <span class="cr-label">📝 Comentario</span>
+            <span class="cr-value">${ctx.comment || "Sin comentarios"}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="cr-footer">
+        <div class="thanks">¡Gracias por tu compra!</div>
+        <div class="return">VUELVE PRONTO</div>
+        <div class="wa">WhatsApp: 944 275 861</div>
+      </div>
+    </div>`;
+}
+
+async function createCustomerReceiptBlob(ctx){
+  if (typeof html2canvas !== "function") throw new Error("No cargó el generador de imagen.");
+  const stage = document.createElement("div");
+  stage.className = "customer-share-stage";
+  stage.innerHTML = buildCustomerReceiptHtml(ctx);
+  document.body.appendChild(stage);
+  try{
+    const receipt = stage.querySelector(".customer-receipt");
+    const canvas = await html2canvas(receipt,{
+      backgroundColor:"#f7f2e8",
+      scale:2,
+      useCORS:true,
+      logging:false
+    });
+    return await new Promise((resolve,reject)=>{
+      canvas.toBlob(blob=>blob ? resolve(blob) : reject(new Error("No se pudo crear la imagen.")),"image/png",1);
+    });
+  }finally{
+    stage.remove();
+  }
+}
+
+async function shareCustomerReceipt(){
+  if (!cart.length) {
+    alert("Agrega productos antes de compartir la boleta.");
+    return;
+  }
+  ensureBoletaCreated();
+  const ctx = getCtx();
+  const errors = getErrors(ctx);
+  if (errors.length) {
+    alert(errors.join("\n"));
+    return;
+  }
+
+  const originalText = btnWhatsapp.textContent;
+  btnWhatsapp.classList.add("disabled");
+  btnWhatsapp.textContent = "Generando imagen...";
+
+  try{
+    const blob = await createCustomerReceiptBlob(ctx);
+    const filename = `pedido-${dailyOrderNumber()}-${CURRENT_BOLETA || "boleta"}.png`;
+    const file = new File([blob], filename, {type:"image/png"});
+    const caption = buildCustomerCaption(ctx);
+
+    if (navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({
+        files:[file],
+        title:"Pedido - El Patrón del Mal",
+        text:caption
+      });
+      return;
+    }
+
+    let copied = false;
+    try{
+      if (navigator.clipboard && window.ClipboardItem){
+        await navigator.clipboard.write([new ClipboardItem({"image/png":blob})]);
+        copied = true;
+      }
+    }catch(e){}
+
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+
+    window.open(buildWhatsapp(ctx),"_blank");
+    alert(
+      copied
+        ? "✅ Boleta generada y copiada.\n\nSe abrió WhatsApp con el mensaje correcto. Pega la imagen con Ctrl+V si WhatsApp no la adjunta automáticamente."
+        : "✅ Boleta generada.\n\nSe descargó la imagen y se abrió WhatsApp con el mensaje correcto. Adjunta la imagen descargada."
+    );
+  }catch(err){
+    alert("No se pudo compartir la boleta: " + (err.message || String(err)));
+  }finally{
+    btnWhatsapp.classList.remove("disabled");
+    btnWhatsapp.textContent = originalText;
+  }
+}
+
 function renderCart(){
   updateMixedPaymentVisibility();
   if (!cartItemsEl || !cartEmptyEl || !cartTotalEl || !btnWhatsapp) return;
@@ -2826,7 +2656,6 @@ function renderCart(){
     cartTotalEl.innerHTML = "Total: S/ 0.00";
     if (boletaEl) boletaEl.innerHTML = "";
     if (comandaEl) comandaEl.innerHTML = "";
-    if (clientTicketVisual) clientTicketVisual.innerHTML = "";
     if (orderSaveStatus) orderSaveStatus.textContent = "";
     if (bottomBar) bottomBar.classList.add("hidden");
     if (bottomTotal) bottomTotal.textContent = "Total: S/ 0.00";
@@ -2846,12 +2675,11 @@ function renderCart(){
     cartItemsEl.appendChild(row);
   });
   const ctx = getCtx();
-  cartTotalEl.innerHTML = `Subtotal: ${money(ctx.subtotal)}<br>Empaque / taper: 🥡 ${ctx.taperTextPrint}<br>Delivery: ${money(ctx.deliveryFee)}<br><span style="font-size:17px;">Total: ${money(ctx.total)}</span>`;
+  cartTotalEl.innerHTML = `Subtotal: ${money(ctx.subtotal)}<br>Tapers: 🥡 ${ctx.taperTextPrint}<br>Delivery: ${money(ctx.deliveryFee)}<br><span style="font-size:17px;">Total: ${money(ctx.total)}</span>`;
   if (bottomBar) bottomBar.classList.remove("hidden");
   if (bottomTotal) bottomTotal.textContent = `Total: ${money(ctx.total)}`;
   if (boletaEl) boletaEl.innerHTML = buildTicket(ctx);
   if (comandaEl) comandaEl.innerHTML = buildKitchenTicket(ctx);
-  if (clientTicketVisual) clientTicketVisual.innerHTML = buildClientVisualTicket(ctx);
   const errors = getErrors(ctx);
   if (errors.length) { btnWhatsapp.href="#"; btnWhatsapp.classList.add("disabled"); if (errorMsg) errorMsg.textContent=errors.join("\n"); }
   else { btnWhatsapp.href=buildWhatsapp(ctx); btnWhatsapp.classList.remove("disabled"); if (errorMsg) errorMsg.textContent=""; }
@@ -2871,18 +2699,10 @@ function clearCart(){
 function scrollToWithOffset(el, offset=STICKY_OFFSET){ if(!el) return; const y = el.getBoundingClientRect().top + window.pageYOffset - offset; window.scrollTo({top:y, behavior:"smooth"}); }
 
 renderMenu();
-setupCategoryFiltering();
-showOnlyCategory("combos", false);
 renderCart();
 if (btnClear) btnClear.addEventListener("click", clearCart);
 if (bottomVerPedido) bottomVerPedido.addEventListener("click", () => scrollToWithOffset(document.getElementById("carrito")));
 if (inputName) inputName.addEventListener("input", renderCart);
-if (inputDni) inputDni.addEventListener("input", () => { inputDni.value = sanitizeDniInput(inputDni.value); renderCart(); });
-if (btnToggleDni && dniFieldWrap) btnToggleDni.addEventListener("click", () => {
-  const hidden = dniFieldWrap.classList.toggle("dni-field-hidden");
-  btnToggleDni.textContent = hidden ? "+ Agregar DNI" : "− Ocultar DNI";
-  if (!hidden) inputDni?.focus();
-});
 if (inputComment) inputComment.addEventListener("input", renderCart);
 paymentRadios.forEach(r => r.addEventListener("change", renderCart));
 if (mixedYapeInput) mixedYapeInput.addEventListener("input", renderCart);
@@ -2907,7 +2727,6 @@ if (btnPrintClient) btnPrintClient.addEventListener("click", () => {
   printHTML(buildTicket(ctx), "Boleta cliente");
 });
 if (btnRegisterSale) btnRegisterSale.addEventListener("click", () => registerSale("MOZA_COCINA"));
-if (btnShareTicket) btnShareTicket.addEventListener("click", shareClientTicket);
 if (btnOpenDay) btnOpenDay.addEventListener("click", async () => {
   // Guardamos la fecha elegida ANTES de consultar Supabase para que no se cambie por zona horaria ni por un valor anterior.
   const selectedDateKey = cashDayInput?.value || operationalDefaultDateKey();
@@ -2934,7 +2753,14 @@ if (cashDayInput) cashDayInput.addEventListener("change", () => {
   if (!CASH_IS_OPEN) { ACTIVE_DATE_KEY = cashDayInput.value || operationalDefaultDateKey(); renderCashDayUI(); }
 });
 loadCashRegisterState();
-if (btnWhatsapp) btnWhatsapp.addEventListener("click", e => { if (btnWhatsapp.classList.contains("disabled") || !cart.length) { e.preventDefault(); alert("Agrega productos y revisa los datos antes de enviar por WhatsApp."); } });
+if (btnWhatsapp) btnWhatsapp.addEventListener("click", async e => {
+  e.preventDefault();
+  if (btnWhatsapp.classList.contains("disabled") || !cart.length) {
+    alert("Agrega productos y revisa los datos antes de compartir la boleta.");
+    return;
+  }
+  await shareCustomerReceipt();
+});
 </script>
 </body>
 </html>
