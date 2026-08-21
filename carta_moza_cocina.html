@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
+<!-- PDM SHARE VERSION: 2026-08-20-CAPTION-FIX -->
+
 <head>
   <meta charset="UTF-8" />
   <title>El Patrón del Mal - Moza / Cocina</title>
@@ -100,6 +102,14 @@ height:65px;
       z-index:1;
     }
     .page-content{ position:relative; z-index:2; }
+    .gif-dinero{
+      position:fixed; bottom:80px; left:8px;
+      width:140px;
+      pointer-events:none;
+      z-index:3;
+    }
+    .gif-dinero img{ width:100%; height:auto; display:block; }
+
     h1,h2,h3{ color:#ff9f1c; margin:10px 0; }
     p{ margin:4px 0; }
 
@@ -586,6 +596,7 @@ height:65px;
 
     @media (max-width:600px){
       body{ padding:10px; }
+      .gif-dinero{ bottom:70px; left:4px; width:100px; }
       .bottom-bar-mobile{ display:flex; }
       .carrito-actions{ gap:8px; }
       .carrito-actions > *{ flex:1 1 46%; text-align:center; }
@@ -1300,89 +1311,305 @@ body{
 }
 
 
+/* =========================================================
+   AJUSTE FINAL - BOLETA CLIENTE + CAMPOS COMPACTOS
+   La carta, promociones, torres, tragos y frappés se conservan.
+   ========================================================= */
 
-/* ===== MEJORA OPERATIVA MOZA 2026: interfaz compacta + boleta visual cliente ===== */
-.cash-day-panel.compact-cash{padding:10px 12px !important;}
-.cash-compact-head{display:flex;align-items:center;justify-content:space-between;gap:10px;}
-.cash-compact-head h3{margin:0 !important;font-size:14px !important;}
-.cash-settings{margin-top:8px;}
-.cash-settings summary{cursor:pointer;color:#fde68a;font-weight:900;font-size:12px;list-style:none;text-align:right;}
-.cash-settings summary::-webkit-details-marker{display:none;}
-.cash-settings[open] summary{margin-bottom:10px;}
-
-.dni-toggle-row{margin-top:8px;}
-#btn-toggle-dni{background:#111827;color:#fde68a;border:1px solid rgba(250,204,21,.35);border-radius:10px;padding:7px 10px;font-size:12px;}
-.dni-field-hidden{display:none !important;}
-
-.delivery-choice-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;}
-.delivery-choice-grid .delivery-option{grid-template-columns:28px 1fr 20px !important;padding:9px 7px !important;margin:0 !important;min-height:58px;}
-.delivery-choice-grid .delivery-option small{display:none;}
-.delivery-choice-grid .delivery-option b{font-size:12px;}
-
-.carrito-actions{display:block !important;}
-.primary-order-actions{display:grid;grid-template-columns:1fr;gap:10px;}
-.primary-order-actions button{width:100%;border-radius:14px;padding:14px 10px;font-size:14px;font-weight:900;}
-#btn-register-sale{background:#facc15 !important;color:#111827 !important;}
-#btn-share-ticket{background:#22c55e !important;color:#052e16 !important;}
-#btn-clear{background:#ef4444 !important;color:#fff !important;}
-.secondary-actions{margin-top:10px;border:1px solid #334155;border-radius:12px;background:#020617;padding:8px 10px;}
-.secondary-actions summary{cursor:pointer;color:#cbd5e1;font-weight:800;font-size:12px;text-align:center;}
-.secondary-actions-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:9px;}
-.secondary-actions-grid > *{width:100%;box-sizing:border-box;text-align:center;border-radius:10px;padding:9px 8px;font-size:12px;}
-#btn-whatsapp{grid-column:1 / -1 !important;background:#374151 !important;color:#fff !important;box-shadow:none !important;text-transform:none !important;}
-
-/* Boleta visual para compartir: NO se usa para impresión térmica */
-#client-ticket-capture-host{
-  position:fixed;left:-10000px;top:0;width:760px;z-index:-1;pointer-events:none;
+/* Nombre en una sola columna */
+.staff-fields-grid{
+  grid-template-columns:1fr !important;
 }
-.client-share-ticket{
-  width:720px;box-sizing:border-box;background:#fff;color:#161616;
-  border:3px solid #c9972d;border-radius:30px;padding:34px 34px 0;
-  font-family:Arial,Helvetica,sans-serif;overflow:hidden;
-  box-shadow:0 18px 55px rgba(0,0,0,.18);
-}
-.client-share-ticket *{box-sizing:border-box;}
-.cst-brand{text-align:center;padding:2px 8px 18px;}
-.cst-crown{font-size:25px;color:#b88619;line-height:1;}
-.cst-brand-name{font-family:Georgia,'Times New Roman',serif;font-weight:900;font-size:46px;letter-spacing:2px;line-height:1;color:#111;}
-.cst-brand-sub{font-family:Georgia,'Times New Roman',serif;font-weight:900;font-size:30px;letter-spacing:6px;color:#b88619;margin-top:3px;}
-.cst-fast{display:inline-block;margin-top:10px;background:#111;color:#e5b84b;border-radius:999px;padding:7px 34px;font-weight:900;letter-spacing:5px;font-size:15px;}
-.cst-confirmed{font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:28px;text-align:center;margin:8px 0 22px;color:#111;}
-.cst-meta{display:grid;grid-template-columns:1fr 1.2fr 1.25fr;border:1.5px solid #c9972d;border-radius:18px;overflow:hidden;margin-bottom:18px;}
-.cst-meta-item{padding:13px 14px;border-right:1px solid #d9c08b;}
-.cst-meta-item:last-child{border-right:0;}
-.cst-label{display:block;font-size:12px;font-weight:900;color:#6b5a33;letter-spacing:.5px;text-transform:uppercase;}
-.cst-value{display:block;font-size:21px;font-weight:900;margin-top:4px;color:#111;}
-.cst-section-title{margin:0 auto 10px;width:max-content;min-width:330px;text-align:center;background:#111;color:#e4b64a;border-radius:999px;padding:8px 24px;font-weight:900;letter-spacing:2px;font-size:14px;}
-.cst-items{border:1.5px solid #c9972d;border-radius:18px;padding:8px 18px 2px;margin-bottom:10px;}
-.cst-item{display:grid;grid-template-columns:58px 1fr 120px;gap:10px;align-items:start;padding:13px 2px;border-bottom:1px dashed #c9a75a;}
-.cst-item:last-child{border-bottom:0;}
-.cst-qty{font-size:20px;font-weight:900;text-align:center;}
-.cst-item-name{font-size:18px;font-weight:900;line-height:1.2;}
-.cst-item-detail{font-size:13px;color:#555;margin-top:4px;line-height:1.3;}
-.cst-item-price{text-align:right;font-size:18px;font-weight:900;white-space:nowrap;}
-.cst-totals{border:1.5px solid #c9972d;border-radius:18px;padding:13px 18px 0;margin-top:10px;overflow:hidden;}
-.cst-total-row{display:flex;justify-content:space-between;gap:15px;font-size:16px;padding:4px 0;}
-.cst-total-row strong{font-size:17px;}
-.cst-grand-total{margin:12px -18px 0;background:#111;color:#e4b64a;padding:15px 18px;display:flex;justify-content:space-between;align-items:center;font-weight:900;font-size:21px;}
-.cst-grand-total span:last-child{font-size:34px;}
-.cst-info{display:grid;grid-template-columns:1fr 1fr;border:1.5px solid #c9972d;border-radius:18px;margin-top:10px;overflow:hidden;}
-.cst-info-item{padding:12px 16px;border-bottom:1px solid #dfd2b6;}
-.cst-info-item:nth-child(odd){border-right:1px solid #dfd2b6;}
-.cst-info-item:nth-last-child(-n+2){border-bottom:0;}
-.cst-info-item b{display:block;font-size:12px;color:#7b6023;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;}
-.cst-info-item span{font-size:16px;font-weight:700;line-height:1.25;word-break:break-word;}
-.cst-footer{margin:22px -34px 0;background:#111;color:#fff;padding:22px 25px 24px;text-align:center;border-top:3px solid #c9972d;}
-.cst-thanks{font-family:Georgia,'Times New Roman',serif;font-style:italic;color:#e4b64a;font-size:27px;}
-.cst-return{font-size:14px;letter-spacing:4px;margin-top:6px;}
-.cst-phone{display:inline-block;margin-top:12px;border:1px solid #c9972d;border-radius:12px;padding:8px 16px;color:#e4b64a;font-size:16px;font-weight:900;letter-spacing:1px;}
 
-@media(max-width:700px){
-  .delivery-choice-grid{grid-template-columns:repeat(3,1fr);gap:6px;}
-  .delivery-choice-grid .delivery-option{grid-template-columns:24px 1fr 18px !important;padding:8px 5px !important;}
-  .delivery-choice-grid .delivery-option span{font-size:18px;}
-  .delivery-choice-grid .delivery-option b{font-size:10px;}
-  .secondary-actions-grid{grid-template-columns:1fr 1fr;}
+/* Pago y entrega: más pequeños, sin quitar funciones */
+.pago-datos.staff-card,
+.extras.staff-card.delivery-card{
+  padding:9px 10px !important;
+  border-radius:13px !important;
+  margin-top:9px !important;
+}
+.pago-datos .staff-card-head,
+.delivery-card .staff-card-head{
+  gap:7px !important;
+  margin-bottom:5px !important;
+}
+.pago-datos .staff-icon,
+.delivery-card .staff-icon{
+  width:30px !important;
+  height:30px !important;
+  min-width:30px !important;
+  border-radius:9px !important;
+  font-size:15px !important;
+}
+.pago-datos .staff-card-head h3,
+.delivery-card .staff-card-head h3{
+  font-size:13px !important;
+  margin:0 !important;
+}
+.pago-datos .staff-card-head p,
+.delivery-card .staff-card-head p{
+  font-size:9.5px !important;
+  line-height:1.15 !important;
+  margin:1px 0 0 !important;
+}
+.payment-choice-grid{
+  gap:5px !important;
+}
+.pay-choice{
+  min-height:42px !important;
+  padding:5px 4px !important;
+  border-radius:10px !important;
+  gap:3px !important;
+}
+.pay-choice span{font-size:16px !important;}
+.pay-choice b{font-size:10px !important;}
+.nota-pago-yape,
+.nota-taper{
+  margin:5px 0 0 !important;
+  font-size:9px !important;
+  line-height:1.18 !important;
+}
+.mixed-payment-box{
+  margin-top:6px !important;
+  padding:7px !important;
+  border-radius:10px !important;
+}
+.mixed-payment-grid{
+  gap:6px !important;
+}
+.mixed-payment-grid label{
+  font-size:9.5px !important;
+}
+.mixed-payment-grid input{
+  padding:6px 7px !important;
+  font-size:11px !important;
+}
+.delivery-option{
+  grid-template-columns:25px 1fr 18px !important;
+  gap:0 6px !important;
+  padding:6px 7px !important;
+  margin:4px 0 !important;
+  border-radius:10px !important;
+  min-height:42px !important;
+}
+.delivery-option span{font-size:16px !important;}
+.delivery-option b{font-size:11px !important;}
+.delivery-option small{
+  font-size:8.8px !important;
+  line-height:1.08 !important;
+}
+.delivery-option input{
+  width:16px !important;
+  height:16px !important;
+}
+
+/* Botón para cliente */
+#btn-whatsapp{
+  background:#16a34a !important;
+  color:#fff !important;
+}
+
+/* ===== Imagen bonita que se comparte con el cliente ===== */
+.customer-share-stage{
+  position:fixed;
+  left:-12000px;
+  top:0;
+  width:620px;
+  padding:22px;
+  background:#f7f2e8;
+  z-index:-999;
+}
+.customer-receipt{
+  width:576px;
+  overflow:hidden;
+  border:2px solid #d5ad36;
+  border-radius:22px;
+  background:#fff;
+  color:#151515;
+  font-family:Arial,Helvetica,sans-serif;
+  box-shadow:0 12px 30px rgba(0,0,0,.12);
+}
+.cr-head{
+  text-align:center;
+  padding:21px 24px 12px;
+  background:
+    radial-gradient(circle at 14% 18%,rgba(190,148,45,.11) 0 2px,transparent 3px),
+    radial-gradient(circle at 88% 15%,rgba(190,148,45,.09) 0 2px,transparent 3px),
+    #fff;
+}
+.cr-brand{
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:30px;
+  font-weight:900;
+  letter-spacing:1px;
+  line-height:1;
+}
+.cr-subbrand{
+  color:#b98200;
+  font-size:13px;
+  font-weight:900;
+  letter-spacing:6px;
+  margin-top:5px;
+}
+.cr-fast{
+  display:inline-block;
+  margin-top:7px;
+  padding:4px 15px;
+  border-radius:999px;
+  background:#111;
+  color:#e7bf48;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:3px;
+}
+.cr-confirm{
+  margin-top:11px;
+  color:#49391f;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:15px;
+  font-style:italic;
+}
+.cr-body{padding:0 24px 17px;}
+.cr-meta{
+  display:grid;
+  grid-template-columns:1.05fr .9fr 1.25fr;
+  border:1px solid #d5ad36;
+  border-radius:11px;
+  overflow:hidden;
+  margin-bottom:9px;
+}
+.cr-meta>div{
+  min-width:0;
+  padding:6px 8px;
+  border-right:1px solid #ecdfba;
+}
+.cr-meta>div:last-child{border-right:0;}
+.cr-label{
+  display:block;
+  margin-bottom:2px;
+  color:#80600f;
+  font-size:6.7px;
+  font-weight:900;
+  text-transform:uppercase;
+}
+.cr-value{
+  display:block;
+  overflow:hidden;
+  color:#111;
+  font-size:9.5px;
+  font-weight:900;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.cr-titlebar{
+  width:70%;
+  margin:0 auto 7px;
+  padding:4px 8px;
+  border-radius:999px;
+  background:#111;
+  color:#e7bf48;
+  text-align:center;
+  font-size:7.7px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+.cr-items{
+  overflow:hidden;
+  border:1px solid #d5ad36;
+  border-radius:11px;
+}
+.cr-item{
+  display:grid;
+  grid-template-columns:25px 1fr 68px;
+  gap:7px;
+  align-items:start;
+  padding:7px 9px;
+  border-bottom:1px solid #eee2c2;
+}
+.cr-item:last-child{border-bottom:0;}
+.cr-item .qty{font-size:10.5px;font-weight:900;}
+.cr-item .name{font-size:10.5px;font-weight:900;}
+.cr-item .details{
+  margin-top:2px;
+  color:#777;
+  font-size:7.2px;
+  line-height:1.2;
+}
+.cr-item .price{
+  text-align:right;
+  font-size:10.5px;
+  font-weight:900;
+}
+.cr-totals{
+  overflow:hidden;
+  margin-top:8px;
+  border:1px solid #d5ad36;
+  border-radius:11px;
+}
+.cr-total-row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:4px 9px;
+  border-bottom:1px solid #eee2c2;
+  font-size:8.5px;
+}
+.cr-total-main{
+  padding:7px 10px;
+  border-bottom:0;
+  background:#111;
+  color:#e7bf48;
+  font-size:10.5px;
+  font-weight:900;
+}
+.cr-total-main b{font-size:19px;}
+.cr-info{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  overflow:hidden;
+  margin-top:8px;
+  border:1px solid #d5ad36;
+  border-radius:11px;
+}
+.cr-info>div{
+  min-height:34px;
+  padding:5px 7px;
+  border-right:1px solid #eee2c2;
+  border-bottom:1px solid #eee2c2;
+}
+.cr-info>div:nth-child(2n){border-right:0;}
+.cr-info>div:nth-last-child(-n+2){border-bottom:0;}
+.cr-info .cr-label{font-size:6.2px;}
+.cr-info .cr-value{
+  font-size:8.5px;
+  line-height:1.12;
+  white-space:normal;
+}
+.cr-footer{
+  padding:12px 18px 14px;
+  background:#111;
+  color:#e7bf48;
+  text-align:center;
+}
+.cr-footer .thanks{
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:14px;
+  font-style:italic;
+}
+.cr-footer .return{
+  margin-top:2px;
+  color:#eee;
+  font-size:6.5px;
+  letter-spacing:3px;
+}
+.cr-footer .wa{
+  display:inline-block;
+  margin-top:7px;
+  padding:4px 8px;
+  border:1px solid #987515;
+  border-radius:5px;
+  color:#efca58;
+  font-size:7px;
 }
 
 </style>
@@ -1391,6 +1618,7 @@ body{
 <body>
   <div class="bg-rayos"></div>
   <div class="bg-estrellas"></div>
+  <div class="gif-dinero"><img src="dinero.gif" alt="Dinero cayendo"></div>
 
   <div class="page-content">
     <div class="header">
@@ -1450,8 +1678,8 @@ body{
   </a>
 
   <a href="#alitas" class="app-category-card">
-    <img src="cat-alitas.png" alt="Alitas - Patitas Broster">
-    <span>Alitas - Patitas Broster 🍗</span>
+    <img src="cat-alitas.png" alt="Alitas">
+    <span>Alitas 🔥</span>
     <b>›</b>
   </a>
 
@@ -1498,23 +1726,20 @@ body{
       <div id="cart-items"></div>
       <p id="cart-empty">Aún no has añadido platos.</p>
 
-      <div class="cash-day-panel compact-cash">
-        <div class="cash-compact-head">
-          <h3>🗓️ Caja / día operativo</h3>
-        </div>
+      <div class="cash-day-panel">
+        <h3>🗓️ Día operativo / caja activa</h3>
         <div id="cash-day-status" class="cash-day-status closed">Cargando caja activa...</div>
-        <details class="cash-settings">
-          <summary>⚙️ Opciones de caja</summary>
-          <div class="cash-day-actions">
-            <label>Fecha de caja
-              <input type="date" id="cash-day-input">
-            </label>
-            <button id="btn-open-day" type="button">🟢 Abrir día</button>
-            <button id="btn-close-day" type="button">🔒 Cerrar día</button>
-            <button id="btn-refresh-cash-day" type="button">Actualizar</button>
-          </div>
-          <div class="cash-day-mini">Mientras la caja siga abierta, las ventas se guardan en esa fecha. Al terminar el turno, presiona <b>Cerrar día</b>.</div>
-        </details>
+        <div class="cash-day-actions">
+          <label>Fecha de caja
+            <input type="date" id="cash-day-input">
+          </label>
+          <button id="btn-open-day" type="button">🟢 Abrir día</button>
+          <button id="btn-close-day" type="button">🔒 Cerrar día</button>
+          <button id="btn-refresh-cash-day" type="button">Actualizar</button>
+        </div>
+        <div class="cash-day-mini">
+          Si venden hasta la 1:00am, no importa: mientras la caja siga abierta, las ventas se guardan en la fecha de caja activa. Al terminar el turno, presiona <b>Cerrar día</b>.
+        </div>
       </div>
 
       <div class="cliente-datos staff-card">
@@ -1522,20 +1747,16 @@ body{
           <div class="staff-icon">👤</div>
           <div>
             <h3>Datos para boleta / comanda</h3>
-            <p>Nombre, DNI si lo piden y nota interna de cocina.</p>
+            <p>Nombre del cliente y nota interna de cocina.</p>
           </div>
         </div>
 
-        <div class="staff-fields-grid" style="grid-template-columns:1fr;">
+        <div class="staff-fields-grid">
           <label for="customer-name">Nombre del cliente
             <input type="text" id="customer-name" placeholder="Ej: Juan Pérez">
           </label>
 
-          <label for="customer-dni" id="dni-field-wrap" class="dni-field-hidden">DNI opcional
-            <input type="text" id="customer-dni" inputmode="numeric" maxlength="8" placeholder="Ej: 12345678">
-          </label>
         </div>
-        <div class="dni-toggle-row"><button id="btn-toggle-dni" type="button">+ Agregar DNI</button></div>
 
         <label for="order-comment" class="staff-note-label">Nota de cocina / pedido especial</label>
         <textarea id="order-comment" placeholder="Ej: sin cebolla / alitas: 6 acevichada y 2 BBQ / cliente apurado"></textarea>
@@ -1580,11 +1801,9 @@ body{
             <p>Define si cobra delivery y si corresponde empaque.</p>
           </div>
         </div>
-        <div class="delivery-choice-grid">
-          <label class="delivery-option"><input type="checkbox" id="chk-delivery" checked><span>🛵</span><b>Delivery</b><small>S/ 3 antes de 10pm · S/ 4 desde 10pm · gratis &gt; S/ 100</small></label>
-          <label class="delivery-option"><input type="checkbox" id="chk-pickup"><span>🛍️</span><b>Recojo</b><small>Pedido para llevar</small></label>
-          <label class="delivery-option"><input type="checkbox" id="chk-eatin"><span>🍽️</span><b>Local</b><small>No se cobra taper</small></label>
-        </div>
+        <label class="delivery-option"><input type="checkbox" id="chk-delivery" checked><span>🛵</span><b>Delivery</b><small>S/ 3 antes de 10pm · S/ 4 desde 10pm · gratis &gt; S/ 100</small></label>
+        <label class="delivery-option"><input type="checkbox" id="chk-pickup"><span>🛍️</span><b>Recojo en local</b><small>Pedido para llevar</small></label>
+        <label class="delivery-option"><input type="checkbox" id="chk-eatin"><span>🍽️</span><b>Comer en el local</b><small>No se cobra taper</small></label>
         <p class="nota-taper">🥡 Empaque / taper automático para delivery o para llevar. No aplica a bebidas ni cremas extra.</p>
       </div>
 
@@ -1593,22 +1812,13 @@ body{
 
       <div id="boleta-virtual"></div>
       <div id="comanda-cocina"></div>
-      <div id="client-ticket-capture-host"><div id="boleta-cliente-visual"></div></div>
 
       <div class="carrito-actions">
-        <div class="primary-order-actions">
-          <button id="btn-register-sale" type="button">✅ Registrar venta / Enviar cocina</button>
-          <button id="btn-share-ticket" type="button">📲 Compartir boleta con cliente</button>
-          <button id="btn-clear" type="button">🔴 Nuevo pedido</button>
-        </div>
-        <details class="secondary-actions">
-          <summary>🛠️ Impresión y otras opciones</summary>
-          <div class="secondary-actions-grid">
-            <button id="btn-print-kitchen" type="button">👨‍🍳 Imprimir comanda</button>
-            <button id="btn-print-client" type="button">🧾 Imprimir boleta</button>
-            <a id="btn-whatsapp" href="#" target="_blank" class="btn disabled">WhatsApp texto (interno)</a>
-          </div>
-        </details>
+        <button id="btn-clear">Vaciar pedido</button>
+        <button id="btn-print-kitchen" type="button">👨‍🍳 Imprimir comanda</button>
+        <button id="btn-print-client" type="button">🧾 Imprimir boleta</button>
+        <button id="btn-register-sale" type="button">✅ Registrar venta / Enviar cocina</button>
+        <a id="btn-whatsapp" href="#" class="btn disabled">📲 Compartir boleta con cliente</a>
       </div>
 
       <p id="error-msg" class="error-msg"></p>
@@ -1628,7 +1838,7 @@ body{
 <script>
 const WHATSAPP_NUMBER = "51944275861";
 const SUPABASE_URL = "https://defdwzzewzfjuseozwkn.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmR3enpld3pmanVzZW96d2tuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODE4NTMsImV4cCI6MjA4OTM1Nzg1M30.WgVc6PT9rwAEk4yn2i63GyOUl0CTZE6J-7r_2mpumAs";
+const SUPABASE_ANON_KEY = "sb_publishable_ybJZO45G37nMvSHwQYfIhA_qWi9UR0K";
 const ORDERS_TABLE = "orders_cloud";
 const DAY_SETUP_TABLE = "day_setup_cloud";
 const CASH_STATE_TABLE = "cash_register_state";
@@ -1650,7 +1860,6 @@ function pad2(n){ return String(n).padStart(2,"0"); }
 function safeNum(n){ return Number.isFinite(Number(n)) ? Number(n) : 0; }
 function round2(n){ return Number((safeNum(n)).toFixed(2)); }
 function money(n){ return `S/ ${safeNum(n).toFixed(2)}`; }
-function sanitizeDniInput(v){ return String(v || "").replace(/\D/g, "").slice(0,8); }
 function cleanName(n){ return String(n || "").replace(/🔫|💣|👑|🕶|🔥|🍔|🧂|🥤|➕/g, "").trim(); }
 function shortSauces(arr){ return (arr || []).map(s => s.replace("Salsa ", "")).join(", "); }
 function isNoSauceValue(v){ return String(v || "").toUpperCase() === "SIN_SALSA"; }
@@ -1724,9 +1933,6 @@ function getTaperPerUnit(id){
   if (id === 74) return 4; // Torre Nápoles
   if (id === 75) return 3; // Torre Cali
 
-  // Patitas Broster: 1 taper por plato en delivery o recojo.
-  if ([76,77,78].includes(id)) return 1;
-
   if (id === 21 || id === 3) return 2;
   if (id === 4) return 3;
   if (id === 5) return 4;
@@ -1798,7 +2004,7 @@ const SECTIONS = [
       },
       {
         anchorId: "alitas",
-        name: "🍗 Alitas - Patitas Broster",
+        name: "🍗 Alitas",
         image: "FESTIVAL DE ALITAS.jpg",
         sauceMode: "multi",
         items: [
@@ -1813,20 +2019,6 @@ const SECTIONS = [
           { id: 7,  name: "Salchi Alitas - Popeye",            price: 22, desc: "+ chorizo + hotdog + 5 alitas + papas + cremas", fixedAlitasImg: "salchi-alitas.png" },
           { id: 8,  name: "Salchi Mix - Medellín",             price: 16, desc: "+ chorizo + hotdog + huevo + papas + cremas", fixedAlitasImg: "Salchi Mix - Medellín.png" },
           { id: 9,  name: "El Golpe de la DEA",                price: 19, desc: "Trocitos pollo + chaufa + papas + ensalada + cremas", fixedAlitasImg: "golpe-dea.png" }
-        ]
-      },
-      {
-        anchorId: null,
-        name: "🐔 Patitas Broster",
-        image: "cat-alitas.png",
-        sauceMode: "single",
-        allowNoSauce: false,
-        sauces: ["Salsa Acevichada", "Salsa BBQ", "Salsa Picante", "Salsa Maracuyá"],
-        footerText: "Salsas a escoger: Acevichada, BBQ, Picante o Maracuyá. Cada plato suma 1 taper únicamente para delivery o recojo en local.",
-        items: [
-          { id: 76, name: "4 Patitas Broster", price: 12.00, desc: "4 patitas + porción de papas + ensalada fresca + salsa a escoger", cardImg: "patitas-broaster-4.png" },
-          { id: 77, name: "6 Patitas Broster", price: 15.00, desc: "6 patitas + porción de papas + ensalada fresca + salsa a escoger", cardImg: "patitas-broaster-6.png" },
-          { id: 78, name: "Dúo del Patrón", price: 17.00, desc: "3 patitas + 3 alitas + porción de papas + ensalada fresca + salsa a escoger", cardImg: "duo-del-patron.png" }
         ]
       },
       {
@@ -1974,7 +2166,6 @@ const bottomBar = document.getElementById("bottom-bar");
 const bottomTotal = document.getElementById("bottom-total");
 const bottomVerPedido = document.getElementById("bottom-ver-pedido");
 const inputName = document.getElementById("customer-name");
-const inputDni = document.getElementById("customer-dni");
 const inputComment = document.getElementById("order-comment");
 const paymentRadios = document.querySelectorAll('input[name="payment-method"]');
 const mixedPaymentBox = document.getElementById("mixed-payment-box");
@@ -1986,10 +2177,6 @@ const comandaEl = document.getElementById("comanda-cocina");
 const btnPrintKitchen = document.getElementById("btn-print-kitchen");
 const btnPrintClient = document.getElementById("btn-print-client");
 const btnRegisterSale = document.getElementById("btn-register-sale");
-const btnShareTicket = document.getElementById("btn-share-ticket");
-const clientTicketVisual = document.getElementById("boleta-cliente-visual");
-const btnToggleDni = document.getElementById("btn-toggle-dni");
-const dniFieldWrap = document.getElementById("dni-field-wrap");
 const orderSaveStatus = document.getElementById("order-save-status");
 const cashDayStatus = document.getElementById("cash-day-status");
 const cashDayInput = document.getElementById("cash-day-input");
@@ -2054,23 +2241,8 @@ function renderMenu(){
       if (effectiveSauceMode === "single") {
         const wrap = document.createElement("div"); wrap.className = "salsa-select-wrap";
         const sel = document.createElement("select"); sel.className = "salsa-select"; sel.name = `salsa-select-${item.id}`;
-        sel.innerHTML = `<option value="">Selecciona una opción</option>`;
-
-        const allowNoSauce = item.allowNoSauce ?? section.allowNoSauce ?? true;
-        if (allowNoSauce) {
-          const oSin = document.createElement("option");
-          oSin.value = "SIN_SALSA";
-          oSin.textContent = "Sin salsa";
-          sel.appendChild(oSin);
-        }
-
-        const sauceOptions = item.sauces || section.sauces || SAUCES;
-        sauceOptions.forEach(s => {
-          const o = document.createElement("option");
-          o.value = s;
-          o.textContent = s.replace("Salsa ","");
-          sel.appendChild(o);
-        });
+        sel.innerHTML = `<option value="">Selecciona una opción</option><option value="SIN_SALSA">Sin salsa</option>`;
+        SAUCES.forEach(s => { const o = document.createElement("option"); o.value = s; o.textContent = s.replace("Salsa ",""); sel.appendChild(o); });
         wrap.innerHTML = `<div class="salsa-select-title">Elige salsa</div>`; wrap.appendChild(sel); card.appendChild(wrap);
       }
 
@@ -2211,11 +2383,10 @@ function getCtx(){
   } else if (isPickup) { deliveryTextPrint="Recojo en local"; deliveryTextWA="🚶 Recojo en local (para llevar)"; }
   else if (isEatIn) { deliveryTextPrint="Consumo en local"; deliveryTextWA="🍽️ Comeré en el local"; }
   const total = round2(subtotal + taperFee + deliveryFee);
-  return { subtotal, taperCount, taperFee:round2(taperFee), deliveryFee:round2(deliveryFee), total, taperTextPrint:(isDelivery || isPickup) ? `${taperCount} und (S/ ${taperFee.toFixed(2)})` : "0 und (S/ 0.00)", deliveryTextPrint, deliveryTextWA, name:(inputName?.value||"").trim(), dni:sanitizeDniInput(inputDni?.value||""), comment:(inputComment?.value||"").trim(), paymentMethod:getPaymentMethod(), mixedYape:getPaymentMethod()==="mixto" ? safeNum(mixedYapeInput?.value) : 0, mixedCash:getPaymentMethod()==="mixto" ? safeNum(mixedCashInput?.value) : 0 };
+  return { subtotal, taperCount, taperFee:round2(taperFee), deliveryFee:round2(deliveryFee), total, taperTextPrint:(isDelivery || isPickup) ? `${taperCount} und (S/ ${taperFee.toFixed(2)})` : "0 und (S/ 0.00)", deliveryTextPrint, deliveryTextWA, isDelivery:!!isDelivery, isPickup:!!isPickup, isEatIn:!!isEatIn, name:(inputName?.value||"").trim(), comment:(inputComment?.value||"").trim(), paymentMethod:getPaymentMethod(), mixedYape:getPaymentMethod()==="mixto" ? safeNum(mixedYapeInput?.value) : 0, mixedCash:getPaymentMethod()==="mixto" ? safeNum(mixedCashInput?.value) : 0 };
 }
 function getErrors(ctx){
   const errors=[];
-  if (ctx.dni && ctx.dni.length !== 8) errors.push("⚠️ DNI debe tener 8 dígitos o dejarse vacío.");
   if (ctx.paymentMethod === "mixto") {
     const sum = round2(ctx.mixedYape + ctx.mixedCash);
     if (Math.abs(sum - ctx.total) > 0.009) errors.push(`⚠️ Pago mixto no cuadra. Total: S/ ${ctx.total.toFixed(2)} | Yape + efectivo: S/ ${sum.toFixed(2)}.`);
@@ -2267,7 +2438,6 @@ function buildTicket(ctx){
   lines.push(eq);
   lines.push(`Pago: ${paymentText(ctx)}`);
   lines.push(`Cliente: ${ctx.name || "No indicado"}`);
-  if (ctx.dni) lines.push(`DNI: ${ctx.dni}`);
   lines.push(`Tipo: ${ctx.deliveryTextPrint}`);
   if (ctx.comment) lines.push(`Comentario: ${ctx.comment}`);
   lines.push(sep);
@@ -2290,7 +2460,7 @@ function buildKitchenTicket(ctx){
     ].filter(Boolean).join(" | ");
     return `<div style="margin:7px 0;border-bottom:1px dashed #000;padding-bottom:5px;"><b>${i+1}) ${e.qty} x ${cleanName(e.item.name)}</b>${details ? `<br><small>${details}</small>` : ""}</div>`;
   }).join("");
-  return `<div style="text-align:center;font-weight:900;font-size:15px;">COMANDA COCINA<br><small>EL PATRÓN DEL MAL</small><br><small>Pedido N° ${dailyOrderNumber()}</small><br><small>Boleta virtual N° ${CURRENT_BOLETA || "------"}</small><br><small>${formatDateTime()}</small></div><hr>${rows}<hr><small><b>Tipo:</b> ${ctx.deliveryTextPrint}<br><b>Cliente:</b> ${ctx.name || "No indicado"}${ctx.dni ? `<br><b>DNI:</b> ${ctx.dni}` : ""}${ctx.comment ? `<br><b>Comentario:</b> ${ctx.comment}` : ""}<br><b>Pago:</b> ${paymentText(ctx)}</small>`;
+  return `<div style="text-align:center;font-weight:900;font-size:15px;">COMANDA COCINA<br><small>EL PATRÓN DEL MAL</small><br><small>Pedido N° ${dailyOrderNumber()}</small><br><small>Boleta virtual N° ${CURRENT_BOLETA || "------"}</small><br><small>${formatDateTime()}</small></div><hr>${rows}<hr><small><b>Tipo:</b> ${ctx.deliveryTextPrint}<br><b>Cliente:</b> ${ctx.name || "No indicado"}${ctx.comment ? `<br><b>Comentario:</b> ${ctx.comment}` : ""}<br><b>Pago:</b> ${paymentText(ctx)}</small>`;
 }
 function rawBtCleanText(text){
   return String(text || "")
@@ -2593,7 +2763,6 @@ function buildOrderRecord(ctx, source="MOZA_COCINA"){
     source,
     status: "PENDIENTE",
     customerName: ctx.name || "",
-    customerDni: ctx.dni || "",
     comment: ctx.comment || "",
     paymentMethod: ctx.paymentMethod,
     mixedYape: Number(ctx.mixedYape.toFixed(2)),
@@ -2679,144 +2848,226 @@ async function registerSale(source="MOZA_COCINA"){
   return result.ok;
 }
 
+function buildCustomerCaption(ctx){
+  const lines=[];
+  lines.push("✅ *ENVIAR CAPTURA DEL PAGO PARA REALIZAR SU PEDIDO*");
 
-function escapeHtmlClient(value){
-  return String(value ?? "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-}
-function clientPaymentText(ctx){
-  if (ctx.paymentMethod === "efectivo") return "Efectivo";
-  if (ctx.paymentMethod === "yape") return "Yape";
-  return `Mixto · Yape S/ ${ctx.mixedYape.toFixed(2)} + Efectivo S/ ${ctx.mixedCash.toFixed(2)}`;
-}
-function clientDeliveryText(ctx){
-  if (chkDelivery?.checked && !chkEatIn?.checked) return "Delivery";
-  if (chkPickup?.checked) return "Recojo en local";
-  return "Consumo en local";
-}
-function buildClientVisualTicket(ctx){
-  const items = cart.map(e => {
-    const details = [
-      e.noSauce ? "Sin salsa" : "",
-      e.sauces?.length ? "Salsas: " + shortSauces(e.sauces) : "",
-      e.sauceApart ? "Salsas aparte" : "",
-      e.brand ? "Marca: " + e.brand : ""
-    ].filter(Boolean).join(" · ");
-    return `<div class="cst-item">
-      <div class="cst-qty">${escapeHtmlClient(e.qty)}</div>
-      <div><div class="cst-item-name">${escapeHtmlClient(cleanName(e.item.name))}</div>${details ? `<div class="cst-item-detail">${escapeHtmlClient(details)}</div>` : ""}</div>
-      <div class="cst-item-price">${escapeHtmlClient(money(e.item.price*e.qty))}</div>
-    </div>`;
-  }).join("");
-
-  const dt = formatDateTime();
-  return `<div class="client-share-ticket" id="client-share-ticket">
-    <div class="cst-brand">
-      <div class="cst-crown">♛</div>
-      <div class="cst-brand-name">EL PATRÓN</div>
-      <div class="cst-brand-sub">DEL MAL</div>
-      <div class="cst-fast">FAST FOOD</div>
-    </div>
-    <div class="cst-confirmed">Pedido confirmado</div>
-    <div class="cst-meta">
-      <div class="cst-meta-item"><span class="cst-label">Pedido N.º</span><span class="cst-value">${escapeHtmlClient(dailyOrderNumber())}</span></div>
-      <div class="cst-meta-item"><span class="cst-label">Boleta virtual</span><span class="cst-value">${escapeHtmlClient(CURRENT_BOLETA || "------")}</span></div>
-      <div class="cst-meta-item"><span class="cst-label">Fecha y hora</span><span class="cst-value" style="font-size:16px;">${escapeHtmlClient(dt)}</span></div>
-    </div>
-    <div class="cst-section-title">DETALLE DE TU PEDIDO</div>
-    <div class="cst-items">${items}</div>
-    <div class="cst-totals">
-      <div class="cst-total-row"><span>Subtotal</span><strong>${escapeHtmlClient(money(ctx.subtotal))}</strong></div>
-      <div class="cst-total-row"><span>Empaque</span><strong>${escapeHtmlClient(money(ctx.taperFee))}</strong></div>
-      <div class="cst-total-row"><span>Delivery</span><strong>${escapeHtmlClient(money(ctx.deliveryFee))}</strong></div>
-      <div class="cst-grand-total"><span>TOTAL A PAGAR</span><span>${escapeHtmlClient(money(ctx.total))}</span></div>
-    </div>
-    <div class="cst-info">
-      <div class="cst-info-item"><b>Pago</b><span>${escapeHtmlClient(clientPaymentText(ctx))}</span></div>
-      <div class="cst-info-item"><b>Entrega</b><span>${escapeHtmlClient(clientDeliveryText(ctx))}</span></div>
-      <div class="cst-info-item"><b>Cliente</b><span>${escapeHtmlClient(ctx.name || "No indicado")}</span></div>
-      <div class="cst-info-item"><b>Comentario</b><span>${escapeHtmlClient(ctx.comment || "Sin comentarios")}</span></div>
-    </div>
-    <div class="cst-footer">
-      <div class="cst-thanks">¡Gracias por tu compra!</div>
-      <div class="cst-return">VUELVE PRONTO</div>
-      <div class="cst-phone">WhatsApp: 944 275 861</div>
-    </div>
-  </div>`;
-}
-async function shareClientTicket(){
-  if (!cart.length) return alert("No hay pedido para compartir.");
-  ensureBoletaCreated();
-  const ctx = getCtx();
-  const errors = getErrors(ctx);
-  if (errors.length) return alert(errors.join("\n"));
-  if (!clientTicketVisual) return alert("No se encontró la boleta visual del cliente.");
-  clientTicketVisual.innerHTML = buildClientVisualTicket(ctx);
-  const target = clientTicketVisual.querySelector("#client-share-ticket");
-  if (!target) return alert("No pude preparar la boleta visual.");
-  if (typeof html2canvas !== "function") return alert("No cargó el generador de imagen. Revisa tu conexión a internet e inténtalo nuevamente.");
-
-  const originalText = btnShareTicket?.textContent || "📲 Compartir boleta con cliente";
-  try {
-    if (btnShareTicket) { btnShareTicket.disabled = true; btnShareTicket.textContent = "Generando imagen..."; }
-    const canvas = await html2canvas(target, {backgroundColor:"#ffffff", scale:2, useCORS:true, logging:false});
-    const blob = await new Promise(resolve => canvas.toBlob(resolve,"image/png",1));
-    if (!blob) throw new Error("No se pudo crear el PNG");
-    const fileName = `Pedido-${dailyOrderNumber()}-El-Patron-del-Mal.png`;
-    const file = new File([blob], fileName, {type:"image/png"});
-
-    if (navigator.share && (!navigator.canShare || navigator.canShare({files:[file]}))) {
-      await navigator.share({
-        title:"Pedido - El Patrón del Mal",
-        text:`Pedido ${dailyOrderNumber()} · Total ${money(ctx.total)}`,
-        files:[file]
-      });
-    } else {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url; a.download = fileName; document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(()=>URL.revokeObjectURL(url),1500);
-      alert("✅ Boleta guardada como imagen PNG. Puedes enviarla por WhatsApp.");
-    }
-  } catch(err) {
-    if (err && err.name === "AbortError") return;
-    alert("No pude compartir la boleta: " + (err?.message || String(err)));
-  } finally {
-    if (btnShareTicket) { btnShareTicket.disabled = false; btnShareTicket.textContent = originalText; }
+  // Solo delivery pide ubicación.
+  if (ctx.isDelivery) {
+    lines.push("📍 *COMPARTIR UBICACIÓN ACTUAL*");
   }
+
+  // Solo se pide nombre cuando la moza no lo escribió.
+  if (!ctx.name) {
+    lines.push("👤 *ENVIAR NOMBRE*");
+  }
+
+  return lines.join("\n");
 }
 
 function buildWhatsapp(ctx){
-  const lines=[];
-  lines.push("🍗🔥 *NUEVO PEDIDO - EL PATRÓN DEL MAL* 🔥🍗");
-  lines.push(`📌 *Pedido:* *${dailyOrderNumber()}*`);
-  lines.push(`🧾 *Boleta virtual:* *${CURRENT_BOLETA}*`);
-  lines.push(`🕒 *Fecha/Hora:* ${formatDateTime()}`);
-  lines.push("━━━━━━━━━━━━━━━━━━━━", "");
-  cart.forEach((e,i)=>{
-    lines.push(`${i+1}) ✅ ${e.qty} x ${e.item.name} — *${money(e.item.price*e.qty)}*`);
-    if (e.noSauce) lines.push("   🌶️ Salsa: Sin salsa");
-    if (e.sauces?.length) lines.push(`   🌶️ Salsa: ${shortSauces(e.sauces)}`);
-    if (e.sauceApart) lines.push("   🥡 Salsas aparte");
-    if (e.brand) lines.push(`   🥤 Marca: ${e.brand}`);
-    lines.push("");
-  });
-  lines.push("━━━━━━━━━━━━━━━━━━━━");
-  lines.push(`🥡 *Empaque / taper:* ${ctx.taperTextPrint}`);
-  lines.push(`🚚 *Delivery / Consumo:* ${ctx.deliveryTextWA}`);
-  lines.push(`💰 *TOTAL A PAGAR:* *${money(ctx.total)}*`);
-  lines.push(`💳 *Pago:* ${paymentTextWA(ctx)}`);
-  lines.push("━━━━━━━━━━━━━━━━━━━━");
-  lines.push(`👤 *Cliente:* ${ctx.name || "No indicado"}`);
-  if (ctx.dni) lines.push(`🪪 *DNI:* ${ctx.dni}`);
-  if (ctx.comment) lines.push(`📝 *Comentario:* ${ctx.comment}`);
-  lines.push(LOCATION_TEXT_FOR_OWNER, "", "🙏 ¡Gracias por tu pedido! 🙌");
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join("\n"))}`;
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(buildCustomerCaption(ctx))}`;
 }
+
+function customerPaymentShort(ctx){
+  if (ctx.paymentMethod === "yape") return "Yape";
+  if (ctx.paymentMethod === "mixto") {
+    return `Mixto: Yape ${money(ctx.mixedYape)} + Efec. ${money(ctx.mixedCash)}`;
+  }
+  return "Efectivo";
+}
+
+function customerDeliveryShort(ctx){
+  if (ctx.isPickup) return "Recojo en local";
+  if (ctx.isEatIn) return "Consumo en local";
+  if (ctx.deliveryFee <= 0) return "Delivery GRATIS";
+  return `Delivery ${money(ctx.deliveryFee)}`;
+}
+
+function buildCustomerReceiptHtml(ctx){
+  const itemRows=cart.map(e=>{
+    const details=[
+      e.noSauce ? "Sin salsa" : "",
+      e.sauces?.length ? "Salsa: "+shortSauces(e.sauces) : "",
+      e.sauceApart ? "Salsas aparte" : "",
+      e.brand ? "Marca: "+e.brand : ""
+    ].filter(Boolean).join(" · ");
+
+    return `
+      <div class="cr-item">
+        <div class="qty">${e.qty}</div>
+        <div>
+          <div class="name">${cleanName(e.item.name)}</div>
+          ${details ? `<div class="details">${details}</div>` : ""}
+        </div>
+        <div class="price">${money(e.item.price*e.qty)}</div>
+      </div>`;
+  }).join("");
+
+  return `
+    <div class="customer-receipt">
+      <div class="cr-head">
+        <div class="cr-brand">EL PATRÓN</div>
+        <div class="cr-subbrand">DEL MAL</div>
+        <div class="cr-fast">FAST FOOD</div>
+        <div class="cr-confirm">Pedido confirmado</div>
+      </div>
+
+      <div class="cr-body">
+        <div class="cr-meta">
+          <div>
+            <span class="cr-label">Pedido N.°</span>
+            <span class="cr-value">${dailyOrderNumber()}</span>
+          </div>
+          <div>
+            <span class="cr-label">Boleta virtual</span>
+            <span class="cr-value">${CURRENT_BOLETA || "------"}</span>
+          </div>
+          <div>
+            <span class="cr-label">Fecha y hora</span>
+            <span class="cr-value">${formatDateTime()}</span>
+          </div>
+        </div>
+
+        <div class="cr-titlebar">DETALLE DE TU PEDIDO</div>
+        <div class="cr-items">${itemRows}</div>
+
+        <div class="cr-totals">
+          <div class="cr-total-row"><span>Subtotal</span><b>${money(ctx.subtotal)}</b></div>
+          <div class="cr-total-row"><span>Empaque</span><b>${money(ctx.taperFee)}</b></div>
+          <div class="cr-total-row"><span>Delivery</span><b>${money(ctx.deliveryFee)}</b></div>
+          <div class="cr-total-row cr-total-main"><span>TOTAL A PAGAR</span><b>${money(ctx.total)}</b></div>
+        </div>
+
+        <div class="cr-info">
+          <div>
+            <span class="cr-label">💳 Pago</span>
+            <span class="cr-value">${customerPaymentShort(ctx)}</span>
+          </div>
+          <div>
+            <span class="cr-label">🚚 Entrega</span>
+            <span class="cr-value">${customerDeliveryShort(ctx)}</span>
+          </div>
+          <div>
+            <span class="cr-label">👤 Cliente</span>
+            <span class="cr-value">${ctx.name || "No indicado"}</span>
+          </div>
+          <div>
+            <span class="cr-label">📝 Comentario</span>
+            <span class="cr-value">${ctx.comment || "Sin comentarios"}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="cr-footer">
+        <div class="thanks">¡Gracias por tu compra!</div>
+        <div class="return">VUELVE PRONTO</div>
+        <div class="wa">WhatsApp: 944 275 861</div>
+      </div>
+    </div>`;
+}
+
+async function createCustomerReceiptBlob(ctx){
+  if(typeof html2canvas!=="function"){
+    throw new Error("No cargó el generador de imagen.");
+  }
+
+  const stage=document.createElement("div");
+  stage.className="customer-share-stage";
+  stage.innerHTML=buildCustomerReceiptHtml(ctx);
+  document.body.appendChild(stage);
+
+  try{
+    const receipt=stage.querySelector(".customer-receipt");
+    const canvas=await html2canvas(receipt,{
+      scale:2,
+      backgroundColor:"#f7f2e8",
+      useCORS:true,
+      logging:false
+    });
+
+    return await new Promise((resolve,reject)=>{
+      canvas.toBlob(blob=>{
+        if(blob) resolve(blob);
+        else reject(new Error("No se pudo crear la imagen."));
+      },"image/png",1);
+    });
+  }finally{
+    stage.remove();
+  }
+}
+
+async function shareCustomerReceipt(){
+  if(!cart.length){
+    alert("No hay pedido para compartir.");
+    return;
+  }
+
+  ensureBoletaCreated();
+  const ctx=getCtx();
+  const errors=getErrors(ctx);
+  if(errors.length){
+    alert(errors.join("\n"));
+    return;
+  }
+
+  const oldText=btnWhatsapp.textContent;
+  btnWhatsapp.classList.add("disabled");
+  btnWhatsapp.textContent="Generando boleta...";
+
+  try{
+    const blob=await createCustomerReceiptBlob(ctx);
+    const fileName=`pedido-${dailyOrderNumber()}-${CURRENT_BOLETA || "boleta"}.png`;
+    const file=new File([blob],fileName,{type:"image/png"});
+    const caption=buildCustomerCaption(ctx);
+
+    // En celulares compatibles abre el menú de compartir con imagen + texto.
+    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({
+        files:[file],
+        title:"ENVIAR CAPTURA DEL PAGO",
+        text:caption
+      });
+      return;
+    }
+
+    // En PC intentamos copiar la imagen al portapapeles.
+    let copied=false;
+    try{
+      if(navigator.clipboard && window.ClipboardItem){
+        await navigator.clipboard.write([
+          new ClipboardItem({"image/png":blob})
+        ]);
+        copied=true;
+      }
+    }catch(e){}
+
+    // Además dejamos la imagen descargada como respaldo.
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;
+    a.download=fileName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1500);
+
+    // WhatsApp abre SOLO con las instrucciones correctas.
+    window.open(buildWhatsapp(ctx),"_blank");
+
+    alert(
+      copied
+        ? "✅ Boleta generada y copiada.\n\nSe abrió WhatsApp con el mensaje. Si la imagen no aparece sola, pega con Ctrl+V."
+        : "✅ Boleta generada.\n\nSe abrió WhatsApp con el mensaje. Adjunta la imagen que se descargó."
+    );
+  }catch(err){
+    alert("No se pudo generar/compartir la boleta: "+(err.message || String(err)));
+  }finally{
+    btnWhatsapp.classList.remove("disabled");
+    btnWhatsapp.textContent=oldText;
+  }
+}
+
 function renderCart(){
   updateMixedPaymentVisibility();
   if (!cartItemsEl || !cartEmptyEl || !cartTotalEl || !btnWhatsapp) return;
@@ -2826,7 +3077,6 @@ function renderCart(){
     cartTotalEl.innerHTML = "Total: S/ 0.00";
     if (boletaEl) boletaEl.innerHTML = "";
     if (comandaEl) comandaEl.innerHTML = "";
-    if (clientTicketVisual) clientTicketVisual.innerHTML = "";
     if (orderSaveStatus) orderSaveStatus.textContent = "";
     if (bottomBar) bottomBar.classList.add("hidden");
     if (bottomTotal) bottomTotal.textContent = "Total: S/ 0.00";
@@ -2851,7 +3101,6 @@ function renderCart(){
   if (bottomTotal) bottomTotal.textContent = `Total: ${money(ctx.total)}`;
   if (boletaEl) boletaEl.innerHTML = buildTicket(ctx);
   if (comandaEl) comandaEl.innerHTML = buildKitchenTicket(ctx);
-  if (clientTicketVisual) clientTicketVisual.innerHTML = buildClientVisualTicket(ctx);
   const errors = getErrors(ctx);
   if (errors.length) { btnWhatsapp.href="#"; btnWhatsapp.classList.add("disabled"); if (errorMsg) errorMsg.textContent=errors.join("\n"); }
   else { btnWhatsapp.href=buildWhatsapp(ctx); btnWhatsapp.classList.remove("disabled"); if (errorMsg) errorMsg.textContent=""; }
@@ -2877,12 +3126,6 @@ renderCart();
 if (btnClear) btnClear.addEventListener("click", clearCart);
 if (bottomVerPedido) bottomVerPedido.addEventListener("click", () => scrollToWithOffset(document.getElementById("carrito")));
 if (inputName) inputName.addEventListener("input", renderCart);
-if (inputDni) inputDni.addEventListener("input", () => { inputDni.value = sanitizeDniInput(inputDni.value); renderCart(); });
-if (btnToggleDni && dniFieldWrap) btnToggleDni.addEventListener("click", () => {
-  const hidden = dniFieldWrap.classList.toggle("dni-field-hidden");
-  btnToggleDni.textContent = hidden ? "+ Agregar DNI" : "− Ocultar DNI";
-  if (!hidden) inputDni?.focus();
-});
 if (inputComment) inputComment.addEventListener("input", renderCart);
 paymentRadios.forEach(r => r.addEventListener("change", renderCart));
 if (mixedYapeInput) mixedYapeInput.addEventListener("input", renderCart);
@@ -2907,7 +3150,6 @@ if (btnPrintClient) btnPrintClient.addEventListener("click", () => {
   printHTML(buildTicket(ctx), "Boleta cliente");
 });
 if (btnRegisterSale) btnRegisterSale.addEventListener("click", () => registerSale("MOZA_COCINA"));
-if (btnShareTicket) btnShareTicket.addEventListener("click", shareClientTicket);
 if (btnOpenDay) btnOpenDay.addEventListener("click", async () => {
   // Guardamos la fecha elegida ANTES de consultar Supabase para que no se cambie por zona horaria ni por un valor anterior.
   const selectedDateKey = cashDayInput?.value || operationalDefaultDateKey();
@@ -2934,7 +3176,14 @@ if (cashDayInput) cashDayInput.addEventListener("change", () => {
   if (!CASH_IS_OPEN) { ACTIVE_DATE_KEY = cashDayInput.value || operationalDefaultDateKey(); renderCashDayUI(); }
 });
 loadCashRegisterState();
-if (btnWhatsapp) btnWhatsapp.addEventListener("click", e => { if (btnWhatsapp.classList.contains("disabled") || !cart.length) { e.preventDefault(); alert("Agrega productos y revisa los datos antes de enviar por WhatsApp."); } });
+if (btnWhatsapp) btnWhatsapp.addEventListener("click", async e => {
+  e.preventDefault();
+  if (btnWhatsapp.classList.contains("disabled") || !cart.length) {
+    alert("Agrega productos y revisa los datos antes de compartir la boleta.");
+    return;
+  }
+  await shareCustomerReceipt();
+});
 </script>
 </body>
 </html>
