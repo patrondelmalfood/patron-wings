@@ -2,6 +2,7 @@
 <html lang="es">
 <!-- PDM CARTA PUBLICA: MENU + PEDIDO RAPIDO + BOLETA WHATSAPP -->
 <!-- PDM CARTA_CARRITO: WHATSAPP DIRECTO AL DUEÑO 2026-08 -->
+<!-- PDM CARTA_CARRITO FINAL: TEXTO WHATSAPP + SELECTOR RAPIDO 2026-08 -->
 <!-- PDM INDEX PUBLICO: PEDIDO RAPIDO + BOLETA WHATSAPP 2026-08 -->
 <head>
   <meta charset="UTF-8" />
@@ -2948,6 +2949,84 @@ body.home-screen .app-category-card span small{
   font-size:7px;
 }
 
+
+/* =========================================================
+   FLUJO RÁPIDO: AGREGAR Y ELEGIR OTRA CATEGORÍA
+   ========================================================= */
+.quick-category-box{
+  margin:10px 0 12px;
+  padding:10px;
+  border:1px solid rgba(255,183,3,.72);
+  border-radius:16px;
+  background:linear-gradient(180deg,rgba(20,20,20,.98),rgba(4,4,4,.98));
+  box-shadow:0 5px 16px rgba(0,0,0,.42);
+  scroll-margin-top:78px;
+}
+.quick-category-title{
+  text-align:center;
+  color:#fff;
+  font-size:13px;
+  font-weight:900;
+  margin-bottom:8px;
+}
+.quick-category-title.added{
+  color:#7CFF6B;
+  animation:quickAddedFlash .55s ease;
+}
+@keyframes quickAddedFlash{
+  0%{transform:scale(.98);opacity:.5}
+  100%{transform:scale(1);opacity:1}
+}
+.quick-category-scroll{
+  display:flex;
+  gap:6px;
+  overflow-x:auto;
+  padding:2px 1px 6px;
+  scrollbar-width:thin;
+  -webkit-overflow-scrolling:touch;
+}
+.quick-cat-btn{
+  flex:0 0 auto;
+  min-height:38px;
+  padding:8px 11px !important;
+  border-radius:999px !important;
+  border:1px solid #5b5b5b !important;
+  background:#080808 !important;
+  color:#f4f4f4 !important;
+  font-size:11px !important;
+  font-weight:900 !important;
+  white-space:nowrap;
+  box-shadow:none !important;
+}
+.quick-cat-btn.active{
+  background:#ffd60a !important;
+  border-color:#ffd60a !important;
+  color:#000 !important;
+}
+.quick-cart-resume{
+  margin-top:4px;
+  padding-top:7px;
+  border-top:1px solid rgba(255,214,10,.16);
+  text-align:center;
+  color:#ffd60a;
+  font-size:11px;
+  font-weight:900;
+}
+@media(max-width:600px){
+  .quick-category-box{
+    margin:7px 0 9px;
+    padding:8px;
+    border-radius:14px;
+  }
+  .quick-category-title{font-size:12px;margin-bottom:6px}
+  .quick-cat-btn{
+    min-height:35px;
+    padding:7px 9px !important;
+    font-size:10.5px !important;
+  }
+  .quick-cart-resume{font-size:10.5px}
+}
+
 </style>
 
 <style>
@@ -3093,6 +3172,20 @@ body.home-screen .app-category-card span small{
       <button type="button" id="btn-go-cart">Ver pedido</button>
     </div>
 
+    <div class="quick-category-box" id="quick-category-box">
+      <div class="quick-category-title" id="quick-category-title">¿Qué deseas agregar a tu pedido?</div>
+      <div class="quick-category-scroll">
+        <button type="button" class="quick-cat-btn" data-quick-cat="combos">🔥 Promos</button>
+        <button type="button" class="quick-cat-btn" data-quick-cat="alitas">🍗 Alitas</button>
+        <button type="button" class="quick-cat-btn" data-quick-cat="hamburguesas">🍔 Burger</button>
+        <button type="button" class="quick-cat-btn" data-quick-cat="cartel">🍗 Broaster</button>
+        <button type="button" class="quick-cat-btn" data-quick-cat="torres">🗼 Torres</button>
+        <button type="button" class="quick-cat-btn" data-quick-cat="extras">🍟 Extras</button>
+        <button type="button" class="quick-cat-btn" data-quick-cat="bebidas">🥤 Bebidas</button>
+      </div>
+      <div class="quick-cart-resume" id="quick-cart-resume">🛒 Tu carrito está vacío</div>
+    </div>
+
     <div id="menu"></div>
 
     <div class="carrito" id="carrito">
@@ -3163,7 +3256,7 @@ body.home-screen .app-category-card span small{
       <div class="carrito-actions">
         <button id="btn-clear">Vaciar pedido</button>
         <a id="btn-whatsapp" href="#" class="btn disabled">✅ CONFIRMAR MI PEDIDO</a>
-        <div class="confirm-helper">Se abrirá directamente el WhatsApp del local.</div>
+        <div class="confirm-helper">Se abrirá directamente el WhatsApp del local con tu pedido listo.</div>
       </div>
 
       <p id="error-msg" class="error-msg"></p>
@@ -3181,7 +3274,6 @@ body.home-screen .app-category-card span small{
 </div>
 
 
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <script>
 const WHATSAPP_NUMBER = "51944275861";
@@ -3526,6 +3618,9 @@ const sectionToolbar = document.getElementById("section-toolbar");
 const sectionCurrentTitle = document.getElementById("section-current-title");
 const btnBackHome = document.getElementById("btn-back-home");
 const btnGoCart = document.getElementById("btn-go-cart");
+const quickCategoryBox = document.getElementById("quick-category-box");
+const quickCategoryTitle = document.getElementById("quick-category-title");
+const quickCartResume = document.getElementById("quick-cart-resume");
 const homeTrustBar = document.getElementById("home-trust-bar");
 let currentCategoryKey = null;
 
@@ -3560,14 +3655,30 @@ function showHome(){
   if (menuContainer) { menuContainer.innerHTML = ""; menuContainer.classList.add("hidden-section"); }
   window.scrollTo({ top:0, behavior:"smooth" });
 }
+function updateQuickCategoryState(){
+  document.querySelectorAll(".quick-cat-btn[data-quick-cat]").forEach(btn=>{
+    btn.classList.toggle("active", btn.dataset.quickCat === currentCategoryKey);
+  });
+
+  if (quickCartResume) {
+    const units = cart.reduce((acc,e)=>acc + safeNum(e.qty),0);
+    const subtotal = round2(cart.reduce((acc,e)=>acc + safeNum(e.item.price)*safeNum(e.qty),0));
+    quickCartResume.textContent = units
+      ? `🛒 ${units} ${units===1 ? "producto" : "productos"} en tu pedido · ${money(subtotal)}`
+      : "🛒 Tu carrito está vacío";
+  }
+}
+
 function showCategory(categoryKey){
   if (!CATEGORY_GROUPS[categoryKey]) return;
   currentCategoryKey = categoryKey;
   document.body.classList.remove("home-screen");
+  document.body.classList.remove("cart-view");
   if (sectionToolbar) sectionToolbar.classList.remove("hidden-section");
   if (homeTrustBar) homeTrustBar.classList.add("hidden-section");
   if (sectionCurrentTitle) sectionCurrentTitle.textContent = CATEGORY_GROUPS[categoryKey].title;
   renderMenu(categoryKey);
+  updateQuickCategoryState();
   setTimeout(() => scrollToWithOffset(menuContainer, 75), 30);
 }
 function initCategoryNavigation(){
@@ -3577,6 +3688,15 @@ function initCategoryNavigation(){
       showCategory(card.dataset.cat);
     });
   });
+  document.querySelectorAll(".quick-cat-btn[data-quick-cat]").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const categoryKey=btn.dataset.quickCat;
+      if(!CATEGORY_GROUPS[categoryKey]) return;
+      showCategory(categoryKey);
+      setTimeout(()=>scrollToWithOffset(menuContainer,75),40);
+    });
+  });
+
   if (btnBackHome) btnBackHome.addEventListener("click", () => {
     window.location.href = "index.html";
   });
@@ -3977,7 +4097,35 @@ function handleAdd(section, item, card, qtyInput, btn){
   const t = btn.textContent;
   btn.textContent = "✅ Añadido al pedido";
   btn.disabled = true;
-  setTimeout(() => { btn.textContent = t; btn.disabled = false; }, 950);
+
+  updateQuickCategoryState();
+
+  if (quickCategoryTitle) {
+    quickCategoryTitle.textContent = "✅ Añadido. ¿Qué deseas agregar ahora?";
+    quickCategoryTitle.classList.remove("added");
+    void quickCategoryTitle.offsetWidth;
+    quickCategoryTitle.classList.add("added");
+  }
+
+  /*
+    Mantiene el carrito y sube automáticamente al selector de categorías,
+    sin obligar al cliente a volver al inicio.
+  */
+  setTimeout(() => {
+    if (quickCategoryBox) scrollToWithOffset(quickCategoryBox, 72);
+  }, 420);
+
+  setTimeout(() => {
+    btn.textContent = t;
+    btn.disabled = false;
+  }, 950);
+
+  setTimeout(() => {
+    if (quickCategoryTitle) {
+      quickCategoryTitle.textContent = "¿Qué deseas agregar a tu pedido?";
+      quickCategoryTitle.classList.remove("added");
+    }
+  }, 2600);
 }
 
 function limpiarSeleccionMenu(){
@@ -3994,10 +4142,12 @@ function addToCart(item, qty, sauces, sauceApart, brand, noSauce){
   const key = (sauces || []).slice().sort().join("|");
   const found = cart.find(e => Number(e.item.id) === Number(item.id) && e.sauceApart === !!sauceApart && e.brand === (brand || null) && e.noSauce === !!noSauce && (e.sauces || []).slice().sort().join("|") === key);
   if (found) found.qty += qty; else cart.push({ item, qty, sauces:sauces || [], sauceApart:!!sauceApart, brand:brand || null, noSauce:!!noSauce });
-  renderCart(); programarLimpiezaMenu();
+  renderCart();
+  updateQuickCategoryState();
+  programarLimpiezaMenu();
 }
-function removeFromCart(i){ cart.splice(i,1); renderCart(); }
-function changeQty(i,d){ if (!cart[i]) return; cart[i].qty += d; if (cart[i].qty <= 0) cart.splice(i,1); renderCart(); }
+function removeFromCart(i){ cart.splice(i,1); renderCart(); updateQuickCategoryState(); }
+function changeQty(i,d){ if (!cart[i]) return; cart[i].qty += d; if (cart[i].qty <= 0) cart.splice(i,1); renderCart(); updateQuickCategoryState(); }
 function getPaymentMethod(){ let v="efectivo"; paymentRadios.forEach(r => { if (r.checked) v=r.value; }); return v; }
 function updateMixedPaymentVisibility(){ if (mixedPaymentBox) mixedPaymentBox.classList.toggle("show", getPaymentMethod() === "mixto"); }
 function paymentText(ctx){ if (ctx.paymentMethod === "efectivo") return "EFECTIVO"; if (ctx.paymentMethod === "yape") return "YAPE (enviar captura)"; return `MIXTO | Yape: S/ ${ctx.mixedYape.toFixed(2)} + Efectivo: S/ ${ctx.mixedCash.toFixed(2)}`; }
@@ -4060,40 +4210,67 @@ function buildTicket(ctx){
   }).join("");
   return `<div style="text-align:center;font-weight:900">EL PATRÓN DEL MAL<br><small>Pedido N° ${dailyOrderNumber()}</small><br><small>Boleta virtual N° ${CURRENT_BOLETA || "------"}</small><br><small>${formatDateTime()}</small></div><hr>${rows}<hr><div style="display:flex;justify-content:space-between"><span>Subtotal</span><b>${money(ctx.subtotal)}</b></div><div style="display:flex;justify-content:space-between"><span>Empaque / taper</span><b>${money(ctx.taperFee)}</b></div><div style="display:flex;justify-content:space-between"><span>Delivery</span><b>${money(ctx.deliveryFee)}</b></div><hr><div style="display:flex;justify-content:space-between;font-size:13px"><b>TOTAL</b><b>${money(ctx.total)}</b></div><hr><small><b>Pago:</b> ${paymentText(ctx)}<br><b>Cliente:</b> ${ctx.name || "No indicado"}<br><b>Tipo:</b> ${ctx.deliveryTextPrint}${ctx.comment ? `<br><b>Comentario:</b> ${ctx.comment}` : ""}</small>`;
 }
-function escReceipt(v){
-  return String(v ?? "").replace(/[&<>"']/g, ch => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-  }[ch]));
-}
-
 function buildOwnerCaption(ctx){
   const lines=[];
-  lines.push("🍔 *NUEVO PEDIDO WEB - EL PATRÓN DEL MAL*");
-  if (ctx.name) lines.push(`👤 *Cliente:* ${ctx.name}`);
-  else lines.push("👤 *Cliente:* Falta indicar nombre");
 
+  lines.push("✅ *NUEVO PEDIDO WEB - EL PATRÓN DEL MAL*");
+  lines.push(`🧾 *Pedido:* ${dailyOrderNumber()}`);
+  lines.push(`🕒 *Fecha/Hora:* ${formatDateTime()}`);
   lines.push("");
 
+  cart.forEach((e,i)=>{
+    lines.push(`${i+1}. ✅ *${e.qty} x ${cleanName(e.item.name)}* — ${money(e.item.price*e.qty)}`);
+    if (e.noSauce) lines.push("   🌶️ Salsa: Sin salsa");
+    if (e.sauces?.length) lines.push(`   🌶️ Salsa: ${shortSauces(e.sauces)}`);
+    if (e.sauceApart) lines.push("   🥡 Salsas aparte");
+    if (e.brand) lines.push(`   🥤 Marca: ${e.brand}`);
+  });
+
+  lines.push("");
+  lines.push(`🥡 *Empaque:* ${money(ctx.taperFee)}`);
+
   if (ctx.isDelivery) {
-    lines.push("📍 *COMPARTIRÉ MI UBICACIÓN ACTUAL*");
+    lines.push(`🛵 *Entrega:* Delivery ${ctx.deliveryFee > 0 ? money(ctx.deliveryFee) : "GRATIS"}`);
   } else if (ctx.isPickup) {
-    lines.push("🛍️ *RECOJO EN LOCAL*");
+    lines.push("🛍️ *Entrega:* Recojo en local");
   } else if (ctx.isEatIn) {
-    lines.push("🍽️ *CONSUMO EN EL LOCAL*");
+    lines.push("🍽️ *Entrega:* Consumo en el local");
+  }
+
+  lines.push(`💰 *TOTAL A PAGAR:* ${money(ctx.total)}`);
+
+  if (ctx.paymentMethod === "yape") {
+    lines.push("📲 *Pago:* Yape");
+  } else if (ctx.paymentMethod === "mixto") {
+    lines.push(`📲 *Yape:* ${money(ctx.mixedYape)}`);
+    lines.push(`💵 *Efectivo:* ${money(ctx.mixedCash)}`);
+  } else {
+    lines.push("💵 *Pago:* Efectivo");
   }
 
   lines.push("");
+  lines.push(`👤 *Cliente:* ${ctx.name || "No indicado"}`);
+  if (ctx.comment) lines.push(`📝 *Comentario:* ${ctx.comment}`);
 
-  if (ctx.paymentMethod === "yape") {
-    lines.push("📸 *ENVIARÉ CAPTURA DE YAPE*");
-  } else if (ctx.paymentMethod === "mixto") {
-    lines.push(`📲 *YAPE:* ${money(ctx.mixedYape)}`);
-    lines.push(`💵 *EFECTIVO:* ${money(ctx.mixedCash)}`);
-    lines.push("📸 *ENVIARÉ CAPTURA DEL MONTO YAPE*");
+  /* Instrucciones que el cliente debe completar en el chat */
+  if (ctx.isDelivery) {
+    lines.push("");
+    lines.push("📍 *COMPARTIR UBICACIÓN ACTUAL*");
+  }
+
+  if (ctx.paymentMethod === "yape" || ctx.paymentMethod === "mixto") {
+    lines.push("");
+    lines.push("✅ *ENVIAR CAPTURA DEL PAGO PARA REALIZAR SU PEDIDO*");
   } else {
+    lines.push("");
     if (ctx.isDelivery) lines.push("💵 *PAGO EN EFECTIVO AL RECIBIR*");
     else if (ctx.isPickup) lines.push("💵 *PAGO EN EFECTIVO AL RECOGER*");
     else lines.push("💵 *PAGO EN EFECTIVO EN EL LOCAL*");
+  }
+
+  if (!ctx.name) {
+    lines.push("");
+    lines.push("👤 *ENVIAR NOMBRE*");
   }
 
   return lines.join("\n");
@@ -4101,133 +4278,6 @@ function buildOwnerCaption(ctx){
 
 function buildWhatsapp(ctx){
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(buildOwnerCaption(ctx))}`;
-}
-
-function receiptPaymentText(ctx){
-  if (ctx.paymentMethod === "yape") return "Yape";
-  if (ctx.paymentMethod === "mixto") return `Mixto: Yape ${money(ctx.mixedYape)} + Efectivo ${money(ctx.mixedCash)}`;
-  return "Efectivo";
-}
-
-function receiptDeliveryText(ctx){
-  if (ctx.isPickup) return "Recojo en local";
-  if (ctx.isEatIn) return "Consumo en local";
-  if (ctx.isDelivery && ctx.deliveryFee <= 0) return "Delivery GRATIS";
-  if (ctx.isDelivery) return `Delivery ${money(ctx.deliveryFee)}`;
-  return "Sin seleccionar";
-}
-
-function buildCustomerOrderReceiptHtml(ctx){
-  const itemRows=cart.map(e=>{
-    const details=[
-      e.noSauce ? "Sin salsa" : "",
-      e.sauces?.length ? "Salsa: "+shortSauces(e.sauces) : "",
-      e.sauceApart ? "Salsas aparte" : "",
-      e.brand ? "Marca: "+e.brand : ""
-    ].filter(Boolean).join(" · ");
-
-    return `
-      <div class="cor-item">
-        <div class="qty">${e.qty}</div>
-        <div>
-          <div class="name">${escReceipt(cleanName(e.item.name))}</div>
-          ${details ? `<div class="details">${escReceipt(details)}</div>` : ""}
-        </div>
-        <div class="price">${money(e.item.price*e.qty)}</div>
-      </div>`;
-  }).join("");
-
-  return `
-    <div class="customer-order-receipt">
-      <div class="cor-head">
-        <div class="cor-brand">EL PATRÓN</div>
-        <div class="cor-subbrand">DEL MAL</div>
-        <div class="cor-fast">FAST FOOD</div>
-        <div class="cor-confirm">Nuevo pedido online</div>
-      </div>
-
-      <div class="cor-body">
-        <div class="cor-meta">
-          <div>
-            <span class="cor-label">Pedido N.°</span>
-            <span class="cor-value">${dailyOrderNumber()}</span>
-          </div>
-          <div>
-            <span class="cor-label">Boleta virtual</span>
-            <span class="cor-value">${CURRENT_BOLETA || "------"}</span>
-          </div>
-          <div>
-            <span class="cor-label">Fecha y hora</span>
-            <span class="cor-value">${formatDateTime()}</span>
-          </div>
-        </div>
-
-        <div class="cor-titlebar">DETALLE DEL PEDIDO</div>
-        <div class="cor-items">${itemRows}</div>
-
-        <div class="cor-totals">
-          <div class="cor-total-row"><span>Subtotal</span><b>${money(ctx.subtotal)}</b></div>
-          <div class="cor-total-row"><span>Empaque</span><b>${money(ctx.taperFee)}</b></div>
-          <div class="cor-total-row"><span>Delivery</span><b>${money(ctx.deliveryFee)}</b></div>
-          <div class="cor-total-row cor-total-main"><span>TOTAL A PAGAR</span><b>${money(ctx.total)}</b></div>
-        </div>
-
-        <div class="cor-info">
-          <div>
-            <span class="cor-label">💳 Pago</span>
-            <span class="cor-value">${escReceipt(receiptPaymentText(ctx))}</span>
-          </div>
-          <div>
-            <span class="cor-label">🚚 Entrega</span>
-            <span class="cor-value">${escReceipt(receiptDeliveryText(ctx))}</span>
-          </div>
-          <div>
-            <span class="cor-label">👤 Cliente</span>
-            <span class="cor-value">${escReceipt(ctx.name || "No indicado")}</span>
-          </div>
-          <div>
-            <span class="cor-label">📝 Comentario</span>
-            <span class="cor-value">${escReceipt(ctx.comment || "Sin comentarios")}</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="cor-footer">
-        <div class="thanks">¡Gracias por tu pedido!</div>
-        <div class="return">EL PATRÓN DEL MAL</div>
-        <div class="wa">WhatsApp: 944 275 861</div>
-      </div>
-    </div>`;
-}
-
-async function createCustomerOrderReceiptBlob(ctx){
-  if(typeof html2canvas!=="function"){
-    throw new Error("No cargó el generador de imagen.");
-  }
-
-  const stage=document.createElement("div");
-  stage.className="customer-share-stage";
-  stage.innerHTML=buildCustomerOrderReceiptHtml(ctx);
-  document.body.appendChild(stage);
-
-  try{
-    const receipt=stage.querySelector(".customer-order-receipt");
-    const canvas=await html2canvas(receipt,{
-      scale:2,
-      backgroundColor:"#f7f2e8",
-      useCORS:true,
-      logging:false
-    });
-
-    return await new Promise((resolve,reject)=>{
-      canvas.toBlob(blob=>{
-        if(blob) resolve(blob);
-        else reject(new Error("No se pudo crear la imagen del pedido."));
-      },"image/png",1);
-    });
-  }finally{
-    stage.remove();
-  }
 }
 
 async function confirmAndShareOrder(){
@@ -4245,63 +4295,14 @@ async function confirmAndShareOrder(){
     return;
   }
 
-  const oldText=btnWhatsapp.textContent;
-  btnWhatsapp.classList.add("disabled");
-  btnWhatsapp.textContent="GENERANDO PEDIDO...";
-
-  try{
-    const blob=await createCustomerOrderReceiptBlob(ctx);
-    const fileName=`pedido-web-${dailyOrderNumber()}-${CURRENT_BOLETA || "boleta"}.png`;
-    const caption=buildOwnerCaption(ctx);
-
-    // Intentamos copiar la imagen al portapapeles.
-    let copied=false;
-    try{
-      if(navigator.clipboard && window.ClipboardItem){
-        await navigator.clipboard.write([
-          new ClipboardItem({"image/png":blob})
-        ]);
-        copied=true;
-      }
-    }catch(e){
-      copied=false;
-    }
-
-    // Guardamos la imagen como respaldo para poder adjuntarla si el navegador
-    // no permite pegar imágenes directamente en WhatsApp.
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement("a");
-    a.href=url;
-    a.download=fileName;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(()=>URL.revokeObjectURL(url),2500);
-
-    // IMPORTANTE:
-    // Abrimos DIRECTAMENTE el chat del dueño. El cliente NO tiene que
-    // seleccionar WhatsApp ni buscar/guardar el número.
-    const directUrl=buildWhatsapp(ctx);
-    window.location.href=directUrl;
-
-    // En navegadores que mantengan la pestaña activa, mostramos instrucción corta.
-    setTimeout(()=>{
-      if(document.visibilityState==="visible"){
-        alert(
-          copied
-            ? "✅ Pedido listo.\n\nSe abrió directamente el WhatsApp del local. Si la imagen no aparece adjunta, pégala en el chat."
-            : "✅ Pedido listo.\n\nSe abrió directamente el WhatsApp del local. Adjunta la imagen del pedido que se descargó."
-        );
-      }
-    },900);
-
-  }catch(err){
-    alert("No se pudo generar el pedido: "+(err.message || String(err)));
-  }finally{
-    btnWhatsapp.classList.remove("disabled");
-    btnWhatsapp.textContent=oldText;
-  }
+  /*
+    Abrimos DIRECTAMENTE el WhatsApp del local con TODO el pedido en texto.
+    No se genera ni descarga ninguna imagen.
+    El cliente no necesita tener el número guardado.
+  */
+  window.location.href = buildWhatsapp(ctx);
 }
+
 function renderCart(){
   updateMixedPaymentVisibility();
   updatePaymentHelp();
@@ -4354,6 +4355,7 @@ function clearCart(){
   if(chkPickup) chkPickup.checked=false;
   if(chkEatIn) chkEatIn.checked=false;
   renderCart();
+  updateQuickCategoryState();
   programarLimpiezaMenu();
 }
 function scrollToWithOffset(el, offset=STICKY_OFFSET){ if(!el) return; const y = el.getBoundingClientRect().top + window.pageYOffset - offset; window.scrollTo({top:y, behavior:"smooth"}); }
@@ -4436,6 +4438,7 @@ document.body.classList.add("public-menu");
 const initialCategory = new URLSearchParams(window.location.search).get("cat");
 showCategory(CATEGORY_GROUPS[initialCategory] ? initialCategory : "combos");
 renderCart();
+updateQuickCategoryState();
 if (btnClear) btnClear.addEventListener("click", clearCart);
 if (bottomVerPedido) bottomVerPedido.addEventListener("click", () => {
   document.body.classList.add("cart-view");
