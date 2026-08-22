@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+<!-- PDM MOZA RAPIDA: BUSCADOR + STEPPER + NUEVO PEDIDO + ENTREGA SEGURA 2026-08 -->
 <!-- PDM SHARE VERSION: 2026-08-20-CAPTION-FIX -->
 <!-- PDM SHARE VERSION: 2026-08-20-NARROW-SPACING -->
 
@@ -1613,6 +1614,242 @@ body{
   font-size:7px;
 }
 
+
+/* =========================================================
+   MOZA RAPIDA - BUSCADOR + CATEGORIAS + STEPPER + NUEVO PEDIDO
+   ========================================================= */
+.moza-fast-tools{
+  position:sticky;
+  top:0;
+  z-index:50;
+  margin:8px 0 12px;
+  padding:8px;
+  border:1px solid rgba(250,204,21,.42);
+  border-radius:15px;
+  background:rgba(2,6,23,.97);
+  box-shadow:0 8px 22px rgba(0,0,0,.48);
+  backdrop-filter:blur(8px);
+}
+.moza-search-row{
+  display:grid;
+  grid-template-columns:28px 1fr 34px;
+  gap:6px;
+  align-items:center;
+}
+.moza-search-icon{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+}
+#product-search{
+  width:100%;
+  min-width:0;
+  padding:9px 10px !important;
+  border:1px solid rgba(250,204,21,.45) !important;
+  border-radius:11px !important;
+  background:#020617 !important;
+  color:#fff !important;
+  font-size:13px !important;
+  outline:none;
+}
+#product-search:focus{
+  border-color:#facc15 !important;
+  box-shadow:0 0 0 2px rgba(250,204,21,.12);
+}
+.moza-search-clear{
+  width:34px;
+  height:34px;
+  padding:0 !important;
+  border-radius:10px !important;
+  background:#334155 !important;
+  color:#fff !important;
+}
+.product-search-status{
+  min-height:14px;
+  margin:4px 2px 5px 34px;
+  color:#94a3b8;
+  font-size:9.5px;
+  line-height:1.2;
+}
+.moza-fast-tools .app-category-list{
+  display:flex !important;
+  grid-template-columns:none !important;
+  gap:5px !important;
+  margin:0 !important;
+  padding:1px 0 3px;
+  overflow-x:auto;
+  scrollbar-width:thin;
+  -webkit-overflow-scrolling:touch;
+}
+.moza-fast-tools .app-category-card{
+  flex:0 0 auto;
+  min-height:34px !important;
+  padding:6px 9px !important;
+  border-radius:999px !important;
+  box-shadow:none !important;
+}
+.moza-fast-tools .app-category-card span{
+  font-size:10.5px !important;
+  white-space:nowrap;
+}
+.moza-fast-tools .app-category-card.active-category{
+  background:#facc15 !important;
+  color:#111 !important;
+}
+.moza-fast-tools .app-category-card.active-category span{
+  color:#111 !important;
+}
+
+/* buscador */
+.item-card.search-hidden{display:none !important;}
+.menu-section-block.search-block-hidden{display:none !important;}
+.menu-section-block.search-mode{
+  display:block !important;
+}
+.search-match{
+  border-color:#facc15 !important;
+  box-shadow:0 0 0 1px rgba(250,204,21,.25),0 4px 14px rgba(0,0,0,.45) !important;
+}
+
+/* stepper de cantidad en el menú */
+.menu-qty-stepper{
+  display:inline-grid;
+  grid-template-columns:31px 35px 31px;
+  gap:3px;
+  align-items:center;
+  border:1px solid rgba(250,204,21,.32);
+  border-radius:999px;
+  padding:3px;
+  background:#020617;
+}
+.menu-qty-stepper button{
+  width:31px;
+  height:31px;
+  padding:0 !important;
+  border-radius:50% !important;
+  font-size:17px !important;
+  line-height:1 !important;
+  background:#1e293b !important;
+  color:#fff !important;
+}
+.menu-qty-stepper input{
+  width:35px !important;
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+  color:#fff !important;
+  text-align:center;
+  font-size:14px !important;
+  font-weight:900;
+  pointer-events:none;
+  appearance:textfield;
+  -moz-appearance:textfield;
+}
+.menu-qty-stepper input::-webkit-inner-spin-button,
+.menu-qty-stepper input::-webkit-outer-spin-button{
+  -webkit-appearance:none;
+  margin:0;
+}
+.item-actions{
+  align-items:center !important;
+}
+.item-actions > button:last-child{
+  min-height:38px;
+  border-radius:11px !important;
+  font-weight:900 !important;
+}
+.item-actions > button.added-flash{
+  background:#22c55e !important;
+  color:#052e16 !important;
+}
+
+/* Entrega compacta */
+.delivery-fast-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+}
+.delivery-fast-grid .delivery-option{
+  grid-template-columns:1fr !important;
+  grid-template-areas:"ico" "title" "sub" !important;
+  text-align:center;
+  justify-items:center;
+  padding:7px 5px !important;
+  margin:0 !important;
+  min-height:70px !important;
+  position:relative;
+}
+.delivery-fast-grid .delivery-option input{
+  position:absolute;
+  top:5px;
+  right:5px;
+  width:15px !important;
+  height:15px !important;
+}
+.delivery-fast-grid .delivery-option span{font-size:18px !important;}
+.delivery-fast-grid .delivery-option b{font-size:10.5px !important;}
+.delivery-fast-grid .delivery-option small{
+  font-size:7.8px !important;
+  line-height:1.08 !important;
+  text-align:center;
+}
+
+/* estado de guardado sin alert molesto */
+#order-save-status.status-success{
+  color:#86efac !important;
+  border:1px solid rgba(34,197,94,.45);
+  background:rgba(34,197,94,.09) !important;
+}
+#order-save-status.status-error{
+  color:#fca5a5 !important;
+  border:1px solid rgba(239,68,68,.4);
+  background:rgba(239,68,68,.08) !important;
+}
+#btn-register-sale.new-order-mode{
+  background:#22c55e !important;
+  color:#052e16 !important;
+}
+
+/* barra flotante más informativa */
+.bottom-bar-mobile{
+  z-index:80 !important;
+}
+#bottom-total{
+  font-size:11.5px !important;
+  line-height:1.2;
+}
+#bottom-ver-pedido{
+  border-radius:999px !important;
+  background:#facc15 !important;
+  color:#111 !important;
+  font-weight:900 !important;
+}
+
+/* En escritorio también sirve la barra rápida, pero no estorba */
+@media(min-width:701px){
+  .moza-fast-tools{
+    top:4px;
+  }
+}
+@media(max-width:700px){
+  .moza-fast-tools{
+    top:0;
+    margin:5px 0 8px;
+    padding:6px;
+    border-radius:12px;
+  }
+  #product-search{font-size:12px !important;padding:8px !important}
+  .product-search-status{font-size:9px;margin-left:32px}
+  .moza-fast-tools .app-category-card{padding:5px 8px !important}
+  .moza-fast-tools .app-category-card span{font-size:10px !important}
+  .menu-qty-stepper{
+    grid-template-columns:28px 31px 28px;
+  }
+  .menu-qty-stepper button{width:28px;height:28px;font-size:15px !important}
+  .menu-qty-stepper input{width:31px !important;font-size:13px !important}
+}
+
 </style>
 </head>
 
@@ -1670,51 +1907,60 @@ body{
   <p>¿Qué quieres pedir hoy?</p>
   <span></span>
 </div>
-    <section class="app-category-list">
+    <div class="moza-fast-tools" id="moza-fast-tools">
+      <div class="moza-search-row">
+        <span class="moza-search-icon">🔎</span>
+        <input type="search" id="product-search" placeholder="Buscar: royal, 8 alitas, coca, sicario..." autocomplete="off">
+        <button type="button" id="btn-clear-search" class="moza-search-clear">✕</button>
+      </div>
+      <div id="product-search-status" class="product-search-status">Escribe para encontrar un producto rápido.</div>
+
+      <section class="app-category-list">
 
   <a href="#combos" class="app-category-card">
     <img src="cat-combos.png" alt="Combos y Promociones">
-    <span>Combos y Promociones 🔥</span>
+    <span>🔥 Promos</span>
     <b>›</b>
   </a>
 
   <a href="#alitas" class="app-category-card">
     <img src="cat-alitas.png" alt="Alitas">
-    <span>Alitas 🔥</span>
+    <span>🍗 Alitas</span>
     <b>›</b>
   </a>
 
   <a href="#hamburguesas" class="app-category-card">
     <img src="cat-hamburguesa.png" alt="Burger - Wrap">
-    <span>Burger - Wrap 🍔🌯</span>
+    <span>🍔 Burger</span>
     <b>›</b>
   </a>
 
   <a href="#cartel" class="app-category-card">
     <img src="cat-cartel.png" alt="Mostritos y Broaster">
-    <span>Mostritos y Broaster 🍗</span>
+    <span>🍗 Broaster</span>
     <b>›</b>
   </a>
 
   <a href="#torres" class="app-category-card">
     <img src="cat-torres.png" alt="Torres del Cartel">
-    <span>Torres del Cartel 🗼</span>
+    <span>🗼 Torres</span>
     <b>›</b>
   </a>
 
   <a href="#extras" class="app-category-card">
     <img src="cat-extras.png" alt="Papas, cremas y extras">
-    <span>Papas, cremas y extras ➕</span>
+    <span>🍟 Extras</span>
     <b>›</b>
   </a>
 
   <a href="#bebidas" class="app-category-card">
     <img src="cat-bebidas.png" alt="Bebidas, Tragos y Frappés">
-    <span>Bebidas, Tragos y Frappés 🥤</span>
+    <span>🥤 Bebidas</span>
     <b>›</b>
   </a>
 
 </section>
+    </div>
 
     <div id="menu"></div>
 
@@ -1802,10 +2048,12 @@ body{
             <p>Define si cobra delivery y si corresponde empaque.</p>
           </div>
         </div>
-        <label class="delivery-option"><input type="checkbox" id="chk-delivery" checked><span>🛵</span><b>Delivery</b><small>S/ 3 antes de 10pm · S/ 4 desde 10pm · gratis &gt; S/ 100</small></label>
-        <label class="delivery-option"><input type="checkbox" id="chk-pickup"><span>🛍️</span><b>Recojo en local</b><small>Pedido para llevar</small></label>
-        <label class="delivery-option"><input type="checkbox" id="chk-eatin"><span>🍽️</span><b>Comer en el local</b><small>No se cobra taper</small></label>
-        <p class="nota-taper">🥡 Empaque / taper automático para delivery o para llevar. No aplica a bebidas ni cremas extra.</p>
+        <div class="delivery-fast-grid">
+          <label class="delivery-option"><input type="radio" name="delivery-method" id="chk-delivery" value="delivery"><span>🛵</span><b>Delivery</b><small>S/ 3 antes de 10pm · S/ 4 desde 10pm</small></label>
+          <label class="delivery-option"><input type="radio" name="delivery-method" id="chk-pickup" value="pickup"><span>🛍️</span><b>Recojo</b><small>Pedido para llevar</small></label>
+          <label class="delivery-option"><input type="radio" name="delivery-method" id="chk-eatin" value="eatin"><span>🍽️</span><b>Local</b><small>Sin taper</small></label>
+        </div>
+        <p class="nota-taper">👉 Elige una opción. 🥡 Taper automático solo en delivery o recojo.</p>
       </div>
 
       <p id="cart-total">Total: S/ 0.00</p>
@@ -1818,7 +2066,7 @@ body{
         <button id="btn-clear">Vaciar pedido</button>
         <button id="btn-print-kitchen" type="button">👨‍🍳 Imprimir comanda</button>
         <button id="btn-print-client" type="button">🧾 Imprimir boleta</button>
-        <button id="btn-register-sale" type="button">✅ Registrar venta / Enviar cocina</button>
+        <button id="btn-register-sale" type="button">✅ REGISTRAR / ENVIAR COCINA</button>
         <a id="btn-whatsapp" href="#" class="btn disabled">📲 Compartir boleta con cliente</a>
       </div>
 
@@ -2048,11 +2296,11 @@ const SECTIONS = [
         image: "BURGER 2.jpg",
         sauceMode: "none",
         items: [
-          { id: 12, name: "Burger Clásica Ochoa",              price: 10, desc: "Carne 200 g + queso + papas + ensalada + cremas", cardImg: "Burger Clásica Ochoa.png" },
-          { id: 13, name: "Burger Royal Gaviria",              price: 12, desc: "Carne 200 g + queso + huevo + papas + ensalada + cremas", cardImg: "Burger Royal Gaviria.png" },
-          { id: 14, name: "Burger Premium Ulloa",              price: 14, desc: "Carne 200 g + queso + chorizo + tocino + papas + ensalada + cremas", cardImg: "Burger Premium Ulloa.png" },
-          { id: 15, name: "Burger Pablo Escobar",              price: 20, desc: "2 carnes + queso + jamón + huevo + tocino + papas + ensalada + cremas", cardImg: "Burger Pablo Escobar.png" },
-          { id: 16, name: "Burger Crispy Motoa",               price: 12, desc: "Pollo crispy + queso + jamón + papas + ensalada + cremas", cardImg: "Burger Crispy Motoa.png" },
+          { id: 12, name: "Burger Clásica Ochoa",              price: 12.00, desc: "Carne 200 g + queso + papas + ensalada + cremas", cardImg: "Burger Clásica Ochoa.png" },
+          { id: 13, name: "Burger Royal Gaviria",              price: 14.00, desc: "Carne 200 g + queso + huevo + papas + ensalada + cremas", cardImg: "Burger Royal Gaviria.png" },
+          { id: 14, name: "Burger Premium Ulloa",              price: 16.00, desc: "Carne 200 g + queso + chorizo + tocino + papas + ensalada + cremas", cardImg: "Burger Premium Ulloa.png" },
+          { id: 15, name: "Burger Pablo Escobar",              price: 24.00, desc: "2 carnes + queso + jamón + huevo + tocino + papas + ensalada + cremas", cardImg: "Burger Pablo Escobar.png" },
+          { id: 16, name: "Burger Crispy Motoa",               price: 14.00, desc: "Pollo crispy + queso + jamón + papas + ensalada + cremas", cardImg: "Burger Crispy Motoa.png" },
           { id: 17, name: "Wrap Crispy de Pollo",              price: 13.90, desc: "Pollo crispy + verduras frescas + salsa de queso + papas + 3 cremas", cardImg: "wrap-crispy-pollo.png" },
           { id: 18, name: "Wrap BBQ Chicken",                  price: 14.90, desc: "Pollo crispy + salsa BBQ + verduras frescas + queso + papas + 3 cremas", cardImg: "wrap-bbq-chicken.png" },
           { id: 19, name: "Wrap Carne Búfalo",                 price: 15.90, desc: "Carne sazonada + salsa búfalo picante + verduras frescas + queso + papas + 3 cremas", cardImg: "wrap-carne-bufalo.png" }
@@ -2154,6 +2402,7 @@ let CURRENT_ORDER_LOCKED = false;
 let ACTIVE_DATE_KEY = "";
 let CASH_IS_OPEN = false;
 let CASH_STATE_DATA = {};
+let CURRENT_CATEGORY_GROUP = "combos";
 const menuContainer = document.getElementById("menu");
 const cartItemsEl = document.getElementById("cart-items");
 const cartEmptyEl = document.getElementById("cart-empty");
@@ -2184,6 +2433,10 @@ const cashDayInput = document.getElementById("cash-day-input");
 const btnOpenDay = document.getElementById("btn-open-day");
 const btnCloseDay = document.getElementById("btn-close-day");
 const btnRefreshCashDay = document.getElementById("btn-refresh-cash-day");
+const productSearch = document.getElementById("product-search");
+const btnClearSearch = document.getElementById("btn-clear-search");
+const productSearchStatus = document.getElementById("product-search-status");
+const mozaFastTools = document.getElementById("moza-fast-tools");
 
 function renderMenu(){
   if (!menuContainer) return;
@@ -2208,6 +2461,7 @@ function renderMenu(){
     const grid = document.createElement("div"); grid.className = "menu-grid";
     section.items.forEach(item => {
       const card = document.createElement("div"); card.className = "item-card";
+      card.dataset.searchText = normalizeSearchText(`${item.name} ${item.desc || ""} ${section.name || ""}`);
       if (item.fixedAlitasImg) { card.dataset.fixedAlitasImg = item.fixedAlitasImg; card.style.setProperty("--alitas-img", `url("${item.fixedAlitasImg}")`); }
       if (item.cardImg) card.dataset.cardImg = item.cardImg;
       if (section.anchorId === "alitas" || item.cardImg) {
@@ -2254,10 +2508,17 @@ function renderMenu(){
         (item.id === 37 ? ["Inka Kola","Coca-Cola"] : ["Coca-Cola","Inka Kola"]).forEach(v => { const o=document.createElement("option"); o.value=v; o.textContent=v; sel.appendChild(o); });
         const label = document.createElement("label"); label.textContent = item.id === 42 ? "Vidrio: " : (item.id === 37 ? "1L: " : "Marca: "); label.appendChild(sel); actions.appendChild(label);
       }
-      const qty = document.createElement("input"); qty.type = "number"; qty.min = "1"; qty.value = "1";
+      const qtyWrap = document.createElement("div"); qtyWrap.className = "menu-qty-stepper";
+      const qtyMinus = document.createElement("button"); qtyMinus.type = "button"; qtyMinus.textContent = "−"; qtyMinus.setAttribute("aria-label","Restar cantidad");
+      const qty = document.createElement("input"); qty.type = "number"; qty.min = "1"; qty.value = "1"; qty.readOnly = true; qty.setAttribute("aria-label","Cantidad");
+      const qtyPlus = document.createElement("button"); qtyPlus.type = "button"; qtyPlus.textContent = "+"; qtyPlus.setAttribute("aria-label","Sumar cantidad");
+      qtyMinus.addEventListener("click", () => { qty.value = String(Math.max(1, (Number(qty.value)||1)-1)); });
+      qtyPlus.addEventListener("click", () => { qty.value = String((Number(qty.value)||1)+1); });
+      qtyWrap.appendChild(qtyMinus); qtyWrap.appendChild(qty); qtyWrap.appendChild(qtyPlus);
+
       const btn = document.createElement("button"); btn.type = "button"; btn.textContent = "Agregar";
       btn.addEventListener("click", () => handleAdd(section, item, card, qty, btn));
-      actions.appendChild(qty); actions.appendChild(btn); card.appendChild(actions); grid.appendChild(card);
+      actions.appendChild(qtyWrap); actions.appendChild(btn); card.appendChild(actions); grid.appendChild(card);
     });
     sectionBlock.appendChild(grid);
     if (section.footerText) { const note=document.createElement("div"); note.style.cssText="margin-top:8px;font-size:12px;color:#ccc"; note.textContent=section.footerText; sectionBlock.appendChild(note); }
@@ -2265,10 +2526,65 @@ function renderMenu(){
   });
 }
 
+function normalizeSearchText(v){
+  return String(v || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"")
+    .toLowerCase()
+    .trim();
+}
+
+function clearSearchVisual(){
+  document.querySelectorAll(".item-card").forEach(card=>{
+    card.classList.remove("search-hidden","search-match");
+  });
+  document.querySelectorAll(".menu-section-block").forEach(block=>{
+    block.classList.remove("search-block-hidden","search-mode");
+  });
+}
+
+function applyProductSearch(){
+  const q = normalizeSearchText(productSearch?.value || "");
+  clearSearchVisual();
+
+  if(!q){
+    if(productSearchStatus) productSearchStatus.textContent = "Escribe para encontrar un producto rápido.";
+    showOnlyCategory(CURRENT_CATEGORY_GROUP || "combos", false);
+    return;
+  }
+
+  let matches=0;
+  document.querySelectorAll(".menu-section-block").forEach(block=>{
+    let blockMatches=0;
+    block.classList.add("search-mode");
+    block.querySelectorAll(".item-card").forEach(card=>{
+      const ok=(card.dataset.searchText || "").includes(q);
+      card.classList.toggle("search-hidden",!ok);
+      card.classList.toggle("search-match",ok);
+      if(ok){ matches++; blockMatches++; }
+    });
+    block.classList.toggle("search-block-hidden",blockMatches===0);
+  });
+
+  document.querySelectorAll(".app-category-card").forEach(card=>card.classList.remove("active-category"));
+  if(productSearchStatus){
+    productSearchStatus.textContent = matches
+      ? `✅ ${matches} ${matches===1 ? "producto encontrado" : "productos encontrados"}.`
+      : "⚠️ No encontré productos con ese nombre.";
+  }
+}
+
 function showOnlyCategory(anchorId, shouldScroll = true){
   const group = String(anchorId || "").replace("#", "");
   const blocks = Array.from(document.querySelectorAll(".menu-section-block"));
   if (!blocks.length || !group) return;
+  CURRENT_CATEGORY_GROUP = group;
+
+  if(productSearch && productSearch.value){
+    productSearch.value = "";
+    if(productSearchStatus) productSearchStatus.textContent = "Escribe para encontrar un producto rápido.";
+  }
+  clearSearchVisual();
 
   blocks.forEach(block => {
     block.classList.toggle("section-hidden", block.dataset.group !== group);
@@ -2317,8 +2633,15 @@ function handleAdd(section, item, card, qtyInput, btn){
   const brandSel = card.querySelector(`select[name="brand-${item.id}"]`);
   if (brandSel) { if (!brandSel.value) return alert("Elige la opción/marca."); brand = brandSel.value; }
   addToCart(item, qty, sauces, sauceApart, brand, noSauce);
-  const t = btn.textContent; btn.textContent = "✔ Añadido"; btn.disabled = true;
-  setTimeout(() => { btn.textContent = t; btn.disabled = false; }, 850);
+  const t = btn.textContent;
+  btn.textContent = "✅ Añadido";
+  btn.classList.add("added-flash");
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.textContent = t;
+    btn.classList.remove("added-flash");
+    btn.disabled = false;
+  }, 650);
 }
 
 function limpiarSeleccionMenu(){
@@ -2363,7 +2686,6 @@ function setOrderType(type){
   if (type === "delivery") { chkDelivery.checked=true; chkPickup.checked=false; chkEatIn.checked=false; }
   if (type === "pickup") { chkDelivery.checked=false; chkPickup.checked=true; chkEatIn.checked=false; }
   if (type === "eatin") { chkDelivery.checked=false; chkPickup.checked=false; chkEatIn.checked=true; }
-  if (!chkDelivery.checked && !chkPickup.checked && !chkEatIn.checked) chkDelivery.checked = true;
   renderCart();
 }
 function getCtx(){
@@ -2384,10 +2706,14 @@ function getCtx(){
   } else if (isPickup) { deliveryTextPrint="Recojo en local"; deliveryTextWA="🚶 Recojo en local (para llevar)"; }
   else if (isEatIn) { deliveryTextPrint="Consumo en local"; deliveryTextWA="🍽️ Comeré en el local"; }
   const total = round2(subtotal + taperFee + deliveryFee);
-  return { subtotal, taperCount, taperFee:round2(taperFee), deliveryFee:round2(deliveryFee), total, taperTextPrint:(isDelivery || isPickup) ? `${taperCount} und (S/ ${taperFee.toFixed(2)})` : "0 und (S/ 0.00)", deliveryTextPrint, deliveryTextWA, isDelivery:!!isDelivery, isPickup:!!isPickup, isEatIn:!!isEatIn, name:(inputName?.value||"").trim(), comment:(inputComment?.value||"").trim(), paymentMethod:getPaymentMethod(), mixedYape:getPaymentMethod()==="mixto" ? safeNum(mixedYapeInput?.value) : 0, mixedCash:getPaymentMethod()==="mixto" ? safeNum(mixedCashInput?.value) : 0 };
+  const hasDeliveryChoice = !!(isDelivery || isPickup || isEatIn);
+  return { subtotal, taperCount, taperFee:round2(taperFee), deliveryFee:round2(deliveryFee), total, taperTextPrint:(isDelivery || isPickup) ? `${taperCount} und (S/ ${taperFee.toFixed(2)})` : "0 und (S/ 0.00)", deliveryTextPrint, deliveryTextWA, isDelivery:!!isDelivery, isPickup:!!isPickup, isEatIn:!!isEatIn, hasDeliveryChoice, name:(inputName?.value||"").trim(), comment:(inputComment?.value||"").trim(), paymentMethod:getPaymentMethod(), mixedYape:getPaymentMethod()==="mixto" ? safeNum(mixedYapeInput?.value) : 0, mixedCash:getPaymentMethod()==="mixto" ? safeNum(mixedCashInput?.value) : 0 };
 }
 function getErrors(ctx){
   const errors=[];
+  if (!ctx.hasDeliveryChoice) {
+    errors.push("⚠️ Elige Delivery, Recojo o Local antes de registrar.");
+  }
   if (ctx.paymentMethod === "mixto") {
     const sum = round2(ctx.mixedYape + ctx.mixedCash);
     if (Math.abs(sum - ctx.total) > 0.009) errors.push(`⚠️ Pago mixto no cuadra. Total: S/ ${ctx.total.toFixed(2)} | Yape + efectivo: S/ ${sum.toFixed(2)}.`);
@@ -2821,31 +3147,57 @@ async function saveOrderToCloud(order){
 }
 async function registerSale(source="MOZA_COCINA"){
   if (!cart.length) { alert("No hay pedido para registrar."); return false; }
+
+  if (CURRENT_REGISTERED) {
+    startNewOrder();
+    return true;
+  }
+
   ensureBoletaCreated();
   const ctx = getCtx();
   const errors = getErrors(ctx);
   if (errors.length) { alert(errors.join("\n")); return false; }
-  if (CURRENT_REGISTERED) {
-    alert("✅ Este pedido ya fue registrado. Para otro pedido, presiona 'Vaciar pedido'.");
-    return true;
-  }
+
   const activeDateKey = await ensureOperationalDayOpen();
   if (!activeDateKey) return false;
+
   const order = buildOrderRecord(ctx, source);
-  if (btnRegisterSale) { btnRegisterSale.disabled = true; btnRegisterSale.textContent = "Guardando..."; }
-  if (orderSaveStatus) orderSaveStatus.textContent = "Guardando pedido en la nube...";
+  if (btnRegisterSale) {
+    btnRegisterSale.disabled = true;
+    btnRegisterSale.textContent = "Guardando...";
+    btnRegisterSale.classList.remove("new-order-mode");
+  }
+  if (orderSaveStatus) {
+    orderSaveStatus.classList.remove("status-success","status-error");
+    orderSaveStatus.textContent = "Guardando pedido en la nube...";
+  }
+
   const result = await saveOrderToCloud(order);
+
   CURRENT_REGISTERED = true;
   CURRENT_ORDER_LOCKED = true;
   renderCart();
-  if (btnRegisterSale) { btnRegisterSale.disabled = false; btnRegisterSale.textContent = "✅ Registrado / Enviado cocina"; }
+
+  if (btnRegisterSale) {
+    btnRegisterSale.disabled = false;
+    btnRegisterSale.textContent = "➕ NUEVO PEDIDO";
+    btnRegisterSale.classList.add("new-order-mode");
+  }
+
   if (result.ok) {
-    if (orderSaveStatus) orderSaveStatus.textContent = `✅ Pedido registrado en Supabase. Pedido: ${dailyOrderNumber()}`;
-    alert("✅ Pedido registrado y enviado a cocina/admin.\n\nAhora puedes imprimir comanda o boleta.");
+    if (orderSaveStatus) {
+      orderSaveStatus.textContent = `✅ ${dailyOrderNumber()} REGISTRADO Y ENVIADO A COCINA / ADMIN`;
+      orderSaveStatus.classList.add("status-success");
+    }
+    // Sin alert: la moza puede seguir de inmediato con boleta/comanda o Nuevo pedido.
   } else {
-    if (orderSaveStatus) orderSaveStatus.textContent = `⚠️ Guardado local. No confirmó Supabase: ${result.error}`;
+    if (orderSaveStatus) {
+      orderSaveStatus.textContent = `⚠️ Guardado local. Supabase no confirmó: ${result.error}`;
+      orderSaveStatus.classList.add("status-error");
+    }
     alert("⚠️ El pedido quedó guardado en este equipo, pero Supabase no confirmó la nube.\n\nDetalle: " + result.error);
   }
+
   return result.ok;
 }
 
@@ -3080,9 +3432,9 @@ function renderCart(){
     cartTotalEl.innerHTML = "Total: S/ 0.00";
     if (boletaEl) boletaEl.innerHTML = "";
     if (comandaEl) comandaEl.innerHTML = "";
-    if (orderSaveStatus) orderSaveStatus.textContent = "";
+    if (orderSaveStatus && !CURRENT_REGISTERED) orderSaveStatus.textContent = "";
     if (bottomBar) bottomBar.classList.add("hidden");
-    if (bottomTotal) bottomTotal.textContent = "Total: S/ 0.00";
+    if (bottomTotal) bottomTotal.textContent = "🛒 0 productos · S/ 0.00";
     if (errorMsg) errorMsg.textContent = "";
     btnWhatsapp.href = "#"; btnWhatsapp.classList.add("disabled");
     CURRENT_BOLETA = null;
@@ -3101,31 +3453,93 @@ function renderCart(){
   const ctx = getCtx();
   cartTotalEl.innerHTML = `Subtotal: ${money(ctx.subtotal)}<br>Empaque / taper: 🥡 ${ctx.taperTextPrint}<br>Delivery: ${money(ctx.deliveryFee)}<br><span style="font-size:17px;">Total: ${money(ctx.total)}</span>`;
   if (bottomBar) bottomBar.classList.remove("hidden");
-  if (bottomTotal) bottomTotal.textContent = `Total: ${money(ctx.total)}`;
+  if (bottomTotal) {
+    const units = cart.reduce((acc,e)=>acc + safeNum(e.qty),0);
+    bottomTotal.textContent = `🛒 ${units} ${units===1 ? "producto" : "productos"} · ${money(ctx.total)}`;
+  }
   if (boletaEl) boletaEl.innerHTML = buildTicket(ctx);
   if (comandaEl) comandaEl.innerHTML = buildKitchenTicket(ctx);
   const errors = getErrors(ctx);
   if (errors.length) { btnWhatsapp.href="#"; btnWhatsapp.classList.add("disabled"); if (errorMsg) errorMsg.textContent=errors.join("\n"); }
   else { btnWhatsapp.href=buildWhatsapp(ctx); btnWhatsapp.classList.remove("disabled"); if (errorMsg) errorMsg.textContent=""; }
 }
+function resetOrderForm(){
+  if(inputName) inputName.value="";
+  if(inputComment) inputComment.value="";
+  if(mixedYapeInput) mixedYapeInput.value="";
+  if(mixedCashInput) mixedCashInput.value="";
+
+  paymentRadios.forEach(r=>{ r.checked = r.value === "efectivo"; });
+
+  if(chkDelivery) chkDelivery.checked=false;
+  if(chkPickup) chkPickup.checked=false;
+  if(chkEatIn) chkEatIn.checked=false;
+}
+
 function clearCart(){
   cart=[];
   CURRENT_BOLETA=null;
   CURRENT_ORDER_ID=null;
   CURRENT_REGISTERED=false;
   CURRENT_ORDER_LOCKED=false;
-  if(mixedYapeInput) mixedYapeInput.value="";
-  if(mixedCashInput) mixedCashInput.value="";
-  if (btnRegisterSale) { btnRegisterSale.disabled = false; btnRegisterSale.textContent = "✅ Registrar venta / Enviar cocina"; }
-  if (orderSaveStatus) orderSaveStatus.textContent = "";
-  renderCart(); programarLimpiezaMenu();
+
+  resetOrderForm();
+
+  if (btnRegisterSale) {
+    btnRegisterSale.disabled = false;
+    btnRegisterSale.textContent = "✅ REGISTRAR / ENVIAR COCINA";
+    btnRegisterSale.classList.remove("new-order-mode");
+  }
+  if (orderSaveStatus) {
+    orderSaveStatus.textContent = "";
+    orderSaveStatus.classList.remove("status-success","status-error");
+  }
+
+  renderCart();
+  programarLimpiezaMenu();
 }
+
+function startNewOrder(){
+  clearCart();
+
+  if(productSearch){
+    productSearch.value="";
+  }
+  if(productSearchStatus){
+    productSearchStatus.textContent="Escribe para encontrar un producto rápido.";
+  }
+
+  showOnlyCategory(CURRENT_CATEGORY_GROUP || "combos", false);
+
+  setTimeout(()=>{
+    if(mozaFastTools) scrollToWithOffset(mozaFastTools, 8);
+  },50);
+}
+
 function scrollToWithOffset(el, offset=STICKY_OFFSET){ if(!el) return; const y = el.getBoundingClientRect().top + window.pageYOffset - offset; window.scrollTo({top:y, behavior:"smooth"}); }
 
 renderMenu();
 setupCategoryFiltering();
 showOnlyCategory("combos", false);
 renderCart();
+
+if(productSearch){
+  productSearch.addEventListener("input", applyProductSearch);
+  productSearch.addEventListener("keydown", e=>{
+    if(e.key==="Escape"){
+      productSearch.value="";
+      applyProductSearch();
+      productSearch.blur();
+    }
+  });
+}
+if(btnClearSearch){
+  btnClearSearch.addEventListener("click",()=>{
+    if(productSearch) productSearch.value="";
+    applyProductSearch();
+    if(productSearch) productSearch.focus();
+  });
+}
 if (btnClear) btnClear.addEventListener("click", clearCart);
 if (bottomVerPedido) bottomVerPedido.addEventListener("click", () => scrollToWithOffset(document.getElementById("carrito")));
 if (inputName) inputName.addEventListener("input", renderCart);
@@ -3133,9 +3547,9 @@ if (inputComment) inputComment.addEventListener("input", renderCart);
 paymentRadios.forEach(r => r.addEventListener("change", renderCart));
 if (mixedYapeInput) mixedYapeInput.addEventListener("input", renderCart);
 if (mixedCashInput) mixedCashInput.addEventListener("input", renderCart);
-if (chkDelivery) chkDelivery.addEventListener("change", () => setOrderType("delivery"));
-if (chkPickup) chkPickup.addEventListener("change", () => setOrderType("pickup"));
-if (chkEatIn) chkEatIn.addEventListener("change", () => setOrderType("eatin"));
+if (chkDelivery) chkDelivery.addEventListener("change", () => { if(chkDelivery.checked) setOrderType("delivery"); else renderCart(); });
+if (chkPickup) chkPickup.addEventListener("change", () => { if(chkPickup.checked) setOrderType("pickup"); else renderCart(); });
+if (chkEatIn) chkEatIn.addEventListener("change", () => { if(chkEatIn.checked) setOrderType("eatin"); else renderCart(); });
 if (btnPrintKitchen) btnPrintKitchen.addEventListener("click", () => {
   if (!cart.length) return alert("No hay pedido para imprimir.");
   ensureBoletaCreated();
@@ -3152,7 +3566,10 @@ if (btnPrintClient) btnPrintClient.addEventListener("click", () => {
   if (errors.length) return alert(errors.join("\n"));
   printHTML(buildTicket(ctx), "Boleta cliente");
 });
-if (btnRegisterSale) btnRegisterSale.addEventListener("click", () => registerSale("MOZA_COCINA"));
+if (btnRegisterSale) btnRegisterSale.addEventListener("click", () => {
+  if(CURRENT_REGISTERED) startNewOrder();
+  else registerSale("MOZA_COCINA");
+});
 if (btnOpenDay) btnOpenDay.addEventListener("click", async () => {
   // Guardamos la fecha elegida ANTES de consultar Supabase para que no se cambie por zona horaria ni por un valor anterior.
   const selectedDateKey = cashDayInput?.value || operationalDefaultDateKey();
