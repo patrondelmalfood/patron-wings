@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <!-- PDM CARTA PUBLICA: MENU + PEDIDO RAPIDO + BOLETA WHATSAPP -->
+<!-- PDM CARTA_CARRITO: WHATSAPP DIRECTO AL DUEÑO 2026-08 -->
 <!-- PDM INDEX PUBLICO: PEDIDO RAPIDO + BOLETA WHATSAPP 2026-08 -->
 <head>
   <meta charset="UTF-8" />
@@ -3162,7 +3163,7 @@ body.home-screen .app-category-card span small{
       <div class="carrito-actions">
         <button id="btn-clear">Vaciar pedido</button>
         <a id="btn-whatsapp" href="#" class="btn disabled">✅ CONFIRMAR MI PEDIDO</a>
-        <div class="confirm-helper">Se abrirá WhatsApp para finalizar el pedido.</div>
+        <div class="confirm-helper">Se abrirá directamente el WhatsApp del local.</div>
       </div>
 
       <p id="error-msg" class="error-msg"></p>
@@ -4251,22 +4252,9 @@ async function confirmAndShareOrder(){
   try{
     const blob=await createCustomerOrderReceiptBlob(ctx);
     const fileName=`pedido-web-${dailyOrderNumber()}-${CURRENT_BOLETA || "boleta"}.png`;
-    const file=new File([blob],fileName,{type:"image/png"});
     const caption=buildOwnerCaption(ctx);
 
-    /* En celulares compatibles comparte imagen + texto.
-       El cliente elige WhatsApp y el chat del local. */
-    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
-      await navigator.share({
-        files:[file],
-        title:"Pedido - El Patrón del Mal",
-        text:caption
-      });
-      return;
-    }
-
-    /* Respaldo para PC/navegadores que no comparten archivos:
-       se intenta copiar la imagen, se descarga y se abre el WhatsApp del local. */
+    // Intentamos copiar la imagen al portapapeles.
     let copied=false;
     try{
       if(navigator.clipboard && window.ClipboardItem){
@@ -4275,8 +4263,12 @@ async function confirmAndShareOrder(){
         ]);
         copied=true;
       }
-    }catch(e){}
+    }catch(e){
+      copied=false;
+    }
 
+    // Guardamos la imagen como respaldo para poder adjuntarla si el navegador
+    // no permite pegar imágenes directamente en WhatsApp.
     const url=URL.createObjectURL(blob);
     const a=document.createElement("a");
     a.href=url;
@@ -4284,15 +4276,25 @@ async function confirmAndShareOrder(){
     document.body.appendChild(a);
     a.click();
     a.remove();
-    setTimeout(()=>URL.revokeObjectURL(url),1500);
+    setTimeout(()=>URL.revokeObjectURL(url),2500);
 
-    window.open(buildWhatsapp(ctx),"_blank");
+    // IMPORTANTE:
+    // Abrimos DIRECTAMENTE el chat del dueño. El cliente NO tiene que
+    // seleccionar WhatsApp ni buscar/guardar el número.
+    const directUrl=buildWhatsapp(ctx);
+    window.location.href=directUrl;
 
-    alert(
-      copied
-        ? "✅ Pedido listo. Se abrió WhatsApp del local. Si la imagen no aparece sola, pégala con Ctrl+V."
-        : "✅ Pedido listo. Se abrió WhatsApp del local. Adjunta la imagen del pedido que se descargó."
-    );
+    // En navegadores que mantengan la pestaña activa, mostramos instrucción corta.
+    setTimeout(()=>{
+      if(document.visibilityState==="visible"){
+        alert(
+          copied
+            ? "✅ Pedido listo.\n\nSe abrió directamente el WhatsApp del local. Si la imagen no aparece adjunta, pégala en el chat."
+            : "✅ Pedido listo.\n\nSe abrió directamente el WhatsApp del local. Adjunta la imagen del pedido que se descargó."
+        );
+      }
+    },900);
+
   }catch(err){
     alert("No se pudo generar el pedido: "+(err.message || String(err)));
   }finally{
@@ -4300,7 +4302,6 @@ async function confirmAndShareOrder(){
     btnWhatsapp.textContent=oldText;
   }
 }
-
 function renderCart(){
   updateMixedPaymentVisibility();
   updatePaymentHelp();
